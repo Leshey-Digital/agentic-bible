@@ -26,9 +26,33 @@ test('strict schema rejects unsafe markup/URLs, invalid citations/dates/types an
     ['unused_or_missing_evidence',v=>v.article.blocks.splice(3,1)],['duplicate_source',v=>v.article.sources.push(v.article.sources[0])],
     ['invalid_date',v=>v.article.verified='2026-02-31'],['invalid_quality_concern',v=>v.article.concerns=['approval-required']],
     ['unsupported_block',v=>v.article.blocks[0]={type:'html',content:'plain'}],['invalid_text',v=>v.article.title='\ud800'],
+    ['unsupported_schema',v=>v.schemaVersion='1'],['invalid_text',v=>v.article.verified=['2026-10-16']],
+    ['unsupported_provenance',v=>v.article.provenance=['supplied-local-fixture']],
+    ['invalid_text',v=>v.article.sources[0].url=['https://example.org/']],
+    ['invalid_quality_concern',v=>v.article.concerns=[['editorial-review']]],
   ];
   for(const [expected,mutate]of cases){const value=fixture();mutate(value);assert.throws(()=>commandInput(value),code(expected),expected);}
   const large=fixture();large.article.description='x'.repeat(publicationLimits.inputBytes);assert.throws(()=>commandInput(large),code('input_too_large'));
+});
+
+test('topic requires an allowed string and malformed topics cannot change a published snapshot or claim an event',async()=>{
+  const output=store();const first=await output.execute(fixture());
+  const inventory=(directory=output.root):Record<string,string>=>Object.fromEntries(readdirSync(directory,{withFileTypes:true}).sort((a,b)=>a.name.localeCompare(b.name,'en')).flatMap(entry=>{
+    const path=join(directory,entry.name);return entry.isDirectory()?Object.entries(inventory(path)):[[path.slice(output.root.length+1),hash(readFileSync(path))]];
+  }));
+  const snapshot=()=>({current:output.current(),pointer:readFileSync(join(output.root,'current.json'),'utf8'),files:inventory()});
+  const before=snapshot();
+  const cases:[string,unknown][]=[['array',['Foundations']],['nested-array',[['Foundations']]],['object',{value:'Foundations'}],['null',null],['number',42],['boolean',true],['unexpected-string','Unexpected']];
+  for(const [name,topic]of cases){
+    const value=next(first.revisionId,'invalid-topic-'+name);(value.article as unknown as Record<string,unknown>).topic=topic;
+    assert.throws(()=>commandInput(value),code('invalid_topic'),name);
+    await assert.rejects(output.execute(value),code('invalid_topic'),name);
+    assert.deepEqual(snapshot(),before,`${name}: pointer, manifests, revisions, search assets, receipts and sequence must be unchanged`);
+  }
+  for(const topic of ['Foundations','Capabilities','Protocols'] as const){const value=fixture();value.article.topic=topic;const normalized=commandInput(value) as Publish;assert.equal(normalized.article.topic,topic);}
+  const corrected=next(first.revisionId,'invalid-topic-array');corrected.article.topic='Capabilities';
+  const receipt=await output.execute(corrected);assert.equal(receipt.sequence,2);assert.deepEqual(receipt.flags,['editorial-review']);
+  assert.equal(output.revision(receipt.revisionId!).topic,'Capabilities');
 });
 
 test('unknown crosslinks and stale bases fail before activation; valid flagged content publishes automatically and escapes text',async()=>{
