@@ -72,8 +72,10 @@ export class HttpObservationStore {
         .bind(result.ok?'succeeded':'failed',result.ok?result.observation.bytes:null,lease.token,lease.key,lease.token));
     const changes=await this.db.batch(statements);return changes[result.ok?1:0].meta.changes===1;
   }
-  async status(key:string){
+  async status(key:string,now:number=Date.now()){
+    validTime(now);
     const job=await this.job(key);if(!job)throw new HttpStoreError('missing_http_job');
-    return job.result??JSON.stringify({status:job.state==='running'?'busy':'blocked',error:job.state==='running'?'http_in_progress':'http_not_due_or_budget',attempts:job.attempts});
+    const busy=job.state==='running'&&job.lease_until!==null&&job.lease_until>now;
+    return job.result??JSON.stringify({status:busy?'busy':'blocked',error:busy?'http_in_progress':'http_not_due_or_budget',attempts:job.attempts});
   }
 }
