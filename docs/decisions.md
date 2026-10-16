@@ -23,6 +23,7 @@ Last prepared: 2026-10-16. This document distinguishes founder direction from te
 - An OpenSpec-style directory workflow plus AGENTS.md, GitHub issues, and draft PRs.
 - Automatic article publication and post-publication review flags are now approved policy. The publishing pipeline, admin review inbox and escalation delivery are not implemented in this static slice. Code review and deployment checks remain separate.
 - The next stacked branch implements a local synthetic correction/source inbox with role-scoped test sessions, human-entered suggestion tags, dispositions and audit records. Public intake, production identity, article publishing, email delivery and live settings integrations remain disabled. This is implementation progress, not a change to the automatic-publication policy.
+- The source-monitoring branch implements bounded fixture checks and automatic local source-observation metadata revisions with later review flags. This is not article-text generation or a public publication pipeline. Its request/retry/day limits are local test bounds, not actual currency/provider spending caps. Live fetching, cron and Jev/model integration remain disabled pending secure setup.
 - The $10/month operating target is accepted. Numeric Jev allocation, per-run/day limits, provider credentials and the enforcement mechanism remain undefined; paid jobs stay disabled until these are concrete.
 
 ## Decisions still needed

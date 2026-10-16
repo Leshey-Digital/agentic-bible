@@ -2,7 +2,7 @@ name: Validate library
 on:
   pull_request:
   push:
-    branches: [main, feat/reference-library-slice, feat/editorial-inbox]
+    branches: [main, feat/reference-library-slice, feat/editorial-inbox, feat/source-monitoring]
 permissions:
   contents: read
 concurrency:

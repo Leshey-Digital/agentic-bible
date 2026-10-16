@@ -4,6 +4,7 @@ import { D1EditorialStore } from './store.ts';
 import { localMode, sameOrigin, localSession, currentSession, sessionCookie } from './auth.ts';
 import { InputError, RateLimitError, ReplayConflictError, CapacityError, submissionInput, changeInput, readJson, readLimitedText, digest } from './validation.ts';
 import { signIn, messagePage, inbox, detail } from './views.ts';
+import { monitoringRoutes } from '../monitoring/routes.ts';
 
 const uuid = /^[a-f0-9-]{36}$/;
 const headers = {
@@ -57,6 +58,7 @@ export async function handle(request: Request, env: EditorialEnv): Promise<Respo
     return redirect('/admin/sign-in/', { 'Set-Cookie': sessionCookie('', true) });
   }
   if (session.role !== 'admin') return admin ? html(messagePage('Admin role required', 'This local reader identity cannot access editorial submissions.', session), 403) : json({ error: 'Admin role required.' }, 403);
+  if (path === '/admin/sources' || path.startsWith('/admin/sources/') || path.startsWith('/api/admin/monitor/')) return monitoringRoutes(request, env, session);
   if (path === '/api/admin/session' && request.method === 'GET') return json({ identity: session.identity, role: session.role, csrf: session.csrf });
   if ((path === '/api/admin/submissions' || path === '/admin/' || path === '/admin') && request.method === 'GET') {
     const status = url.searchParams.get('status') ?? 'new';

@@ -4,6 +4,8 @@ Status: the foundation describes the design proposal. The first application feat
 
 The next stacked branch implements submissions and the editorial inbox only in an explicit local synthetic Worker/D1 preview. [The editorial contract](editorial-contracts.md) defines the storage port, routes, local sessions, fail-closed production boundary and test commands. The reviewed static staging configuration is preserved; no cloud D1 resource, identity or route is created.
 
+The source-monitoring branch adds a metadata-derived catalog, bounded fixture HTTP jobs, conditional/hash observations, persisted change candidates and an automatic local metadata-revision ledger with post-publication review flags. [Its contract](source-monitoring-contracts.md) distinguishes this working local foundation from future live fetching, model-generated article changes and public release. No live schedule or provider integration is enabled.
+
 ## Read path
 Markdown content with validated front matter → static Astro build → Cloudflare Workers Static Assets → reader. Generate a Pagefind index during the build. Prefer static assets and CDN caching; reading/search must not invoke an LLM. Validate compatibility and current provider constraints before selecting final tooling.
 
