@@ -98,5 +98,10 @@ The separate publication slice accepts supplied synthetic cited article revision
 
 The separate successor `feat/local-mvp-combined-status` retains the exact PR10/PR12/PR11/PR13 histories and independently accepted PR14 status fix, preserving published PR15 unchanged, all original feature suites and a controlled collector/supplied-publication browser journey (`npm run test:combined:browser`). HTTP observation and supplied article publication remain separate libraries: no source-to-generated-article or trusted provenance bridge exists. [Combined contract, exact source heads, review gates and missing bridge](docs/local-mvp-combined-candidate.md) describe the candidate for independent review. No combined acceptance, main merge or deployment is implied.
 
+## Local canonical wiki bridge
+
+The separate canonical bridge successor connects actual charged local HTTP receipts to explicitly supplied original tool-use revisions, the existing publisher and a full isolated wiki build. `npm run wiki-bridge:prepare` prepares controlled synthetic observations; `npm run wiki-bridge:apply -- --file fixtures/wiki-bridge/packet.json` performs evidence validation, publication, full Astro/Pagefind build and atomic activation in one command. `npm run wiki-bridge:status` exposes pending state; `npm run wiki-bridge:local` previews canonical routes on 127.0.0.1:8793. [Bridge contracts and reproduction](docs/local-canonical-wiki-bridge.md) and [verification](docs/review/local-canonical-wiki-bridge.md) distinguish integrity binding from factual/authenticity proof. Original Markdown, ordinary dist and interactive data are preserved. Earlier disconnected-slice descriptions remain historical; no source generation, live release or deployment is added.
+
 ## License and contributions
+
 The founder approved open-source direction. Specific licensing for code, articles, and submitted material is unresolved; no license is granted by these documents. Third-party contributions are not being solicited or accepted until the founder approves and publishes the relevant terms.

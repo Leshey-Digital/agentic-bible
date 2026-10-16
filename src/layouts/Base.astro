@@ -4,6 +4,7 @@ import { repository } from '../lib/library';
 interface Props { title: string; description?: string; active?: 'library' | 'topics' | 'about' | 'search'; }
 const { title, description = 'A sourced reference library for AI agents and the technology around them.', active } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
+const localBridge=process.env.AGENTIC_BIBLE_LOCAL_WIKI_BUILD==='1';
 ---
 <!doctype html>
 <html lang="en">
@@ -20,7 +21,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
     <header class="site-header shell">
-      <a class="wordmark" href="/" aria-label="Agentic Bible home">
+      <a class="wordmark" href="/">
         <img src="/favicon.svg" width="36" height="36" alt="" />
         <span>Agentic Bible<span class="wordmark-sub">A living reference</span></span>
       </a>
@@ -28,13 +29,14 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
         <a href="/" aria-current={active === 'library' ? 'page' : undefined}>Library</a>
         <a href="/topics/" aria-current={active === 'topics' ? 'page' : undefined}>Topics</a>
         <a href="/about/" aria-current={active === 'about' ? 'page' : undefined}>About</a>
+        {localBridge&&<><a href="/history/">Revision history</a><a href="/review/">Review flags</a></>}
       </nav>
       <a class="header-search" href="/search/" aria-label="Search the library" aria-current={active === 'search' ? 'page' : undefined}>
         <svg width="17" height="17" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" stroke-width="1.6"/><path d="m13 13 4 4" stroke="currentColor" stroke-width="1.6"/></svg>
         <span>Search library</span><kbd>/</kbd>
       </a>
     </header>
-    <div class="preview-strip"><div class="shell"><span class="status-dot"></span> Preview edition <span class="strip-detail">Three sourced drafts. Editorial review pending.</span></div></div>
+    <div class="preview-strip" role="region" aria-label="Edition status"><div class="shell"><span class="status-dot"></span> {localBridge?'Local synthetic wiki demonstration':'Preview edition'} <span class="strip-detail">{localBridge?'Supplied revisions; integrity binding is not factual or source-authenticity proof. No live release.':'Three sourced drafts. Editorial review pending.'}</span></div></div>
     <main id="main" class="shell" tabindex="-1"><slot /></main>
     <footer class="site-footer shell">
       <div><a class="footer-name" href="/">Agentic Bible</a><p>A little more context. A clearer understanding.</p></div>
@@ -46,7 +48,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
         if (event.key !== '/' || event.ctrlKey || event.metaKey || event.altKey || target.isContentEditable || /INPUT|TEXTAREA|SELECT/.test(target.tagName)) return;
         event.preventDefault();
         const field = document.querySelector<HTMLInputElement>('#search-input');
-        if (field) field.focus(); else window.location.assign('/search/');
+        if (field) field.focus(); else window.location.assign((document.body.dataset.wikiSnapshotBase??'/')+'search/');
       });
     </script>
   </body>
