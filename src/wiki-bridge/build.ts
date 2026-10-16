@@ -19,7 +19,7 @@ function markdown(article:Article,publisher:Reference,bindings:Binding[]){
 export async function buildWiki(options:{repo:string;project:Record<string,Buffer>;output:string;siteId:string;publisher:PublicationStore;reference:Reference;bindings:Binding[];proofs:{eventId:string;revisionId:string;bindings:Binding[]}[];started?:()=>void|Promise<void>}){
   const pinned=options.publisher.load(options.reference);const revision=pinned.state.articles['tool-use'];
   if(Object.keys(pinned.state.articles).some(id=>id!=='tool-use'))reject('unsupported_publisher_snapshot');
-  const scratch=mkdtempSync(join(tmpdir(),'agentic-wiki-bridge-'));const project=join(scratch,'project');mkdirSync(project);
+  const scratch=mkdtempSync(join(tmpdir(),'agentic-wiki-bridge-'));const project=join(scratch,'project');const built=join(project,'dist');mkdirSync(project);
   let child:ReturnType<typeof spawn>|undefined;
   try{
     for(const [path,value]of Object.entries(options.project))write(join(project,path),value);
@@ -28,11 +28,14 @@ export async function buildWiki(options:{repo:string;project:Record<string,Buffe
     const publisherFiles:Record<string,string>={};for(const path of Object.keys(pinned.files)){if(path.startsWith('history/')||path==='review/index.html'||path.startsWith('assets/'))publisherFiles[path]=bounded(join(options.publisher.root,'releases',options.reference.id,path),16*1024*1024).toString('base64');}
     const plan=join(scratch,'plan.json');writeFileSync(plan,canonical({siteId:options.siteId,publisherFiles,proofs:options.proofs,publisherBase:`/local-publications/releases/${options.reference.id}/`}));
     await new Promise<void>((done,failed)=>{
-      child=spawn(process.execPath,[join(project,'scripts/wiki-bridge-build.mjs'),project,options.output,plan],{cwd:options.repo,env:{PATH:process.env.PATH??'',ASTRO_TELEMETRY_DISABLED:'1',AGENTIC_BIBLE_LOCAL_WIKI_BUILD:'1'},stdio:'ignore'});
+      child=spawn(process.execPath,[join(project,'scripts/wiki-bridge-build.mjs'),project,built,plan],{cwd:project,env:{PATH:process.env.PATH??'',ASTRO_TELEMETRY_DISABLED:'1',AGENTIC_BIBLE_LOCAL_WIKI_BUILD:'1'},stdio:'ignore'});
       const timer=setTimeout(()=>{child!.kill('SIGKILL');failed(new Error('deadline'));},45000);
       child.once('error',()=>{clearTimeout(timer);failed(new Error('spawn'));});child.once('exit',code=>{clearTimeout(timer);code===0?done():failed(new Error('build'));});
       void Promise.resolve(options.started?.()).catch(()=>{child!.kill('SIGKILL');failed(new Error('checkpoint'));});
     });
+    // Astro keeps static prerender intermediates within cwd when outDir is external.
+    // Complete the build inside its private project, then bounded-copy across filesystems.
+    for(const path of Object.keys(inventory(built)))write(join(options.output,path),bounded(join(built,path),16*1024*1024));
     // Pin every internal navigation/asset link to this immutable full-site snapshot.
     const base=`/wiki-snapshots/${options.siteId}/`;
     for(const path of walk(options.output).filter(path=>path.endsWith('.html'))){let html=readFileSync(path,'utf8');html=html.replace(/\b(href|src|action)="\/(?!\/)/g,(_match,attr)=>`${attr}="${base}`).replace('<body','<body data-wiki-snapshot-base="'+base+'"');writeFileSync(path,html);}

@@ -1,0 +1,5 @@
+# Isolate every full wiki build directory
+
+Preserve reviewed PR17 `6f6fbd69bdaab9107f0eb88955d8da8bd1f3450d`. SEO build checks reproduced Astro 7.4's `getOutDirWithinCwd` fallback: a destination outside child cwd uses the caller checkout's `.astro/.prerender`. A cross-filesystem destination raises EXDEV; overlapping builds can mutate/remove that shared directory. This explains a credible mechanism for PR17's earlier unestablished concurrent build failure, without claiming the historical failure's exact cause is proven.
+
+Build inside each captured temporary project with child cwd set there. Bound/inventory the completed output and copy bytes into the bridge's private staging destination, then retain existing pinning/sealing/activation checks. Never use a cross-filesystem rename for generated assets. Verify a red regression against PR17, two concurrent full builds, ordinary cache/dist preservation and all bridge recovery/browser checks. No provider call, deployment, infrastructure or review-head mutation.
