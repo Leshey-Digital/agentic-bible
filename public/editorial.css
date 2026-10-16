@@ -80,6 +80,24 @@ body.editorial { margin: 0; padding: 0 40px; }
 .contribution [aria-invalid=true] { border: 2px solid #a64d2e; }
 .sr-only, .honeypot { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 #intake-status { color: var(--muted); font-size: 12px; }
+.monitor-controls { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 45px; align-items: start; }
+.monitor-controls select { max-width: 100%; }
+.monitor-explanation { padding: 24px 0; font-size: 13px; color: var(--muted); }
+.monitor-explanation h2 { color: var(--ink); }
+.monitor-explanation form { margin-block: 16px; }
+.monitor-section { border-top: 1px solid var(--line); margin-top: 40px; padding-top: 28px; }
+.monitor-section>p { max-width: 800px; color: var(--muted); font-size: 12px; }
+.monitor-source-list, .monitor-audit { list-style: none; padding: 0; }
+.monitor-source-list li { display: flex; justify-content: space-between; gap: 25px; padding: 12px 0; border-bottom: 1px solid var(--line); font-size: 12px; }
+.monitor-source-list li strong { font-weight: 500; }
+.monitor-source-list li span { color: var(--muted); font-size: 10px; white-space: nowrap; }
+.monitor-candidate { padding: 24px; border: 1px solid var(--line); margin: 20px 0; background: #eeede4; }
+.monitor-candidate h3 { font: 24px/1.4 Georgia,serif; margin: 8px 0 12px; }
+.monitor-candidate>p:not(.kicker) { font-size: 12px; }
+.monitor-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px; }
+.monitor-actions form { margin: 0; }
+.monitor-section code { font-size: 10px; overflow-wrap: anywhere; }
+.monitor-audit li { padding-block: 12px; border-bottom: 1px solid var(--line); font-size: 12px; }
 @media(max-width: 800px) {
   body.editorial { padding-inline: 23px; }
   .editorial h1 { font-size: 43px; }
@@ -94,4 +112,7 @@ body.editorial { margin: 0; padding: 0 40px; }
   .review-layout aside { grid-row: 1; }
   .contribution-note { margin-top: 10px; }
   .editorial .page-intro h1 { font-size: 43px; }
+  .monitor-controls { grid-template-columns: 1fr; gap: 5px; }
+  .monitor-source-list li { flex-direction: column; gap: 4px; }
+  .monitor-candidate { padding: 20px; }
 }
