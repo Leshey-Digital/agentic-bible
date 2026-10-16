@@ -95,6 +95,16 @@ test('private/forms/search/query/errors and privacy preference requests never ex
   assert.equal(await(await publicSettingsPreview(new Request(origin+'/'),env)).text(),assetHtml);db.raw.close();
 });
 
+test('conditional browser reloads cannot reuse an old static document after preview changes',async()=>{
+  const {db,store}=setup();await store.update(change('google',google),'local-editor',now);await store.update(change('privacy',preview),'local-editor',now);
+  let requests=0;const conditionalAssets={fetch:async(request:Request)=>{requests++;assert.equal(request.headers.get('If-None-Match'),null);assert.equal(request.headers.get('If-Modified-Since'),null);return assets.fetch();}};
+  const env={ASSETS:conditionalAssets,EDITORIAL_DB:db,LOCAL_EDITORIAL_MODE:'synthetic-only'};
+  const request=new Request(origin+'/articles/ai-agent/',{headers:{'If-None-Match':'cached-static','If-Modified-Since':'Wed, 01 Jan 2025 00:00:00 GMT'}});
+  const enabled=await publicSettingsPreview(request,env);assert.ok((await enabled.text()).includes('measurement-policy'));assert.equal(enabled.headers.get('ETag'),null);
+  await store.update(change('privacy',defaults.privacy,2),'local-editor',now+1);
+  const disabled=await publicSettingsPreview(request,env);assert.equal(await disabled.text(),assetHtml);assert.equal(disabled.headers.get('Cache-Control'),'private, no-store');assert.equal(requests,2);db.raw.close();
+});
+
 test('Worker settings endpoints enforce identity, roles, origin, CSRF and remote fail-closed gates',async()=>{
   const {db}=setup();const env={ASSETS:assets,EDITORIAL_DB:db,LOCAL_EDITORIAL_MODE:'synthetic-only'};const path='/api/admin/settings';
   assert.equal((await worker.fetch(new Request(origin+path),env)).status,401);
