@@ -1,0 +1,11 @@
+# Local rendered article publication
+
+The accepted PR10 stack publishes source-observation metadata but does not change article HTML or search. Add a separate local Node publication adapter for supplied synthetic article revisions. It automatically publishes technically valid sourced content, then exposes quality flags for post-publication review. Unsafe/malformed input fails with explicit technical codes; quality concerns are not a prepublication approval gate.
+
+Base: immutable integration head `d0bfca47cd221b970b01ace838afb3f3bb9a5d32`. Preserve its independent review as a durable record. Do not change monitoring transport/runner files, original Markdown articles, D1 migrations, remote bindings, credentials, live cron, paid calls or deployment configuration.
+
+Use a strict structured cited-content schema, escaped templates using the existing wiki styles, real Pagefind indexing of the current local collection, readable retained revisions and a post-publication review queue. Immutable content-addressed snapshots include a deterministic file-hash manifest. A single atomic pointer exposes HTML/search/history/flags together. A local SQLite mutex serializes writers and releases automatically after process death. Interrupted builds stay invisible; retry can adopt a completed uncommitted snapshot. Rollback creates a new snapshot of an ancestor's articles while retaining prior revisions and event receipts.
+
+Outputs are confined to explicitly named `article-publication*` directories inside the repository's actual Git directory; the loopback-only preview is read-only under `/local-publications/`. Original static reading routes can be linked read-only. Current local publication search covers only this supplied-revision collection. This is not a canonical website release or article generation. Bounded operations/revisions/storage fail closed without deleting accepted history or replay keys.
+
+Remaining production work includes the trusted source-event/content adapter, real editorial identity/flag dispositions, factual and license/PII validation, canonical whole-site build/search integration, artifact distribution/authorization, object storage/atomic deployment/backup and cost enforcement. No paid service/resource is added. Report a tested local commit and these gaps before publishing a new PR.
