@@ -24,6 +24,12 @@ test('one human can recover a contribution, review it, publish fixture metadata 
   const outside:string[]=[];page.on('request',request=>{if(!request.url().startsWith('http://127.0.0.1:8788'))outside.push(request.url());});
   await page.goto('/articles/ai-agent/');const policy=await page.locator('#measurement-policy').evaluate(element=>JSON.parse((element as HTMLTemplateElement).content.textContent!));expect(policy.trackingEnabled).toBe(false);expect(policy.adsEnabled).toBe(false);expect(policy.providers.some((provider:{provider:string;identifiers:string[]})=>provider.provider==='clarity'&&provider.identifiers.includes('integration01'))).toBe(true);expect(outside).toEqual([]);
   await page.goto('/admin/settings/');await expect(page.locator('#measurement-policy')).toHaveCount(0);await expect(page.getByRole('heading',{name:'Ads are off.'})).toBeVisible();
+  const session=await(await page.request.get('/api/admin/session')).json();const headers={Origin:'http://127.0.0.1:8788','X-CSRF-Token':session.csrf};
+  for(const action of ['schedule','process']){
+    const requestKey=crypto.randomUUID();const first=await page.request.post('/api/admin/monitor/'+action,{headers,data:{requestKey}});expect(first.status()).toBe(200);const receipt=await first.text();
+    const beforeReplay=await(await page.request.get('/api/admin/monitor/state')).json();const replay=await page.request.post('/api/admin/monitor/'+action,{headers,data:{requestKey}});expect(replay.status()).toBe(200);expect(await replay.text()).toBe(receipt);
+    expect(await(await page.request.get('/api/admin/monitor/state')).json()).toEqual(beforeReplay);
+  }
   await page.setViewportSize({width:390,height:844});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);expect((await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa']).analyze()).violations).toEqual([]);
   await page.getByLabel('Public policy preview').selectOption('false');await page.getByRole('button',{name:'Save privacy defaults'}).click();
   await page.getByLabel('Clarity project ID').fill('');await page.locator('#clarity-enabled').selectOption('false');await page.getByRole('button',{name:'Save Microsoft Clarity settings',exact:true}).click();

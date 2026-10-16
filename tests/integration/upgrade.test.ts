@@ -12,6 +12,7 @@ import {fixtureTransport} from '../../src/monitoring/fixtures.ts';
 import {publishQueued} from '../../src/monitoring/publication.ts';
 import {SettingsStore} from '../../src/settings/store.ts';
 import {defaults,updateInput} from '../../src/settings/contracts.ts';
+import {executeBatch} from '../../src/monitoring/batch.ts';
 
 const now=1_792_168_000_000;
 const catalog=await validateCatalog(JSON.parse(readFileSync('dist/source-catalog.json','utf8')));
@@ -64,5 +65,23 @@ test('populated editorial → source ledger → settings upgrades retain all pri
     assert.equal(await reopenedSettings.update(updateInput({group:'clarity',version:1,requestKey:crypto.randomUUID(),values:{projectId:'upgrade001',enabled:false}}),'local-editor',now+11),'saved');
     assert.equal((await reopenedSettings.audit()).length,2);
     assert.deepEqual(db.raw.prepare('PRAGMA foreign_key_check').all(),[]);assert.equal(db.raw.prepare('PRAGMA integrity_check').get()?.integrity_check,'ok');
+  }finally{db.raw.close();rmSync(dir,{recursive:true,force:true});}
+});
+
+test('a populated PR8 batch-receipt database upgrades to settings without losing exact replay protection',async()=>{
+  const dir=mkdtempSync('.git/integration-receipt-upgrade-');const path=join(dir,'upgrade.sqlite');let db=new SqliteD1(path);
+  try {
+    for(const filename of ['0002_source_monitoring.sql','0003_monitor_batch_commands.sql'])db.raw.exec(readFileSync(join('migrations',filename),'utf8'));
+    const store=new MonitorStore(db);await store.seed(catalog);
+    const state=async()=>({jobs:await store.jobs(),budget:await store.budget(now)});
+    const key=crypto.randomUUID();const result=await executeBatch(store,catalog,'schedule',key,state,()=>now);
+    const old=snapshot(db,[...editorialTables,...sourceTables,'monitor_batch_commands']);
+    db.raw.exec(readFileSync('migrations/0003_measurement_settings.sql','utf8'));
+    assert.deepEqual(snapshot(db,[...editorialTables,...sourceTables,'monitor_batch_commands']),old);
+    assert.deepEqual((await new SettingsStore(db).read()).privacy.values,defaults.privacy);
+    db.raw.close();db=new SqliteD1(path,false);const reopened=new MonitorStore(db);
+    assert.equal(await executeBatch(reopened,catalog,'schedule',key,async()=>({jobs:await reopened.jobs(),budget:await reopened.budget(now)}),()=>now+1),result);
+    assert.deepEqual(snapshot(db,[...editorialTables,...sourceTables,'monitor_batch_commands']),old);
+    assert.deepEqual(db.raw.prepare('PRAGMA foreign_key_check').all(),[]);
   }finally{db.raw.close();rmSync(dir,{recursive:true,force:true});}
 });
