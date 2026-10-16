@@ -15,6 +15,7 @@ test('parallel full builds preserve caller prerender cache and ordinary dist',{t
   try{
     const stores=names.map(name=>new WikiBridge(name));const results=await Promise.allSettled(stores.map(store=>store.execute(packet(),local.db,'fixtures/wiki-bridge/sources')));
     assert.ok(existsSync(sentinel),'caller-owned prerender cache was deleted');
+    assert.equal(results[0].status,'fulfilled');assert.equal(results[1].status,'fulfilled');assert.equal(results[0].value.site.id,results[1].value.site.id,'identical inputs should produce the same site identity in distinct stores');
     for(const [i,settled]of results.entries()){assert.equal(settled.status,'fulfilled');const result=settled.value;assert.equal(result.outcome,'site-activated');assert.equal(stores[i].current().manifest.state.events.length,1);assert.ok(readFileSync(join(stores[i].root,'sites',result.site.id,'articles/tool-use/index.html'),'utf8').includes('Cedarharbor'));}
     assert.deepEqual(inventory(cache),cached);if(dist)assert.deepEqual(inventory('dist'),dist);assert.deepEqual(inventory('src/content/articles'),markdown);assert.deepEqual(await accounting(local.db),before);
   }finally{rmSync(sentinel,{force:true});await local.runtime.dispose();}

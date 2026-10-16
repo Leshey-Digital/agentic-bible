@@ -42,6 +42,13 @@ export class WikiBridge {
     }catch{return reject('site_corrupt');}
   }
   current(){const path=this.path('current.json');if(!existsSync(path))return null;try{const ref=reference(json(path,300));if(!ref)reject('site_corrupt');return {reference:ref,manifest:this.load(ref)};}catch{return reject('site_corrupt');}}
+  private storageUsage(){
+    const captures=this.path('captures');let captureSlots=0;
+    if(existsSync(captures))for(const name of readdirSync(captures)){if(!/^capture-[a-f0-9]{64}-[1-3]-[A-Za-z0-9]{6}$/.test(name)||!lstatSync(this.path(`captures/${name}`)).isDirectory())reject('unsafe_capture');captureSlots++;}
+    let storedBytes=0;for(const name of readdirSync(this.root)){if(name==='captures')continue;const path=this.path(name),stat=lstatSync(path);storedBytes+=stat.isDirectory()?walk(path).reduce((n,file)=>n+lstatSync(file).size,0):stat.size;}
+    const reservedCaptureBytes=captureSlots*bridgeLimits.captureBytes;
+    return {captureSlots,reservedCaptureBytes,accountedBytes:storedBytes+reservedCaptureBytes,limitBytes:bridgeLimits.storeBytes};
+  }
   private receipt(current:NonNullable<ReturnType<WikiBridge['current']>>,event:Event):SiteReceipt{
     const site=event.sequence===current.manifest.state.sequence?current.reference:current.manifest.state.ancestors[event.sequence-1];
     return {...event,outcome:'site-activated',site,parent:event.sequence===1?null:current.manifest.state.ancestors[event.sequence-2]};
@@ -51,7 +58,7 @@ export class WikiBridge {
     if(existsSync(jobs))for(const id of readdirSync(jobs)){if(!digest(id))reject('unsafe_bridge_store');const job=json(this.path(`jobs/${id}/operation.json`)) as Job;if(job.phase==='complete'||active?.manifest.state.events.some(e=>e.eventId===job.command.eventId))continue;
       const accepted=this.publisher.current()?.manifest.state.receipts.some(e=>e.eventId===job.command.eventId);
       pending.push({eventId:job.command.eventId,phase:accepted?'article-accepted/site-pending':'evidence-validated/article-pending',buildAttempts:job.buildAttempts});}
-    return {mode:'local-synthetic-only',active:active?{...active.reference,sequence:active.manifest.state.sequence,articleRevision:active.manifest.state.articleRevision,publisher:active.manifest.state.publisher}:null,pending};
+    return {mode:'local-synthetic-only',active:active?{...active.reference,sequence:active.manifest.state.sequence,articleRevision:active.manifest.state.articleRevision,publisher:active.manifest.state.publisher}:null,pending,storage:this.storageUsage()};
   }
   async execute(value:unknown,db:SqlDatabase,sourceDirectory:string,options:Options={}):Promise<SiteReceipt>{
     const command=bridgeInput(value);const fingerprint=hash(canonical(command));const jobId=hash(command.eventId);const jobDir=this.path(`jobs/${jobId}`);const jobPath=join(jobDir,'operation.json');let mutex:DatabaseSync|undefined;
@@ -83,7 +90,7 @@ export class WikiBridge {
       }else if(command.kind==='apply'&&(pub?.manifest.state.articles['tool-use']??null)!==command.revision.baseRevision)reject('stale_publisher_base');
       if(pub&&Object.keys(pub.manifest.state.articles).some(id=>id!=='tool-use'))reject('unsupported_publisher_snapshot');
       if(!job){
-        if(walk(this.root).reduce((n,path)=>n+lstatSync(path).size,0)+bridgeLimits.siteBytes+bridgeLimits.projectBytes>bridgeLimits.storeBytes-(command.kind==='apply'?bridgeLimits.siteBytes:0))reject('bridge_storage_capacity');
+        if(this.storageUsage().accountedBytes+bridgeLimits.captureBytes+bridgeLimits.siteBytes>bridgeLimits.storeBytes-(command.kind==='apply'?bridgeLimits.siteBytes:0))reject('bridge_storage_capacity');
         if(existsSync(jobs)&&readdirSync(jobs).length>=8)reject('bridge_capacity');
         job={schemaVersion:1,command,fingerprint,sourceTreeHash:project.hash,phase:'validated',bindings:validated.bindings,buildAttempts:0};
         for(const [sha,bytes]of Object.entries(validated.files))write(this.path(`evidence/${sha}.txt`),bytes);atomic(jobPath,job);
@@ -99,11 +106,11 @@ export class WikiBridge {
       if(existsSync(destination)){
         ref={id:siteId,manifestHash:hash(bounded(join(destination,'manifest.json'),1024*1024))};if(canonical(this.load(ref).state)!==canonical(state))reject('site_corrupt');
       }else{
-        const occupied=walk(this.root).reduce((n,path)=>n+lstatSync(path).size,0);
-        if(occupied+bridgeLimits.siteBytes+bridgeLimits.projectBytes>bridgeLimits.storeBytes-(command.kind==='apply'?bridgeLimits.siteBytes:0))reject('bridge_storage_capacity');
+        const occupied=this.storageUsage().accountedBytes;
+        if(occupied+bridgeLimits.captureBytes+bridgeLimits.siteBytes>bridgeLimits.storeBytes-(command.kind==='apply'?bridgeLimits.siteBytes:0))reject('bridge_storage_capacity');
         if(job.buildAttempts>=3)reject('bridge_build_attempts_exhausted');job.buildAttempts++;job.phase='building';atomic(jobPath,job);
         stage=this.path(`staging/${jobId}-${job.buildAttempts}`);if(existsSync(stage))reject('bridge_stage_exists');mkdirSync(stage,{recursive:true});
-        const files=await buildWiki({repo:this.repo,project:project.files,output:stage,siteId,publisher:this.publisher,reference:pinned.reference,bindings:job.bindings,proofs:state.proofs,started:()=>options.checkpoint?.('build-started')});await options.checkpoint?.('after-build');
+        const files=await buildWiki({repo:this.repo,captureRoot:this.path('captures'),capture:{eventId:command.eventId,jobId,attempt:job.buildAttempts},project:project.files,output:stage,siteId,publisher:this.publisher,reference:pinned.reference,bindings:job.bindings,proofs:state.proofs,started:()=>options.checkpoint?.('build-started')});await options.checkpoint?.('after-build');
         const manifest:SiteManifest={schemaVersion:1,siteId,state,files};write(join(stage,'manifest.json'),canonical(manifest));syncTree(stage);mkdirSync(this.path('sites'),{recursive:true});renameSync(stage,destination);stage=undefined;sync(this.path('sites'));ref={id:siteId,manifestHash:hash(canonical(manifest))};
       }
       this.load(ref);await options.checkpoint?.('after-seal');

@@ -67,9 +67,9 @@ test('actual charged D1 evidence rejects invalid input before domain effects and
       const boundedName='wiki-bridge-test-attempts';clean(boundedName);const bounded=new WikiBridge(boundedName);
       await assert.rejects(bounded.execute(packet(),local.db,sourceDir,{async checkpoint(phase){
         if(phase==='after-validation')await assert.rejects(new WikiBridge(boundedName).execute(packet(),local.db,sourceDir),{code:'bridge_busy'});
-        if(phase==='build-started')throw new BridgeError('test_build_failure');
-      }}),{code:'full_wiki_build_failed'});
-      for(let n=0;n<2;n++)await assert.rejects(bounded.execute(packet(),local.db,sourceDir,{checkpoint(phase){if(phase==='build-started')throw new BridgeError('test_build_failure');}}),{code:'full_wiki_build_failed'});
+        if(phase==='after-build')throw new BridgeError('test_post_build_failure');
+      }}),{code:'test_post_build_failure'});
+      for(let n=0;n<2;n++)await assert.rejects(bounded.execute(packet(),local.db,sourceDir,{checkpoint(phase){if(phase==='after-build')throw new BridgeError('test_post_build_failure');}}),{code:'test_post_build_failure'});
       await assert.rejects(bounded.execute(packet(),local.db,sourceDir),{code:'bridge_build_attempts_exhausted'});
       assert.equal(bounded.current(),null);assert.equal(bounded.publisher.current().manifest.state.receipts.length,1);assert.equal(bounded.status().pending[0].buildAttempts,3);
     });
