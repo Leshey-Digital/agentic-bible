@@ -28,6 +28,16 @@ Future live fetching still requires a separately secured transport, DNS/address/
 
 Source snapshot, versioned change event, affected-article candidates and successful job/reservation state commit transactionally. Event IDs include the source version, so replay cannot duplicate an event while a genuine later A→B→A cycle remains distinguishable. A failed transaction leaves the previous snapshot intact.
 
+## Batch command receipts and supported retry window
+
+Migration `0003_monitor_batch_commands.sql` adds a separate schedule/process receipt journal. Apply it through the existing local migration command; never reset interactive data. These two commands accept only their UUID request key (and native-form CSRF). Cross-action key reuse returns 409 `command_key_conflict`; unsupported business fields return 422 before work.
+
+A receipt freezes up to four hourly source/job keys or due job IDs and their current attempt ordinals **before** work. Each job claim atomically checks that ordinal, so retry/recovery cannot dispatch an already charged attempt again. Publication IDs are checkpointed before publishing; recovery cannot select another candidate batch after earlier publications commit. An interrupted or failed attempt remains charged; a deliberately new process reference is needed to retry it when due. Recovery may finish a pass with those jobs still awaiting retry, rather than expanding that original pass.
+
+A leased command owner has 30 seconds, renewed between bounded steps. Same-key concurrent callers receive the saved result if complete or 409 `command_in_progress` plus `Retry-After: 1`; they must retry the same reference. Native pending-error forms retain that reference. Expired owners cannot overwrite plans/results. A crash or failed receipt commit resumes the persisted plan. Successful API responses are exact saved JSON snapshots, including after later work or restart; use `GET /api/admin/monitor/state` for current state. Native successful retries redirect to the same controls without running extra work.
+
+The fixed supported retry window is **24 hours from receipt creation**. Keep at most **128 receipts**, with at most **128 KiB per result**. Only expired receipts with no active lease may be purged. Full storage or oversized results fail closed with 503; unexpired receipts are never evicted to admit another command. Existing supported replays still work at capacity. After the window, a removed/expired key is no longer protected against re-execution: use a fresh UUID for new work. This bounded local storage policy is not a monetary budget or production retention approval. All existing daily/attempt/byte limits and fixture-only gates remain in force.
+
 ## Publication and review states
 
 Candidates contain only a source-observation note plus event/source IDs, URL and old/new hashes. The publisher independently checks the payload kind/scope/article and required evidence against the catalog and recorded event. Structural invalidity becomes `blocked_malformed`; missing/mismatched evidence becomes `blocked_evidence`; neither produces a revision. Valid `queued` candidates automatically become `published` with `review_flag=flagged`.
@@ -53,7 +63,7 @@ Native admin forms use corresponding `/admin/sources/check/`, `schedule/`, `proc
 
 ## Verification and remaining work
 
-`npm run validate` includes `npm run test:monitoring` after building the real metadata catalog. SQLite tests cover conditional responses, hash changes, replay, timeout, malformed/oversized payloads, allowlist/redirect rejection, no global fetch, retry/day caps, lost leases, missing evidence, rollback, stale revisions, reversible flags/heads and persisted state. `npm run test:editorial:browser` also exercises this flow against the actual Worker/local D1, including concurrent duplicate requests and daily-budget reservation races.
+`npm run validate` includes `npm run test:monitoring` after building the real metadata catalog. SQLite tests cover conditional responses, hash changes, replay, timeout, malformed/oversized payloads, allowlist/redirect rejection, no global fetch, retry/day caps, lost leases, missing evidence, rollback, stale revisions, reversible flags/heads and persisted state. `npm run test:editorial:browser` also exercises this flow against the actual Worker/local D1, including lost schedule/process responses, exact replay, concurrent duplicate requests and daily-budget reservation races. `npm run test:monitoring:worker` separately stops/restarts a real Worker against disposable local D1, injects a failed receipt completion, fills the receipt cap and expires a synthetic receipt to verify safe resumption/retention. It never changes interactive `.wrangler/editorial` state.
 
 This slice does not enable live HTTP/cron, Jev/model integration, public article publication, production admin identity, email, analytics or advertising. Secure provider setup, actual monetary budgets and a production publisher adapter remain pending. Specific licenses/Jev allocation are still undefined. The accepted $10 operating target is unchanged.
 

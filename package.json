@@ -24,7 +24,8 @@
     "editorial:local": "XDG_CONFIG_HOME=.git/runtime-config XDG_CACHE_HOME=.git/runtime-cache WRANGLER_SEND_METRICS=false wrangler dev --local --config wrangler.editorial.local.jsonc --persist-to .wrangler/editorial --ip 127.0.0.1 --port 8788",
     "test:editorial": "node --test tests/editorial/*.test.ts",
     "test:editorial:browser": "PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright test --config playwright.editorial.config.ts",
-    "test:monitoring": "node --test tests/monitoring/*.test.ts"
+    "test:monitoring": "node --test tests/monitoring/*.test.ts",
+    "test:monitoring:worker": "node --test tests/monitoring-worker/*.test.mjs"
   },
   "dependencies": {
     "astro": "7.4.0"
