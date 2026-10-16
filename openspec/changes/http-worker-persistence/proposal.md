@@ -1,0 +1,9 @@
+# Local Workers HTTP observation persistence
+
+Continue from immutable local checkpoint e237f02912a71b812bc36cf8f628d9144b4b62a4; PR10 stays unchanged. Add a native Workers-fetch observation library and HTTP-only D1 repository using the existing SqlDatabase interface. No app route, UI, scheduler, paid provider, credential, article publication or remote deployment is added. Coordinate the separate article-publishing path without changing its files.
+
+Workers cannot run Node DNS lookup/pinning unchanged: DNS lookup is unavailable and HTTP wrappers ignore lookup/TLS socket options. Native fetch trusts platform DNS/TLS and cannot prove the connected peer's address. Preserve exact static HTTPS targets, no redirects and bounded response validation; do not claim equivalent pinning or deployment readiness. Keep real app entry points disconnected pending explicit egress-policy review.
+
+An additive 0005_http_observations migration separates last-good hashes/validators from fixtures. Persist at most 128 command jobs, three charged attempts each, twenty request reservations per UTC day and four active leases globally, with one active lease per source. D1 serialized batches reserve before dispatch; failures/interruption never refund. Retry only an explicit call with the same key after persisted exponential backoff. Expired leases fence old completions. Bounded receipts survive restart; terminal jobs are not silently evicted. Capacity stops new work pending a reviewed retention policy.
+
+Re-use the response validation core across Node and Workers, preserving Node tests. Exercise actual local workerd/D1 via existing Miniflare dependency with controlled outbound responses, restart, parallel admission, conditional 304 and failures. No extra framework/dependency installation. Count limits bound requests; they do not enforce currency, CPU, D1 or infrastructure charges. Paid automation remains disabled.
