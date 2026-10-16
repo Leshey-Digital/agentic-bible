@@ -1,0 +1,9 @@
+# Added acceptance scenarios
+
+- A successful schedule/process command is keyed by its UUID and action. Identical retries return byte-identical saved JSON without selecting work, spending another reservation, publishing another candidate or rereading a newer result. Cross-action key reuse returns 409; unsupported business fields return 422 without work.
+- An in-progress same-key concurrent retry returns the saved result when available or explicit 409 `command_in_progress` with Retry-After. It never starts another pass. A stale receipt owner cannot overwrite a plan/result.
+- Freeze at most four scheduled sources or due job IDs/attempt ordinals before side effects. Recovery resumes only that plan; already attempted jobs cannot dispatch another attempt through the same command. Freeze at most four publication IDs; recovery never selects replacement candidates after earlier publications commit.
+- If result persistence fails after work commits, retrying the same reference safely completes its receipt. Failed/interrupted job attempts remain charged and wait for a deliberately new process reference to retry. The fixed daily fixture cap still applies.
+- Results and plans survive database/Worker restarts. Real Worker/D1 regressions must drop only response delivery after successful command execution and prove no additional jobs/reservations on retry.
+- A full 128-receipt store cannot evict unexpired entries. Replays remain protected throughout the fixed 24-hour window, even under capacity pressure. Only expired inactive entries may be removed; clients need fresh references after that window. Results are capped at 128 KiB and capacity errors fail closed.
+- Keep existing local/admin/session/same-origin/CSRF gates and zero-live-fetch/cron/paid-call behavior. Preserve PR #5 and PR #6 exact candidates.
