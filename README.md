@@ -2,9 +2,9 @@
 
 A planned living encyclopedia of AI agents and the technology around them: sourced, interconnected articles with transparent revision history.
 
-**Status on the feature branch:** a local Astro/TypeScript reading slice with three sourced working drafts, topic navigation, citations, related entries, GitHub file history, and Pagefind search. Editorial approval is pending. No deployment, analytics, advertising, public submissions, or automated publishing is enabled. Foundation PR #1 remains unmerged.
+**Status on the integration candidate:** local Astro/TypeScript reading/search, synthetic editorial/source workflows and inert measurement settings, with accepted contribution recovery fixes combined for review. Three sourced working drafts exist; editorial/content review remains pending. Foundation/reading PRs #1/#2 are merged upstream, observed at main `2ad330e06fcc4dd46a8fc95291ccc3cd1c597327`; this integration candidate does not merge main or deploy. No live analytics, ads, public submissions, provider calls or article publishing is enabled.
 
-The stacked `feat/editorial-inbox` branch adds a persisted **local synthetic** correction/source flow and role-protected editorial inbox with tags, dispositions and audit history. Public intake and production admin authentication remain disabled. PR #2's branch is unchanged.
+The source PR branches stay immutable. The feature sections below describe the separately reviewed slices; the integration candidate adds their combined validation without changing production gates. Public intake and production admin authentication remain disabled.
 
 ## Start here
 - [Decisions and open questions](docs/decisions.md)
@@ -71,6 +71,10 @@ Run a `baseline` and then a `change` for one source. Synthetic HTTP responses pr
 After `npm run build` and `npm run editorial:migrate`, start `npm run editorial:local` and open `/admin/settings/` with the local editor fixture. Google tag/GA4 and Microsoft Clarity identifiers save independently with per-section revisions and a bounded audit history. Use synthetic identifiers only. Consent defaults are denied and ads are locked off.
 
 The optional public policy preview emits an inert template on selected local reading pages. It cannot execute or send tracking requests. No SDK, provider connection, secret form or key vault exists; private/admin pages, search and forms are excluded. Static staging remains uninstrumented. `npm run test:settings` checks validation, security/privacy, transactions, replay and persistence; the editorial browser suite includes actual Worker/D1 settings/rendering checks. [Settings contracts and remaining gates](docs/measurement-settings-contracts.md) describe the precise scope. PR #5 remains immutable; this branch does not include the separate contribution-draft fix.
+
+## Local integration validation
+
+Start with `npm run validate` to build the exact candidate and run all server/static tests, including the populated migration upgrade/reopen check. Then run `npm run test:editorial:browser`, `npm run test:integration:browser` and `npm run test:browser` sequentially. The integration browser journey uses its own `.git/integration-browser-state`; both browser harnesses preserve `.wrangler/editorial`. `npm run editorial:migrate` applies only missing local migrations; reapplying an up-to-date schema is a no-op. No remote migration or deployment is part of these commands.
 
 ## License and contributions
 The founder approved open-source direction. Specific licensing for code, articles, and submitted material is unresolved; no license is granted by these documents. Third-party contributions are not being solicited or accepted until the founder approves and publishes the relevant terms.

@@ -1,6 +1,6 @@
 # Measurement settings contracts
 
-Status: local synthetic configuration foundation, not a working analytics integration. Branch stacks on immutable PR #5 at `9ac36c2e11dd8fb2316ddecb1e497cafafdfbd9a`. The separately reviewed contribution fix remains outside this branch. [Independent fix review](review/editorial-draft-recovery-independent.md) pins its own accepted head.
+Status: local synthetic configuration foundation, not a working analytics integration. The original PR #7 stacks on immutable PR #5 at `9ac36c2e11dd8fb2316ddecb1e497cafafdfbd9a`. The later integration candidate combines accepted contribution fixes while preserving those original source heads. [Independent fix review](review/editorial-draft-recovery-independent.md) pins its accepted head.
 
 ## Controls and validation
 

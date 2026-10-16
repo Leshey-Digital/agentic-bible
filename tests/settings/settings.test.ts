@@ -49,7 +49,7 @@ test('provider sections persist independently; audit contains field names withou
 
 test('same-section races cannot overwrite; exact replay is idempotent and changed replay conflicts',async()=>{
   const {db,store}=setup();const input=change('google',google);
-  const result=await Promise.all([store.update(input,'local-editor',now),store.update(input,'local-editor',now)]);assert.deepEqual(result,['saved','duplicate']);
+  const result=await Promise.all([store.update(input,'local-editor',now),store.update(input,'local-editor',now)]);assert.deepEqual(result.sort(),['duplicate','saved']);
   assert.equal((await store.audit()).length,1);assert.equal(await store.update(input,'local-editor',now),'duplicate');
   await assert.rejects(store.update({...input,values:{...google,tagId:'GT-DIFFERENT1'}},'local-editor',now),ReplayConflictError);
   const races=await Promise.all([store.update(change('google',{...google,tagId:'GT-NEXTONE1'},2),'local-editor',now+1),store.update(change('google',{...google,tagId:'GT-NEXTTWO1'},2),'local-editor',now+1)]);
