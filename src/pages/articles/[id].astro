@@ -9,7 +9,7 @@ const related = (await library()).filter(entry => article.data.related.includes(
 const publication=article.data.publication;
 const history = `${repository}/commits/${sourceBranch}/src/content/articles/${article.id}.md`;
 ---
-<Base title={article.data.title} description={article.data.description} active="library">
+<Base title={article.data.title} description={article.data.description} active="library" seoArticle={article}>
   <div class="article-breadcrumb"><a href="/">Library</a><span>/</span><a href={topicUrl(article.data.topic)}>{article.data.topic}</a></div>
   <div class="reading-layout"><aside class="contents"><p class="eyebrow">On this page</p><nav aria-label="On this page"><a href="#overview">Overview</a>{headings.filter(h => h.depth === 2).map(h => <a href={`#${h.slug}`}>{h.text}</a>)}<a href="#sources">Sources & context</a><a href="#revision">Revision record</a></nav><div class="contents-bottom"><span class="eyebrow">Part of the collection</span><a href={topicUrl(article.data.topic)}>{article.data.topic} <svg class="icon-arrow" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 13 13 3M3 3h10v10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" /></svg></a></div></aside>
   <article class="article" data-pagefind-body>
