@@ -34,8 +34,13 @@ test('one human can recover a contribution, review it, publish fixture metadata 
     const beforeReplay=await(await page.request.get('/api/admin/monitor/state')).json();const replay=await page.request.post('/api/admin/monitor/'+action,{headers,data:{requestKey}});expect(replay.status()).toBe(200);expect(await replay.text()).toBe(receipt);
     expect(await(await page.request.get('/api/admin/monitor/state')).json()).toEqual(beforeReplay);
   }
+  const currentSettings=await(await page.request.get('/api/admin/settings')).json();
+  const noop={group:'privacy',values:currentSettings.settings.privacy.values,version:currentSettings.settings.privacy.version,requestKey:crypto.randomUUID()};
+  const originalReply=await page.request.patch('/api/admin/settings',{headers,data:noop});expect(originalReply.status()).toBe(200);const originalBody=await originalReply.text();expect(JSON.parse(originalBody).result).toBe('unchanged');
   await page.setViewportSize({width:390,height:844});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);expect((await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa']).analyze()).violations).toEqual([]);
   await page.getByLabel('Public policy preview').selectOption('false');await saveForm(page,'Save privacy defaults');
+  const beforeSettingsReplay=await(await page.request.get('/api/admin/settings')).json();const settingsReplay=await page.request.patch('/api/admin/settings',{headers,data:noop});expect(settingsReplay.status()).toBe(200);expect(await settingsReplay.text()).toBe(originalBody);
+  expect((await page.request.patch('/api/admin/settings',{headers,data:{...noop,values:{...noop.values,previewEnabled:false}}})).status()).toBe(409);expect(await(await page.request.get('/api/admin/settings')).json()).toEqual(beforeSettingsReplay);expect((await(await page.request.get('/articles/ai-agent/')).text()).includes('measurement-policy')).toBe(false);
   await page.getByLabel('Clarity project ID').fill('');await page.locator('#clarity-enabled').selectOption('false');await saveForm(page,'Save Microsoft Clarity settings');
   await page.getByRole('button',{name:'Sign out'}).click();expect((await page.request.get('/api/admin/settings')).status()).toBe(401);expect((await page.request.get('/api/admin/monitor/state')).status()).toBe(401);
 });

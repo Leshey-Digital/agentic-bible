@@ -4,7 +4,7 @@ import {readFileSync,mkdtempSync,rmSync,readdirSync} from 'node:fs';
 import {join} from 'node:path';
 import {SqliteD1} from '../editorial/sqlite.ts';
 import {D1EditorialStore} from '../../src/editorial/store.ts';
-import {submissionInput,digest} from '../../src/editorial/validation.ts';
+import {submissionInput,digest,ReplayConflictError} from '../../src/editorial/validation.ts';
 import {validateCatalog} from '../../src/monitoring/catalog.ts';
 import {MonitorStore} from '../../src/monitoring/store.ts';
 import {runJob} from '../../src/monitoring/runner.ts';
@@ -20,6 +20,14 @@ const editorialTables=['submissions','editorial_audit','local_sessions','rate_wi
 const sourceTables=['monitor_sources','monitor_jobs','monitor_reservations','source_events','publication_heads','publication_candidates','publication_revisions','publication_actions'];
 function snapshot(db:SqliteD1,tables:string[]) {
   return Object.fromEntries(tables.map(table=>[table,db.raw.prepare(`SELECT * FROM ${table} ORDER BY rowid`).all()]));
+}
+async function legacySettings(db:SqliteD1) {
+  // Populate the historical schema without calling newer receipt-aware code before migration 0004.
+  const input=updateInput({group:'google',version:1,requestKey:crypto.randomUUID(),values:{tagId:'GT-UPGRADE001',ga4Id:'',enabled:false}});
+  const fingerprint=await digest(JSON.stringify({group:input.group,values:input.values,version:input.version}));
+  db.raw.prepare('UPDATE measurement_settings SET values_json=?,version=2,updated_at=? WHERE setting_group=?').run(JSON.stringify(input.values),now+6,'google');
+  db.raw.prepare('INSERT INTO measurement_audit VALUES(?,?,?,?,?,?,?,?)').run(crypto.randomUUID(),'local-editor','google',2,'["tagId"]',now+6,input.requestKey,fingerprint);
+  return input;
 }
 
 test('populated editorial → source ledger → settings upgrades retain all prior rows and keep each subsystem usable after reopen',async()=>{
@@ -48,7 +56,7 @@ test('populated editorial → source ledger → settings upgrades retain all pri
     assert.deepEqual(snapshot(db,editorialTables),legacy);assert.deepEqual(snapshot(db,sourceTables),sourceState);
     const settings=new SettingsStore(db);const initial=await settings.read();
     for(const group of ['google','clarity','privacy','advertising'] as const)assert.deepEqual(initial[group].values,defaults[group]);
-    await settings.update(updateInput({group:'google',version:1,requestKey:crypto.randomUUID(),values:{tagId:'GT-UPGRADE001',ga4Id:'',enabled:false}}),'local-editor',now+6);
+    const legacyChange=await legacySettings(db);
     const prior=snapshot(db,[...editorialTables,...sourceTables,'measurement_settings','measurement_audit']);
     // Any additive migrations introduced by an accepted follow-up must preserve the populated stack too.
     for(const filename of readdirSync('migrations').filter(name=>name.endsWith('.sql')&&!['0001_editorial.sql','0002_source_monitoring.sql','0003_measurement_settings.sql'].includes(name)).sort())db.raw.exec(readFileSync(join('migrations',filename),'utf8'));
@@ -62,6 +70,7 @@ test('populated editorial → source ledger → settings upgrades retain all pri
     assert.equal((await runJob(reopenedMonitor,catalog,queued.id,fixtureTransport,()=>now+10)).state,'succeeded');
     assert.equal((await reopenedMonitor.candidate(candidate.id))?.reviewFlag,'cleared');
     const reopenedSettings=new SettingsStore(db);assert.equal((await reopenedSettings.read()).google.values.tagId,'GT-UPGRADE001');
+    assert.equal(await reopenedSettings.update(legacyChange,'local-editor',now+10),'duplicate');
     assert.equal(await reopenedSettings.update(updateInput({group:'clarity',version:1,requestKey:crypto.randomUUID(),values:{projectId:'upgrade001',enabled:false}}),'local-editor',now+11),'saved');
     assert.equal((await reopenedSettings.audit()).length,2);
     assert.deepEqual(db.raw.prepare('PRAGMA foreign_key_check').all(),[]);assert.equal(db.raw.prepare('PRAGMA integrity_check').get()?.integrity_check,'ok');
@@ -79,9 +88,30 @@ test('a populated PR8 batch-receipt database upgrades to settings without losing
     db.raw.exec(readFileSync('migrations/0003_measurement_settings.sql','utf8'));
     assert.deepEqual(snapshot(db,[...editorialTables,...sourceTables,'monitor_batch_commands']),old);
     assert.deepEqual((await new SettingsStore(db).read()).privacy.values,defaults.privacy);
+    db.raw.exec(readFileSync('migrations/0004_measurement_request_receipts.sql','utf8'));
     db.raw.close();db=new SqliteD1(path,false);const reopened=new MonitorStore(db);
     assert.equal(await executeBatch(reopened,catalog,'schedule',key,async()=>({jobs:await reopened.jobs(),budget:await reopened.budget(now)}),()=>now+1),result);
     assert.deepEqual(snapshot(db,[...editorialTables,...sourceTables,'monitor_batch_commands']),old);
     assert.deepEqual(db.raw.prepare('PRAGMA foreign_key_check').all(),[]);
+  }finally{db.raw.close();rmSync(dir,{recursive:true,force:true});}
+});
+
+test('migration 0004 preserves both 0003 schemas and legacy keys, then keeps independent receipt replays through reopen',async()=>{
+  const dir=mkdtempSync('.git/integration-settings-upgrade-');const path=join(dir,'upgrade.sqlite');let db=new SqliteD1(path);
+  try {
+    for(const filename of ['0002_source_monitoring.sql','0003_measurement_settings.sql','0003_monitor_batch_commands.sql'])db.raw.exec(readFileSync(join('migrations',filename),'utf8'));
+    const legacyChange=await legacySettings(db);const monitor=new MonitorStore(db);await monitor.seed(catalog);
+    const batchKey=crypto.randomUUID();const batchResult=await executeBatch(monitor,catalog,'schedule',batchKey,async()=>({jobs:await monitor.jobs(),budget:await monitor.budget(now)}),()=>now);
+    const tables=[...editorialTables,...sourceTables,'measurement_settings','measurement_audit','monitor_batch_commands'];const before=snapshot(db,tables);
+    db.raw.exec(readFileSync('migrations/0004_measurement_request_receipts.sql','utf8'));assert.deepEqual(snapshot(db,tables),before);
+    const settings=new SettingsStore(db);assert.equal(await settings.update(legacyChange,'local-editor',now+10),'duplicate');
+    const noop=updateInput({group:'google',version:2,requestKey:crypto.randomUUID(),values:(await settings.read()).google.values});
+    const receipt=await settings.commit(noop,'local-editor',now+11);assert.equal(receipt.result,'unchanged');
+    await settings.update(updateInput({group:'clarity',version:1,requestKey:crypto.randomUUID(),values:{projectId:'upgrade009',enabled:false}}),'local-editor',now+12);
+    const after=snapshot(db,[...tables,'measurement_request_receipts']);db.raw.close();db=new SqliteD1(path,false);
+    const reopened=new SettingsStore(db);assert.deepEqual(await reopened.commit(noop,'local-editor',now+13),receipt);
+    await assert.rejects(reopened.commit({...noop,values:{tagId:'GT-CONFLICT009',ga4Id:'',enabled:false}},'local-editor',now+13),ReplayConflictError);
+    const reopenedMonitor=new MonitorStore(db);assert.equal(await executeBatch(reopenedMonitor,catalog,'schedule',batchKey,async()=>({jobs:await reopenedMonitor.jobs(),budget:await reopenedMonitor.budget(now)}),()=>now+13),batchResult);
+    assert.deepEqual(snapshot(db,[...tables,'measurement_request_receipts']),after);assert.deepEqual(db.raw.prepare('PRAGMA foreign_key_check').all(),[]);assert.equal(db.raw.prepare('PRAGMA integrity_check').get()?.integrity_check,'ok');
   }finally{db.raw.close();rmSync(dir,{recursive:true,force:true});}
 });

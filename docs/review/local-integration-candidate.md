@@ -1,6 +1,6 @@
 # Non-deploying integration candidate evidence
 
-Prepared 2026-10-16 on `feat/local-integration-candidate`. Final exact head and exact-head CI are recorded in the integration draft PR/handoff. This is a review/test candidate, not release approval or a deployment. Existing PR heads remain immutable.
+Prepared 2026-10-16 on `feat/local-integration-candidate`. The original remote checkpoint is `fd9b38874e40bd4fabcc7b57122dc20641a7002b`, with successful CI 38944375116. The later PR #9 follow-up is local only; its final local head is recorded in the handoff, and it has no remote combined CI run because publication remains stopped. This is a review/test candidate, not release approval or deployment. Existing PR heads remain immutable.
 
 ## Exact provenance
 
@@ -10,14 +10,15 @@ Prepared 2026-10-16 on `feat/local-integration-candidate`. Final exact head and 
 | Accepted PR #4 recovery | `3d98ef75679d855b1ffb5608014ccdf0c0c94669` | `b85aafa089f0475f920fad4417c856df52fab532`, `cherry-pick -x` |
 | Accepted PR #6 interruptions/clear-only | `c61c576bf5455b20b01e1449330a85fe37386f45` | `29af0f2fd0f6b97ab77783b98470442714e65aed`, `cherry-pick -x` |
 | Independently accepted PR #8 batch replay | `47885169b71b352c9425dc3b3aa269322ac549ae` | `ecb9ad75b9491bb3402cc036efa6efd0ea4b6a28`, `cherry-pick -x` |
+| Independently accepted PR #9 no-op settings receipts | `a72b8f8c3d772618cf279035be4c19c8103d4198` | Source `45d989d` → `2d8fa5b5dc6483afed89484b1587cadc8fddd128`; `2cb7ed3` → `41e489413ddbf23cab8120405d63e69a3d2e25eb`; `a72b8f8` → `bd97075240ca0b466576fd672a76743fe96e116a`, all local `-x` |
 
-PR #4/#6 source ancestry diverged from PR #7 at PR #3 `efa15e6fc47931951ea7d617c4a567850435f939`; PR #8 is one commit directly on PR #5. Source SHA trailers preserve the applied origin. Only the package script list and CI command list conflicted on PR #8 inclusion: resolution retained settings, integration and Worker-restart tests. No reviewed runtime code was altered to resolve conflicts.
+PR #4/#6 source ancestry diverged from PR #7 at PR #3 `efa15e6fc47931951ea7d617c4a567850435f939`; PR #8 is one commit directly on PR #5. PR #9 contains three commits directly above PR #7. Source SHA trailers preserve every applied origin. Package script and CI command-list conflicts on PR #8/#9 inclusion retained all suites. No reviewed runtime code was altered to resolve conflicts.
 
-Diff checks confirm contribution client/flow tests equal PR #6; monitoring runtime/unit/batch-browser/Worker tests and receipt migration equal PR #8; settings runtime/editorial Worker/views/CSS/local config, lockfile and static staging config equal PR #7. Additional candidate changes are integration tests/harness/CI, docs, one order-agnostic settings concurrency assertion and explicit document-load waits in settings/journey browser tests. The concurrency assertion requires exactly one save and one duplicate regardless of which identical request wins; runtime behavior is unchanged.
+Diff checks confirm contribution client/flow tests equal PR #6; monitoring runtime/unit/batch-browser/Worker tests and receipt migration equal PR #8; settings runtime/unit/new receipt-browser/Worker tests and migration equal PR #9. Editorial Worker/views/CSS/local config, lockfile and static staging config equal PR #7. Additional candidate changes are integration tests/harness/CI, docs and explicit document-load waits in existing settings/journey browser tests. PR #9 preserves the same order-agnostic concurrency assertion already used in the candidate. Its package/CI conflicts were resolved by retaining every existing suite and adding the settings Worker suite; runtime source required no conflict edits.
 
 Observed upstream main was `2ad330e06fcc4dd46a8fc95291ccc3cd1c597327`, containing foundation/reading PR #1/#2 merges performed upstream. It was fetched read-only, never merged or rebased into this candidate. The integration draft targets PR #7's branch to keep the combination independently reviewable. No main merge or source-head mutation occurred here.
 
-## Combined checks
+## Combined checks at the original remote checkpoint
 
 | Check | Observed result |
 |---|---|
@@ -49,6 +50,26 @@ Two integration SQLite tests cover both histories: populated editorial → sourc
 
 The candidate still requires independent integration acceptance and the pending release approval. Production identity, public-intake terms/licenses/privacy, real article publisher/live transport, numeric paid-provider budgets, secure credential setup, measurement/consent/retention/CSP, remaining MVP articles, SEO ownership/submission, delivery and production operational/rollback evidence remain incomplete. All provider collection/ads/live fetching/cron/paid calls stay off. No persistent access, secret, license choice, remote database/resource, ad account, merge or deployment was created.
 
-Known P2 after independent PR #7 review: unchanged/no-op saves return without persisting a request-key receipt, allowing changed reuse and preventing exact no-op replay after a later save. A separate PR #7-based fix is pending. The integration candidate leaves the settings store/receipt schema untouched; passing existing tests does not close that untested guarantee. This checkpoint must not be called fully accepted until the fix is independently reviewed and integrated.
+The PR #7 no-op receipt P2 is resolved locally by independently accepted PR #9. [Exact review and bounded guarantees](settings-receipts-independent.md) distinguish this acceptance from the still-pending full integration/release approval. No-op receipt snapshots remain private and cannot restore stale public settings or grant consent. Publication remains stopped; no push, PR call or alternative publication route is used for this follow-up.
+
+## Local PR #9 follow-up verification
+
+The previous no-op receipt P2 is independently accepted as fixed at PR #9 head `a72b8f8c3d772618cf279035be4c19c8103d4198` and integrated locally. No source PR head is changed, and this follow-up is not pushed or submitted by another publication route. Final local SHA is recorded in the handoff. The earlier remote `fd9b388` CI success is not represented as a CI result for these unpublished changes; exact PR #9 CI 38947395513 is separate source-review evidence.
+
+| Combined local check | Result |
+|---|---|
+| `npm run validate`, followed by current type/upgrade checks | Zero diagnostics in 51 files; 4 static + 9 server + 23 monitoring + 19 settings + 3 populated-upgrade tests passed |
+| Reading/search browser suite | 16 passed in 26.9s, desktop/mobile, partial axe and privacy/static safeguards |
+| Combined editorial/monitor/settings browser suite | 22 passed in 35.9s, including actual lost no-op response and concurrent conflicting payloads |
+| Full integration journey | Passed in 10.5s, now also verifies an old no-op privacy response cannot mutate current settings or restore the current public template |
+| Monitoring Worker restart/failure/retention suite | Passed in 17.6s |
+| Settings Worker restart/fault/retention suite | Passed in 22.8s, including exact no-op restart replay, rollback, 128-row capacity/expiry and revoked session |
+| Static dry run | 53 assets, no bindings/deployment |
+| Actual local migration 0004 | Three statements applied; hashes/counts of all 15 prior application tables unchanged, new settings-receipt table empty, foreign keys/integrity passed |
+| Migration reapply | No work; no table reset or migration rename |
+
+The upgrade tests seed historical changed settings/audit rows before invoking the receipt-aware app, then apply both distinct `0003` files followed by `0004`. They preserve legacy change keys and monitoring receipts, verify independent no-op/batch replay after later writes/reopen, reject changed no-op reuse and confirm full database integrity. A settings-first and a monitoring-first history are both covered. Local row-hash evidence is `.git/integration-pr9-migration-result.json`; suite logs are `.git/pr9-combined-*.log` and `.git/integration-pr9-validate.log`.
+
+Independent source acceptance closes the bounded P2, while exact combined integration acceptance, publication authorization and release approval remain pending. No published PR, new-head remote CI, deployment, paid call, live provider setup or persistent access is claimed.
 
 Rollback this candidate's code/config to the prior reviewed stack. Preserve/export local SQLite before any deliberate schema rollback; additive tables can remain unused by older code. Never delete `.wrangler/editorial`, rename applied migration files or treat test-directory resets as a backup/restore plan. No remote resource rollback is needed because none was changed.

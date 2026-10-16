@@ -2,9 +2,9 @@
 
 This is a non-deploying local integration candidate. Its test evidence does not replace independent integration review or the pending release approval. No main merge, staging/production deployment or remote resources are created. Source PRs remain immutable. Existing upstream foundation/reading merges are history observed from main, not operations performed by this candidate.
 
-## Known acceptance blocker
+## Resolved local settings P2; integration acceptance still pending
 
-Independent PR #7 review found a P2 in unchanged/no-op settings saves: the current store returns before recording a request-key receipt. That allows the same key to be reused with changed content, and an identical retry after a later save cannot recover the original no-op response. A separate PR #7-based fix is pending. This candidate deliberately leaves `src/settings/store.ts` and the receipt schema untouched to avoid conflicting work. The candidate is a checkpoint, not fully accepted; the exact fix must be reviewed and integrated before acceptance/release. Existing tests do not establish that missing no-op replay guarantee.
+Independent PR #7 review found a P2 in unchanged/no-op settings saves: missing receipts allowed changed key reuse and prevented historical no-op replay after later changes. PR #9 at `a72b8f8c3d772618cf279035be4c19c8103d4198` was independently accepted and integrated locally, adding bounded actor-scoped receipts and migration `0004_measurement_request_receipts.sql`. [Exact independent review](review/settings-receipts-independent.md) records the tests and limits. This closes that bounded P2 locally; the full candidate still requires independent integration acceptance and pending release approval. Publication remains blocked and the follow-up has not been pushed or submitted as a PR.
 
 | Area | Implemented and verified locally | Remaining before the relevant capability can launch |
 |---|---|---|
