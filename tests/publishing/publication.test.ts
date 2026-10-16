@@ -8,7 +8,7 @@ import {get as httpGet} from 'node:http';
 import {close as closePagefind} from 'pagefind';
 import {PublicationStore,type Phase} from '../../src/publishing/store.ts';
 import {publicationServer} from '../../src/publishing/preview.ts';
-import {commandInput,canonical,hash,publicationLimits,PublicationError,type Publish} from '../../src/publishing/contracts.ts';
+import {commandInput,hash,publicationLimits,PublicationError,type Publish} from '../../src/publishing/contracts.ts';
 
 const roots:string[]=[];
 function store(){const value=new PublicationStore('article-publication-unit-'+crypto.randomUUID());roots.push(value.root);return value;}

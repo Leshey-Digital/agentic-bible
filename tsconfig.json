@@ -10,7 +10,10 @@
     "tests/editorial-browser/**/*.ts",
     "tests/monitoring/**/*.ts",
     "tests/http-sources/**/*.ts",
-    "tests/http-worker/**/*.ts"
+    "tests/http-worker/**/*.ts",
+    "tests/publishing/**/*.ts",
+    "tests/publication-browser/**/*.ts",
+    "tests/combined-browser/**/*.ts"
   ],
   "exclude": [
     "dist",

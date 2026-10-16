@@ -94,5 +94,9 @@ The separate publication slice accepts supplied synthetic cited article revision
 
 `npm run test:publication` checks interruption/process death, deterministic manifests, replay, rollback, schema/security and isolation. `npm run test:publication:browser` exercises real HTML/search/history and desktop/mobile accessibility on its own disposable Git-directory store. Run browser suites sequentially. The production source-event/publishing adapter, identity, factual/licensing checks and canonical full-site integration remain unfinished; no new PR is published before the local checkpoint handoff.
 
+## Local combined candidate
+
+The separate `feat/local-mvp-combined-candidate` retains the exact PR10/PR12/PR11/PR13 histories, all original feature suites and a controlled collector/supplied-publication browser journey (`npm run test:combined:browser`). HTTP observation and supplied article publication remain separate libraries: no source-to-generated-article or trusted provenance bridge exists. [Combined contract, exact source heads, review gates and missing bridge](docs/local-mvp-combined-candidate.md) describe the candidate for independent review. No combined acceptance, main merge or deployment is implied.
+
 ## License and contributions
 The founder approved open-source direction. Specific licensing for code, articles, and submitted material is unresolved; no license is granted by these documents. Third-party contributions are not being solicited or accepted until the founder approves and publishes the relevant terms.

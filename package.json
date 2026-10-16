@@ -35,7 +35,8 @@
     "test:publication": "node --test tests/publishing/*.test.ts",
     "test:publication:browser": "PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright test --config playwright.publication.config.ts",
     "publication:demo": "node scripts/article-publication.mjs demo",
-    "publication:local": "node scripts/article-publication.mjs preview"
+    "publication:local": "node scripts/article-publication.mjs preview",
+    "test:combined:browser": "PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright test --config playwright.combined.config.ts"
   },
   "dependencies": {
     "astro": "7.4.0"
