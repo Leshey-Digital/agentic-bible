@@ -15,6 +15,8 @@ Checks on the fix branch, 2026-10-16:
 
 An initial concurrent launch of the two Playwright suites collided in their shared artifact directory (`ENOENT` during context close) and hit a reading accessibility timeout while overlapping. Both runs were interrupted and rerun sequentially with unchanged app code and timeouts; README now documents this requirement. The clean sequential results are the evidence above.
 
+The first CI run exposed an existing test assumption that the first of two identical concurrent writes must win. It correctly produced one `saved` and one `duplicate` in the opposite order, with no application failure. The assertion now checks that exact pair without imposing a winner; the existing single-audit and revision assertions remain. No application code changed for this correction.
+
 Migration provenance: this branch adds only `0004_measurement_request_receipts.sql`, after PR #7's `0003_measurement_settings.sql`. Independently owned PR #8 `0003_monitor_batch_commands.sql` is neither imported nor renamed. Both distinct `0003` files precede `0004` in integration. No old table is rewritten or deleted. Legacy settings/audit migration/reopen coverage confirms prior replay keys remain valid.
 
 Limits: 128 receipts, 32 KiB UTF-8 response each, fixed 24-hour window, no supported-retry eviction. Historical allowed IDs may remain privately retained until expiry. Current GET state/public policy always read current settings. Identity, public intake/terms, secret integration setup, live tracking/ads, paid work and enforceable currency budgets remain unavailable. No remote resource or binding is created. Preserve a local DB copy before rollback; prior app can ignore the additive table.
