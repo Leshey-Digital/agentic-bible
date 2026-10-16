@@ -85,8 +85,11 @@ form.addEventListener('submit', async event => {
       try { sessionStorage.removeItem(draftKey); } catch { /* Saved successfully even if browser storage is blocked. */ }
     } else {
       // A completed request owns only its snapshot, never edits or a cleared/new draft made while it was pending.
-      if (requestKey.value === submitted.requestKey) requestKey.value = crypto.randomUUID();
-      showRecovery(false); persist();
+      showRecovery(false);
+      if (requestKey.value === submitted.requestKey) {
+        requestKey.value = crypto.randomUUID(); persist();
+      }
+      // A cleared/new draft owns its storage already; an older response must not recreate a cleared draft.
       receipt.textContent += ' Your newer draft is kept with its own request reference.';
     }
     receipt.focus();

@@ -14,7 +14,7 @@ async function submit(request: APIRequestContext, body = suggestion()) {
 async function expectDraft(page: Page, draft: Record<string, string>) {
   for (const [name, value] of Object.entries(draft)) await expect(page.locator(`[name="${name}"]`)).toHaveValue(value);
 }
-async function holdCommittedSubmission(page: Page) {
+async function holdCommittedSubmission(page: Page, discardResponse = false) {
   let release!: () => void;
   const held = new Promise<void>(resolve => { release = resolve; });
   let committed!: (receipt: { reference: string }) => void;
@@ -26,7 +26,8 @@ async function holdCommittedSubmission(page: Page) {
       expect(response.status()).toBe(201);
       committed(await response.json());
       await held;
-      await route.fulfill({ response });
+      if (discardResponse) await route.abort();
+      else await route.fulfill({ response });
     } catch (error) { failed(error); throw error; }
   });
   return { saved, release };
@@ -36,7 +37,21 @@ async function storedItem(page: Page, reference: string) {
   expect(response.status()).toBe(200);
   const record = await response.json();
   expect(record.audit).toHaveLength(1);
+  expect(record.audit[0].action).toBe('submitted');
+  expect(record.item.version).toBe(1);
   return record.item;
+}
+async function newReferences(page: Page): Promise<string[]> {
+  const response = await page.request.get('/api/admin/submissions?status=new');
+  expect(response.status()).toBe(200);
+  const result = await response.json();
+  expect(result.next, 'These bounded fixtures must fit in one inbox page for exact counts.').toBeNull();
+  return result.items.map((item: { id: string }) => item.id);
+}
+async function expectAddedRecords(page: Page, before: string[], references: string[]) {
+  const after = await newReferences(page);
+  expect(after).toHaveLength(before.length + references.length);
+  expect(after.filter(id => !before.includes(id)).sort()).toEqual([...references].sort());
 }
 
 test('local submission persists through refresh and becomes a tagged, audited inbox disposition', async ({ page }) => {
@@ -255,6 +270,121 @@ test('clearing and starting a draft during a pending save preserves the new draf
   await login(page);
   expect(await storedItem(page, first.reference)).toMatchObject({ message: original });
   expect(await storedItem(page, second.reference)).toMatchObject({ message: newer });
+});
+
+test('an unchanged retry after a lost committed response and reload reuses one record and audit event', async ({ page }) => {
+  await page.setExtraHTTPHeaders({ 'CF-Connecting-IP': '192.0.2.20' });
+  await login(page);
+  const before = await newReferences(page);
+  await page.goto('/contribute/?article=model-context-protocol');
+  await expect(page.getByLabel('What needs attention?')).toBeEnabled();
+  const draft = { articleId: 'model-context-protocol', kind: 'source', message: 'Synthetic unchanged replay: confirm the original persisted evidence after its receipt is lost.', sourceUrl: 'https://example.org/unchanged-replay' };
+  await page.getByLabel('Suggestion type').selectOption(draft.kind);
+  await page.getByLabel('What needs attention?').fill(draft.message);
+  await page.getByLabel('Primary source URL').fill(draft.sourceUrl);
+  const requestKey = await page.locator('#request-key').inputValue();
+  let reference = '';
+  await page.route('**/api/submissions', async route => {
+    const response = await route.fetch(); expect(response.status()).toBe(201);
+    reference = (await response.json()).reference;
+    await route.abort();
+  });
+  await page.getByRole('button', { name: 'Send local suggestion' }).click();
+  await expect(page.getByRole('alert')).toContainText('Could not confirm');
+  await page.unroute('**/api/submissions');
+  await page.reload();
+  await expect(page.getByLabel('What needs attention?')).toBeEnabled();
+  await expectDraft(page, { ...draft, requestKey });
+  await expect(page.getByRole('button', { name: 'Keep draft with new reference' })).toBeVisible();
+  const replay = page.waitForResponse(response => response.url().endsWith('/api/submissions'));
+  await page.getByRole('button', { name: 'Send local suggestion' }).click();
+  const response = await replay; expect(response.status()).toBe(200);
+  expect(await response.json()).toMatchObject({ reference, duplicate: true });
+  await expect(page.locator('#receipt')).toContainText('previously saved suggestion');
+  await expectDraft(page, { message: '', sourceUrl: '' });
+  expect(await page.evaluate(() => sessionStorage.getItem('agentic-bible:synthetic-suggestion:v1'))).toBeNull();
+  await expectAddedRecords(page, before, [reference]);
+  expect(await storedItem(page, reference)).toMatchObject(draft);
+});
+
+test('reloading before a pending save responds retains newer fields for conflict recovery', async ({ page }) => {
+  await page.setExtraHTTPHeaders({ 'CF-Connecting-IP': '192.0.2.21' });
+  await login(page);
+  const before = await newReferences(page);
+  await page.goto('/contribute/?article=tool-use');
+  await expect(page.getByLabel('What needs attention?')).toBeEnabled();
+  const original = { articleId: 'tool-use', kind: 'correction', message: 'Synthetic navigation interruption: the first evidence commits before this page is reloaded.', sourceUrl: 'https://example.org/before-reload' };
+  const newer = { articleId: 'ai-agent', kind: 'source', message: 'Synthetic pending navigation edits: preserve every newer field when reloading before receipt delivery.', sourceUrl: 'https://example.org/after-reload' };
+  await page.getByLabel('What needs attention?').fill(original.message);
+  await page.getByLabel('Primary source URL').fill(original.sourceUrl);
+  const oldKey = await page.locator('#request-key').inputValue();
+  const held = await holdCommittedSubmission(page, true);
+  await page.getByRole('button', { name: 'Send local suggestion' }).click();
+  const first = await held.saved;
+  try {
+    await page.getByLabel('Article', { exact: true }).selectOption(newer.articleId);
+    await page.getByLabel('Suggestion type').selectOption(newer.kind);
+    await page.getByLabel('What needs attention?').fill(newer.message);
+    await page.getByLabel('Primary source URL').fill(newer.sourceUrl);
+    await expect(page.getByRole('button', { name: 'Saving suggestion…' })).toBeDisabled();
+    await page.reload(); // The old document is destroyed while its committed response is still withheld.
+  } finally { held.release(); }
+  await page.unrouteAll({ behavior: 'wait' });
+  await expect(page.getByLabel('What needs attention?')).toBeEnabled();
+  await expectDraft(page, { ...newer, requestKey: oldKey });
+  const conflict = page.waitForResponse(response => response.url().endsWith('/api/submissions'));
+  await page.getByRole('button', { name: 'Send local suggestion' }).click();
+  expect((await conflict).status()).toBe(409);
+  await expect(page.getByRole('alert')).toContainText('different content');
+  await expectAddedRecords(page, before, [first.reference]);
+  await page.getByRole('button', { name: 'Keep draft with new reference' }).click();
+  const newKey = await page.locator('#request-key').inputValue(); expect(newKey).not.toBe(oldKey);
+  await page.reload();
+  await expect(page.getByLabel('What needs attention?')).toBeEnabled();
+  await expectDraft(page, { ...newer, requestKey: newKey });
+  const save = page.waitForResponse(response => response.url().endsWith('/api/submissions'));
+  await page.getByRole('button', { name: 'Send local suggestion' }).click();
+  const response = await save; expect(response.status()).toBe(201);
+  const second = await response.json(); expect(second.reference).not.toBe(first.reference);
+  await expect(page.locator('#receipt')).toContainText('Suggestion saved');
+  await expectAddedRecords(page, before, [first.reference, second.reference]);
+  expect(await storedItem(page, first.reference)).toMatchObject(original);
+  expect(await storedItem(page, second.reference)).toMatchObject(newer);
+});
+
+test('clearing without replacement during a pending save stays cleared after completion and navigation', async ({ page }) => {
+  await page.setExtraHTTPHeaders({ 'CF-Connecting-IP': '192.0.2.22' });
+  await login(page);
+  const before = await newReferences(page);
+  await page.goto('/contribute/?article=tool-use');
+  await expect(page.getByLabel('What needs attention?')).toBeEnabled();
+  const original = { articleId: 'tool-use', kind: 'source', message: 'Synthetic clear-only interruption: retain the stored original but keep the deliberately cleared draft absent.', sourceUrl: 'https://example.org/clear-only' };
+  await page.getByLabel('Suggestion type').selectOption(original.kind);
+  await page.getByLabel('What needs attention?').fill(original.message);
+  await page.getByLabel('Primary source URL').fill(original.sourceUrl);
+  const oldKey = await page.locator('#request-key').inputValue();
+  const held = await holdCommittedSubmission(page);
+  await page.getByRole('button', { name: 'Send local suggestion' }).click();
+  const first = await held.saved;
+  let clearedKey = '';
+  try {
+    await page.getByRole('button', { name: 'Clear draft' }).click();
+    clearedKey = await page.locator('#request-key').inputValue(); expect(clearedKey).not.toBe(oldKey);
+    expect(await page.evaluate(() => sessionStorage.getItem('agentic-bible:synthetic-suggestion:v1'))).toBeNull();
+  } finally { held.release(); }
+  await expect(page.locator('#receipt')).toContainText(first.reference);
+  await expectDraft(page, { message: '', sourceUrl: '', requestKey: clearedKey });
+  expect(await page.evaluate(() => sessionStorage.getItem('agentic-bible:synthetic-suggestion:v1'))).toBeNull();
+  await page.unroute('**/api/submissions');
+  await page.reload();
+  await expect(page.getByLabel('What needs attention?')).toBeEnabled();
+  await expectDraft(page, { articleId: 'tool-use', kind: 'correction', message: '', sourceUrl: '' });
+  expect(await page.evaluate(() => sessionStorage.getItem('agentic-bible:synthetic-suggestion:v1'))).toBeNull();
+  await page.goto('/contribute/?article=model-context-protocol');
+  await expect(page.getByLabel('What needs attention?')).toBeEnabled();
+  await expectDraft(page, { articleId: 'model-context-protocol', message: '', sourceUrl: '' });
+  await expectAddedRecords(page, before, [first.reference]);
+  expect(await storedItem(page, first.reference)).toMatchObject(original);
 });
 
 test('inbox empty and sign-in states remain accessible; rate limit stops further writes', async ({ page, request }) => {
