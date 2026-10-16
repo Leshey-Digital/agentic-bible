@@ -1,6 +1,6 @@
 # Non-deploying integration candidate evidence
 
-Prepared 2026-10-16 on `feat/local-integration-candidate`. The original remote checkpoint is `fd9b38874e40bd4fabcc7b57122dc20641a7002b`, with successful CI 38944375116. The later PR #9 follow-up is local only; its final local head is recorded in the handoff, and it has no remote combined CI run because publication remains stopped. This is a review/test candidate, not release approval or deployment. Existing PR heads remain immutable.
+Prepared 2026-10-16 on `feat/local-integration-candidate`. The original remote checkpoint is `fd9b38874e40bd4fabcc7b57122dc20641a7002b`, with successful CI 38944375116. PR #9 was first verified locally at 56f8f4df35a96064216ed78e8ce351c1f35cff3f; a later documentation-only commit records the separately authorized draft publication. Final published head, CI and PR outcome are recorded in the handoff; old-checkpoint CI is not substituted for final-head validation. This is a review/test candidate, not release approval or deployment. Existing PR heads remain immutable.
 
 ## Exact provenance
 
@@ -50,11 +50,11 @@ Two integration SQLite tests cover both histories: populated editorial → sourc
 
 The candidate still requires independent integration acceptance and the pending release approval. Production identity, public-intake terms/licenses/privacy, real article publisher/live transport, numeric paid-provider budgets, secure credential setup, measurement/consent/retention/CSP, remaining MVP articles, SEO ownership/submission, delivery and production operational/rollback evidence remain incomplete. All provider collection/ads/live fetching/cron/paid calls stay off. No persistent access, secret, license choice, remote database/resource, ad account, merge or deployment was created.
 
-The PR #7 no-op receipt P2 is resolved locally by independently accepted PR #9. [Exact review and bounded guarantees](settings-receipts-independent.md) distinguish this acceptance from the still-pending full integration/release approval. No-op receipt snapshots remain private and cannot restore stale public settings or grant consent. Publication remains stopped; no push, PR call or alternative publication route is used for this follow-up.
+The PR #7 no-op receipt P2 is resolved locally by independently accepted PR #9. [Exact review and bounded guarantees](settings-receipts-independent.md) distinguish this acceptance from the still-pending full integration/release approval. No-op receipt snapshots remain private and cannot restore stale public settings or grant consent. The follow-up was completed locally while publication was stopped. Draft publication is now separately authorized; its actual result is recorded in the handoff without granting release approval.
 
 ## Local PR #9 follow-up verification
 
-The previous no-op receipt P2 is independently accepted as fixed at PR #9 head `a72b8f8c3d772618cf279035be4c19c8103d4198` and integrated locally. No source PR head is changed, and this follow-up is not pushed or submitted by another publication route. Final local SHA is recorded in the handoff. The earlier remote `fd9b388` CI success is not represented as a CI result for these unpublished changes; exact PR #9 CI 38947395513 is separate source-review evidence.
+The previous no-op receipt P2 is independently accepted as fixed at PR #9 head `a72b8f8c3d772618cf279035be4c19c8103d4198` and integrated locally. No source PR head is changed. All application checks below ran locally at 56f8f4df35a96064216ed78e8ce351c1f35cff3f before the authorized draft publication; later publication-status edits affect documentation only. Exact final-head remote CI is recorded separately in the handoff. The earlier remote `fd9b388` CI success is not substituted for final-head validation; exact PR #9 CI 38947395513 is separate source-review evidence.
 
 | Combined local check | Result |
 |---|---|
@@ -70,6 +70,6 @@ The previous no-op receipt P2 is independently accepted as fixed at PR #9 head `
 
 The upgrade tests seed historical changed settings/audit rows before invoking the receipt-aware app, then apply both distinct `0003` files followed by `0004`. They preserve legacy change keys and monitoring receipts, verify independent no-op/batch replay after later writes/reopen, reject changed no-op reuse and confirm full database integrity. A settings-first and a monitoring-first history are both covered. Local row-hash evidence is `.git/integration-pr9-migration-result.json`; suite logs are `.git/pr9-combined-*.log` and `.git/integration-pr9-validate.log`.
 
-Independent source acceptance closes the bounded P2, while exact combined integration acceptance, publication authorization and release approval remain pending. No published PR, new-head remote CI, deployment, paid call, live provider setup or persistent access is claimed.
+Independent source acceptance closes the bounded P2, while exact combined integration acceptance, publication authorization and release approval remain pending. The local checks above do not themselves establish a published PR or new-head remote CI; those outcomes must be recorded separately. No deployment, paid call, live provider setup or persistent access is claimed.
 
 Rollback this candidate's code/config to the prior reviewed stack. Preserve/export local SQLite before any deliberate schema rollback; additive tables can remain unused by older code. Never delete `.wrangler/editorial`, rename applied migration files or treat test-directory resets as a backup/restore plan. No remote resource rollback is needed because none was changed.

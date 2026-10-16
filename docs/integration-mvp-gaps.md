@@ -4,7 +4,7 @@ This is a non-deploying local integration candidate. Its test evidence does not 
 
 ## Resolved local settings P2; integration acceptance still pending
 
-Independent PR #7 review found a P2 in unchanged/no-op settings saves: missing receipts allowed changed key reuse and prevented historical no-op replay after later changes. PR #9 at `a72b8f8c3d772618cf279035be4c19c8103d4198` was independently accepted and integrated locally, adding bounded actor-scoped receipts and migration `0004_measurement_request_receipts.sql`. [Exact independent review](review/settings-receipts-independent.md) records the tests and limits. This closes that bounded P2 locally; the full candidate still requires independent integration acceptance and pending release approval. Publication remains blocked and the follow-up has not been pushed or submitted as a PR.
+Independent PR #7 review found a P2 in unchanged/no-op settings saves: missing receipts allowed changed key reuse and prevented historical no-op replay after later changes. PR #9 at `a72b8f8c3d772618cf279035be4c19c8103d4198` was independently accepted and integrated locally, adding bounded actor-scoped receipts and migration `0004_measurement_request_receipts.sql`. [Exact independent review](review/settings-receipts-independent.md) records the tests and limits. This closes that bounded P2 locally; the full candidate still requires independent integration acceptance and pending release approval. Draft code/documentation publication is now separately authorized; final PR outcome and exact-head CI are recorded in the handoff. This does not authorize a main merge or deployment.
 
 | Area | Implemented and verified locally | Remaining before the relevant capability can launch |
 |---|---|---|

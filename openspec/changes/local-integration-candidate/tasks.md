@@ -7,5 +7,5 @@
 - [x] Prepare the focused draft integration PR handoff with exact provenance, CI result recorded before completion, known MVP gaps and rollback; no main merge/deployment.
 - [x] Independently accept PR #9 at a72b8f8c3d772618cf279035be4c19c8103d4198 and integrate its three commits locally; the no-op receipt P2 is closed within its documented retry window.
 - [x] Rerun all local combined checks after PR #9: 58 static/server/upgrade tests, 22 Worker/D1 browser cases, complete journey, 16 reading cases, both Worker restart suites and static dry run. Migration 0004 preserved all 15 prior table hashes; reapply did no work.
-- [ ] Publish only after explicit user authorization resolves the recorded automatic-review rejection; do not retry PR creation or use another publication route in this task.
+- [x] Obtain separate explicit user authorization for draft publication and prepare one authorized PR-creation retry; actual outcome and final-head CI are recorded in the handoff. No main merge/deployment authorization is implied.
 - [ ] Independent integration acceptance and pending release approval; do not merge/deploy here.
