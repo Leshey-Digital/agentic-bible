@@ -1,9 +1,13 @@
 ---
 import '../styles/global.css';
 import { repository } from '../lib/library';
-interface Props { title: string; description?: string; active?: 'library' | 'topics' | 'about' | 'search'; }
-const { title, description = 'A sourced reference library for AI agents and the technology around them.', active } = Astro.props;
-const canonical = new URL(Astro.url.pathname, Astro.site);
+import {discoveryPolicy,pageDiscovery} from '../seo/policy.ts';
+import {articleStructuredData,eligibleArticle,jsonLd,type SeoArticle} from '../seo/articles.ts';
+interface Props { title: string; description?: string; active?: 'library' | 'topics' | 'about' | 'search'; seoArticle?:SeoArticle; }
+const { title, description = 'A sourced reference library for AI agents and the technology around them.', active,seoArticle } = Astro.props;
+const discovery=discoveryPolicy();
+const page=pageDiscovery(discovery,Astro.url.pathname,!!seoArticle&&!eligibleArticle(seoArticle));
+const structured=seoArticle?articleStructuredData(seoArticle,discovery):null;
 const localBridge=process.env.AGENTIC_BIBLE_LOCAL_WIKI_BUILD==='1';
 ---
 <!doctype html>
@@ -13,9 +17,10 @@ const localBridge=process.env.AGENTIC_BIBLE_LOCAL_WIKI_BUILD==='1';
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title} · Agentic Bible</title>
     <meta name="description" content={description} />
-    <meta name="robots" content="noindex, nofollow" />
+    <meta name="robots" content={page.indexable?'index, follow':'noindex, nofollow'} />
     <meta name="color-scheme" content="light" />
-    <link rel="canonical" href={canonical} />
+    {page.canonical&&<link rel="canonical" href={page.canonical} />}
+    {structured&&<script is:inline type="application/ld+json" set:html={jsonLd(structured)} />}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   </head>
   <body>
