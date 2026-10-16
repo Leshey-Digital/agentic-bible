@@ -44,7 +44,8 @@ test('staging pages are non-indexable, use staging canonicals, and contain no in
   for (const page of pages) {
     const source = html(page);
     assert.match(source, /name="robots" content="noindex, nofollow"/);
-    assert.match(source, /rel="canonical" href="https:\/\/staging\.agenticbible\.si\//);
+    if(/(?:search|contribute|404)(?:\/|\.html)/.test(page))assert.doesNotMatch(source,/rel="canonical"/);
+    else assert.match(source, /rel="canonical" href="https:\/\/staging\.agenticbible\.si\//);
     assert.equal(attrs(source, 'id').length, new Set(attrs(source, 'id')).size, `${page}: duplicate ids`);
     for (const script of source.matchAll(/<script([^>]*)>([\s\S]*?)<\/script>/g)) {
       assert.match(script[1], /src="\/_astro\//, `${page}: script must be a local file`);
@@ -52,7 +53,8 @@ test('staging pages are non-indexable, use staging canonicals, and contain no in
     }
     assert.doesNotMatch(source, /<iframe|<form[^>]+action="https?:|<script[^>]+src="https?:/);
   }
-  assert.match(html('dist/robots.txt'), /Disallow: \//);
+  assert.match(html('dist/robots.txt'), /Allow: \//);
+  assert.doesNotMatch(html('dist/robots.txt'), /Disallow:|Sitemap:/);
   assert.match(html('dist/_headers'), /X-Robots-Tag: noindex, nofollow/);
   assert.ok(!existsSync('dist/sitemap.xml'), 'preview must not publish a sitemap');
 });

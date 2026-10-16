@@ -104,4 +104,6 @@ The separate canonical bridge successor connects actual charged local HTTP recei
 
 ## License and contributions
 
+The separate canonical SEO/indexing slice adds explicit origin/mode policy, accurate article structured data, public-only sitemap generation and a disabled bounded SQL indexing outbox. Default builds remain staging/noindex. `npm run test:seo` and `npm run test:seo:build` are included in validate; `npm run indexing:queue` and `npm run indexing:status` default to disabled with no submissions or store creation. [Contracts and reproduction](docs/canonical-seo-indexing.md) distinguish candidate URLs/provider receipts from actual publication/indexing. [Verification](docs/review/canonical-seo-indexing.md) records native D1/build checks and the separately prioritized bridge-isolation fix. No live transport, provider key, account, cron or deployment is configured.
+
 The founder approved open-source direction. Specific licensing for code, articles, and submitted material is unresolved; no license is granted by these documents. Third-party contributions are not being solicited or accepted until the founder approves and publishes the relevant terms.

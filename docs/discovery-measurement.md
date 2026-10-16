@@ -1,6 +1,6 @@
 # Discovery, SEO and measurement policy
 
-Required intent from the founder; implementation remains pending.
+Required intent from the founder. The separate [canonical SEO/indexing slice](canonical-seo-indexing.md) implements local canonical/staging metadata, sitemap and a disabled bounded indexing outbox. No production origin, account, provider connection, submission or deployment is enabled; measurement remains unconfigured.
 
 ## Legitimate discoverability
 Publish useful original synthesis backed by citations, semantic HTML, descriptive titles, stable canonical URLs, internal cluster links, accessible navigation, and accurate structured data matching visible content. Generate XML sitemaps containing only canonical public pages. Keep staging and previews out of indexing and sitemaps; check robots and noindex separately before launch.
