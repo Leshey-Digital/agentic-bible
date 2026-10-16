@@ -43,7 +43,7 @@ async function observe(lease:Lease,transport:FixtureTransport,signal:AbortSignal
   return {kind:lease.source.hash===null?'baseline':lease.source.hash===hash?'unchanged':'changed',hash,etag,lastModified,bytes:length};
 }
 
-export async function runJob(store:MonitorStore,catalog:SourceCatalog,id:string,transport:FixtureTransport,clock:()=>number=Date.now,timeoutMs:number=limits.timeoutMs) {
+export async function runJob(store:MonitorStore,catalog:SourceCatalog,id:string,transport:FixtureTransport,clock:()=>number=Date.now,timeoutMs:number=limits.timeoutMs,expectedAttempts:number|null=null) {
   const now=clock();
   await validateCatalog(catalog);
   // A caller cannot switch this foundation to live HTTP, or enlarge its deadline.
@@ -51,7 +51,7 @@ export async function runJob(store:MonitorStore,catalog:SourceCatalog,id:string,
   const job=await store.job(id);if(!job)throw new MonitorError('missing_job');
   const allowed=catalog.sources.find(source=>source.id===job.sourceId);
   if(!allowed)throw new MonitorError('source_not_allowlisted');
-  const lease=await store.claim(id,now);if(!lease)return {state:(await store.job(id))?.state??'missing',dispatched:false};
+  const lease=await store.claim(id,now,expectedAttempts);if(!lease)return {state:(await store.job(id))?.state??'missing',dispatched:false};
   if(lease.source.url!==allowed.url||!Array.isArray(lease.source.articleIds)||lease.source.articleIds.some(article=>!allowed.articleIds.includes(article))) {
     await store.fail(lease,new MonitorError('source_not_allowlisted'),now);return {state:'dead',dispatched:false};
   }

@@ -44,15 +44,15 @@ export class MonitorStore {
       ((state IN ('queued','retry','budget_blocked') AND due_at<=?) OR (state='running' AND lease_until<=?))
       AND (attempts<3 OR state='running') ORDER BY due_at,id LIMIT 4`).bind(now,now).all<JobRow>()).results.map(jobRow);
   }
-  async claim(id:string, now:number):Promise<Lease|null> {
+  async claim(id:string, now:number, expectedAttempts:number|null=null):Promise<Lease|null> {
     const token=crypto.randomUUID();const day=Math.floor(now/86_400_000);
     const result=await this.db.batch([
       this.db.prepare(`UPDATE monitor_reservations SET outcome='abandoned' WHERE outcome='reserved' AND token IN
         (SELECT lease_token FROM monitor_jobs WHERE id=? AND state='running' AND lease_until<=?)`).bind(id,now),
       this.db.prepare(`UPDATE monitor_jobs SET state='running',lease_token=?,lease_until=?,updated_at=?
-        WHERE id=? AND attempts<3 AND ((state IN ('queued','retry','budget_blocked') AND due_at<=?) OR (state='running' AND lease_until<=?))
+        WHERE id=? AND attempts<3 AND (? IS NULL OR attempts=?) AND ((state IN ('queued','retry','budget_blocked') AND due_at<=?) OR (state='running' AND lease_until<=?))
         AND NOT EXISTS(SELECT 1 FROM monitor_jobs other WHERE other.source_id=monitor_jobs.source_id AND other.id<>monitor_jobs.id AND other.state='running' AND other.lease_until>?)`)
-        .bind(token,now+limits.leaseMs,now,id,now,now,now),
+        .bind(token,now+limits.leaseMs,now,id,expectedAttempts,expectedAttempts,now,now,now),
       this.db.prepare(`INSERT INTO monitor_reservations(token,job_id,attempt,day,max_bytes)
         SELECT ?,id,attempts+1,?,? FROM monitor_jobs WHERE id=? AND lease_token=?
         AND (SELECT COUNT(*) FROM monitor_reservations WHERE day=?)<?`)
