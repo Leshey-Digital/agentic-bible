@@ -1,0 +1,141 @@
+{
+  "baseHead": "c3d1d7a47e55862c53840d52ad4c71631bd9ad9e",
+  "scope": "local builds and controlled browser/Worker tests only; no deployment or indexing submission",
+  "productionCandidate": {
+    "schemaVersion": 1,
+    "mode": "canonical",
+    "origin": "https://agenticbible.si",
+    "entries": [
+      {
+        "articleId": "agent-evaluation",
+        "url": "https://agenticbible.si/articles/agent-evaluation/",
+        "revision": "14643868b187191d7ab0e4e5bb5054c81a8d2ec835668aee78e22c5fe9dbf808"
+      },
+      {
+        "articleId": "agent-memory",
+        "url": "https://agenticbible.si/articles/agent-memory/",
+        "revision": "14fd069b896cc82a7a65d9914c4bb9395bf29246e02f935fbab359e9c090585f"
+      },
+      {
+        "articleId": "agent-orchestration",
+        "url": "https://agenticbible.si/articles/agent-orchestration/",
+        "revision": "a4f21b3f6b7e1a707ce5f87445137a3fe78b3727d41b995d1d23b10e6b7e46d5"
+      },
+      {
+        "articleId": "ai-agent",
+        "url": "https://agenticbible.si/articles/ai-agent/",
+        "revision": "0f2b14b4c3874f6884322f610d7db56de8e085d16c11728ed95db41f9af50b07"
+      },
+      {
+        "articleId": "model-context-protocol",
+        "url": "https://agenticbible.si/articles/model-context-protocol/",
+        "revision": "8fdd86b9a21495d1dbd3f539374d1233209913aa61363f35c4c02e108cb9ae12"
+      },
+      {
+        "articleId": "prompt-injection",
+        "url": "https://agenticbible.si/articles/prompt-injection/",
+        "revision": "b3c86e2917fa24fa6f6233408f7fc58fa56ffa007c3cb099e6b83c4e15573963"
+      },
+      {
+        "articleId": "retrieval-augmented-generation",
+        "url": "https://agenticbible.si/articles/retrieval-augmented-generation/",
+        "revision": "ececd7198902abb0a552ac71d035a156b6af76b2b707aa4707cc0743cdf1d112"
+      },
+      {
+        "articleId": "tool-use",
+        "url": "https://agenticbible.si/articles/tool-use/",
+        "revision": "bf433486d5b9facf273cda4c2929cfd3c01b91ba1a5baeaf5be7469f693a4ffc"
+      }
+    ]
+  },
+  "sourceCatalogUniqueUrls": 22,
+  "newArticleBodyWords": {
+    "agent-evaluation": 694,
+    "agent-memory": 667,
+    "agent-orchestration": 636,
+    "prompt-injection": 697,
+    "retrieval-augmented-generation": 666
+  },
+  "syntheticComposition": {
+    "sourceHeads": {
+      "bridge": "6066255556e1c7b6ec6fbf3f17915048e5eff6bf",
+      "seo": "76d32e80714b5ba8040e73150cab914e4a3f8bb8"
+    },
+    "productionOrigin": "https://agenticbible.si",
+    "productionArticles": [
+      "agent-evaluation",
+      "agent-memory",
+      "agent-orchestration",
+      "ai-agent",
+      "model-context-protocol",
+      "prompt-injection",
+      "retrieval-augmented-generation",
+      "tool-use"
+    ],
+    "first": {
+      "eventId": "wiki-tool-use-original-demo",
+      "fingerprint": "5ddedb6a61594a4fd5311077209c5ac8aa9376dfe6d9f9f41371e23502763aba",
+      "sequence": 1,
+      "kind": "apply",
+      "publisher": {
+        "id": "39c1ce6f0bad0d7efd53926cd047b82bde8a9c08f0138c2afaeaf2571df20944",
+        "manifestHash": "73139f2ec2f4b87efe6b6da9a04c565915cbeda780a53b958252ca166dbb81ee"
+      },
+      "articleRevision": "8949ae864d618c6a73c883aa5ef67d680ec0b411990249c39d62eafc4a172369",
+      "evidenceHash": "1362d84e96f6e6ea03bbacdafc3fc6836c4fc374dace609b17a8663eefdea330",
+      "outcome": "site-activated",
+      "site": {
+        "id": "a93cf072a14bb7cd27aa08c9a201542f7a4ad5d51daddb2cab4d7ff5c1d5b2cd",
+        "manifestHash": "5839e440809ae483d7699ad08421e9545aaf7098c9d9fbaffd9143fc26f332a1"
+      },
+      "parent": null
+    },
+    "second": {
+      "eventId": "seo-composition-second",
+      "fingerprint": "f3428acce90fc4fc6ade9100835c8cb49e304678ed7412c7d98f8cf738aa3c9c",
+      "sequence": 2,
+      "kind": "apply",
+      "publisher": {
+        "id": "d42e59036dc77579907c3bce76781197fcbf94e0961eb3e9fff179144d94d8ed",
+        "manifestHash": "b87e74fb418d71f169998ab619de6ab00ab4d1798961fb560fd1e7e3a48a2507"
+      },
+      "articleRevision": "f856bd331d75370fbac2399f4b6f8b2744e207ec94c7fd7754449e8e3c31b2f4",
+      "evidenceHash": "1362d84e96f6e6ea03bbacdafc3fc6836c4fc374dace609b17a8663eefdea330",
+      "outcome": "site-activated",
+      "site": {
+        "id": "7efff8029a671e6eeeed84d40c3a6bf79cb2350e383267826154b396b47adbf8",
+        "manifestHash": "4f15f8240c48df54d8c165457f452f20cdc4d07abfa9a156000fe76949f5398f"
+      },
+      "parent": {
+        "id": "a93cf072a14bb7cd27aa08c9a201542f7a4ad5d51daddb2cab4d7ff5c1d5b2cd",
+        "manifestHash": "5839e440809ae483d7699ad08421e9545aaf7098c9d9fbaffd9143fc26f332a1"
+      }
+    },
+    "restored": {
+      "eventId": "seo-composition-rollback",
+      "fingerprint": "26777a54ed853b50bd1554a35400425f0ef56f44c367882ee3609ffb30059372",
+      "sequence": 3,
+      "kind": "rollback",
+      "publisher": {
+        "id": "9a3fa8a70efcc77050cb93e980256e4ac950481dbdcf734c422703f773abf4ad",
+        "manifestHash": "8d93bb7751bc52daae2fce8a048b6f5c05f5af622378076235492c247bd963a4"
+      },
+      "articleRevision": "8949ae864d618c6a73c883aa5ef67d680ec0b411990249c39d62eafc4a172369",
+      "evidenceHash": "1362d84e96f6e6ea03bbacdafc3fc6836c4fc374dace609b17a8663eefdea330",
+      "outcome": "site-activated",
+      "site": {
+        "id": "1661daa5bec2986569002e3ec589f9ca47cc343679dc95e70398fb22bb7ed0df",
+        "manifestHash": "c81bbb0580609f8853e27dc85f744ed131dd00438cea9f09917bf4ec9f4876e0"
+      },
+      "parent": {
+        "id": "7efff8029a671e6eeeed84d40c3a6bf79cb2350e383267826154b396b47adbf8",
+        "manifestHash": "4f15f8240c48df54d8c165457f452f20cdc4d07abfa9a156000fe76949f5398f"
+      }
+    },
+    "bridgeSourceFetches": 0,
+    "indexingSubmissions": 0,
+    "syntheticSitemap": false,
+    "chargesPreserved": true,
+    "originalMarkdownAndDistPreserved": true
+  }
+}

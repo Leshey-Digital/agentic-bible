@@ -21,7 +21,7 @@ export async function indexingManifest(articles:SeoArticle[],policy:DiscoveryPol
 export function checkedManifest(value:unknown):IndexingManifest{
   if(!value||typeof value!=='object'||Array.isArray(value))throw new Error('invalid_indexing_manifest');
   const m=value as IndexingManifest;
-  if(Object.keys(m).sort().join(',')!=='entries,mode,origin,schemaVersion'||m.schemaVersion!==1||!['staging','canonical','synthetic'].includes(m.mode)||!Array.isArray(m.entries)||m.entries.length>3)throw new Error('invalid_indexing_manifest');
+  if(Object.keys(m).sort().join(',')!=='entries,mode,origin,schemaVersion'||m.schemaVersion!==1||!['staging','canonical','synthetic'].includes(m.mode)||!Array.isArray(m.entries)||m.entries.length>articleIds.length)throw new Error('invalid_indexing_manifest');
   if(m.mode!=='canonical'){if(m.origin!=='https://staging.agenticbible.si'||m.entries.length)throw new Error('invalid_indexing_manifest');return m;}
   if(m.origin!=='https://agenticbible.si')throw new Error('invalid_indexing_manifest');
   const seen=new Set();for(const e of m.entries){

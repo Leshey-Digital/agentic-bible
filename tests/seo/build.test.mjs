@@ -6,7 +6,7 @@ import {spawn,spawnSync} from 'node:child_process';
 import {tmpdir} from 'node:os';
 import {createServer} from 'node:net';
 import {projectFiles,write,inventory} from '../../src/wiki-bridge/files.ts';
-import {publicRoutes} from '../../src/seo/policy.ts';
+import {articleIds,publicRoutes} from '../../src/seo/policy.ts';
 import {git} from '../wiki-bridge/helpers.mjs';
 test('actual canonical, staging, synthetic and mixed builds produce coherent discovery without touching ordinary dist',{timeout:120000},async()=>{
   const original=inventory('src/content/articles'),dist=inventory('dist');const scratch=mkdtempSync(join(tmpdir(),'agentic-seo-build-')),root=join(scratch,'project');mkdirSync(root);
@@ -26,7 +26,7 @@ test('actual canonical, staging, synthetic and mixed builds produce coherent dis
     }finally{if(child.exitCode===null&&child.signalCode===null){const stopped=new Promise(resolve=>child.once('exit',resolve));child.kill('SIGTERM');const timer=setTimeout(()=>child.kill('SIGKILL'),5000);await stopped;clearTimeout(timer);}}
   }
   try{
-    const canonical=await build('canonical',{AGENTIC_BIBLE_DISCOVERY_MODE:'production',AGENTIC_BIBLE_CANONICAL_ORIGIN:'https://agenticbible.si'}),m=manifest(canonical);assert.equal(m.entries.length,3);
+    const canonical=await build('canonical',{AGENTIC_BIBLE_DISCOVERY_MODE:'production',AGENTIC_BIBLE_CANONICAL_ORIGIN:'https://agenticbible.si'}),m=manifest(canonical);assert.deepEqual(m.entries.map(e=>e.articleId).sort(),[...articleIds].sort());
     writeFileSync(join(git,'seo-canonical-manifest.json'),JSON.stringify(m));
     const xml=readFileSync(join(canonical,'sitemap.xml'),'utf8');writeFileSync(join(git,'seo-canonical-sitemap.xml'),xml);assert.equal((xml.match(/<url>/g)??[]).length,publicRoutes.length);for(const path of publicRoutes)assert.ok(xml.includes(`<loc>https://agenticbible.si${path}</loc>`));
     for(const entry of m.entries){assert.ok(xml.includes(`<loc>${entry.url}</loc>`));const source=html(canonical,`/articles/${entry.articleId}/`);assert.ok(source.includes(`rel="canonical" href="${entry.url}"`));assert.match(source,/name="robots" content="index, follow"/);const data=JSON.parse(/<script type="application\/ld\+json">([^]*?)<\/script>/.exec(source)?.[1]??'null');assert.equal(data['@type'],'TechArticle');assert.equal(data.url,entry.url);assert.ok(data.headline);assert.ok(data.description);assert.equal(data.dateModified,undefined);assert.equal(data.datePublished,undefined);assert.equal(data.author,undefined);assert.ok(data.citation.length>=2);}
@@ -38,7 +38,7 @@ test('actual canonical, staging, synthetic and mixed builds produce coherent dis
     await serve(canonical,true);await serve(staging,false);
     const synthetic=await build('synthetic',{AGENTIC_BIBLE_DISCOVERY_MODE:'production',AGENTIC_BIBLE_CANONICAL_ORIGIN:'https://agenticbible.si',AGENTIC_BIBLE_LOCAL_WIKI_BUILD:'1'});assert.equal(manifest(synthetic).mode,'synthetic');assert.deepEqual(manifest(synthetic).entries,[]);assert.equal(existsSync(join(synthetic,'sitemap.xml')),false);assert.match(html(synthetic,'/articles/tool-use/'),/noindex, nofollow/);
     const path=join(root,'src/content/articles/tool-use.md');writeFileSync(path,readFileSync(path,'utf8').replace('status: Working draft','status: Published local demonstration').replace('author: AI-assisted project draft','author: Supplied local demonstration'));
-    const mixed=await build('mixed',{AGENTIC_BIBLE_DISCOVERY_MODE:'production',AGENTIC_BIBLE_CANONICAL_ORIGIN:'https://agenticbible.si'});assert.deepEqual(manifest(mixed).entries.map(e=>e.articleId),['ai-agent','model-context-protocol']);assert.doesNotMatch(readFileSync(join(mixed,'sitemap.xml'),'utf8'),/tool-use/);assert.doesNotMatch(html(mixed,'/articles/tool-use/'),/rel="canonical"|application\/ld\+json/);assert.match(html(mixed,'/articles/tool-use/'),/noindex, nofollow/);assert.match(readFileSync(join(mixed,'_headers'),'utf8'),/\/articles\/tool-use\/\*\n  X-Robots-Tag: noindex, nofollow/);
+    const mixed=await build('mixed',{AGENTIC_BIBLE_DISCOVERY_MODE:'production',AGENTIC_BIBLE_CANONICAL_ORIGIN:'https://agenticbible.si'});assert.deepEqual(manifest(mixed).entries.map(e=>e.articleId),[...articleIds].filter(id=>id!=='tool-use').sort());assert.doesNotMatch(readFileSync(join(mixed,'sitemap.xml'),'utf8'),/tool-use/);assert.doesNotMatch(html(mixed,'/articles/tool-use/'),/rel="canonical"|application\/ld\+json/);assert.match(html(mixed,'/articles/tool-use/'),/noindex, nofollow/);assert.match(readFileSync(join(mixed,'_headers'),'utf8'),/\/articles\/tool-use\/\*\n  X-Robots-Tag: noindex, nofollow/);
     assert.deepEqual(inventory('src/content/articles'),original);assert.deepEqual(inventory('dist'),dist);
   }finally{rmSync(scratch,{recursive:true,force:true});}
 });

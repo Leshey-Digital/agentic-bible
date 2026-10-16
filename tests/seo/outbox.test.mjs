@@ -5,6 +5,7 @@ import {execFileSync} from 'node:child_process';
 import {join} from 'node:path';
 import {Miniflare,convertV4MiniflareOptions} from 'miniflare';
 import {enqueueIndexing,deliverIndexing,retryIndexing,disabledIndexing} from '../../src/seo/outbox.ts';
+import {readingArticleIds} from '../../src/lib/article-ids.ts';
 const config={enabled:true,provider:'indexnow',origin:'https://agenticbible.si',ownershipVerified:true};
 const manifest={schemaVersion:1,mode:'canonical',origin:config.origin,entries:[{articleId:'tool-use',url:config.origin+'/articles/tool-use/',revision:'a'.repeat(64)}]};
 test('disabled or unconfigured indexing has no SQL effects or provider calls',async()=>{
@@ -14,6 +15,22 @@ test('disabled or unconfigured indexing has no SQL effects or provider calls',as
   }
   assert.equal((await deliverIndexing(db,'a'.repeat(64),config)).status,'provider-not-configured');
   assert.equal((await deliverIndexing(db,'a'.repeat(64),config,{id:'indexnow',origin:'https://other.example',ownershipVerified:true,supports:'canonical-article-updates',notify(){throw Error('forbidden');}})).status,'provider-not-configured');
+});
+test('eight-article events preserve the 96-notification cap atomically under concurrency and restart',{timeout:60000},async()=>{
+  const git=execFileSync('git',['rev-parse','--absolute-git-dir'],{encoding:'utf8'}).trim(),path=join(git,'seo-eight-article-test');rmSync(path,{recursive:true,force:true});let runtime,db;
+  async function start(){runtime=new Miniflare({...convertV4MiniflareOptions({name:'seo-eight-article-test',modules:true,script:'export default {fetch(){return new Response("local test")}}',compatibilityDate:'2026-10-16',d1Databases:{EDITORIAL_DB:'seo-eight-article-test'},outboundService(){throw Error('external fetch forbidden');}}),resourcePersistencePath:path});db=await runtime.getD1Database('EDITORIAL_DB');}
+  const expanded={...manifest,entries:readingArticleIds.map(articleId=>({articleId,url:config.origin+`/articles/${articleId}/`,revision:'b'.repeat(64)}))};
+  const rows=async()=>({receipts:(await db.prepare('SELECT * FROM indexing_enqueue_receipts ORDER BY event_key').all()).results,notifications:(await db.prepare('SELECT * FROM indexing_notifications ORDER BY id').all()).results});
+  await start();try{
+    for(const sql of readFileSync('migrations/0006_indexing_outbox.sql','utf8').replace(/--[^\n]*/g,'').split(';').map(s=>s.trim()).filter(Boolean))await db.prepare(sql).run();
+    const first=await enqueueIndexing(db,expanded,'eight-article-first',config);assert.equal(first.ids.length,8);
+    for(let n=1;n<11;n++)await enqueueIndexing(db,expanded,'eight-article-release-'+n,config);
+    const raced=await Promise.allSettled(['eight-article-race-one','eight-article-race-two'].map(key=>enqueueIndexing(db,expanded,key,config)));
+    assert.equal(raced.filter(r=>r.status==='fulfilled').length,1);assert.equal(raced.find(r=>r.status==='rejected').reason.code,'indexing_capacity');
+    const snapshot=await rows();assert.equal(snapshot.receipts.length,12);assert.equal(snapshot.notifications.length,96);for(const row of snapshot.receipts)assert.equal(JSON.parse(row.receipt).ids.length,8);
+    await assert.rejects(enqueueIndexing(db,expanded,'eight-article-over-cap',config),{code:'indexing_capacity'});assert.deepEqual(await rows(),snapshot);assert.deepEqual(await enqueueIndexing(db,expanded,'eight-article-first',config),first);
+    await runtime.dispose();await start();assert.deepEqual(await rows(),snapshot);assert.deepEqual(await enqueueIndexing(db,expanded,'eight-article-first',config),first);
+  }finally{await runtime.dispose();}
 });
 test('actual local D1 outbox migration/replay/concurrency/restart/faults and bounds preserve unrelated data',{timeout:120000},async()=>{
   const git=execFileSync('git',['rev-parse','--absolute-git-dir'],{encoding:'utf8'}).trim(),path=join(git,'seo-outbox-test');rmSync(path,{recursive:true,force:true});let runtime,db,calls=0;

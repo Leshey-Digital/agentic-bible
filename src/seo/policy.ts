@@ -1,4 +1,5 @@
-export const articleIds=['ai-agent','tool-use','model-context-protocol'] as const;
+import {readingArticleIds} from '../lib/article-ids.ts';
+export const articleIds=readingArticleIds;
 export const publicRoutes=['/','/about/','/topics/','/topics/foundations/','/topics/capabilities/','/topics/protocols/',...articleIds.map(id=>`/articles/${id}/`)];
 export type DiscoveryPolicy={mode:'staging'|'canonical'|'synthetic';origin:string};
 export function canonicalOrigin(value:unknown):string{

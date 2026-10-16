@@ -26,8 +26,8 @@ test('all generated links and fragments resolve, including article citations', (
   }
 });
 
-test('three substantive articles include provenance, review status and connected ideas', () => {
-  assert.equal(articlePages.length, 3);
+test('eight substantive articles include provenance, review status and connected ideas', () => {
+  assert.equal(articlePages.length, 8);
   for (const page of articlePages) {
     const source = html(page);
     assert.match(source, /Editorial review pending/);
@@ -37,6 +37,20 @@ test('three substantive articles include provenance, review status and connected
     assert.ok(attrs(source, 'id').filter(id => id.startsWith('source-')).length >= 2);
     assert.ok(source.replace(/<[^>]*>/g, ' ').split(/\s+/).length > 400);
     assert.match(source, /Connected ideas/);
+  }
+});
+
+test('new genuine entries have substantive prose, audited citations and actual GitHub history', () => {
+  const record=JSON.parse(readFileSync('docs/review/encyclopedia-source-verification.json','utf8'));
+  assert.equal(record.independentEditorialReview,'pending');
+  for(const id of ['agent-orchestration','agent-memory','retrieval-augmented-generation','agent-evaluation','prompt-injection']){
+    const source=html(`dist/articles/${id}/index.html`),body=/<div class="prose"[^>]*>([^]*?)<\/div>/.exec(source)?.[1]??'';
+    assert.ok(body.replace(/<[^>]*>/g,' ').split(/\s+/).length>500,`${id}: substantive article body`);
+    assert.match(source,new RegExp(`/commits/feat/encyclopedia-agent-topics/src/content/articles/${id}\\.md`));
+    assert.doesNotMatch(source,/Published local demonstration|Supplied local demonstration|Bound original bytes/);
+    const claims=record.claims.filter(claim=>claim.articleId===id);assert.equal(claims.length,3);
+    for(const claim of claims){assert.ok(body.includes(`href="#source-${claim.citationId}"`));assert.ok(source.includes(`href="${claim.url}"`));assert.ok(claim.sectionsChecked&&claim.supports&&claim.limits&&claim.versionContext);}
+    assert.ok(attrs(source,'href').filter(href=>/^\/articles\//.test(href)).length>=4);
   }
 });
 

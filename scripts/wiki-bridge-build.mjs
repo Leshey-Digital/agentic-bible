@@ -4,6 +4,7 @@ import {createIndex,close} from 'pagefind';
 import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';
 import {join,dirname} from 'node:path';
 import {rebasePublisherLinks} from '../src/wiki-bridge/html.ts';
+import {readingArticleIds} from '../src/lib/article-ids.ts';
 const [project,output,planPath,ownerPid]=process.argv.slice(2);const plan=JSON.parse(readFileSync(planPath,'utf8'));
 const owner=Number(ownerPid);if(!Number.isSafeInteger(owner)||owner<2||process.ppid!==owner)process.exit(3);
 const guard=setInterval(()=>{if(process.ppid!==owner)process.exit(3);try{process.kill(owner,0);}catch{process.exit(3);}},100);guard.unref();
@@ -25,7 +26,7 @@ try{
   const base=`/wiki-snapshots/${plan.siteId}/`;
   const {index,errors}=await createIndex({forceLanguage:'en'});if(errors.length||!index)throw new Error('index');
   try{
-    for(const id of ['ai-agent','tool-use','model-context-protocol']){const added=await index.addHTMLFile({url:base+`articles/${id}/`,content:readFileSync(join(output,`articles/${id}/index.html`),'utf8')});if(added.errors.length)throw new Error('index');}
+    for(const id of readingArticleIds){const added=await index.addHTMLFile({url:base+`articles/${id}/`,content:readFileSync(join(output,`articles/${id}/index.html`),'utf8')});if(added.errors.length)throw new Error('index');}
     const files=await index.getFiles();if(files.errors.length||files.files.length>512||files.files.reduce((n,f)=>n+f.content.length,0)>16*1024*1024)throw new Error('index');
     for(const file of files.files){if(!/^[a-zA-Z0-9_./-]+$/.test(file.path)||file.path.split('/').some(p=>p==='..'||p==='.'||p===''))throw new Error('path');const destination=join(output,'pagefind',file.path);mkdirSync(dirname(destination),{recursive:true});writeFileSync(destination,Buffer.from(file.content));}
   }finally{await index.deleteIndex();}

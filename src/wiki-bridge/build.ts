@@ -2,6 +2,7 @@ import {mkdtempSync,mkdirSync,writeFileSync,readFileSync,symlinkSync,rmSync,lsta
 import {spawn} from 'node:child_process';
 import {join,resolve} from 'node:path';
 import {canonical,qualityFlags} from '../publishing/contracts.ts';
+import {readingArticleIds} from '../lib/article-ids.ts';
 import {escape} from '../publishing/render.ts';
 import type {PublicationStore} from '../publishing/store.ts';
 import type {Reference,Article} from '../publishing/contracts.ts';
@@ -42,8 +43,8 @@ export async function buildWiki(options:{repo:string;captureRoot:string;capture:
     // Pin every internal navigation/asset link to this immutable full-site snapshot.
     const base=`/wiki-snapshots/${options.siteId}/`;
     for(const path of walk(options.output).filter(path=>path.endsWith('.html'))){let html=readFileSync(path,'utf8');html=pinWikiLinks(html,base).replace('<body','<body data-wiki-snapshot-base="'+base+'"');writeFileSync(path,html);}
-    const catalog=JSON.parse(readFileSync(join(options.output,'source-catalog.json'),'utf8'));if(catalog.articles.length!==3||!catalog.articles.some((a:{id:string})=>a.id==='tool-use'))reject('incomplete_wiki_catalog');
-    const files=inventory(options.output);for(const path of ['index.html','topics/capabilities/index.html','source-catalog.json','history/index.html','review/index.html','articles/tool-use/index.html','articles/ai-agent/index.html','articles/model-context-protocol/index.html','pagefind/pagefind.js'])if(!files[path])reject('incomplete_wiki_artifact');
+    const catalog=JSON.parse(readFileSync(join(options.output,'source-catalog.json'),'utf8'));if(catalog.articles.length!==readingArticleIds.length||!readingArticleIds.every(id=>catalog.articles.some((a:{id:string})=>a.id===id)))reject('incomplete_wiki_catalog');
+    const files=inventory(options.output);for(const path of ['index.html','topics/capabilities/index.html','source-catalog.json','history/index.html','review/index.html',...readingArticleIds.map(id=>`articles/${id}/index.html`),'pagefind/pagefind.js'])if(!files[path])reject('incomplete_wiki_artifact');
     return files;
   }catch{return reject('full_wiki_build_failed');}finally{if(child?.exitCode===null&&child.signalCode===null)child.kill('SIGKILL');if(!child||child.exitCode===0)rmSync(scratch,{recursive:true,force:true});}
 }

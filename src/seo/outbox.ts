@@ -28,7 +28,7 @@ export async function enqueueIndexing(db:SqlDatabase,value:unknown,eventKey:stri
   if(prior){if(prior.fingerprint!==fingerprint)return fail('indexing_event_conflict');return {status:'queued',...JSON.parse(prior.receipt) as Receipt};}
   const ids=await Promise.all(manifest.entries.map(e=>digest(JSON.stringify(['indexnow',eventKey,e.url,e.revision]))));const receipt:Receipt={eventKey,ids};
   await db.batch([
-    db.prepare(`INSERT INTO indexing_enqueue_receipts(event_key,fingerprint,receipt) SELECT ?,?,? WHERE (SELECT COUNT(*) FROM indexing_enqueue_receipts)<32 ON CONFLICT DO NOTHING`).bind(eventKey,fingerprint,JSON.stringify(receipt)),
+    db.prepare(`INSERT INTO indexing_enqueue_receipts(event_key,fingerprint,receipt) SELECT ?,?,? WHERE (SELECT COUNT(*) FROM indexing_enqueue_receipts)<32 AND (SELECT COUNT(*) FROM indexing_notifications)+?<=96 ON CONFLICT DO NOTHING`).bind(eventKey,fingerprint,JSON.stringify(receipt),manifest.entries.length),
     ...manifest.entries.map((e,i)=>db.prepare(`INSERT INTO indexing_notifications(id,event_key,provider,url,revision) SELECT ?,?,'indexnow',?,? WHERE EXISTS(SELECT 1 FROM indexing_enqueue_receipts WHERE event_key=? AND fingerprint=?) ON CONFLICT DO NOTHING`).bind(ids[i],eventKey,e.url,e.revision,eventKey,fingerprint))
   ]);
   const stored=await db.prepare('SELECT fingerprint,receipt FROM indexing_enqueue_receipts WHERE event_key=?').bind(eventKey).first<{fingerprint:string;receipt:string}>();

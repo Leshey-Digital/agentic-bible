@@ -1,3 +1,4 @@
+import {readingArticleIds} from '../../src/lib/article-ids.ts';
 import {test,expect} from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import {readFileSync,writeFileSync} from 'node:fs';
@@ -30,8 +31,9 @@ test('canonical wiki, citations, catalog, retained history and real Pagefind act
     for(const evidence of firstPacket.evidence){await expect(page.locator(`#source-${evidence.citationId}`)).toContainText(evidence.bodyHash);await expect(page.locator(`#source-${evidence.citationId}`)).toContainText(evidence.sourceId);await expect(page.locator(`#source-${evidence.citationId}`)).toContainText(evidence.receiptKey);}
     await expect(page.locator('#revision')).toContainText(first.articleRevision);await expect(page.locator('#revision')).toContainText(first.publisher.id);
     for(const path of ['/','/topics/capabilities/']){await page.goto(origin+path);await expect(page.locator('main')).toContainText('Published local demonstration');await expect(page.locator('a[href="/wiki-snapshots/'+first.site.id+'/articles/tool-use/"]').first()).toBeVisible();}
-    const catalog=await (await page.request.get(origin+'/source-catalog.json')).json();expect(catalog.articles.map(a=>a.id).sort()).toEqual(['ai-agent','model-context-protocol','tool-use']);for(const e of firstPacket.evidence)expect(catalog.sources.find(s=>s.id===e.sourceId)).toMatchObject({url:e.url,articleIds:expect.arrayContaining(['tool-use'])});
+    const catalog=await (await page.request.get(origin+'/source-catalog.json')).json();expect(catalog.articles.map(a=>a.id).sort()).toEqual([...readingArticleIds].sort());for(const e of firstPacket.evidence)expect(catalog.sources.find(s=>s.id===e.sourceId)).toMatchObject({url:e.url,articleIds:expect.arrayContaining(['tool-use'])});
     await search(first.site.id,'Cedarharbor',1);await search(first.site.id,'corresponding call identifier',0);await search(first.site.id,'pattern of control',1);await search(first.site.id,'host application',1);
+    for(const term of ['orchestrator produces subtasks','MemGPT','RAG-Sequence','τ-bench','AgentDojo'])await search(first.site.id,term,1);
     await page.goto(origin+'/articles/tool-use/');await page.setViewportSize({width:390,height:844});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
     expect((await new AxeBuilder({page}).analyze()).violations).toEqual([]);await page.screenshot({path:'test-results/wiki-bridge/canonical-mobile.png',fullPage:true});await page.setViewportSize({width:1440,height:1000});
     const secondPacket=successor(bridge,'wiki-browser-second'),second=await bridge.execute(secondPacket,local.db,'fixtures/wiki-bridge/sources');
