@@ -13,7 +13,8 @@
     "tests/http-worker/**/*.ts",
     "tests/publishing/**/*.ts",
     "tests/publication-browser/**/*.ts",
-    "tests/combined-browser/**/*.ts"
+    "tests/combined-browser/**/*.ts",
+    "tests/seo/**/*.ts"
   ],
   "exclude": [
     "dist",

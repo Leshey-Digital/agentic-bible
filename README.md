@@ -102,6 +102,14 @@ The separate successor `feat/local-mvp-combined-status` retains the exact PR10/P
 
 The separate canonical bridge successor connects actual charged local HTTP receipts to explicitly supplied original tool-use revisions, the existing publisher and a full isolated wiki build. `npm run wiki-bridge:prepare` prepares controlled synthetic observations; `npm run wiki-bridge:apply -- --file fixtures/wiki-bridge/packet.json` performs evidence validation, publication, full Astro/Pagefind build and atomic activation in one command. `npm run wiki-bridge:status` exposes pending state; `npm run wiki-bridge:local` previews canonical routes on 127.0.0.1:8793. [Bridge contracts and reproduction](docs/local-canonical-wiki-bridge.md) and [verification](docs/review/local-canonical-wiki-bridge.md) distinguish integrity binding from factual/authenticity proof. Original Markdown, ordinary dist and interactive data are preserved. Earlier disconnected-slice descriptions remain historical; no source generation, live release or deployment is added.
 
+## Canonical discovery and disabled indexing
+
+The separate canonical SEO/indexing slice adds explicit origin/mode policy, accurate article structured data, public-only sitemap generation and a disabled bounded SQL indexing outbox. Default builds remain staging/noindex. `npm run test:seo` and `npm run test:seo:build` are included in validate; `npm run indexing:queue` and `npm run indexing:status` default to disabled with no submissions or store creation. [Contracts and reproduction](docs/canonical-seo-indexing.md) distinguish candidate URLs/provider receipts from actual publication/indexing. [Verification](docs/review/canonical-seo-indexing.md) records native D1/build checks and the separately prioritized bridge-isolation fix. No live transport, provider key, account, cron or deployment is configured.
+
+## Bridge and SEO composition
+
+The separate [bridge/SEO composition](docs/wiki-seo-integration.md) preserves exact PR19/PR20 ancestry and adds `npm run test:wiki-seo:browser` for charged evidence → supplied canonical reading/history/search with synthetic sitemap/indexing exclusion, restart/replay and rollback. Only explicit production build mode with https://agenticbible.si enables canonical production discovery. Default staging and synthetic output remain nonindexable, and indexing has no live transport. Independent source/composition acceptance and release gates remain pending; no deployment or live submission is performed.
+
 ## License and contributions
 
 The founder approved open-source direction. Specific licensing for code, articles, and submitted material is unresolved; no license is granted by these documents. Third-party contributions are not being solicited or accepted until the founder approves and publishes the relevant terms.

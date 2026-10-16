@@ -16,9 +16,9 @@
     "test:docs": "node scripts/validate-docs.mjs",
     "test": "node --test tests/static.test.mjs",
     "test:browser": "PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright test",
-    "validate": "npm run test:docs && npm run check && npm run build && npm test && npm run test:editorial && npm run test:monitoring && npm run test:settings && npm run test:integration && npm run test:http-sources && npm run test:http-worker && npm run test:publication && npm run test:wiki-bridge",
-    "staging:check": "XDG_CONFIG_HOME=.git/runtime-config XDG_CACHE_HOME=.git/runtime-cache WRANGLER_SEND_METRICS=false wrangler deploy --dry-run --config wrangler.staging.jsonc",
-    "staging:local": "XDG_CONFIG_HOME=.git/runtime-config XDG_CACHE_HOME=.git/runtime-cache WRANGLER_SEND_METRICS=false wrangler dev --local --config wrangler.staging.jsonc --ip 127.0.0.1 --port 8787",
+    "validate": "npm run test:docs && npm run check && npm run build && npm test && npm run test:editorial && npm run test:monitoring && npm run test:settings && npm run test:integration && npm run test:http-sources && npm run test:http-worker && npm run test:publication && npm run test:seo && npm run test:seo:build && npm run test:wiki-bridge",
+    "staging:check": "node scripts/assert-staging-discovery.mjs && XDG_CONFIG_HOME=.git/runtime-config XDG_CACHE_HOME=.git/runtime-cache WRANGLER_SEND_METRICS=false wrangler deploy --dry-run --config wrangler.staging.jsonc",
+    "staging:local": "node scripts/assert-staging-discovery.mjs && XDG_CONFIG_HOME=.git/runtime-config XDG_CACHE_HOME=.git/runtime-cache WRANGLER_SEND_METRICS=false wrangler dev --local --config wrangler.staging.jsonc --ip 127.0.0.1 --port 8787",
     "browser:install": "PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright install chromium",
     "editorial:migrate": "XDG_CONFIG_HOME=.git/runtime-config XDG_CACHE_HOME=.git/runtime-cache WRANGLER_SEND_METRICS=false wrangler d1 migrations apply EDITORIAL_DB --local --config wrangler.editorial.local.jsonc --persist-to .wrangler/editorial",
     "editorial:local": "XDG_CONFIG_HOME=.git/runtime-config XDG_CACHE_HOME=.git/runtime-cache WRANGLER_SEND_METRICS=false wrangler dev --local --config wrangler.editorial.local.jsonc --persist-to .wrangler/editorial --ip 127.0.0.1 --port 8788",
@@ -42,7 +42,12 @@
     "wiki-bridge:status": "node scripts/wiki-bridge.mjs status",
     "wiki-bridge:local": "node scripts/wiki-bridge.mjs preview",
     "test:wiki-bridge": "node --test tests/wiki-bridge/*.test.mjs",
-    "test:wiki-bridge:browser": "PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright test --config playwright.wiki-bridge.config.ts"
+    "test:wiki-bridge:browser": "PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright test --config playwright.wiki-bridge.config.ts",
+    "test:seo": "node --test tests/seo/policy.test.ts tests/seo/outbox.test.mjs",
+    "test:seo:build": "node --test tests/seo/build.test.mjs",
+    "indexing:queue": "node scripts/indexing-outbox.mjs queue",
+    "indexing:status": "node scripts/indexing-outbox.mjs status",
+    "test:wiki-seo:browser": "AGENTIC_BIBLE_DISCOVERY_MODE=production AGENTIC_BIBLE_CANONICAL_ORIGIN=https://agenticbible.si PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright test --config playwright.wiki-seo-integration.config.ts"
   },
   "dependencies": {
     "astro": "7.4.0"
