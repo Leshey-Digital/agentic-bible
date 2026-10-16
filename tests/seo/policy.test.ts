@@ -5,10 +5,10 @@ import {articleStructuredData,eligibleArticle,indexingManifest,jsonLd,checkedMan
 const article:SeoArticle={id:'tool-use',body:'Actual original body.',data:{title:'Actual title </script><script>alert(1)</script>',description:'Actual description',topic:'Capabilities',status:'Working draft',author:'AI-assisted project draft',sources:[{url:'https://developers.openai.com/api/docs/guides/function-calling'}]}};
 test('canonical origin is explicit, project-scoped and fail-closed; local synthetic overrides canonical mode',()=>{
   assert.equal(discoveryPolicy({}).mode,'staging');
-  for(const origin of [undefined,'https://evil.example','https://staging.agenticbible.si','http://agenticbible.si','https://agenticbible.si/','https://agenticbible.si/path','https://user@agenticbible.si','https://agenticbible.si?token=x','https://agenticbible.si:8443'])assert.throws(()=>discoveryPolicy({AGENTIC_BIBLE_DISCOVERY_MODE:'canonical',AGENTIC_BIBLE_CANONICAL_ORIGIN:origin}));
-  assert.throws(()=>discoveryPolicy({AGENTIC_BIBLE_DISCOVERY_MODE:'production'}));
-  for(const origin of ['https://agenticbible.si','https://www.agenticbible.si'])assert.deepEqual(discoveryPolicy({AGENTIC_BIBLE_DISCOVERY_MODE:'canonical',AGENTIC_BIBLE_CANONICAL_ORIGIN:origin}),{mode:'canonical',origin});
-  assert.equal(discoveryPolicy({AGENTIC_BIBLE_DISCOVERY_MODE:'canonical',AGENTIC_BIBLE_CANONICAL_ORIGIN:'https://agenticbible.si',AGENTIC_BIBLE_LOCAL_WIKI_BUILD:'1'}).mode,'synthetic');
+  for(const origin of [undefined,'https://www.agenticbible.si','https://evil.example','https://staging.agenticbible.si','http://agenticbible.si','https://agenticbible.si/','https://agenticbible.si/path','https://user@agenticbible.si','https://agenticbible.si?token=x','https://agenticbible.si:8443'])assert.throws(()=>discoveryPolicy({AGENTIC_BIBLE_DISCOVERY_MODE:'production',AGENTIC_BIBLE_CANONICAL_ORIGIN:origin}));
+  assert.throws(()=>discoveryPolicy({AGENTIC_BIBLE_DISCOVERY_MODE:'canonical',AGENTIC_BIBLE_CANONICAL_ORIGIN:'https://agenticbible.si'}));
+  for(const origin of ['https://agenticbible.si'])assert.deepEqual(discoveryPolicy({AGENTIC_BIBLE_DISCOVERY_MODE:'production',AGENTIC_BIBLE_CANONICAL_ORIGIN:origin}),{mode:'canonical',origin});
+  assert.equal(discoveryPolicy({AGENTIC_BIBLE_DISCOVERY_MODE:'production',AGENTIC_BIBLE_CANONICAL_ORIGIN:'https://agenticbible.si',AGENTIC_BIBLE_LOCAL_WIKI_BUILD:'1'}).mode,'synthetic');
 });
 test('private/query/snapshot/fixture paths never gain a canonical or indexing permission',()=>{
   const policy={mode:'canonical' as const,origin:'https://agenticbible.si'};

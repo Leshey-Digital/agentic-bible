@@ -46,7 +46,8 @@
     "test:seo": "node --test tests/seo/policy.test.ts tests/seo/outbox.test.mjs",
     "test:seo:build": "node --test tests/seo/build.test.mjs",
     "indexing:queue": "node scripts/indexing-outbox.mjs queue",
-    "indexing:status": "node scripts/indexing-outbox.mjs status"
+    "indexing:status": "node scripts/indexing-outbox.mjs status",
+    "test:wiki-seo:browser": "AGENTIC_BIBLE_DISCOVERY_MODE=production AGENTIC_BIBLE_CANONICAL_ORIGIN=https://agenticbible.si PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright test --config playwright.wiki-seo-integration.config.ts"
   },
   "dependencies": {
     "astro": "7.4.0"

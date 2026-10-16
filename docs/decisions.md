@@ -29,7 +29,7 @@ Last prepared: 2026-10-16. This document distinguishes founder direction from te
 - A separate local article-publication slice on accepted PR10 renders supplied synthetic cited revisions into isolated HTML/search/history snapshots with post-publication flags and rollback. It does not write canonical Markdown or a public release and is not connected to the source-monitoring transport/event outbox. Identity, factual/licensing validation, full-site publishing, artifact distribution and production cost enforcement remain future work.
 
 ## Decisions still needed
-- Active zone agenticbible.si was verified in foundation preparation. Canonical production origin and deployment prerequisites remain to be validated. Reviewed release authority is granted; this slice does not exercise it. Isolated staging target: staging.agenticbible.si.
+- Active zone agenticbible.si was verified in foundation preparation. The user specifies https://agenticbible.si for explicit production builds in the bridge/SEO composition; ownership/deployment prerequisites remain unexercised. Default staging stays staging.agenticbible.si and no release is performed here.
 - Code/content licensing and contributor terms before accepting third-party submissions.
 - Initial three articles and cluster boundaries.
 - Provider/model, approved numeric spending caps, billing alerts, overage/stop behavior.

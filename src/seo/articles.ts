@@ -23,7 +23,7 @@ export function checkedManifest(value:unknown):IndexingManifest{
   const m=value as IndexingManifest;
   if(Object.keys(m).sort().join(',')!=='entries,mode,origin,schemaVersion'||m.schemaVersion!==1||!['staging','canonical','synthetic'].includes(m.mode)||!Array.isArray(m.entries)||m.entries.length>3)throw new Error('invalid_indexing_manifest');
   if(m.mode!=='canonical'){if(m.origin!=='https://staging.agenticbible.si'||m.entries.length)throw new Error('invalid_indexing_manifest');return m;}
-  if(!['https://agenticbible.si','https://www.agenticbible.si'].includes(m.origin))throw new Error('invalid_indexing_manifest');
+  if(m.origin!=='https://agenticbible.si')throw new Error('invalid_indexing_manifest');
   const seen=new Set();for(const e of m.entries){
     if(!e||Object.keys(e).sort().join(',')!=='articleId,revision,url'||!articleIds.includes(e.articleId as typeof articleIds[number])||e.url!==`${m.origin}/articles/${e.articleId}/`||typeof e.revision!=='string'||!/^[a-f0-9]{64}$/.test(e.revision)||seen.has(e.articleId))throw new Error('invalid_indexing_manifest');seen.add(e.articleId);
   }
