@@ -32,7 +32,8 @@ test('defaults are denied/off and malformed, secret, script and unsupported sett
   for(const values of [{...preview,analyticsConsent:'granted'},{...preview,adConsent:'granted'},{...preview,respectDnt:false}])assert.throws(()=>validateValues('privacy',values),InputError);
   assert.throws(()=>validateValues('advertising',{enabled:true}),InputError);
   assert.throws(()=>updateInput({...change('google',google),script:'alert(1)'}),InputError);
-  for(const version of [0,-1,true,'01',1.1])assert.throws(()=>change('google',google,version as number),InputError);
+  for(const version of [0,-1,true,'01','1\n',1.1])assert.throws(()=>change('google',google,version as number),InputError);
+  assert.throws(()=>change('google',google,1,crypto.randomUUID()+'\n'),InputError);
 });
 
 test('provider sections persist independently; audit contains field names without values',async()=>{

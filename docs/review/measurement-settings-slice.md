@@ -26,6 +26,7 @@ Actual Worker/D1 browser tests verify independent form saves and persisted reloa
 - [Desktop dashboard](measurement-settings-desktop.png)
 - [Mobile dashboard](measurement-settings-mobile.png)
 - [Exact independent PR #4 acceptance and commands](editorial-draft-recovery-independent.md)
+- [Exact independent PR #6 acceptance and commands](editorial-interruption-independent.md)
 - [Settings HTTP/storage/rendering contracts](../measurement-settings-contracts.md)
 
 ## Handoff and remaining work

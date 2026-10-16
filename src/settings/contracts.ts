@@ -54,8 +54,8 @@ export function updateInput(input: unknown): Update {
   if (!record(input) || Object.keys(input).some(key => !['group','values','version','requestKey'].includes(key))) throw new InputError({ form: 'Send only the supplied settings fields. Credentials and raw scripts are not settings.' });
   if (!(groups as readonly unknown[]).includes(input.group)) throw new InputError({ group: 'Choose a settings section.' });
   const group = input.group as Group;
-  const version = typeof input.version === 'string' && /^[1-9]\d*$/.test(input.version) ? Number(input.version) : input.version;
+  const version = typeof input.version === 'string' && input.version===input.version.trim() && /^[1-9]\d*$/.test(input.version) ? Number(input.version) : input.version;
   if (!Number.isSafeInteger(version) || (version as number) < 1) throw new InputError({ version: 'Reload the current revision before saving.' });
-  if (typeof input.requestKey !== 'string' || !/^[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}$/i.test(input.requestKey)) throw new InputError({ requestKey: 'Reload the controls to obtain a request reference.' });
+  if (typeof input.requestKey !== 'string' || input.requestKey.length!==36 || !/^[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}$/i.test(input.requestKey)) throw new InputError({ requestKey: 'Reload the controls to obtain a request reference.' });
   return { group, values: validateValues(group, input.values), version: version as number, requestKey: input.requestKey };
 }

@@ -5,5 +5,5 @@
 - [x] Complete persisted settings, atomic audit/replay/CAS and dashboard with non-reflecting rejection.
 - [x] Verify 11 unit and 12 actual Worker/D1 browser tests; real restart preserved settings/audit and existing inbox/source state.
 - [x] Run relevant existing checks, inspect desktop/mobile screenshots; 16 reading checks and static dry run passed.
-- [ ] Publish a separate draft PR with exact head and CI evidence.
+- [x] Publish separate draft PR #7 with exact-head handoff; remote CI result is recorded in the PR before completion.
 - [ ] Parent independent review/integration; no merge/deploy in this slice.
