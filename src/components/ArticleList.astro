@@ -1,0 +1,12 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { articleUrl } from '../lib/library';
+interface Props { articles: CollectionEntry<'articles'>[]; }
+const { articles } = Astro.props;
+---
+<ol class="article-list">
+  {articles.map((article) => <li>
+    <span class="entry-number">{String(article.data.order).padStart(2, '0')}</span>
+    <div class="entry-copy"><span class="eyebrow">{article.data.topic}</span><h3><a href={articleUrl(article.id)}>{article.data.title}<span class="entry-arrow" aria-hidden="true"><svg class="icon-arrow" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 13 13 3M3 3h10v10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" /></svg></span></a></h3><p>{article.data.description}</p><span class="entry-meta">{article.data.sources.length} primary sources <span>·</span> Working draft</span></div>
+  </li>)}
+</ol>

@@ -3,7 +3,7 @@
 Policy proposal for implementation; no billing plan, cap, paid job, or ad provider is enabled by this document.
 
 ## Spend
-Founder direction allows a lean Workers baseline around $5/month and occasional few-dollar overages. Verify actual current pricing and account entitlements before deployment. The proposed $10 target is unresolved, not approved.
+Founder direction allows a lean Workers baseline around $5/month and occasional few-dollar overages. Verify actual current pricing and account entitlements before deployment. On 2026-10-16 the founder accepted the $10 monthly operating target. Numeric Jev allocation and enforceable per-run/day limits are still undefined; an operating target alone is not a working spend guard.
 
 Before enabling paid automation, record approved per-run/day/month numeric caps, currency, provider/model, token/request limits, concurrency, schedule, alert recipients and stop behavior. A missing cap means paid automation remains disabled.
 

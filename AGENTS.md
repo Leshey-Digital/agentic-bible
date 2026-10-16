@@ -9,4 +9,4 @@
 7. Make small, reversible changes. Reproduce bugs; add regression coverage; run documented lint/type/build/tests plus relevant accessibility, mobile, security, and repeated/interrupted-flow checks. Report passed, failed, and not-run separately.
 8. Document exact commit, checks, remaining gaps, resource changes, and rollback in the PR. Do not claim readiness based on mock-only checks.
 9. Do not add a license, enable public submissions, create persistent credentials, change account security, or connect advertising without the required decision/permission.
-10. Preparation status: documentation only; no application commands or CI exist yet.
+10. Feature-branch status: static Astro reading/search slice, with commands in README and validation-only CI. Run `npm run validate`, `npm run test:browser`, and `npm run staging:check` for relevant application changes. Nothing is deployed. Foundation and application PRs are separate review steps.

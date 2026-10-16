@@ -1,0 +1,21 @@
+---
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { library, articleUrl, topicUrl, repository, sourceBranch } from '../../lib/library';
+export async function getStaticPaths() { return (await library()).map(article => ({ params: { id: article.id }, props: { article } })); }
+const { article } = Astro.props;
+const { Content, headings } = await render(article);
+const related = (await library()).filter(entry => article.data.related.includes(entry.id));
+const history = `${repository}/commits/${sourceBranch}/src/content/articles/${article.id}.md`;
+---
+<Base title={article.data.title} description={article.data.description} active="library">
+  <div class="article-breadcrumb"><a href="/">Library</a><span>/</span><a href={topicUrl(article.data.topic)}>{article.data.topic}</a></div>
+  <div class="reading-layout"><aside class="contents"><p class="eyebrow">On this page</p><nav aria-label="On this page"><a href="#overview">Overview</a>{headings.filter(h => h.depth === 2).map(h => <a href={`#${h.slug}`}>{h.text}</a>)}<a href="#sources">Sources & context</a><a href="#revision">Revision record</a></nav><div class="contents-bottom"><span class="eyebrow">Part of the collection</span><a href={topicUrl(article.data.topic)}>{article.data.topic} <svg class="icon-arrow" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 13 13 3M3 3h10v10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" /></svg></a></div></aside>
+  <article class="article" data-pagefind-body>
+    <header id="overview"><p class="eyebrow" data-pagefind-meta="topic">{article.data.topic} / Reference entry {String(article.data.order).padStart(2, '0')}</p><h1 data-pagefind-meta="title">{article.data.title}</h1><p class="article-deck" data-pagefind-meta="description">{article.data.description}</p><div class="article-status" data-pagefind-ignore><span class="draft-pill"><span class="status-dot"></span> Working draft</span><span>Editorial review pending</span></div></header>
+    <div class="prose"><Content /></div>
+    <section class="sources" id="sources" aria-labelledby="sources-title" data-pagefind-ignore><p class="eyebrow">Follow the evidence</p><h2 id="sources-title">Sources & context</h2><p>Primary sources checked on <time datetime={article.data.verified}>16 October 2026</time>. A source check is not independent editorial approval.</p><ol>{article.data.sources.map(source => <li id={`source-${source.id}`}><a href={source.url}>{source.title} <span aria-hidden="true"><svg class="icon-arrow" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 13 13 3M3 3h10v10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" /></svg></span></a><span class="source-publisher">{source.publisher}</span><p>{source.context}</p></li>)}</ol></section>
+    <section class="revision" id="revision" data-pagefind-ignore><h2>Revision record</h2><dl><div><dt>Prepared</dt><dd>16 October 2026</dd></div><div><dt>Authorship</dt><dd>{article.data.author}</dd></div><div><dt>Editorial review</dt><dd>Pending · no reviewer assigned</dd></div><div><dt>This revision</dt><dd>Initial sourced draft for the first reading slice.</dd></div></dl><a class="text-link" href={history}>View file history on GitHub <svg class="icon-arrow" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 13 13 3M3 3h10v10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" /></svg></a></section>
+    <section class="related" data-pagefind-ignore><p class="eyebrow">Keep exploring</p><h2>Connected ideas</h2>{related.map(entry => <a href={articleUrl(entry.id)}><span><span class="eyebrow">{entry.data.topic}</span><strong>{entry.data.title}</strong></span><span aria-hidden="true"><svg class="icon-arrow" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h12m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" /></svg></span></a>)}</section>
+  </article></div>
+</Base>

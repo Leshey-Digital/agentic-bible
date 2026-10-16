@@ -1,0 +1,107 @@
+import { test, expect } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
+
+test('reading, source anchors, related links and topic navigation work', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('link', { name: 'Begin with AI agent' }).click();
+  await expect(page.getByRole('heading', { name: 'AI agent', exact: true })).toBeVisible();
+  await page.locator('.prose a[href="#source-patterns"]').first().click();
+  await expect(page.locator('#source-patterns')).toBeInViewport();
+  await page.locator('.related').getByRole('link', { name: 'Capabilities Tool use' }).click();
+  await expect(page.getByRole('heading', { name: 'Tool use', exact: true })).toBeVisible();
+  await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'Topics' }).click();
+  await page.getByRole('link', { name: /03.*Protocols/ }).click();
+  await expect(page.getByRole('heading', { name: 'Protocols', exact: true })).toBeVisible();
+  await expect(page.locator('.article-list li')).toHaveCount(1);
+});
+
+test('real Pagefind supports success, empty, no-results, punctuation and rapid replacement', async ({ page }) => {
+  await page.goto('/search/');
+  const input = page.getByRole('searchbox');
+  await expect(page.getByRole('status')).toContainText('Enter a word');
+  await input.fill('MCP');
+  await expect(page.locator('#search-results a')).not.toHaveCount(0);
+  await expect(page.locator('#search-results')).toContainText('Model Context Protocol');
+  await input.fill('zzunfindablewordzz');
+  await expect(page.getByRole('heading', { name: 'No connections yet.' })).toBeVisible();
+  await page.getByRole('button', { name: 'Clear search' }).click();
+  await expect(input).toHaveValue('');
+  await input.fill('???');
+  await expect(page.getByRole('heading', { name: 'No connections yet.' })).toBeVisible();
+  await input.fill('agent');
+  await input.fill('JSON-RPC');
+  await expect(page.getByRole('status')).toContainText('“JSON-RPC”');
+  await expect(page.locator('#search-results')).toContainText('Model Context Protocol');
+  await input.press('Escape');
+  await expect(page.getByRole('status')).toContainText('Enter a word');
+  await page.goto('/search/#q=capabilities');
+  await expect(input).toHaveValue('capabilities');
+  await expect(page.locator('#search-results a')).not.toHaveCount(0);
+});
+
+test('missing index has a useful fallback and retry action', async ({ page }) => {
+  await page.route('**/pagefind/**', route => route.abort());
+  await page.goto('/search/');
+  await page.getByRole('searchbox').fill('agent');
+  await expect(page.getByRole('heading', { name: 'Search is unavailable' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'AI agent Foundations' })).toBeVisible();
+  await page.unroute('**/pagefind/**');
+  await page.getByRole('button', { name: 'Retry search' }).click();
+  await expect(page.locator('#search-results a')).not.toHaveCount(0);
+  await expect(page.getByRole('searchbox')).toHaveValue('agent');
+});
+
+test('all core pages pass automated accessibility and fit the viewport', async ({ page }) => {
+  for (const path of ['/', '/articles/ai-agent/', '/articles/tool-use/', '/articles/model-context-protocol/', '/topics/', '/about/', '/search/']) {
+    await page.goto(path);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+    const audit = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
+    expect(audit.violations, `${path}: accessibility violations`).toEqual([]);
+  }
+});
+
+test('keyboard skip link, search shortcut, 404 and staging headers work', async ({ page, request }) => {
+  await page.goto('/');
+  await page.keyboard.press('Tab');
+  await expect(page.getByRole('link', { name: 'Skip to content' })).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(page.locator('#main')).toBeFocused();
+  await page.keyboard.press('/');
+  await page.waitForURL('**/search/');
+  await page.keyboard.press('/');
+  await expect(page.getByRole('searchbox')).toBeFocused();
+  const response = await request.get('/missing-entry/');
+  expect(response.status()).toBe(404);
+  expect(response.headers()['x-robots-tag']).toBe('noindex, nofollow');
+  expect(response.headers()['content-security-policy']).toContain("script-src 'self'");
+  await page.goto('/missing-entry/');
+  await expect(page.getByRole('heading', { name: /off the shelf/ })).toBeVisible();
+});
+
+test('read and search send no external requests and have no runtime or CSP errors', async ({ page }) => {
+  const failures: string[] = [];
+  const external: string[] = [];
+  page.on('pageerror', error => failures.push(error.message));
+  page.on('console', message => { if (message.type() === 'error') failures.push(message.text()); });
+  page.on('request', request => { if (!request.url().startsWith('http://127.0.0.1:8787/') && !request.url().startsWith('data:')) external.push(request.url()); });
+  await page.goto('/articles/ai-agent/');
+  await page.goto('/search/#q=agent');
+  await expect(page.locator('#search-results a')).not.toHaveCount(0);
+  expect(external).toEqual([]);
+  expect(failures).toEqual([]);
+});
+
+test('articles, sources and browse fallback work without JavaScript', async ({ browser, baseURL }) => {
+  const context = await browser.newContext({ javaScriptEnabled: false, baseURL });
+  const page = await context.newPage();
+  await page.goto('/articles/tool-use/');
+  await expect(page.getByRole('heading', { name: 'Tool use', exact: true })).toBeVisible();
+  await page.locator('.prose a[href="#source-openai"]').first().click();
+  await expect(page.locator('#source-openai')).toBeInViewport();
+  await page.goto('/search/');
+  await expect(page.getByRole('status')).toContainText('Full-text search needs JavaScript.');
+  await expect(page.getByRole('searchbox')).toBeDisabled();
+  await page.getByRole('link', { name: 'AI agent Foundations' }).click();
+  await expect(page.getByRole('heading', { name: 'AI agent', exact: true })).toBeVisible();
+  await context.close();
+});
