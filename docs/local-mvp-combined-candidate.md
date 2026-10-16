@@ -1,15 +1,16 @@
 # Local combined candidate
 
-`feat/local-mvp-combined-candidate` combines exact feature histories for independent review. It is not a release or a claim that source changes generate articles. No existing source branch is advanced, rebased or force-pushed.
+Successor `feat/local-mvp-combined-status` preserves PR15 and combines exact feature histories for independent review. It is not a release or a claim that source changes generate articles. No existing source branch is advanced, rebased or force-pushed.
 
 | Source | Exact head | Review status when prepared |
 |---|---|---|
 | PR10 integration base | `d0bfca47cd221b970b01ace838afb3f3bb9a5d32` | Independently accepted; durable review artifact retained. |
-| PR12 HTTP observation library | `b78751b4f4db09fcce4289052f7e163ac4be9c5b` | Independently accepted within disconnected local-library scope. Nonblocking P3: expired budget-blocked jobs can misleadingly report in progress; no extra fetch occurs. |
+| PR12 HTTP observation library | `b78751b4f4db09fcce4289052f7e163ac4be9c5b` | Independently accepted within disconnected local-library scope. |
+| PR14 HTTP expired-lease status fix | `d6dc2bfb3564f6e2eb649ba5f9c7428b0c145134` | Independently accepted at the exact head after red reproduction and 73 green validation tests. |
 | PR11 supplied article publisher | `efeffed9467a9fa67125725d923d6d672cfd9555` | Independent behavior review found the topic-type P2 addressed by PR13. |
-| PR13 topic schema fix | `d57e975253ba6d9ba3e48a2292611cfca14aa118` | Independent source/test patch recheck accepted. Full six-file/documentation review remains pending; no full-commit acceptance is claimed. |
+| PR13 topic schema fix | `d57e975253ba6d9ba3e48a2292611cfca14aa118` | Full six-file commit, including documentation, independently accepted. Source acceptance does not imply combined-candidate acceptance. |
 
-The merge base of HTTP and publisher histories is PR10. Local merge `1a1c6a878412672aa431b9f77b0f028bfb4b0483` has exact parents PR12 and PR13, retaining the original PR11 and Node adapter commits as ancestors. Three merge conflicts were limited to agent instructions, README sections and package scripts; both feature contracts and all commands were preserved. No runtime transport/publisher implementation was reconciled by hand. The final candidate commit is recorded in its handoff/PR and remains subject to independent combined review.
+The merge base of HTTP and publisher histories is PR10. Local merge `1a1c6a878412672aa431b9f77b0f028bfb4b0483` has exact parents PR12 and PR13, retaining the original PR11 and Node adapter commits as ancestors. Three merge conflicts were limited to agent instructions, README sections and package scripts; both feature contracts and all commands were preserved. No runtime transport/publisher implementation was reconciled by hand. Successor merge `7ffff682b2a7a2ceacd82567e6a4e0ec86a7a9f4` has exact parents PR15 `284eb49f97f1839a25bfcb29542287e989f50b1b` and PR14; it applied cleanly. PR15 and its green CI remain immutable historical evidence. The final successor commit is recorded in its handoff/PR and remains subject to independent combined review.
 
 ## Current behavior and the missing bridge
 
@@ -39,7 +40,7 @@ npm run test:browser -- --workers=1 --timeout=90000
 npm run staging:check
 ```
 
-Validation retains 4 static, 9 editorial, 23 monitoring, 19 settings, 3 populated migration upgrades, 13 Node HTTP, 1 actual local workerd/D1 HTTP and 12 publication tests. The combined browser owns disposable `combined-http-publication-browser` D1 and `article-publication-combined-browser` stores in the actual Git directory; its loopback preview uses an ephemeral port. Test-only collector routes are bundled from the existing HTTP harness and never enter the app Worker. No Internet requests are used by the combined test. Existing browser/restart harnesses retain their own isolated directories. Preserve `.wrangler/editorial`; do not run a default-state migration merely to validate this candidate.
+Validation retains 4 static, 9 editorial, 23 monitoring, 19 settings, 3 populated migration upgrades, 13 Node HTTP, 2 actual local workerd/D1 HTTP and 12 publication tests. The combined browser owns disposable `combined-http-publication-browser` D1 and `article-publication-combined-browser` stores in the actual Git directory; its loopback preview uses an ephemeral port. Test-only collector routes are bundled from the existing HTTP harness and never enter the app Worker. No Internet requests are used by the combined test. Existing browser/restart harnesses retain their own isolated directories. Preserve `.wrangler/editorial`; do not run a default-state migration merely to validate this candidate.
 
 The migration inventory is unchanged from PR12: 0001 editorial, 0002 source monitoring, both distinct 0003 measurement/batch files, 0004 settings receipts and additive 0005 HTTP observations. The publisher adds no D1 schema. Original Markdown, app Worker/editorial/settings/fixture runtime, deployment configurations, shared styles and dependency lockfile are unchanged. Expanded type coverage includes both publisher test folders and the new combined test; one previously unused test import was removed without changing its assertions or runtime code.
 
@@ -51,6 +52,6 @@ Workers native fetch still relies on platform DNS/TLS and cannot claim Node-equi
 
 The local publisher still does not update canonical article Markdown, the global Astro/Pagefind library or a live wiki release. Production needs authenticated event/admin workflows, source/content/license/PII checks, canonical full-site artifact generation, trusted distribution, remote release/backup/restore, cross-host coordination and currency controls. No inference or paid service is connected.
 
-PR13's pending full documentation review and independent exact-head combined review are distinct gates. Green source CI or patch-level acceptance does not grant combined acceptance or release approval. This candidate may be published as a qualified draft under existing project publication authority; no main merge, deployment, remote migration, live cron or paid call is part of this work.
+PR13 full documentation/commit acceptance and PR14 exact-head acceptance have been received. Independent exact-head review of this successor composition remains a distinct gate; green source CI and source acceptance do not grant combined acceptance or release approval. This candidate may be published as a qualified draft under existing project publication authority; no main merge, deployment, remote migration, live cron or paid call is part of this work.
 
 Rollback is returning code to PR10 or a recorded source head, leaving isolated test/publication stores unused. Additive HTTP tables can remain unused; preserve/export shared state before any deliberate schema rollback. Publication rollback only changes its isolated article/search state and retains history/receipts. It must not be presented as collector rollback or a live-site restore procedure.

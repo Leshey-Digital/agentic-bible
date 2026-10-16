@@ -1,6 +1,8 @@
-# Local combined verification checkpoint
+# Combined verification checkpoints
 
-Branch `feat/local-mvp-combined-candidate` is isolated from all preserved source branches. Exact ancestry, conflict resolution, test-only orchestration, missing trusted bridge, production gaps and rollback are in the [combined contract](../local-mvp-combined-candidate.md). Source review status includes PR13 full documentation review still pending. Neither full source-commit nor combined candidate acceptance is inferred from accepted source/test rechecks or green CI.
+The original PR15 checkpoint below remains measured historical evidence. The successor adds independently accepted PR14 without changing any existing PR head; PR13 full six-file/documentation acceptance has since been received. New successor checks are recorded in the addendum below, and combined acceptance remains pending.
+
+Branch `feat/local-mvp-combined-candidate` is isolated from all preserved source branches. Exact ancestry, conflict resolution, test-only orchestration, missing trusted bridge, production gaps and rollback are in the [combined contract](../local-mvp-combined-candidate.md). At original PR15 preparation, PR13 full documentation review was still pending. Neither full source-commit nor combined candidate acceptance is inferred from accepted source/test rechecks or green CI.
 
 ## Exact provenance and changes
 
@@ -12,7 +14,7 @@ Branch `feat/local-mvp-combined-candidate` is isolated from all preserved source
 
 Three merge conflicts involved only instructions, README and package commands; both source sections and every original test script were retained. The candidate adds a combined browser test/config, one CI step, expanded type-check coverage and this evidence/change documentation. An unused import in the original publication test was removed after expanded checking reported a hint. Actual HTTP and publisher runtime implementations match their reviewed heads byte-for-byte. Existing app/editorial/settings/fixture runtime, original Markdown, six migration files (including both 0003 names), shared styles, deployment configs and dependency lockfile are unchanged.
 
-## Passed local checks
+## Original PR15 local checks
 
 Pinned Node 24.19.0/npm 11.9.0 and existing dependencies/system Chromium; no framework or package was installed.
 
@@ -42,10 +44,18 @@ This is test orchestration, with `automaticBridge:false`, not an implemented tru
 
 ## Remaining gates and limitations
 
-- PR13's independent full documentation/commit review remains pending when prepared, as does independent exact-head review of this combined candidate. Source patch acceptance is recorded separately from full-commit/candidate acceptance.
+- PR13 full commit/documentation acceptance arrived after PR15 preparation. Independent exact-head review of the successor combined candidate remains pending. Source patch acceptance is recorded separately from full-commit/candidate acceptance.
 - Workers native fetch relies on platform DNS/TLS, with no Node-equivalent DNS pin/peer check. Real official-page connectivity/content sizes/validators remain unverified after the earlier bounded reads failed before an upstream response. No new live probe was made.
 - HTTP request/day/concurrency limits and fixture storage bounds are not currency/infrastructure billing enforcement. Paid jobs/providers, live cron, public intake, credentials, tracking and ads stay disabled.
-- Known nonblocking HTTP P3 remains: expired budget-blocked jobs can misleadingly report in progress; no extra requests are dispatched. No runtime change was made to hide or fix it in this candidate.
+- PR15 retained the nonblocking HTTP P3 status wording defect. The successor incorporates its independently accepted PR14 correction; no extra-fetch or budget behavior is changed.
 - Production identity/admin dispositions, factual/source/license/PII safeguards, canonical full-site artifact integration, trusted remote distribution/release/restore, cross-host locking and numeric spending controls remain absent.
 
 No unresolved test failure remains. Qualified draft publication is authorized for review; no main merge, release acceptance, deployment, remote resource/migration, live schedule or paid call is implied. Rollback is described in the contract. Preserve interactive data and exact source heads.
+
+## Successor with accepted HTTP status correction
+
+`feat/local-mvp-combined-status` preserves PR15 at 284eb49f97f1839a25bfcb29542287e989f50b1b. Merge 7ffff682b2a7a2ceacd82567e6a4e0ec86a7a9f4 has exact parents PR15 and PR14 d6dc2bfb3564f6e2eb649ba5f9c7428b0c145134. The merge applied cleanly with no runtime conflict resolution. [PR14 independent review](http-expired-lease-status-independent.md) accepts the bounded status/clock change after reproducing the old failure and running 73 exact-source validation tests. PR13 full commit, including all four documentation files, is independently accepted; no new combined acceptance is inferred.
+
+Successor `npm run validate` passed **85 tests** (the prior 84 plus the new expired-lease Worker/D1 case), build/Pagefind and **71 files with zero errors/warnings/hints**. The real controlled collector/supplied-publication browser journey passed again, including runtime restart, conditional fetch/replay, last-good failure preservation and independent publication reopen/replay/rollback. The real publication HTML/Pagefind/history/flags/mobile/desktop-accessibility browser journey passed again. Static dry-run passed with 53 assets/no bindings; docs and whitespace passed. The five-request/five-reservation example JSON was byte-identical to PR15's, confirming this status fix does not alter the normal orchestration. Saved interactive state remained **21 files with identical hashes**.
+
+Other legacy browser/Worker restart harnesses were not redundantly repeated locally for the successor: they passed locally and in exact-head PR15 CI, and final successor CI runs them all again. The exact final successor head/CI is recorded in the new draft/handoff; no prior-head CI is represented as successor verification. The source-status correction does not implement the missing bridge, production identity or live release path. PR15 CI 38962434920 remains green at its own immutable head; it does not substitute for successor exact-head CI.

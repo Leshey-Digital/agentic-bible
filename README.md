@@ -96,7 +96,7 @@ The separate publication slice accepts supplied synthetic cited article revision
 
 ## Local combined candidate
 
-The separate `feat/local-mvp-combined-candidate` retains the exact PR10/PR12/PR11/PR13 histories, all original feature suites and a controlled collector/supplied-publication browser journey (`npm run test:combined:browser`). HTTP observation and supplied article publication remain separate libraries: no source-to-generated-article or trusted provenance bridge exists. [Combined contract, exact source heads, review gates and missing bridge](docs/local-mvp-combined-candidate.md) describe the candidate for independent review. No combined acceptance, main merge or deployment is implied.
+The separate successor `feat/local-mvp-combined-status` retains the exact PR10/PR12/PR11/PR13 histories and independently accepted PR14 status fix, preserving published PR15 unchanged, all original feature suites and a controlled collector/supplied-publication browser journey (`npm run test:combined:browser`). HTTP observation and supplied article publication remain separate libraries: no source-to-generated-article or trusted provenance bridge exists. [Combined contract, exact source heads, review gates and missing bridge](docs/local-mvp-combined-candidate.md) describe the candidate for independent review. No combined acceptance, main merge or deployment is implied.
 
 ## License and contributions
 The founder approved open-source direction. Specific licensing for code, articles, and submitted material is unresolved; no license is granted by these documents. Third-party contributions are not being solicited or accepted until the founder approves and publishes the relevant terms.
