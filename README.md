@@ -82,5 +82,9 @@ The local PR #9 follow-up closes no-op settings replay with separately bounded p
 
 The settings follow-up preserves unchanged-save request references with separate bounded receipts: 128 private responses, 32 KiB each, 24 hours without evicting supported retries. New no-ops fail closed at capacity; change audit is unaffected. After a build, `npm run test:settings:worker` verifies actual Worker/D1 restart, capacity, expiry and rollback in its disposable `.git/settings-receipt-worker-state`. Run all browser/Worker suites sequentially: the browser suites share their artifact directory, and the editorial browser and settings Worker suites share port 8788. Migration `0004_measurement_request_receipts.sql` follows PR #7's measurement `0003`; PR #8's independent monitoring `0003` keeps its distinct filename. See the contracts for provenance, retention and rollback.
 
+## Local HTTP adapter checkpoint
+
+The separate `feat/local-http-source-adapter` branch adds a callable Node HTTP observation library with six fixed official documentation targets, public-address DNS pinning, conditional fetch, strict response/deadline/body/request limits and hash-only last-good metadata. `npm run test:http-sources` uses controlled resolver/fetch data; it makes no live adapter request. Existing Worker source controls remain fixture-only and remote schedules stay disabled. The library is not wired to persistence, admin actions or publication. [API, safety boundaries and integration limitations](docs/http-source-adapter.md) describe the local checkpoint. PR10 stays immutable; this branch is not published or deployed.
+
 ## License and contributions
 The founder approved open-source direction. Specific licensing for code, articles, and submitted material is unresolved; no license is granted by these documents. Third-party contributions are not being solicited or accepted until the founder approves and publishes the relevant terms.
