@@ -7,8 +7,8 @@ import type {WebFetch} from './http-core.ts';
 export async function checkHttpSource(store:HttpObservationStore,id:unknown,key:unknown,send?:WebFetch,clock:()=>number=Date.now){
   const job=await store.enqueue(id,key,clock());
   const lease=await store.claim(job.request_key,clock());
-  if(!lease)return store.status(job.request_key);
+  if(!lease)return store.status(job.request_key,clock());
   const result=await createWorkersHttpPass(send,clock).check(lease.sourceId,lease.lastGood);
   if(!await store.finish(lease,result,clock()))throw new HttpStoreError('http_lease_lost');
-  return store.status(job.request_key);
+  return store.status(job.request_key,clock());
 }
