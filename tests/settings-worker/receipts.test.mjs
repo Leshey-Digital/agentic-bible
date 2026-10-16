@@ -3,8 +3,15 @@ import test from 'node:test';
 import {spawn,spawnSync} from 'node:child_process';
 import {closeSync,mkdirSync,openSync,readFileSync,rmSync,writeFileSync} from 'node:fs';
 import {resolve} from 'node:path';
+import {createServer} from 'node:net';
+
+async function requireFreePort(){
+  const server=createServer();
+  await new Promise((resolve,reject)=>{server.once('error',()=>reject(new Error('Port 8788 must be free; refusing to use an existing local Worker.')));server.listen(8788,'127.0.0.1',()=>server.close(resolve));});
+}
 
 test('actual Worker/D1 no-op receipts survive restart, failures, capacity and expiry without changing history',{timeout:360_000},async()=>{
+  await requireFreePort();
   // Reset only this suite's disposable synthetic DB, never interactive or other suite state.
   const state=resolve('.git/settings-receipt-worker-state');rmSync(state,{recursive:true,force:true});mkdirSync(state,{recursive:true});
   const cli=resolve('node_modules/wrangler/bin/wrangler.js');const common=['--config','wrangler.editorial.local.jsonc','--persist-to',state];
@@ -14,6 +21,7 @@ test('actual Worker/D1 no-op receipts survive restart, failures, capacity and ex
   const sql=statement=>{const path=resolve(state,'fixture.sql');writeFileSync(path,statement);command(['d1','execute','EDITORIAL_DB','--local','--file',path]);};
   const quote=value=>"'"+String(value).replaceAll("'","''")+"'";
   async function start(){
+    await requireFreePort();
     child=spawn(process.execPath,[cli,'dev','--local',...common,'--ip','127.0.0.1','--port','8788'],{env,stdio:['ignore',fd,fd]});
     for(let i=0;i<200;i++){if(child.exitCode!==null)throw new Error('Local Worker exited');try{if((await fetch(origin+'/api/editorial/status')).ok)return;}catch{}await new Promise(r=>setTimeout(r,200));}throw new Error('Worker startup timed out');
   }
