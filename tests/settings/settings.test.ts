@@ -15,7 +15,7 @@ const origin='http://127.0.0.1:8788';
 const now=1_792_168_000_000;
 function setup(path=':memory:',initialize=true) {
   const db=new SqliteD1(path,initialize);
-  if(initialize)db.raw.exec(readFileSync('migrations/0003_measurement_settings.sql','utf8'));
+  if(initialize)for(const file of ['0003_measurement_settings.sql','0004_measurement_request_receipts.sql'])db.raw.exec(readFileSync('migrations/'+file,'utf8'));
   return {db,store:new SettingsStore(db)};
 }
 const change=(group:Group,values:unknown,version=1,requestKey=crypto.randomUUID())=>updateInput({group,values,version,requestKey});
