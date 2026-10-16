@@ -10,7 +10,7 @@ Suggested article metadata: stable id/slug, title, summary, cluster, related art
 ## Write and discovery paths
 - On-site edit/source proposal → bounded validation and moderation → issue or draft change → review → Git commit → build.
 - Scheduled discovery → allowlisted sources and conditional fetching → deduplication/content hash → bounded extraction and optional model call → evidence-linked proposed diff → review.
-- Never auto-publish unreviewed model output. D1 is optional for queues/submissions if GitHub alone is insufficient; do not provision it preemptively.
+- Proposed initial posture: human editorial review before publication. The long-term goal includes autopilot publishing and maintenance; enable bounded autopublishing only under an explicit policy with measured factual/source checks, reversible revisions, and escalation rules, never model confidence alone. D1 is optional for queues/submissions if GitHub alone is insufficient; do not provision it preemptively.
 - TypesafeJev integration is out of scope until its interface, utility, permission, and cost are understood.
 
 ## Resource inventory template

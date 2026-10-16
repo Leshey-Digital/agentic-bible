@@ -13,6 +13,8 @@ Reading and search favor static delivery and require no paid inference on reader
 - Given keyboard/mobile navigation, content and controls remain usable.
 
 ## Proposals and updates
+The founder's long-term goal includes autopilot publishing and maintenance. Human editorial publication review is the proposed initial posture, not a permanent requirement. Future bounded autopublishing requires explicit policy approval, measured factual/source checks, reversible revisions and escalation; model confidence alone is insufficient. Code/deployment review remains distinct.
+
 On-site proposals and GitHub contributions enter a reviewable process after contribution terms are resolved.
 - Given untrusted input, validate and moderate it without execution or direct publication.
 - Given a detected source change, produce an evidence-linked draft within the approved budget.

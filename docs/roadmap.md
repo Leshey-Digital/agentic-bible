@@ -27,6 +27,7 @@ All milestones below are proposed and incomplete except preparation work explici
 - Verify production origin, resource isolation, billing controls, backup/rollback, search-console ownership and release evidence.
 - Submit sitemaps and eligible IndexNow updates only through authorized accounts/protocols.
 - Review observed indexing, readership, search quality, source freshness and costs; separate observations from gaps.
+- Evaluate the founder's long-term autopilot publishing and maintenance goal against measured factual/source quality. Define and obtain approval for bounded publication categories, quality gates, escalation rules, reversible revisions and an off switch before enabling autopublishing. Initial human editorial review is a proposed starting posture, separate from code/deployment review.
 - Consider ads or TypesafeJev only via a scoped proposal with consent, cost and editorial review.
 
 No milestone promises rankings, indexing, AI citations, traffic, or revenue.

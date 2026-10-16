@@ -5,7 +5,7 @@ Last prepared: 2026-10-16. This document distinguishes founder direction from te
 ## Founder direction
 - Build a living encyclopedia focused on AI agents and surrounding technology.
 - Provide sourced, interconnected articles, reading/search, revision history, on-site edit/source proposals, and GitHub contribution pathways.
-- Automate source discovery and update proposals with budgeted model calls.
+- Pursue long-term autopilot publishing and maintenance, including source discovery and updates, with budgeted model calls.
 - Pursue strong legitimate SEO and measure Google, Microsoft, and AI visibility from the first launch, with explicit measurement gaps and privacy safeguards.
 - Be advertising-ready through provider-neutral slots; activation depends on traffic, approval, and economics.
 - Keep infrastructure lean. A roughly $5/month Workers baseline and occasional few-dollar overages are acceptable direction, not verified pricing or an unlimited spending authorization.
@@ -15,6 +15,7 @@ Last prepared: 2026-10-16. This document distinguishes founder direction from te
 - Astro + TypeScript; Cloudflare Workers Static Assets; Pagefind; Markdown and Git history; D1 only when a concrete mutable-data need justifies it.
 - First slice: three articles end to end. MVP: 20 articles across three clusters.
 - An OpenSpec-style directory workflow plus AGENTS.md, GitHub issues, and draft PRs.
+- Human editorial publication review for the initial slice, not a permanent founder requirement. Future bounded autopublishing requires an explicitly approved editorial policy, measured factual/source checks, reversible revisions, and escalation rules; model confidence alone is insufficient. Code review and deployment authorization remain separate.
 - A $10/month target was discussed as a proposal only. It is **not an approved cap or spending permission**.
 
 ## Decisions still needed
