@@ -1,6 +1,6 @@
 # Canonical discovery and offline indexing outbox
 
-This separate branch starts from immutable PR17 `6f6fbd69bdaab9107f0eb88955d8da8bd1f3450d`. Its [CI run](https://github.com/Leshey-Digital/agentic-bible/actions/runs/38968747632) passed every step; independent bridge acceptance remains separate. The SEO task exposed a bridge build-isolation defect, addressed first on separate `fix/wiki-build-isolation`. This branch does not silently rewrite or treat PR17 as accepted. Compose the independently reviewed isolation fix before release.
+This separate branch starts from immutable PR17 `6f6fbd69bdaab9107f0eb88955d8da8bd1f3450d`. Its [CI run](https://github.com/Leshey-Digital/agentic-bible/actions/runs/38968747632) passed every step; independent review subsequently requested history/capture fixes. The SEO task exposed a build-isolation defect addressed first in [PR18](https://github.com/Leshey-Digital/agentic-bible/pull/18), then review findings were prioritized in [PR19](https://github.com/Leshey-Digital/agentic-bible/pull/19). This independent SEO delta preserves those heads; their acceptance/composition is required before release. It does not declare PR17 accepted or silently absorb the fixes.
 
 ## Build policy
 
