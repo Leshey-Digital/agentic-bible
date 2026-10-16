@@ -1,5 +1,7 @@
 # Local HTTP source adapter contract
 
+This document records the original Node checkpoint `e237f02912a71b812bc36cf8f628d9144b4b62a4`. The separate [Workers/persistence follow-up](http-worker-persistence.md) adds a shared core, native Workers transport and separate HTTP D1 tables; it supersedes the persistence/Worker gaps below without providing Node-equivalent DNS pinning. The original checkpoint remains unchanged.
+
 Branch `feat/local-http-source-adapter`, based on immutable PR #10 `d0bfca47cd221b970b01ace838afb3f3bb9a5d32`. This adds a callable Node library, not a running source service or an article publisher. No Worker route, UI control, schedule, migration, binding, credentials, paid request or article publication is added. Existing source controls still use deterministic fixtures and are unchanged.
 
 ## API and fixed source registry

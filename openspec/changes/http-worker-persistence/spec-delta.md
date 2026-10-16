@@ -1,0 +1,7 @@
+# Added local Workers/persistence requirements
+
+- Workers import graph has no Node DNS/HTTPS transport; shared response validation remains bounded. Fixed official HTTPS targets only, no redirects, arbitrary contributed URLs, credentials or cf target overrides. Native platform fetch cannot promise application DNS pinning; no runtime route or schedule enables it.
+- HTTP state and command/reservation tables are separate from fixture and publication data. Persist validated cache validators/hash/time only, never source text. Failures preserve last-good metadata.
+- Atomic D1 reservation precedes each dispatch. Concurrent callers cannot exceed twenty reservations/day, four active leases, one active lease/source or three attempts/command. Identical keys bind one source; replays do not charge successful/dead commands. Explicit retry observes persisted backoff. Ambiguous interruptions remain charged and expired completions cannot write source/cache or results.
+- A bounded 128-job store fails closed at capacity; no automatic receipt eviction. UTC-day counter never resets backward. Missing schema/accounting failure stops before dispatch.
+- Real local Worker HTTP tests use controlled outbound fetch, persistent local D1 and restart. Verify baseline/304/redirect/timeout/oversize, conditional headers, parallel same-key/source/global budgets, retry exhaustion and stale completion fencing. No cloud resource is provisioned and remote schedules stay disabled.

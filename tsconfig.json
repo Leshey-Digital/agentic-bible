@@ -9,7 +9,8 @@
     "tests/editorial/**/*.ts",
     "tests/editorial-browser/**/*.ts",
     "tests/monitoring/**/*.ts",
-    "tests/http-sources/**/*.ts"
+    "tests/http-sources/**/*.ts",
+    "tests/http-worker/**/*.ts"
   ],
   "exclude": [
     "dist",
