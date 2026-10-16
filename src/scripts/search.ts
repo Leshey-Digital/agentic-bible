@@ -1,12 +1,13 @@
 export {};
 interface SearchResult { url: string; meta: { title?: string; description?: string }; plain_excerpt?: string; }
-interface Pagefind { search: (query: string) => Promise<{ results: { data: () => Promise<SearchResult> }[] }>; }
+interface Pagefind { options?: (config:{baseUrl:string})=>Promise<void>; search: (query: string) => Promise<{ results: { data: () => Promise<SearchResult> }[] }>; }
 const input = document.querySelector<HTMLInputElement>('#search-input')!;
 const form = document.querySelector<HTMLFormElement>('#search-form')!;
 const searchStatus = document.querySelector<HTMLElement>('#search-status')!;
 const results = document.querySelector<HTMLOListElement>('#search-results')!;
 const error = document.querySelector<HTMLElement>('#search-error')!;
 const empty = document.querySelector<HTMLElement>('#no-results')!;
+const snapshotBase=document.body.dataset.wikiSnapshotBase??'/';
 input.disabled = false;
 form.querySelector<HTMLButtonElement>('button[type=submit]')!.disabled = false;
 let sequence = 0;
@@ -23,8 +24,8 @@ async function search() {
   if (!query) { searchStatus.textContent = 'Enter a word or phrase to search the collection.'; return; }
   searchStatus.textContent = 'Searching the collection…';
   try {
-    const moduleUrl = '/pagefind/pagefind.js';
-    engine ??= import(/* @vite-ignore */ moduleUrl) as Promise<Pagefind>;
+    const moduleUrl = snapshotBase+'pagefind/pagefind.js';
+    engine ??= (import(/* @vite-ignore */ moduleUrl) as Promise<Pagefind>).then(async module=>{if(snapshotBase!=='/')await module.options?.({baseUrl:'/'});return module;});
     const pagefind = await engine;
     if (request !== sequence) return;
     const found = await pagefind.search(query);
@@ -34,7 +35,7 @@ async function search() {
     empty.hidden = entries.length !== 0;
     for (const entry of entries) {
       const url = new URL(entry.url, location.origin);
-      if (url.origin !== location.origin || !url.pathname.startsWith('/articles/')) continue;
+      if (url.origin !== location.origin || !url.pathname.startsWith(snapshotBase+'articles/')) continue;
       const li = document.createElement('li');
       const link = document.createElement('a');
       link.href = url.pathname + url.hash;

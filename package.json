@@ -16,7 +16,7 @@
     "test:docs": "node scripts/validate-docs.mjs",
     "test": "node --test tests/static.test.mjs",
     "test:browser": "PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright test",
-    "validate": "npm run test:docs && npm run check && npm run build && npm test && npm run test:editorial && npm run test:monitoring && npm run test:settings && npm run test:integration && npm run test:http-sources && npm run test:http-worker && npm run test:publication",
+    "validate": "npm run test:docs && npm run check && npm run build && npm test && npm run test:editorial && npm run test:monitoring && npm run test:settings && npm run test:integration && npm run test:http-sources && npm run test:http-worker && npm run test:publication && npm run test:wiki-bridge",
     "staging:check": "XDG_CONFIG_HOME=.git/runtime-config XDG_CACHE_HOME=.git/runtime-cache WRANGLER_SEND_METRICS=false wrangler deploy --dry-run --config wrangler.staging.jsonc",
     "staging:local": "XDG_CONFIG_HOME=.git/runtime-config XDG_CACHE_HOME=.git/runtime-cache WRANGLER_SEND_METRICS=false wrangler dev --local --config wrangler.staging.jsonc --ip 127.0.0.1 --port 8787",
     "browser:install": "PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright install chromium",
@@ -36,7 +36,13 @@
     "test:publication:browser": "PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright test --config playwright.publication.config.ts",
     "publication:demo": "node scripts/article-publication.mjs demo",
     "publication:local": "node scripts/article-publication.mjs preview",
-    "test:combined:browser": "PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright test --config playwright.combined.config.ts"
+    "test:combined:browser": "PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright test --config playwright.combined.config.ts",
+    "wiki-bridge:prepare": "node scripts/wiki-bridge.mjs prepare",
+    "wiki-bridge:apply": "node scripts/wiki-bridge.mjs apply",
+    "wiki-bridge:status": "node scripts/wiki-bridge.mjs status",
+    "wiki-bridge:local": "node scripts/wiki-bridge.mjs preview",
+    "test:wiki-bridge": "node --test tests/wiki-bridge/*.test.mjs",
+    "test:wiki-bridge:browser": "PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright test --config playwright.wiki-bridge.config.ts"
   },
   "dependencies": {
     "astro": "7.4.0"

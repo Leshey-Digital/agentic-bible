@@ -48,6 +48,8 @@ See [combined verification evidence](review/local-mvp-combined-candidate.md), [H
 
 ## Remaining limits and review gates
 
+Historical checkpoint note: PR16 at `d0c80023b4ade29fad5eb77bcbdaae8ca08781c5` subsequently received independent acceptance. The separate [canonical wiki bridge](local-canonical-wiki-bridge.md) adds bounded local supplied-content integration on top without changing PR16. The limits below describe the original combined candidate and still apply beyond that bounded bridge.
+
 Workers native fetch still relies on platform DNS/TLS and cannot claim Node-equivalent DNS pinning/peer checks. Live official-page TLS/size/validator compatibility remains unverified; the earlier bounded manual reads failed before an upstream response. All adapter limits remain unchanged. Request/day/concurrency limits and bounded fixture stores are not monetary enforcement. No provider, live source schedule, credential, public intake, tracking or advertising is enabled.
 
 The local publisher still does not update canonical article Markdown, the global Astro/Pagefind library or a live wiki release. Production needs authenticated event/admin workflows, source/content/license/PII checks, canonical full-site artifact generation, trusted distribution, remote release/backup/restore, cross-host coordination and currency controls. No inference or paid service is connected.

@@ -11,7 +11,7 @@ concurrency:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     env:
       ASTRO_TELEMETRY_DISABLED: '1'
       WRANGLER_SEND_METRICS: 'false'
@@ -34,6 +34,7 @@ jobs:
       - run: npm run test:settings:worker
       - run: npm run test:publication:browser
       - run: npm run test:combined:browser
+      - run: npm run test:wiki-bridge:browser
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:
