@@ -35,7 +35,7 @@ const list=(v:unknown,min:number,max:number):unknown[]=>{if(!Array.isArray(v)||v
 export function articleInput(value:unknown):Article{
   shape(value,['id','title','description','topic','verified','provenance','sources','related','blocks','concerns']);
   const id=slug(value.id);const title=text(value.title,100);const description=text(value.description,240);
-  if(!['Foundations','Capabilities','Protocols'].includes(String(value.topic)))fail('invalid_topic');
+  if(typeof value.topic!=='string'||!['Foundations','Capabilities','Protocols'].includes(value.topic))fail('invalid_topic');
   const verified=text(value.verified,10);if(!/^\d{4}-\d{2}-\d{2}$/.test(verified)||!Number.isFinite(Date.parse(verified))||new Date(verified).toISOString().slice(0,10)!==verified)fail('invalid_date');
   if(value.provenance!=='supplied-local-fixture')fail('unsupported_provenance');
   const sources=list(value.sources,1,8).map(source=>{
