@@ -16,7 +16,7 @@
     "test:docs": "node scripts/validate-docs.mjs",
     "test": "node --test tests/static.test.mjs",
     "test:browser": "PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright test",
-    "validate": "npm run test:docs && npm run check && npm run build && npm test && npm run test:editorial && npm run test:monitoring",
+    "validate": "npm run test:docs && npm run check && npm run build && npm test && npm run test:editorial && npm run test:monitoring && npm run test:settings",
     "staging:check": "XDG_CONFIG_HOME=.git/runtime-config XDG_CACHE_HOME=.git/runtime-cache WRANGLER_SEND_METRICS=false wrangler deploy --dry-run --config wrangler.staging.jsonc",
     "staging:local": "XDG_CONFIG_HOME=.git/runtime-config XDG_CACHE_HOME=.git/runtime-cache WRANGLER_SEND_METRICS=false wrangler dev --local --config wrangler.staging.jsonc --ip 127.0.0.1 --port 8787",
     "browser:install": "PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright install chromium",
@@ -24,7 +24,8 @@
     "editorial:local": "XDG_CONFIG_HOME=.git/runtime-config XDG_CACHE_HOME=.git/runtime-cache WRANGLER_SEND_METRICS=false wrangler dev --local --config wrangler.editorial.local.jsonc --persist-to .wrangler/editorial --ip 127.0.0.1 --port 8788",
     "test:editorial": "node --test tests/editorial/*.test.ts",
     "test:editorial:browser": "PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright test --config playwright.editorial.config.ts",
-    "test:monitoring": "node --test tests/monitoring/*.test.ts"
+    "test:monitoring": "node --test tests/monitoring/*.test.ts",
+    "test:settings": "node --test tests/settings/*.test.ts"
   },
   "dependencies": {
     "astro": "7.4.0"

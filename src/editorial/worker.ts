@@ -5,6 +5,8 @@ import { localMode, sameOrigin, localSession, currentSession, sessionCookie } fr
 import { InputError, RateLimitError, ReplayConflictError, CapacityError, submissionInput, changeInput, readJson, readLimitedText, digest } from './validation.ts';
 import { signIn, messagePage, inbox, detail } from './views.ts';
 import { monitoringRoutes } from '../monitoring/routes.ts';
+import { settingsRoutes } from '../settings/routes.ts';
+import { publicSettingsPreview } from '../settings/render.ts';
 
 const uuid = /^[a-f0-9-]{36}$/;
 const headers = {
@@ -24,7 +26,7 @@ export async function handle(request: Request, env: EditorialEnv): Promise<Respo
   const url = new URL(request.url); const path = url.pathname;
   const admin = path === '/admin' || path.startsWith('/admin/');
   const api = path.startsWith('/api/');
-  if (!admin && !api) return env.ASSETS.fetch(request);
+  if (!admin && !api) return publicSettingsPreview(request,env);
   const isLocal = localMode(request, env);
   if (path === '/api/editorial/status' && request.method === 'GET') return json({ enabled: isLocal && !!env.EDITORIAL_DB, mode: 'local-synthetic-only', publicIntake: false });
   if (!isLocal) return admin ? html(messagePage('Admin access is not configured', 'Local fixture identities are unavailable here. A verified production identity provider is required.'), 503) : json({ error: 'Public intake and production admin access are not configured.' }, 503);
@@ -58,6 +60,7 @@ export async function handle(request: Request, env: EditorialEnv): Promise<Respo
     return redirect('/admin/sign-in/', { 'Set-Cookie': sessionCookie('', true) });
   }
   if (session.role !== 'admin') return admin ? html(messagePage('Admin role required', 'This local reader identity cannot access editorial submissions.', session), 403) : json({ error: 'Admin role required.' }, 403);
+  if (path === '/admin/settings' || path.startsWith('/admin/settings/') || path === '/api/admin/settings') return settingsRoutes(request,env,session);
   if (path === '/admin/sources' || path.startsWith('/admin/sources/') || path.startsWith('/api/admin/monitor/')) return monitoringRoutes(request, env, session);
   if (path === '/api/admin/session' && request.method === 'GET') return json({ identity: session.identity, role: session.role, csrf: session.csrf });
   if ((path === '/api/admin/submissions' || path === '/admin/' || path === '/admin') && request.method === 'GET') {
