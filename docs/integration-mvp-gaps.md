@@ -2,6 +2,10 @@
 
 This is a non-deploying local integration candidate. Its test evidence does not replace independent integration review or the pending release approval. No main merge, staging/production deployment or remote resources are created. Source PRs remain immutable. Existing upstream foundation/reading merges are history observed from main, not operations performed by this candidate.
 
+## Known acceptance blocker
+
+Independent PR #7 review found a P2 in unchanged/no-op settings saves: the current store returns before recording a request-key receipt. That allows the same key to be reused with changed content, and an identical retry after a later save cannot recover the original no-op response. A separate PR #7-based fix is pending. This candidate deliberately leaves `src/settings/store.ts` and the receipt schema untouched to avoid conflicting work. The candidate is a checkpoint, not fully accepted; the exact fix must be reviewed and integrated before acceptance/release. Existing tests do not establish that missing no-op replay guarantee.
+
 | Area | Implemented and verified locally | Remaining before the relevant capability can launch |
 |---|---|---|
 | Content | Three sourced working drafts, three topic routes, citations, related reading, Pagefind and GitHub file history | Accepted MVP is 20 articles across three clusters; remaining article list, substantive editorial/source verification, licensing and content acceptance are incomplete |

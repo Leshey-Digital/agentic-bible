@@ -8,6 +8,9 @@ const privacy={previewEnabled:false,analyticsConsent:'denied',adConsent:'denied'
 async function login(page:Page,identity='local-editor') {
   await page.goto('/admin/sign-in/');await page.getByLabel('Test identity').selectOption(identity);await page.getByRole('button',{name:'Start local test session'}).click();
 }
+async function saveForm(page:Page,name:string) {
+  await Promise.all([page.waitForEvent('domcontentloaded'),page.getByRole('button',{name,exact:true}).click()]);
+}
 async function state(page:Page) {const response=await page.request.get('/api/admin/settings');expect(response.status()).toBe(200);return response.json();}
 async function save(page:Page,group:string,values:unknown) {
   const current=await state(page);const session=await(await page.request.get('/api/admin/session')).json();
@@ -22,19 +25,19 @@ test('admin edits providers independently, preserves valid stale/invalid input a
   await expect(page.getByLabel('Public policy preview')).toHaveValue('false');
   const before=await state(page);
   await page.getByLabel('Google tag ID',{exact:true}).fill(google.tagId);await page.getByLabel('GA4 measurement ID').fill(google.ga4Id);
-  await page.locator('#google-enabled').selectOption('true');await page.getByRole('button',{name:'Save Google settings',exact:true}).click();
+  await page.locator('#google-enabled').selectOption('true');await saveForm(page,'Save Google settings');
   await expect(page.getByRole('status')).toContainText('Collection remains off');
-  await page.getByLabel('Clarity project ID').fill(clarity.projectId);await page.locator('#clarity-enabled').selectOption('true');await page.getByRole('button',{name:'Save Microsoft Clarity settings',exact:true}).click();
+  await page.getByLabel('Clarity project ID').fill(clarity.projectId);await page.locator('#clarity-enabled').selectOption('true');await saveForm(page,'Save Microsoft Clarity settings');
   await page.reload();await expect(page.getByLabel('Google tag ID',{exact:true})).toHaveValue(google.tagId);await expect(page.getByLabel('Clarity project ID')).toHaveValue(clarity.projectId);
   const after=await state(page);expect(after.audit.length).toBe(before.audit.length+2);expect(after.settings.privacy.version).toBe(before.settings.privacy.version);
-  await page.getByLabel('Google tag ID',{exact:true}).fill('sk-synthetic-private-do-not-store');await page.getByRole('button',{name:'Save Google settings',exact:true}).click();
+  await page.getByLabel('Google tag ID',{exact:true}).fill('sk-synthetic-private-do-not-store');await saveForm(page,'Save Google settings');
   await expect(page.getByRole('alert')).toContainText('Use a GT- or G-');expect(await page.content()).not.toContain('sk-synthetic-private-do-not-store');await expect(page.getByLabel('GA4 measurement ID')).toHaveValue(google.ga4Id);
   await page.getByLabel('Google tag ID',{exact:true}).fill('GT-MYNEWEDIT1');
   await save(page,'google',{...google,tagId:'GT-OTHEREDIT1'});
   const conflict=page.waitForResponse(response=>response.url().endsWith('/admin/settings/')&&response.request().method()==='POST');
-  await page.getByRole('button',{name:'Save Google settings',exact:true}).click();expect((await conflict).status()).toBe(409);
+  await saveForm(page,'Save Google settings');expect((await conflict).status()).toBe(409);
   await expect(page.getByRole('alert')).toContainText('Your valid entered settings are kept');await expect(page.getByLabel('Google tag ID',{exact:true})).toHaveValue('GT-MYNEWEDIT1');
-  await page.getByRole('button',{name:'Save Google settings',exact:true}).click();await expect(page.getByRole('status')).toContainText('Settings saved');
+  await saveForm(page,'Save Google settings');await expect(page.getByRole('status')).toContainText('Settings saved');
   await page.setViewportSize({width:1440,height:1000});expect((await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa']).analyze()).violations).toEqual([]);
   await page.screenshot({path:test.info().outputPath('settings-desktop.png'),fullPage:true});
   await page.setViewportSize({width:390,height:844});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);expect((await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa']).analyze()).violations).toEqual([]);
