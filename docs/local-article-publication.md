@@ -1,0 +1,54 @@
+# Local rendered article publication
+
+This branch starts at independently accepted PR10 `d0bfca47cd221b970b01ace838afb3f3bb9a5d32`. [Durable independent review](review/pr10-integration-independent.md) and its synthetic row-count/hash evidence pin that exact acceptance. PR10 remains unchanged. This new slice is a local publication adapter for supplied original fixtures, without inference or live source fetching.
+
+## Try the isolated preview
+
+Use the pinned Node/npm versions and installed dependencies. From the repository root:
+
+```sh
+npm run build
+npm run publication:demo
+npm run publication:local
+```
+
+Open `http://127.0.0.1:8790/local-publications/`. The demo automatically publishes two supplied revisions, leaving the newer text searchable and both versions readable in history. The review queue shows an editorial follow-up flag after publication. Repeating the demo replays its existing event receipts without reverting later actions. An empty rollback snapshot remains empty on repeat, by design; use a fresh event for a deliberate new publication.
+
+The preview is bound to exact HTTP loopback and accepts only GET/HEAD. There is no browser publication/rollback API, new sign-in mechanism, secret input, tracking or ad code. Requests with another Host are rejected. Search and static assets are snapshot-pinned and no-store; Pagefind's numeric `pagefind-entry.json?ts=...` cache-bust is the sole accepted query form. Original three draft article/topic pages and their assets are read-only crosslink destinations. Preview search indexes only current local supplied revisions; it does not replace the canonical library's search. Pagefind supports partial-word results; quoted queries are used to verify exact old/new content replacement. Its [browser options](https://pagefind.app/docs/search-config/) bind result URLs to the explicit root while bundle URLs remain snapshot-specific.
+
+Default output is `article-publication` inside the repository's actual Git directory (normal checkout `.git/article-publication`). `--state article-publication-example` selects another isolated named store. Arbitrary paths, names outside that prefix, symlink outputs and unrelated nonempty directories are refused. No `src/content/articles`, `dist`, `.wrangler/editorial`, D1 table, deployed binding or monitoring transport file is written.
+
+## Apply a supplied event
+
+```sh
+node scripts/article-publication.mjs apply --file fixtures/local-publication/article-v1.json
+node scripts/article-publication.mjs status
+```
+
+The exact JSON schema is implemented in [contracts](../src/publishing/contracts.ts). A publish command takes `schemaVersion:1`, `kind:"publish"`, a stable lowercase event reference, nullable `baseRevision`, and `article`. Existing articles require their current content hash as the base; new articles require null. The fixture file is a complete example.
+
+Article fields are exact: slug ID, title/description/topic, valid calendar source date, fixed `supplied-local-fixture` provenance, 1–8 bibliography sources, known related article IDs, 1–24 heading/paragraph blocks and allowed quality concerns. Paragraphs contain typed text, citation or article-link nodes. Each paragraph must contain substantive plain text and a resolvable citation; every supplied source is cited. Source IDs/headings are unique, source URLs are public HTTPS references without credentials, private literal hosts or query strings, and crosslinks resolve to the current local collection, the article itself or an existing baseline draft. No URL is fetched; this is not a production DNS/redirect SSRF transport.
+
+All text is escaped. Raw HTML, unsupported blocks, unknown fields, malformed identifiers/dates/types, unresolved citations/crosslinks, unsupported provenance and oversized input are rejected with stable technical codes such as `unsafe_markup`, `unresolved_citation`, `unresolved_article_link` or `stale_revision`. CLI errors print only the code, not payloads or exception details. Rejections do not claim the event or change the active publication.
+
+Technically valid input publishes automatically. `editorial-review`, `source-recency` and `coverage-gap` are optional post-publication flags; one supplied source also adds `limited-source-coverage`. They never require prepublication human approval. The manifest and readable review queue retain these flags. The queue is a read-only local inspection surface, not an authenticated production admin/disposition system or a factual-verification claim.
+
+## Snapshot, replay and rollback contract
+
+Each content revision is canonical JSON addressed by SHA-256. Snapshot identity hashes deterministic state: renderer/assets signature, current article revisions, retained history, ancestor manifest hashes, event receipts and operation sequence. Its manifest additionally hashes every rendered HTML, CSS/JS and Pagefind asset. Independent stores with identical input sequences produce identical manifests/file hashes. The renderer does not use wall-clock dates or random values in published artifacts.
+
+A local SQLite transaction is a mutex, not a content database; OS process death releases it. Work is staged off-path. Complete owned Pagefind bytes, HTML/history/flags and assets are written and synchronized, a manifest is sealed and validated, then one atomic rename activates `current.json`. The loopback server serves only current/ancestor snapshots recorded by that pointer, never staging or sealed-but-uncommitted artifacts. Old pages use their own matching index after subsequent publication. Missing/corrupt pointers, revisions, inventories or hashes fail closed.
+
+An identical normalized event returns its original receipt, including after later changes, process restart or rollback; changed event-reference reuse conflicts. Different concurrent writers return `publication_busy` for safe retry. A stale base cannot overwrite another revision. If a process dies before activation, the previous complete snapshot remains active. Retry removes abandoned staging and can adopt a complete validated snapshot. If interruption happens just after activation, retry confirms the already committed event once. Unexpected failure returns `publication_outcome_unconfirmed`; retry the same event to determine its result. A sealed orphan is not a successful publication.
+
+A rollback command is `{schemaVersion:1,kind:"rollback",eventId,expectedRelease,targetRelease}`. `expectedRelease` is the current snapshot ID from `status`; the target is an ancestor ID from its manifest, or null for the initial empty collection. Apply it through the same CLI file command. It creates a new immutable snapshot of the target article state and matching search, retaining every accepted revision, receipt and the rollback action. Replaying an earlier publish event cannot undo the rollback. Retained revision pages preserve their citations and usable links even when an article is no longer current.
+
+Limits: 32 KiB input, 20 current articles, 32 distinct retained content revisions, 32 total committed operations, 8 MiB per artifact and 64 MiB store budget. New publication stops before the last operation slot and reserves one artifact's budget for a terminal rollback. No accepted history or event key is evicted. At exhaustion, supported retries remain available; deliberate archive/retention and further capacity management are future work. Sealed uncommitted artifacts consume bounded storage and may require deliberate cleanup after inspection. Index generation has a 30-second deadline. These are local fixture limits, not monetary enforcement.
+
+## Verification and remaining production work
+
+`npm run test:publication` covers schema/citation/link/security validation, automatic flags, byte-identical manifests, replay/stale conflicts, rollback, all interruption phases, actual SIGKILL before/after activation, mutex recovery, tampering, bounded storage with reserved rollback, loopback/read-only serving and original Markdown preservation. `npm run test:publication:browser` uses actual rendered HTML and Pagefind across publication/rollback, checks old/new token removal, pinned old snapshots, readable history/citation/crosslinks, no outside requests/runtime errors, desktop/mobile axe and overflow. It resets only the disposable `article-publication-browser` store. Run browser suites sequentially; the preview uses port 8790.
+
+The fixture publisher and its CLI still need independent exact-head review. It is not wired to a trusted source-event outbox or the other worker's HTTP adapter; monitoring still writes its existing metadata ledger. No source article, canonical Astro release or global library index is changed. Production needs authenticated/authorized event ingestion and admin flag dispositions, factual/source/license/PII checks, content policy, secure secret setup where needed, canonical full-site build/search integration, signed/trusted artifact distribution, atomic remote release/backup/restore, cross-host locking and cost enforcement. Filesystem hash checks detect corruption; they do not authenticate a malicious filesystem owner. The $10 target does not enforce spending. No cron, paid call, credential, public intake or deployment was enabled.
+
+Rollback of this branch itself is reverting its code and leaving the isolated store unused. Retain a copy before any deliberate store deletion. Do not treat test-directory resets as a production backup/restore procedure. Report the local tested commit before opening any new PR.
