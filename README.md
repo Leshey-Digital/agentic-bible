@@ -78,5 +78,7 @@ Start with `npm run validate` to build the exact candidate and run all server/st
 
 [Exact integration provenance and evidence](docs/review/local-integration-candidate.md) and [remaining MVP/release gaps](docs/integration-mvp-gaps.md) distinguish local behavior from launch readiness. Independent integration review and pending release approval remain required.
 
+The settings follow-up preserves unchanged-save request references with separate bounded receipts: 128 private responses, 32 KiB each, 24 hours without evicting supported retries. New no-ops fail closed at capacity; change audit is unaffected. After a build, `npm run test:settings:worker` verifies actual Worker/D1 restart, capacity, expiry and rollback in its disposable `.git/settings-receipt-worker-state`. Run all browser/Worker suites sequentially: the browser suites share their artifact directory, and the editorial browser and settings Worker suites share port 8788. Migration `0004_measurement_request_receipts.sql` follows PR #7's measurement `0003`; PR #8's independent monitoring `0003` keeps its distinct filename. See the contracts for provenance, retention and rollback.
+
 ## License and contributions
 The founder approved open-source direction. Specific licensing for code, articles, and submitted material is unresolved; no license is granted by these documents. Third-party contributions are not being solicited or accepted until the founder approves and publishes the relevant terms.

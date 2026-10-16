@@ -28,7 +28,8 @@
     "test:settings": "node --test tests/settings/*.test.ts",
     "test:integration": "node --test tests/integration/*.test.ts",
     "test:integration:browser": "PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright test --config playwright.integration.config.ts",
-    "test:monitoring:worker": "node --test tests/monitoring-worker/*.test.mjs"
+    "test:monitoring:worker": "node --test tests/monitoring-worker/*.test.mjs",
+    "test:settings:worker": "node --test tests/settings-worker/*.test.mjs"
   },
   "dependencies": {
     "astro": "7.4.0"
