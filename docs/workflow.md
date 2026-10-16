@@ -35,4 +35,4 @@ Never include credentials, private chat transcripts, customer data, or unsupport
 - [ ] Post-deploy smoke checks cover reading/search/proposals and confirm exact deployed version.
 - [ ] Report actual results and remaining gaps.
 
-No release, CI, or deployment automation is configured in this preparation.
+The foundation has no automation. The first application feature branch adds validation-only CI; no release or deployment automation is configured.

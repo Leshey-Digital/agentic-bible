@@ -1,0 +1,53 @@
+---
+import '../styles/global.css';
+import { repository } from '../lib/library';
+interface Props { title: string; description?: string; active?: 'library' | 'topics' | 'about' | 'search'; }
+const { title, description = 'A sourced reference library for AI agents and the technology around them.', active } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title} · Agentic Bible</title>
+    <meta name="description" content={description} />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="color-scheme" content="light" />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header shell">
+      <a class="wordmark" href="/" aria-label="Agentic Bible home">
+        <img src="/favicon.svg" width="36" height="36" alt="" />
+        <span>Agentic Bible<span class="wordmark-sub">A living reference</span></span>
+      </a>
+      <nav aria-label="Main navigation">
+        <a href="/" aria-current={active === 'library' ? 'page' : undefined}>Library</a>
+        <a href="/topics/" aria-current={active === 'topics' ? 'page' : undefined}>Topics</a>
+        <a href="/about/" aria-current={active === 'about' ? 'page' : undefined}>About</a>
+      </nav>
+      <a class="header-search" href="/search/" aria-label="Search the library" aria-current={active === 'search' ? 'page' : undefined}>
+        <svg width="17" height="17" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" stroke-width="1.6"/><path d="m13 13 4 4" stroke="currentColor" stroke-width="1.6"/></svg>
+        <span>Search library</span><kbd>/</kbd>
+      </a>
+    </header>
+    <div class="preview-strip"><div class="shell"><span class="status-dot"></span> Preview edition <span class="strip-detail">Three sourced drafts. Editorial review pending.</span></div></div>
+    <main id="main" class="shell" tabindex="-1"><slot /></main>
+    <footer class="site-footer shell">
+      <div><a class="footer-name" href="/">Agentic Bible</a><p>A little more context. A clearer understanding.</p></div>
+      <div class="footer-links"><a href="/about/#editorial">Editorial approach</a><a href={repository}>GitHub <svg class="icon-arrow" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 13 13 3M3 3h10v10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" /></svg></a><span>Preview · October 2026</span></div>
+    </footer>
+    <script>
+      document.addEventListener('keydown', (event) => {
+        const target = event.target as HTMLElement;
+        if (event.key !== '/' || event.ctrlKey || event.metaKey || event.altKey || target.isContentEditable || /INPUT|TEXTAREA|SELECT/.test(target.tagName)) return;
+        event.preventDefault();
+        const field = document.querySelector<HTMLInputElement>('#search-input');
+        if (field) field.focus(); else window.location.assign('/search/');
+      });
+    </script>
+  </body>
+</html>

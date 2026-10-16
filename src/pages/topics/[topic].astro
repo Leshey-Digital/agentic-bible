@@ -1,0 +1,9 @@
+---
+import Base from '../../layouts/Base.astro';
+import ArticleList from '../../components/ArticleList.astro';
+import { library, topics } from '../../lib/library';
+export function getStaticPaths() { return topics.map(topic => ({ params: { topic: topic.id }, props: { topic } })); }
+const { topic } = Astro.props;
+const articles = (await library()).filter(article => article.data.topic === topic.name);
+---
+<Base title={topic.name} active="topics"><header class="page-intro"><a class="breadcrumb" href="/topics/">Topics / {topic.number}</a><h1>{topic.name}</h1><p>{topic.description}</p></header><section class="topic-entries"><div class="section-heading"><h2>In this topic</h2><span>{articles.length} article</span></div><ArticleList articles={articles} /></section><a class="text-link back-link" href="/topics/"><svg class="icon-arrow" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M14 8H2m5-5L2 8l5 5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" /></svg> All topics</a></Base>

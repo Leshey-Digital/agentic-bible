@@ -1,0 +1,17 @@
+---
+import Base from '../layouts/Base.astro';
+import ArticleList from '../components/ArticleList.astro';
+import LoopDiagram from '../components/LoopDiagram.astro';
+import { library, topics } from '../lib/library';
+const articles = await library();
+---
+<Base title="The library" active="library">
+  <section class="library-hero">
+    <div><p class="eyebrow hero-eyebrow">An encyclopedia of agents & their technology</p><h1>A field guide to<br /><em>agentic AI.</em></h1><p class="hero-description">Understand the ideas, tools, and protocols behind AI agents. Follow the connections. Go back to the source.</p><a class="text-link" href="#collection">Explore the library <span aria-hidden="true"><svg class="icon-arrow" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 2v12m-5-5 5 5 5-5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" /></svg></span></a></div>
+    <LoopDiagram />
+  </section>
+  <div class="library-grid" id="collection">
+    <aside class="topic-sidebar"><p class="eyebrow">Browse by topic</p><nav aria-label="Browse topics"><a class="selected" href="/#collection" aria-current="page">All articles <span>{articles.length.toString().padStart(2,'0')}</span></a>{topics.map((topic) => <a href={`/topics/${topic.id}/`}>{topic.name}<span>{articles.filter(a => a.data.topic === topic.name).length.toString().padStart(2,'0')}</span></a>)}</nav><div class="sidebar-note"><span class="small-star"><svg class="asterisk" width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 4v32M4 20h32M9 9l22 22M9 31 31 9" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" /></svg></span><h3>Knowledge, connected.</h3><p>Every entry points to its evidence and to the ideas around it.</p><a href="/about/">How this library works <svg class="icon-arrow" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 13 13 3M3 3h10v10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" /></svg></a></div></aside>
+    <section aria-labelledby="collection-title"><div class="section-heading"><h2 id="collection-title">The starting collection</h2><span>01 — 03</span></div><p class="collection-intro">Three building blocks. One connected reading path.</p><ArticleList articles={articles} /><div class="reading-path"><span class="eyebrow">New to the subject?</span><p>Start with the agent. Follow the action. Meet the protocol.</p><a class="text-link" href="/articles/ai-agent/">Begin with AI agent <span aria-hidden="true"><svg class="icon-arrow" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h12m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" /></svg></span></a></div></section>
+  </div>
+</Base>

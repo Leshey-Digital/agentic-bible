@@ -1,6 +1,6 @@
 # Roadmap and acceptance criteria
 
-All milestones below are proposed and incomplete except preparation work explicitly verified in its PR.
+The founder accepted the MVP scope on 2026-10-16. Implementation remains incomplete except work evidenced in each PR. The first local reading/search slice is on its feature branch.
 
 ## 0. Repository foundation
 - Review linked docs, status labels, internal links and license hold.
@@ -12,11 +12,11 @@ All milestones below are proposed and incomplete except preparation work explici
 - Pick three representative articles; each has verifiable primary sources, dates, related links, revision history, and clear uncertainty.
 - Build accessible responsive reading, navigation and local static search; verify empty/no-result queries, keyboard navigation, broken links, narrow screens and repeated navigation.
 - Demonstrate one on-site source/edit proposal through moderation to a reviewed revision using synthetic data. Gate public submissions until terms, privacy and abuse controls are ready.
-- Demonstrate one budget-limited discovery run that proposes a sourced diff without auto-publication; verify timeout, duplicate, rate-limit and budget-exhaustion paths.
+- Future pipeline: demonstrate one budget-limited discovery/update run with technical and source validation, automatic publication and post-publication review flags. Verify timeout, duplicates, rate limits, budget exhaustion and rollback; no paid pipeline is enabled in the current slice.
 - Verify sitemap/canonical/robots behavior and measurement taxonomy; show real metrics or explicitly unavailable states, never fabricated dashboards.
 - Build an isolated preview only after deployment authorization and inventory review. Prove prior-artifact rollback.
 
-## 2. Proposed MVP: 20 articles / three clusters
+## 2. Accepted MVP scope: 20 articles / three clusters
 - Founder confirms the article list and clusters; all meet the same editorial acceptance criteria.
 - No orphan articles; validate internal references, citations and redirects. No thin programmatic pages.
 - Validate performance and accessibility with measured evidence on representative mobile/desktop pages.
@@ -27,7 +27,14 @@ All milestones below are proposed and incomplete except preparation work explici
 - Verify production origin, resource isolation, billing controls, backup/rollback, search-console ownership and release evidence.
 - Submit sitemaps and eligible IndexNow updates only through authorized accounts/protocols.
 - Review observed indexing, readership, search quality, source freshness and costs; separate observations from gaps.
-- Evaluate the founder's long-term autopilot publishing and maintenance goal against measured factual/source quality. Define and obtain approval for bounded publication categories, quality gates, escalation rules, reversible revisions and an off switch before enabling autopublishing. Initial human editorial review is a proposed starting posture, separate from code/deployment review.
+- Implement the approved automatic publication policy with post-publication human review flags, measured factual/source checks, malicious-content rejection, escalation rules, reversible revisions and an off switch. Do not impose a universal human editorial prepublication gate. Code/release review remains separate.
 - Consider ads or TypesafeJev only via a scoped proposal with consent, cost and editorial review.
 
 No milestone promises rankings, indexing, AI citations, traffic, or revenue.
+
+## Next admin slice
+- In-app editorial inbox/review queue, with editorial@agenticbible.si as the designated destination; do not claim email delivery exists.
+- Independently editable tag fields and revision/audit history.
+- Validated analytics-provider IDs; no arbitrary script setting.
+- Authenticated server-side write-only API key setup, masked status, least-privilege connection tests, budget controls and redacted audit events.
+- Decide specific admin identity and credential provisioning, code/content licenses and numeric Jev allocation before enabling those integrations.
