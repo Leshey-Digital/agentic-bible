@@ -15,7 +15,7 @@ const origin='http://127.0.0.1:8788';
 const now=1_792_168_000_000;
 function setup(path=':memory:',initialize=true) {
   const db=new SqliteD1(path,initialize);
-  if(initialize)db.raw.exec(readFileSync('migrations/0003_measurement_settings.sql','utf8'));
+  if(initialize)for(const file of ['0003_measurement_settings.sql','0004_measurement_request_receipts.sql'])db.raw.exec(readFileSync('migrations/'+file,'utf8'));
   return {db,store:new SettingsStore(db)};
 }
 const change=(group:Group,values:unknown,version=1,requestKey=crypto.randomUUID())=>updateInput({group,values,version,requestKey});
@@ -49,7 +49,7 @@ test('provider sections persist independently; audit contains field names withou
 
 test('same-section races cannot overwrite; exact replay is idempotent and changed replay conflicts',async()=>{
   const {db,store}=setup();const input=change('google',google);
-  const result=await Promise.all([store.update(input,'local-editor',now),store.update(input,'local-editor',now)]);assert.deepEqual(result,['saved','duplicate']);
+  const result=await Promise.all([store.update(input,'local-editor',now),store.update(input,'local-editor',now)]);assert.deepEqual(result.sort(),['duplicate','saved']);
   assert.equal((await store.audit()).length,1);assert.equal(await store.update(input,'local-editor',now),'duplicate');
   await assert.rejects(store.update({...input,values:{...google,tagId:'GT-DIFFERENT1'}},'local-editor',now),ReplayConflictError);
   const races=await Promise.all([store.update(change('google',{...google,tagId:'GT-NEXTONE1'},2),'local-editor',now+1),store.update(change('google',{...google,tagId:'GT-NEXTTWO1'},2),'local-editor',now+1)]);

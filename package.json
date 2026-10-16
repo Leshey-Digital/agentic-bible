@@ -25,7 +25,8 @@
     "test:editorial": "node --test tests/editorial/*.test.ts",
     "test:editorial:browser": "PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright test --config playwright.editorial.config.ts",
     "test:monitoring": "node --test tests/monitoring/*.test.ts",
-    "test:settings": "node --test tests/settings/*.test.ts"
+    "test:settings": "node --test tests/settings/*.test.ts",
+    "test:settings:worker": "node --test tests/settings-worker/*.test.mjs"
   },
   "dependencies": {
     "astro": "7.4.0"
