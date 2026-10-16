@@ -33,6 +33,8 @@ const articles = await library();
             <input type="hidden" name="requestKey" id="request-key" />
             <button id="send-suggestion" type="submit">Send local suggestion</button>
             <button id="clear-draft" class="quiet-button" type="button">Clear draft</button>
+            <button id="renew-reference" class="quiet-button" type="button" hidden aria-describedby="draft-recovery">Keep draft with new reference</button>
+            <p id="draft-recovery" class="field-help" role="status" hidden>An earlier version may already be saved. Retry unchanged to confirm it, or use a new reference for the current draft. Your text and source will be kept.</p>
           </fieldset>
           <p id="form-error" role="alert"></p>
         </form>
