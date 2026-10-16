@@ -2,7 +2,7 @@ name: Validate library
 on:
   pull_request:
   push:
-    branches: [main, feat/reference-library-slice]
+    branches: [main, feat/reference-library-slice, feat/editorial-inbox]
 permissions:
   contents: read
 concurrency:
@@ -28,6 +28,7 @@ jobs:
       - run: npm run staging:check
       - run: PLAYWRIGHT_BROWSERS_PATH=.git/playwright npx --no-install playwright install --with-deps chromium
       - run: npm run test:browser
+      - run: npm run test:editorial:browser
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:

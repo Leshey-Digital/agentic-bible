@@ -22,6 +22,7 @@ Last prepared: 2026-10-16. This document distinguishes founder direction from te
 - The authorized first slice contains AI agent, tool use and Model Context Protocol. The accepted MVP scope is 20 articles across three clusters; the remaining article list is unfinished.
 - An OpenSpec-style directory workflow plus AGENTS.md, GitHub issues, and draft PRs.
 - Automatic article publication and post-publication review flags are now approved policy. The publishing pipeline, admin review inbox and escalation delivery are not implemented in this static slice. Code review and deployment checks remain separate.
+- The next stacked branch implements a local synthetic correction/source inbox with role-scoped test sessions, human-entered suggestion tags, dispositions and audit records. Public intake, production identity, article publishing, email delivery and live settings integrations remain disabled. This is implementation progress, not a change to the automatic-publication policy.
 - The $10/month operating target is accepted. Numeric Jev allocation, per-run/day limits, provider credentials and the enforcement mechanism remain undefined; paid jobs stay disabled until these are concrete.
 
 ## Decisions still needed

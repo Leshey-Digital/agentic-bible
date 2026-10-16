@@ -13,7 +13,11 @@ test('all generated links and fragments resolve, including article citations', (
   for (const page of pages) {
     for (const href of attrs(html(page), 'href')) {
       if (/^(https?:|mailto:)/.test(href)) continue;
-      const [pathname, fragment] = href.split('#');
+      const parsed = new URL(href, 'https://staging.agenticbible.si/' + page.replace(/^dist\//, ''));
+      const pathname = href.startsWith('#') ? '' : parsed.pathname;
+      const fragment = parsed.hash.slice(1);
+      // The sole dynamic HTML entry is authenticated and covered by the Worker/browser suite.
+      if (pathname === '/admin/') continue;
       let target = pathname ? (pathname.startsWith('/') ? resolve('dist', `.${pathname}`) : resolve(dirname(page), pathname)) : resolve(page);
       if (existsSync(target) && statSync(target).isDirectory()) target = join(target, 'index.html');
       assert.ok(existsSync(target), `${page}: missing ${href}`);
