@@ -6,22 +6,41 @@ const error = document.querySelector<HTMLElement>('#form-error')!;
 const receipt = document.querySelector<HTMLElement>('#receipt')!;
 const send = document.querySelector<HTMLButtonElement>('#send-suggestion')!;
 const requestKey = document.querySelector<HTMLInputElement>('#request-key')!;
+const renew = document.querySelector<HTMLButtonElement>('#renew-reference')!;
+const recoveryHelp = document.querySelector<HTMLElement>('#draft-recovery')!;
 const draftKey = 'agentic-bible:synthetic-suggestion:v1';
 const names = ['articleId', 'kind', 'message', 'sourceUrl', 'requestKey'] as const;
 const control = (name: string) => form.elements.namedItem(name) as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
+let recoveryNeeded = false;
+let saving = false;
+let restoredArticle = false;
+function showRecovery(needed: boolean) {
+  recoveryNeeded = needed; renew.hidden = !needed; recoveryHelp.hidden = !needed;
+}
 requestKey.value = crypto.randomUUID();
 try {
   const saved = JSON.parse(sessionStorage.getItem(draftKey) ?? 'null');
-  if (saved && typeof saved === 'object') for (const name of names) if (typeof saved[name] === 'string') control(name).value = saved[name];
+  if (saved && typeof saved === 'object') {
+    for (const name of names) if (typeof saved[name] === 'string') control(name).value = saved[name];
+    restoredArticle = typeof saved.articleId === 'string';
+    showRecovery(saved.recoveryNeeded === true);
+  }
 } catch { /* A blocked or malformed local draft must not break the form. */ }
 const article = new URLSearchParams(location.search).get('article');
-if (article && [...control('articleId').querySelectorAll('option')].some(option => (option as HTMLOptionElement).value === article)) control('articleId').value = article;
+if (!restoredArticle && article && [...control('articleId').querySelectorAll('option')].some(option => (option as HTMLOptionElement).value === article)) control('articleId').value = article;
 function persist() {
-  try { sessionStorage.setItem(draftKey, JSON.stringify(Object.fromEntries(names.map(name => [name, control(name).value])))); } catch { /* Browser storage can be unavailable; in-memory form remains usable. */ }
+  try { sessionStorage.setItem(draftKey, JSON.stringify({ ...Object.fromEntries(names.map(name => [name, control(name).value])), recoveryNeeded })); } catch { /* Browser storage can be unavailable; in-memory form remains usable. */ }
 }
 form.addEventListener('input', persist);
+renew.addEventListener('click', () => {
+  if (saving) return;
+  requestKey.value = crypto.randomUUID(); showRecovery(false); persist();
+  error.textContent = ''; receipt.hidden = false;
+  receipt.textContent = 'Your draft is kept with a new request reference. Review it, then send when ready. An earlier version may already be saved.';
+  receipt.focus();
+});
 document.querySelector('#clear-draft')!.addEventListener('click', () => {
-  form.reset(); requestKey.value = crypto.randomUUID(); error.textContent = ''; receipt.hidden = true;
+  form.reset(); requestKey.value = crypto.randomUUID(); showRecovery(false); error.textContent = ''; receipt.hidden = true;
   try { sessionStorage.removeItem(draftKey); } catch { /* No stored draft to remove. */ }
   control('message').focus();
 });
@@ -37,18 +56,20 @@ async function init() {
 }
 form.addEventListener('submit', async event => {
   event.preventDefault();
-  if (fields.disabled) return;
+  if (fields.disabled || saving) return;
   error.textContent = ''; receipt.hidden = true;
   for (const el of form.querySelectorAll<HTMLElement>('.field-error')) el.textContent = '';
   for (const name of names) control(name).removeAttribute('aria-invalid');
-  persist(); send.disabled = true; send.textContent = 'Saving suggestion…';
+  const submitted = Object.fromEntries(new FormData(form));
+  persist(); saving = true; send.disabled = true; renew.disabled = true; send.textContent = 'Saving suggestion…';
   try {
     const response = await fetch('/api/submissions', {
       method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(Object.fromEntries(new FormData(form))),
+      body: JSON.stringify(submitted),
     });
     const result = await response.json();
     if (!response.ok) {
+      if (response.status === 409 && requestKey.value === submitted.requestKey) { showRecovery(true); persist(); }
       for (const [name, text] of Object.entries(result.fields ?? {})) {
         const target = document.getElementById(`${name}-error`);
         if (target) { target.textContent = String(text); control(name).setAttribute('aria-invalid', 'true'); }
@@ -59,10 +80,23 @@ form.addEventListener('submit', async event => {
     }
     receipt.hidden = false;
     receipt.textContent = result.reference ? `Suggestion saved. Reference ${result.reference}. ${result.duplicate ? 'This matches a previously saved suggestion.' : 'It is available in the local editorial inbox.'}` : 'Suggestion received.';
-    form.reset(); requestKey.value = crypto.randomUUID();
-    try { sessionStorage.removeItem(draftKey); } catch { /* Saved successfully even if browser storage is blocked. */ }
+    if (names.every(name => control(name).value === submitted[name])) {
+      form.reset(); requestKey.value = crypto.randomUUID(); showRecovery(false);
+      try { sessionStorage.removeItem(draftKey); } catch { /* Saved successfully even if browser storage is blocked. */ }
+    } else {
+      // A completed request owns only its snapshot, never edits or a cleared/new draft made while it was pending.
+      showRecovery(false);
+      if (requestKey.value === submitted.requestKey) {
+        requestKey.value = crypto.randomUUID(); persist();
+      }
+      // A cleared/new draft owns its storage already; an older response must not recreate a cleared draft.
+      receipt.textContent += ' Your newer draft is kept with its own request reference.';
+    }
     receipt.focus();
-  } catch { error.textContent = 'Could not confirm the save. Your draft and request reference are kept. Retry safely when the connection returns.'; }
-  finally { send.disabled = false; send.textContent = 'Send local suggestion'; }
+  } catch {
+    if (requestKey.value === submitted.requestKey) { showRecovery(true); persist(); }
+    error.textContent = 'Could not confirm the save. Your draft and request reference are kept. Retry unchanged to confirm it, or keep your draft with a new reference.';
+  }
+  finally { saving = false; send.disabled = false; renew.disabled = false; send.textContent = 'Send local suggestion'; }
 });
 void init();

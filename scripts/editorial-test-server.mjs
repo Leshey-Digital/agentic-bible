@@ -3,7 +3,7 @@ import { rmSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 // Only this isolated synthetic-test directory is reset. Interactive local data is separate.
-const state = resolve('.git/editorial-browser-state');
+const state = resolve(process.argv[2]==='integration'?'.git/integration-browser-state':'.git/editorial-browser-state');
 rmSync(state, { recursive: true, force: true });
 const cli = resolve('node_modules/wrangler/bin/wrangler.js');
 const env = { ...process.env, XDG_CONFIG_HOME: resolve('.git/runtime-config'), XDG_CACHE_HOME: resolve('.git/runtime-cache'), WRANGLER_SEND_METRICS: 'false' };

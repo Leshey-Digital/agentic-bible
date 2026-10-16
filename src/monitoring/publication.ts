@@ -15,10 +15,12 @@ async function evidence(store:MonitorStore,catalog:SourceCatalog,candidate:Candi
   return null;
 }
 
-export async function publishQueued(store:MonitorStore,catalog:SourceCatalog,now=Date.now()) {
+export async function publishQueued(store:MonitorStore,catalog:SourceCatalog,now=Date.now(),ids?:string[]) {
   await validateCatalog(catalog);
   const results=[];
-  for(const candidate of await store.candidates(true)) {
+  const selected=ids?await Promise.all(ids.map(id=>store.candidate(id))):await store.candidates(true);
+  for(const candidate of selected) {
+    if(!candidate||candidate.state!=='queued')continue;
     const blocked=await evidence(store,catalog,candidate);
     if(blocked) {await store.block(candidate,blocked,blocked==='blocked_evidence'?'required_source_evidence_missing':'technical_payload_invalid',now);results.push({id:candidate.id,state:blocked});continue;}
     const published=await store.publish(candidate,now);
