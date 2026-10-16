@@ -2,7 +2,7 @@
 
 A planned living encyclopedia of AI agents and the technology around them: sourced, interconnected articles with transparent revision history.
 
-**Status on the local publication branch:** accepted local reading/search, synthetic editorial/source workflows and inert settings, plus isolated supplied-article HTML/search/history snapshots. Three original sourced working drafts remain unchanged; editorial/content review remains pending. Foundation/reading PRs #1/#2 are merged upstream, observed at main `2ad330e06fcc4dd46a8fc95291ccc3cd1c597327`; this branch does not merge main or deploy. No live analytics, ads, public submissions, provider calls or public article release is enabled. Accepted PR10 remains pinned at `d0bfca47cd221b970b01ace838afb3f3bb9a5d32`.
+**Status on the encyclopedia content branch:** accepted local reading/search, synthetic editorial/source workflows and inert settings, plus isolated supplied-article HTML/search/history snapshots. Eight sourced working drafts cover agent foundations, tool use, MCP, orchestration, memory, retrieval-augmented generation, evaluation and prompt injection; independent editorial/content review remains pending. The original tool-use Markdown bytes are preserved. Foundation/reading PRs #1/#2 are merged upstream, observed at main `2ad330e06fcc4dd46a8fc95291ccc3cd1c597327`; this branch does not merge main or deploy. No live analytics, ads, public submissions, provider calls or public article release is enabled. Accepted PR10 remains pinned at `d0bfca47cd221b970b01ace838afb3f3bb9a5d32`.
 
 The source PR branches stay immutable. The feature sections below describe the separately reviewed slices; the integration candidate adds their combined validation without changing production gates. Public intake and production admin authentication remain disabled.
 
@@ -113,3 +113,7 @@ The separate [bridge/SEO composition](docs/wiki-seo-integration.md) preserves ex
 ## License and contributions
 
 The founder approved open-source direction. Specific licensing for code, articles, and submitted material is unresolved; no license is granted by these documents. Third-party contributions are not being solicited or accepted until the founder approves and publishes the relevant terms.
+
+## Expanded encyclopedia collection
+
+The five new entries are original working drafts with claim-linked primary sources. Read the [source-verification record](docs/review/encyclopedia-source-verification.md) and [change proposal](openspec/changes/encyclopedia-agent-topics/proposal.md). Genuine reading/search and explicit production discovery cover eight articles; the original synthetic editorial form remains limited to its three supported entries. New citation metadata does not expand the separate live HTTP transport allowlist. No source fetching, paid generation, public submission, indexing delivery or deployment is enabled.

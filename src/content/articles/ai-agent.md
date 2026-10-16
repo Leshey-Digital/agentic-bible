@@ -6,7 +6,7 @@ order: 1
 status: Working draft
 verified: '2026-10-16'
 author: AI-assisted project draft
-related: [tool-use, model-context-protocol]
+related: [tool-use, model-context-protocol, agent-orchestration, agent-memory, retrieval-augmented-generation, agent-evaluation, prompt-injection]
 sources:
   - id: patterns
     title: Building effective agents

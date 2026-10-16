@@ -1,7 +1,8 @@
 ---
 import Base from '../layouts/Base.astro';
 import { library } from '../lib/library';
-const articles = await library();
+import {articleIds} from '../editorial/contracts.ts';
+const articles = (await library()).filter(article=>articleIds.some(id=>id===article.id));
 ---
 <Base title="Suggest a correction">
   <link rel="stylesheet" href="/editorial.css" />
@@ -10,7 +11,7 @@ const articles = await library();
     <div class="contribution-layout">
       <section aria-labelledby="form-title">
         <h2 id="form-title">Suggest a correction or source</h2>
-        <p id="intake-status" role="status">Public submissions are on hold while contribution terms are resolved. The form is available only in the local synthetic preview.</p>
+        <p id="intake-status" role="status">Public submissions are on hold while contribution terms are resolved. The form is available only in the local synthetic preview for AI agent, Tool use, and Model Context Protocol.</p>
         <div id="receipt" class="notice" hidden tabindex="-1"></div>
         <form id="contribution-form" novalidate>
           <fieldset disabled id="contribution-fields">

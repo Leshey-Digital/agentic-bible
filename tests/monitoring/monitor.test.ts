@@ -25,8 +25,8 @@ async function changed(store:MonitorStore,time=start) {
   return (await store.candidates())[0];
 }
 
-test('catalog comes from all three article metadata sets and rejects external/private/credential URLs',async()=>{
-  assert.equal(catalog.articles.length,3);assert.equal(catalog.sources.length,8);
+test('catalog comes from all eight article metadata sets and rejects external/private/credential URLs',async()=>{
+  assert.equal(catalog.articles.length,8);assert.equal(catalog.sources.length,22);
   for(const url of ['http://127.0.0.1/','https://evil.invalid/','https://user:secret@www.anthropic.com/','https://www.anthropic.com:444/']) {
     const bad=structuredClone(catalog);bad.sources[0].url=url;await assert.rejects(validateCatalog(bad));
   }
@@ -148,7 +148,9 @@ test('hourly planner is bounded and deduplicated, and persisted work survives da
   try {
     assert.equal((await scheduleChecks(store,catalog,start)).length,4);
     assert.equal((await scheduleChecks(store,catalog,start)).length,4);
-    assert.equal((await scheduleChecks(store,catalog,start)).length,0);
+    let scheduled=8;
+    while(true){const batch=await scheduleChecks(store,catalog,start);assert.ok(batch.length<=4);if(!batch.length)break;scheduled+=batch.length;}
+    assert.equal(scheduled,catalog.sources.length);assert.equal((await scheduleChecks(store,catalog,start)).length,0);
     await runDue(store,catalog,fixtureTransport,()=>start);
     await runJob(store,catalog,(await job(store,'baseline',start+1)).id,fixtureTransport,()=>start+1);
     await runJob(store,catalog,(await job(store,'change',start+2)).id,fixtureTransport,()=>start+2);

@@ -52,12 +52,29 @@ test('missing index has a useful fallback and retry action', async ({ page }) =>
 });
 
 test('all core pages pass automated accessibility and fit the viewport', async ({ page }) => {
-  for (const path of ['/', '/articles/ai-agent/', '/articles/tool-use/', '/articles/model-context-protocol/', '/topics/', '/about/', '/search/']) {
+  for (const path of ['/', '/articles/ai-agent/', '/articles/tool-use/', '/articles/model-context-protocol/', '/articles/agent-orchestration/', '/articles/agent-memory/', '/articles/retrieval-augmented-generation/', '/articles/agent-evaluation/', '/articles/prompt-injection/', '/topics/', '/about/', '/search/']) {
     await page.goto(path);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
     const audit = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
     expect(audit.violations, `${path}: accessibility violations`).toEqual([]);
   }
+});
+
+test('five new topics are discoverable through actual Pagefind and connected reading',async({page})=>{
+  for(const [query,id,title]of [
+    ['orchestrator','agent-orchestration','Agent orchestration'],
+    ['MemGPT','agent-memory','Agent memory'],
+    ['RAG-Sequence','retrieval-augmented-generation','Retrieval-augmented generation'],
+    ['τ-bench','agent-evaluation','Agent evaluation'],
+    ['AgentDojo','prompt-injection','Prompt injection'],
+  ]){
+    await page.goto('/search/');await expect(page.getByRole('searchbox')).toBeEnabled();await page.getByRole('searchbox').fill(query);
+    const result=page.locator(`#search-results a[href="/articles/${id}/"]`);await expect(result).toBeVisible();await result.click();
+    await expect(page.getByRole('heading',{name:title,exact:true})).toBeVisible();await expect(page.locator('.article-status')).toContainText('Working draft');
+    await page.locator('.prose a[href^="#source-"]').first().click();await expect(page.locator(':target')).toBeInViewport();
+    await page.locator('.related a').first().click();await expect(page.getByRole('heading',{name:'AI agent',exact:true})).toBeVisible();
+  }
+  await page.goto('/');await expect(page.locator('.article-list li')).toHaveCount(8);
 });
 
 test('keyboard skip link, search shortcut, 404 and staging headers work', async ({ page, request }) => {

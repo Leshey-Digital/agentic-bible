@@ -9,6 +9,7 @@ import {bridgeInput,validateEvidence,reference,digest,object,type BridgeCommand,
 import {BridgeError,bridgeLimits,reject} from './limits.ts';
 import {atomic,bounded,json,projectFiles,safePath,sync,syncTree,walk,write} from './files.ts';
 import {buildWiki} from './build.ts';
+import {readingArticleIds} from '../lib/article-ids.ts';
 
 type Event={eventId:string;fingerprint:string;sequence:number;kind:'apply'|'rollback';publisher:Reference;articleRevision:string|null;evidenceHash:string};
 export type SiteState={schemaVersion:1;mode:'local-synthetic-only';sequence:number;originalMarkdownHash:string;sourceTreeHash:string;publisher:Reference;articleRevision:string|null;bindings:Binding[];proofs:{eventId:string;revisionId:string;bindings:Binding[]}[];parent:Reference|null;ancestors:Reference[];events:Event[]};
@@ -37,7 +38,7 @@ export class WikiBridge {
       for(const ancestor of s.ancestors)if(!reference(ancestor))reject('site_corrupt');
       if(new Set(s.events.map(e=>e.eventId)).size!==s.events.length||s.events.some((e,i)=>!digest(e.fingerprint)||e.sequence!==i+1||!reference(e.publisher)))reject('site_corrupt');
       const actual=inventoryExceptManifest(folder);if(canonical(actual)!==canonical(manifest.files))reject('site_corrupt');
-      for(const path of ['articles/tool-use/index.html','articles/ai-agent/index.html','articles/model-context-protocol/index.html','source-catalog.json','pagefind/pagefind.js','history/index.html','review/index.html'])if(!actual[path])reject('site_corrupt');
+      for(const path of [...readingArticleIds.map(id=>`articles/${id}/index.html`),'source-catalog.json','pagefind/pagefind.js','history/index.html','review/index.html'])if(!actual[path])reject('site_corrupt');
       return manifest;
     }catch{return reject('site_corrupt');}
   }
