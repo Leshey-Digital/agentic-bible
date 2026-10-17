@@ -1,0 +1,214 @@
+{
+  "preservedPR28": "1cb4d1ed56e46acffe82240b9cbe6cd7df139ab3",
+  "preservedCorrectionComposition": "5cafc71764ce89c215282dd68028ca8966bede3e",
+  "localBrowser": "154.0.8037.57",
+  "ciPin": {
+    "playwright": "1.64.1",
+    "chromiumRevision": "1248",
+    "chromium": "156.0.8078.4"
+  },
+  "fullValidation": {
+    "tests": 129,
+    "pass": 129,
+    "fail": 0,
+    "cancelled": 0
+  },
+  "checks": [
+    {
+      "label": "seo",
+      "command": "npm run test:seo:build",
+      "ci": false,
+      "exitCode": 0,
+      "seconds": 12.2
+    },
+    {
+      "label": "reading",
+      "command": "npm run test:browser",
+      "ci": true,
+      "exitCode": 0,
+      "seconds": 85.1
+    },
+    {
+      "label": "a11y-one-worker",
+      "command": "npm run test:browser -- --grep automated accessibility and viewport --workers=1",
+      "ci": true,
+      "exitCode": 0,
+      "seconds": 50.47
+    },
+    {
+      "label": "validate",
+      "command": "npm run validate",
+      "ci": false,
+      "exitCode": 0,
+      "seconds": 105.74
+    }
+  ],
+  "actualPageCoverage": {
+    "reading": {
+      "passedPages": {
+        "desktop": [
+          "/",
+          "/about/",
+          "/articles/agent-budgets/",
+          "/articles/agent-evaluation/",
+          "/articles/agent-identity/",
+          "/articles/agent-memory/",
+          "/articles/agent-observability/",
+          "/articles/agent-orchestration/",
+          "/articles/agent-planning/",
+          "/articles/agent-sandboxing/",
+          "/articles/agent-to-agent-communication/",
+          "/articles/ai-agent/",
+          "/articles/computer-use-agents/",
+          "/articles/context-engineering/",
+          "/articles/durable-agent-execution/",
+          "/articles/human-oversight/",
+          "/articles/model-context-protocol/",
+          "/articles/prompt-injection/",
+          "/articles/retrieval-augmented-generation/",
+          "/articles/structured-outputs/",
+          "/articles/tool-permissions/",
+          "/articles/tool-use/",
+          "/search/",
+          "/topics/"
+        ],
+        "mobile": [
+          "/",
+          "/about/",
+          "/articles/agent-budgets/",
+          "/articles/agent-evaluation/",
+          "/articles/agent-identity/",
+          "/articles/agent-memory/",
+          "/articles/agent-observability/",
+          "/articles/agent-orchestration/",
+          "/articles/agent-planning/",
+          "/articles/agent-sandboxing/",
+          "/articles/agent-to-agent-communication/",
+          "/articles/ai-agent/",
+          "/articles/computer-use-agents/",
+          "/articles/context-engineering/",
+          "/articles/durable-agent-execution/",
+          "/articles/human-oversight/",
+          "/articles/model-context-protocol/",
+          "/articles/prompt-injection/",
+          "/articles/retrieval-augmented-generation/",
+          "/articles/structured-outputs/",
+          "/articles/tool-permissions/",
+          "/articles/tool-use/",
+          "/search/",
+          "/topics/"
+        ]
+      },
+      "browserRuntimes": [
+        {
+          "project": "desktop",
+          "version": "154.0.8037.57"
+        },
+        {
+          "project": "mobile",
+          "version": "154.0.8037.57"
+        }
+      ]
+    },
+    "a11y-one-worker": {
+      "passedPages": {
+        "desktop": [
+          "/",
+          "/about/",
+          "/articles/agent-budgets/",
+          "/articles/agent-evaluation/",
+          "/articles/agent-identity/",
+          "/articles/agent-memory/",
+          "/articles/agent-observability/",
+          "/articles/agent-orchestration/",
+          "/articles/agent-planning/",
+          "/articles/agent-sandboxing/",
+          "/articles/agent-to-agent-communication/",
+          "/articles/ai-agent/",
+          "/articles/computer-use-agents/",
+          "/articles/context-engineering/",
+          "/articles/durable-agent-execution/",
+          "/articles/human-oversight/",
+          "/articles/model-context-protocol/",
+          "/articles/prompt-injection/",
+          "/articles/retrieval-augmented-generation/",
+          "/articles/structured-outputs/",
+          "/articles/tool-permissions/",
+          "/articles/tool-use/",
+          "/search/",
+          "/topics/"
+        ],
+        "mobile": [
+          "/",
+          "/about/",
+          "/articles/agent-budgets/",
+          "/articles/agent-evaluation/",
+          "/articles/agent-identity/",
+          "/articles/agent-memory/",
+          "/articles/agent-observability/",
+          "/articles/agent-orchestration/",
+          "/articles/agent-planning/",
+          "/articles/agent-sandboxing/",
+          "/articles/agent-to-agent-communication/",
+          "/articles/ai-agent/",
+          "/articles/computer-use-agents/",
+          "/articles/context-engineering/",
+          "/articles/durable-agent-execution/",
+          "/articles/human-oversight/",
+          "/articles/model-context-protocol/",
+          "/articles/prompt-injection/",
+          "/articles/retrieval-augmented-generation/",
+          "/articles/structured-outputs/",
+          "/articles/tool-permissions/",
+          "/articles/tool-use/",
+          "/search/",
+          "/topics/"
+        ]
+      },
+      "browserRuntimes": [
+        {
+          "project": "desktop",
+          "version": "154.0.8037.57"
+        },
+        {
+          "project": "mobile",
+          "version": "154.0.8037.57"
+        }
+      ]
+    }
+  },
+  "actualColdCacheCLI": {
+    "wrangler": "4.151.1",
+    "results": [
+      {
+        "mode": "control",
+        "httpStatus": 200,
+        "metadataGetAttempts": 2,
+        "otherExternalAttempts": 0,
+        "preloadedProcesses": 2,
+        "externalNetworkBlocked": true,
+        "coldCache": true
+      },
+      {
+        "mode": "isolated",
+        "httpStatus": 200,
+        "metadataGetAttempts": 0,
+        "otherExternalAttempts": 0,
+        "preloadedProcesses": 2,
+        "externalNetworkBlocked": true,
+        "coldCache": true
+      }
+    ]
+  },
+  "applicationAndPublicOutput": {
+    "sourceTreeHash": "2840e893ef7e421979aec6ad2d4ce40a4d31ee3eadb1bbfe6c04511b020575d5",
+    "capturedApplicationSourceUnchanged": true,
+    "publicBuildFiles": 75,
+    "publicBuildBytesUnchanged": true
+  },
+  "perPageTimeoutMs": 30000,
+  "fullSuiteWorkers": 2,
+  "retries": 0,
+  "expectedCIBrowserCases": 101,
+  "independentReview": "pending"
+}

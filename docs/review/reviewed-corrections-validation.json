@@ -92,5 +92,7 @@
   "stagingDryRun": {
     "assets": 107,
     "bindings": 0
-  }
+  },
+  "checkpointHead": "5cafc71764ce89c215282dd68028ca8966bede3e",
+  "note": "Historical initial composition proof. Current reviewer-follow-up results are in seo-cli-and-page-audits.json and exact-head CI in PR29."
 }

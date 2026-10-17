@@ -8,6 +8,8 @@ import {createServer} from 'node:net';
 import {projectFiles,write,inventory} from '../../src/wiki-bridge/files.ts';
 import {articleIds,publicRoutes} from '../../src/seo/policy.ts';
 import {git} from '../wiki-bridge/helpers.mjs';
+import {seoPreviewEnvironment} from './local-runtime.mjs';
+import {verifySeoCliIsolation} from './cli-isolation.mjs';
 test('actual canonical, staging, synthetic and mixed builds produce coherent discovery without touching ordinary dist',{timeout:120000},async()=>{
   const original=inventory('src/content/articles'),dist=inventory('dist');const scratch=mkdtempSync(join(tmpdir(),'agentic-seo-build-')),root=join(scratch,'project');mkdirSync(root);
   for(const [path,bytes]of Object.entries(projectFiles(process.cwd()).files))write(join(root,path),bytes);symlinkSync(resolve('node_modules'),join(root,'node_modules'),'dir');
@@ -17,7 +19,7 @@ test('actual canonical, staging, synthetic and mixed builds produce coherent dis
   async function serve(output,canonical){
     await new Promise((done,failed)=>{const probe=createServer();probe.once('error',failed);probe.listen(8794,'127.0.0.1',()=>probe.close(done));});
     const config=join(scratch,'wrangler-seo-proof.json');writeFileSync(config,JSON.stringify({name:'agentic-bible-seo-proof',compatibility_date:'2026-10-16',workers_dev:false,preview_urls:false,send_metrics:false,assets:{directory:output,html_handling:'force-trailing-slash',not_found_handling:'404-page'}}));
-    const child=spawn(process.execPath,[resolve('node_modules/wrangler/bin/wrangler.js'),'dev','--local','--config',config,'--ip','127.0.0.1','--port','8794','--persist-to',join(root,'worker-state')],{cwd:root,env:{PATH:process.env.PATH,WRANGLER_SEND_METRICS:'false',XDG_CONFIG_HOME:resolve('.git/runtime-config'),XDG_CACHE_HOME:resolve('.git/runtime-cache')},stdio:'ignore'});
+    const child=spawn(process.execPath,[resolve('node_modules/wrangler/bin/wrangler.js'),'dev','--local','--config',config,'--ip','127.0.0.1','--port','8794','--persist-to',join(root,'worker-state')],{cwd:root,env:seoPreviewEnvironment(resolve('.git/runtime-config'),resolve('.git/runtime-cache')),stdio:'ignore'});
     const origin='http://127.0.0.1:8794';try{
       let ready=false;for(let n=0;n<150;n++){if(child.exitCode!==null)throw Error('local static Worker exited');try{const response=await fetch(origin+'/articles/tool-use/');if(response.status===200){ready=true;assert.equal(response.headers.get('x-robots-tag'),canonical?null:'noindex, nofollow');break;}}catch(error){if(error?.code==='ERR_ASSERTION')throw error;}await new Promise(resolve=>setTimeout(resolve,100));}assert.equal(ready,true,'local static Worker startup');
       assert.deepEqual(await (await fetch(origin+'/indexing-manifest.json')).json(),manifest(output));
@@ -42,3 +44,5 @@ test('actual canonical, staging, synthetic and mixed builds produce coherent dis
     assert.deepEqual(inventory('src/content/articles'),original);assert.deepEqual(inventory('dist'),dist);
   }finally{rmSync(scratch,{recursive:true,force:true});}
 });
+
+test('actual cold-cache SEO Wrangler CLI denies external networking and skips metadata only with explicit isolation',{timeout:45000},async()=>{await verifySeoCliIsolation();});

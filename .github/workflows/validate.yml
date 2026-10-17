@@ -51,6 +51,7 @@ jobs:
             .git/wiki-bridge-parallel-diagnostics.json
             .git/wiki-upgrade-*-diagnostics.json
             .git/wiki-runtime-network-isolation.json
+            .git/seo-cli-network-isolation.json
             .git/reviewed-corrections-network-isolation.json
             .git/reviewed-corrections-native-evidence.json
             .git/reviewed-corrections-sigkill-evidence.json
