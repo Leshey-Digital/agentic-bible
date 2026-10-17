@@ -1,6 +1,7 @@
 import {createServer} from 'node:http';
 import {join} from 'node:path';
 import {bounded} from './files.ts';
+import {hash} from '../publishing/contracts.ts';
 import {WikiBridge} from './store.ts';
 const headers={'Cache-Control':'no-store','X-Robots-Tag':'noindex, nofollow','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer','Content-Security-Policy':"default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; img-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'"};
 const mime=(path:string)=>path.endsWith('.html')?'text/html; charset=utf-8':path.endsWith('.js')?'text/javascript':path.endsWith('.css')?'text/css':path.endsWith('.json')?'application/json':path.endsWith('.svg')?'image/svg+xml':'application/octet-stream';
@@ -16,9 +17,12 @@ export function wikiServer(bridge:WikiBridge){
       const current=bridge.current();const match=/^\/wiki-snapshots\/([a-f0-9]{64})\/(.*)$/.exec(path);
       if(!match){if(!current){send(503,bridge.status().pending[0]?.phase??'no_active_wiki');return;}send(302,'','text/plain',{Location:`/wiki-snapshots/${current.reference.id}${path}${url.search}`});return;}
       const reference=current?.reference.id===match[1]?current.reference:current?.manifest.state.ancestors.find(ref=>ref.id===match[1]);if(!reference){send(404,'site_not_activated');return;}
-      const manifest=bridge.load(reference);const file=match[2]===''?'index.html':match[2].endsWith('/')?match[2]+'index.html':match[2];
+      const manifest=reference.id===current!.reference.id&&reference.manifestHash===current!.reference.manifestHash?current!.manifest:bridge.load(reference);const file=match[2]===''?'index.html':match[2].endsWith('/')?match[2]+'index.html':match[2];
       if(file!=='manifest.json'&&!Object.hasOwn(manifest.files,file)){send(404,'wiki_route_not_found');return;}
-      send(200,bounded(join(bridge.root,'sites',reference.id,file),16*1024*1024),mime(file));
+      const bytes=bounded(join(bridge.root,'sites',reference.id,file),16*1024*1024);
+      const expected=file==='manifest.json'?reference.manifestHash:manifest.files[file].sha256;
+      if(hash(bytes)!==expected||file!=='manifest.json'&&bytes.length!==manifest.files[file].bytes){send(503,'wiki_integrity_failure');return;}
+      send(200,bytes,mime(file));
     }catch{send(503,'wiki_integrity_failure');}
   });return server;
 }

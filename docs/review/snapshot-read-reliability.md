@@ -1,0 +1,29 @@
+# Snapshot read and local harness reliability
+
+Candidate from immutable PR27 `d3c80414634480fdf479131bd96e490c58b1d1a0`, branch `fix/snapshot-read-reliability`. [Change proposal](../../openspec/changes/snapshot-read-reliability/proposal.md). This is a separate review candidate; composition acceptance remains withheld. No deployment, live/provider/paid calls, credentials, license, content, transport allowlist or spending-limit changes.
+
+## Measured defects and changes
+
+The same saved PR27 artifact contains 1,306,218 file bytes. A direct `bridge.load()` requested 1,410,367,875 cumulative bytes through `Buffer.alloc` before this change and 1,333,194 after it, across the same 87 calls. These are cumulative allocation requests, **not peak RSS**. The unchanged pinned HTTP probe returns 200/13,207 bytes; its current inventory is validated once instead of twice. `bounded()` now allocates observed regular-file size plus one initialized growth sentinel, handles short reads and rejects growth/shrink, oversized/nonregular files and final-component symlinks. Existing caps and full hash/inventory checks remain.
+
+Pinned current requests reuse only their own validated current manifest. Ancestor requests still validate current activation authority and the selected ancestor. No cross-request cache exists. Actual response bytes must match the selected entry's length and SHA; raw manifest bytes must match the selected reference's manifest hash. Regression tests mutate an article and raw manifest after the final load returns: both fail with503, remain rejected on the next request, and return200 after restoration. An unrequested asset's corruption still rejects an article request. Historical bytes are served unchanged.
+
+Actual local Miniflare factories set `cf:false`; local Wrangler and immutable archived runtime harnesses set `CLOUDFLARE_CF_FETCH_ENABLED=false`. A separate blocked-external-network probe observes one denied framework metadata attempt in its positive control, zero attempts in both the archived-style environment and current factory, zero application fetches and a real D1 insert/read value7. Application request counters alone are not proof of framework isolation. This identifies a separate metadata dependency, not the cause of the earlier59.919-second socket closure.
+
+The child validates argument shape and expected parent PID before resolving Astro/Pagefind, with the existing owner guard and45-second deadline active during imports. The deterministic import-hook comparison records frozen PR27 attempting a heavy import (exit1) versus this candidate rejecting before it (exit3); both use the unchanged five-second boundary. This proves ordering, not a universal startup latency guarantee.
+
+## Diagnostics and limits
+
+Child stderr retains only whitelisted structured phases and safe error types/codes/cause chains, at most12 phase records and8KiB persisted diagnostics. No raw error message, stack, path, URL, query, cookie, SQL or payload is saved. Per-attempt records live under the owned private store's `jobs/<hash>/build-<attempt>-diagnostics.json`. Parallel tests record both settled outcomes and their safe child evidence in `.git/wiki-bridge-parallel-diagnostics.json`; archived workers record safe stage/exit/network diagnostics. CI uploads these selected files alongside browser evidence, including on failure. Undici observation retains at most16 request-error summaries classified only as metadata/loopback/external/unknown. Observation adds no retry.
+
+All existing five-second browser assertions,180-second boundaries,45-second child deadline, bounded captures, real workerd/D1 and SIGKILL tests remain. The new child-fixture tests specifically verify redaction and synchronous checkpoint cleanup; they supplement rather than replace actual full builds.
+
+The original59.919-second socket closure, discarded parallel rejection, intermittent mobile search failure and composition timeout have **not** all been reproduced or explained. Passing this candidate does not close those independent reliability findings. Retained diagnostics should make the next failure actionable; no blanket retries or relaxed timeouts were added.
+
+## Reproduction and evidence
+
+Run `npm ci`, `npm run validate`, then sequentially `test:wiki-seo:browser`, `test:browser`, `test:editorial:browser`, `test:integration:browser`, `test:monitoring:worker`, `test:settings:worker`, `test:publication:browser`, `test:combined:browser`, `test:wiki-bridge:browser`, and `staging:check` through `npm run`. Node24.19.0/npm11.9.0 are pinned. `validate` exercises actual git archives at PR21 `c3d1d7a47e55862c53840d52ad4c71631bd9ad9e` (3), PR22 `398bacc73a4c8b8e8a40dd75d1aa7d96bb86c950` (8) and PR23 `54b9d0793af36c00c9feca7a8933d3c1a9fa9d95` (14), alongside current20. Browser checks use genuine Pagefind from those artifacts. Historical source bytes are never patched.
+
+Local checks passed: full124 tests (0 failures/cancellations), Astro91 files (0 errors/warnings),53 browser cases across all retained suites, both native restart checks and staging dry run107 assets/no bindings. One cold20-entry snapshot search completed in290ms with0 worker attempts; this is an observation, not a latency guarantee. Validation results and exact-head CI are recorded in the draft PR and accompanying sanitized JSON. The separately implemented correction workflow is preserved at local commit `a222eece3f4719a77c1da4cc39d5ab6b0bfa268a`; it is not included or published here. Integration of accepted reliability work and revalidation are required before proposing that workflow.
+
+Rollback: close this draft and return to frozen PR27. No migration, deployment, external resource or interactive `.wrangler/editorial` change requires rollback. Public identity/auth, legal terms/licensing, staging release and enabled production services remain separate decisions.

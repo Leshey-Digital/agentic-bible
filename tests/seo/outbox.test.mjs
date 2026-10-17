@@ -18,7 +18,7 @@ test('disabled or unconfigured indexing has no SQL effects or provider calls',as
 });
 test('eight-article events preserve the 96-notification cap atomically under concurrency and restart',{timeout:60000},async()=>{
   const git=execFileSync('git',['rev-parse','--absolute-git-dir'],{encoding:'utf8'}).trim(),path=join(git,'seo-eight-article-test');rmSync(path,{recursive:true,force:true});let runtime,db;
-  async function start(){runtime=new Miniflare({...convertV4MiniflareOptions({name:'seo-eight-article-test',modules:true,script:'export default {fetch(){return new Response("local test")}}',compatibilityDate:'2026-10-16',d1Databases:{EDITORIAL_DB:'seo-eight-article-test'},outboundService(){throw Error('external fetch forbidden');}}),resourcePersistencePath:path});db=await runtime.getD1Database('EDITORIAL_DB');}
+  async function start(){runtime=new Miniflare({...convertV4MiniflareOptions({name:'seo-eight-article-test',modules:true,script:'export default {fetch(){return new Response("local test")}}',compatibilityDate:'2026-10-16',d1Databases:{EDITORIAL_DB:'seo-eight-article-test'},outboundService(){throw Error('external fetch forbidden');}}),cf:false,resourcePersistencePath:path});db=await runtime.getD1Database('EDITORIAL_DB');}
   const expanded={...manifest,entries:readingArticleIds.slice(0,8).map(articleId=>({articleId,url:config.origin+`/articles/${articleId}/`,revision:'b'.repeat(64)}))};
   const rows=async()=>({receipts:(await db.prepare('SELECT * FROM indexing_enqueue_receipts ORDER BY event_key').all()).results,notifications:(await db.prepare('SELECT * FROM indexing_notifications ORDER BY id').all()).results});
   await start();try{
@@ -34,7 +34,7 @@ test('eight-article events preserve the 96-notification cap atomically under con
 });
 test('fourteen-article manifests preserve capacity with partial room, concurrent admission and restart',{timeout:60000},async()=>{
   const git=execFileSync('git',['rev-parse','--absolute-git-dir'],{encoding:'utf8'}).trim(),path=join(git,'seo-fourteen-article-test');rmSync(path,{recursive:true,force:true});let runtime,db;
-  async function start(){runtime=new Miniflare({...convertV4MiniflareOptions({name:'seo-fourteen-article-test',modules:true,script:'export default {fetch(){return new Response("local test")}}',compatibilityDate:'2026-10-16',d1Databases:{EDITORIAL_DB:'seo-fourteen-article-test'},outboundService(){throw Error('external fetch forbidden');}}),resourcePersistencePath:path});db=await runtime.getD1Database('EDITORIAL_DB');}
+  async function start(){runtime=new Miniflare({...convertV4MiniflareOptions({name:'seo-fourteen-article-test',modules:true,script:'export default {fetch(){return new Response("local test")}}',compatibilityDate:'2026-10-16',d1Databases:{EDITORIAL_DB:'seo-fourteen-article-test'},outboundService(){throw Error('external fetch forbidden');}}),cf:false,resourcePersistencePath:path});db=await runtime.getD1Database('EDITORIAL_DB');}
   const expanded={...manifest,entries:readingArticleIds.slice(0,14).map(articleId=>({articleId,url:config.origin+`/articles/${articleId}/`,revision:'c'.repeat(64)}))};
   const rows=async()=>({receipts:(await db.prepare('SELECT * FROM indexing_enqueue_receipts ORDER BY event_key').all()).results,notifications:(await db.prepare('SELECT * FROM indexing_notifications ORDER BY id').all()).results});
   await start();try{
@@ -51,7 +51,7 @@ test('fourteen-article manifests preserve capacity with partial room, concurrent
 });
 test('twenty-article manifests preserve capacity with partial room, concurrent admission and restart',{timeout:60000},async()=>{
   const git=execFileSync('git',['rev-parse','--absolute-git-dir'],{encoding:'utf8'}).trim(),path=join(git,'seo-twenty-article-test');rmSync(path,{recursive:true,force:true});let runtime,db;
-  async function start(){runtime=new Miniflare({...convertV4MiniflareOptions({name:'seo-twenty-article-test',modules:true,script:'export default {fetch(){return new Response("local test")}}',compatibilityDate:'2026-10-16',d1Databases:{EDITORIAL_DB:'seo-twenty-article-test'},outboundService(){throw Error('external fetch forbidden');}}),resourcePersistencePath:path});db=await runtime.getD1Database('EDITORIAL_DB');}
+  async function start(){runtime=new Miniflare({...convertV4MiniflareOptions({name:'seo-twenty-article-test',modules:true,script:'export default {fetch(){return new Response("local test")}}',compatibilityDate:'2026-10-16',d1Databases:{EDITORIAL_DB:'seo-twenty-article-test'},outboundService(){throw Error('external fetch forbidden');}}),cf:false,resourcePersistencePath:path});db=await runtime.getD1Database('EDITORIAL_DB');}
   const expanded={...manifest,entries:readingArticleIds.slice(0,20).map(articleId=>({articleId,url:config.origin+`/articles/${articleId}/`,revision:'c'.repeat(64)}))};
   const rows=async()=>({receipts:(await db.prepare('SELECT * FROM indexing_enqueue_receipts ORDER BY event_key').all()).results,notifications:(await db.prepare('SELECT * FROM indexing_notifications ORDER BY id').all()).results});
   await start();try{
@@ -68,7 +68,7 @@ test('twenty-article manifests preserve capacity with partial room, concurrent a
 });
 test('actual local D1 outbox migration/replay/concurrency/restart/faults and bounds preserve unrelated data',{timeout:120000},async()=>{
   const git=execFileSync('git',['rev-parse','--absolute-git-dir'],{encoding:'utf8'}).trim(),path=join(git,'seo-outbox-test');rmSync(path,{recursive:true,force:true});let runtime,db,calls=0;
-  async function start(){runtime=new Miniflare({...convertV4MiniflareOptions({name:'seo-outbox-test',modules:true,script:'export default {fetch(){return new Response("read-only test")}}',compatibilityDate:'2026-10-16',d1Databases:{EDITORIAL_DB:'seo-outbox-test'},outboundService(){throw Error('external fetch forbidden');}}),resourcePersistencePath:path});db=await runtime.getD1Database('EDITORIAL_DB');}
+  async function start(){runtime=new Miniflare({...convertV4MiniflareOptions({name:'seo-outbox-test',modules:true,script:'export default {fetch(){return new Response("read-only test")}}',compatibilityDate:'2026-10-16',d1Databases:{EDITORIAL_DB:'seo-outbox-test'},outboundService(){throw Error('external fetch forbidden');}}),cf:false,resourcePersistencePath:path});db=await runtime.getD1Database('EDITORIAL_DB');}
   await start();
   const rows=async()=>({receipts:(await db.prepare('SELECT * FROM indexing_enqueue_receipts ORDER BY event_key').all()).results,notifications:(await db.prepare('SELECT * FROM indexing_notifications ORDER BY id').all()).results});
   const provider={id:'indexnow',origin:config.origin,ownershipVerified:true,supports:'canonical-article-updates',async notify(){calls++;return {status:200};}};

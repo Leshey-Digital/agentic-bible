@@ -32,3 +32,12 @@ test('an actual pre-expansion store retains current/history Pagefind and exact r
     writeFileSync(join(git,'wiki-bridge-upgrade-browser-evidence.json'),JSON.stringify({legacyArticles:3,newArticles:data.newArticles,historicalPagefind:true,currentPagefind:true,newTopicSearches:additions,legacyNewTopicsAbsent:true,historicalSitemapAbsent:true,legacyReplays:2,currentReplay:true,replayD1Sql:sql,sourceFetches:fetches,chargesPreserved:true,oldSnapshotsUnchanged:true},null,2)+'\n');
   }finally{for(const server of servers)await new Promise(done=>server.close(done));await local.runtime.dispose();await close();}
 });
+
+test('retained eight- and fourteen-entry Pagefind indexes keep their own historical topic inventories',async({page})=>{
+  const proofs=JSON.parse(readFileSync(join(git,'wiki-historical-eight-fourteen.json'),'utf8'));const servers=[];
+  try{for(const proof of proofs){const bridge=new WikiBridge(proof.name),before=inventory(join(bridge.root,'sites')),server=wikiServer(bridge);await new Promise(done=>server.listen(0,'127.0.0.1',done));servers.push(server);const origin=`http://127.0.0.1:${server.address().port}`;
+    expect((await(await page.request.get(origin+'/source-catalog.json')).json()).articles).toHaveLength(proof.articles);
+    for(const [query,count]of [['MemGPT',1],['Tree of Thoughts',proof.articles===14?1:0]]){await page.goto(`${origin}/wiki-snapshots/${proof.site.id}/search/`);await page.locator('#search-input').fill('"'+query+'"');await page.locator('#search-form button[type=submit]').click();await expect(page.locator('#search-status')).toContainText(`${count} ${count===1?'entry':'entries'} found`);await expect(page.locator('#search-results>li')).toHaveCount(count);}
+    expect(inventory(join(bridge.root,'sites'))).toEqual(before);
+  }}finally{for(const server of servers)await new Promise(done=>server.close(done));}
+});
