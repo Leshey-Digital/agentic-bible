@@ -26,8 +26,8 @@ test('all generated links and fragments resolve, including article citations', (
   }
 });
 
-test('eight substantive articles include provenance, review status and connected ideas', () => {
-  assert.equal(articlePages.length, 8);
+test('fourteen substantive articles include provenance, review status and connected ideas', () => {
+  assert.equal(articlePages.length, 14);
   for (const page of articlePages) {
     const source = html(page);
     assert.match(source, /Editorial review pending/);
@@ -46,11 +46,23 @@ test('new genuine entries have substantive prose, audited citations and actual G
   for(const id of ['agent-orchestration','agent-memory','retrieval-augmented-generation','agent-evaluation','prompt-injection']){
     const source=html(`dist/articles/${id}/index.html`),body=/<div class="prose"[^>]*>([^]*?)<\/div>/.exec(source)?.[1]??'';
     assert.ok(body.replace(/<[^>]*>/g,' ').split(/\s+/).length>500,`${id}: substantive article body`);
-    assert.match(source,new RegExp(`/commits/feat/encyclopedia-agent-topics/src/content/articles/${id}\\.md`));
+    assert.match(source,new RegExp(`/commits/feat/encyclopedia-operating-principles/src/content/articles/${id}\\.md`));
     assert.doesNotMatch(source,/Published local demonstration|Supplied local demonstration|Bound original bytes/);
     const claims=record.claims.filter(claim=>claim.articleId===id);assert.equal(claims.length,3);
     for(const claim of claims){assert.ok(body.includes(`href="#source-${claim.citationId}"`));assert.ok(source.includes(`href="${claim.url}"`));assert.ok(claim.sectionsChecked&&claim.supports&&claim.limits&&claim.versionContext);}
     assert.ok(attrs(source,'href').filter(href=>/^\/articles\//.test(href)).length>=4);
+  }
+});
+
+test('six operating-principles entries retain genuine provenance, source dates, primary evidence and current file history',()=>{
+  const record=JSON.parse(readFileSync('docs/review/operating-principles-source-verification.json','utf8'));
+  assert.equal(record.independentEditorialReview,'pending');assert.equal(record.checkedOn,'2026-10-17');
+  for(const id of ['agent-planning','durable-agent-execution','tool-permissions','agent-sandboxing','agent-observability','human-oversight']){
+    const source=html(`dist/articles/${id}/index.html`),body=/<div class="prose"[^>]*>([^]*?)<\/div>/.exec(source)?.[1]??'';
+    assert.ok(body.replace(/<[^>]*>/g,' ').split(/\s+/).length>550,id);assert.match(source,/datetime="2026-10-17"[^>]*>17 October 2026/);
+    assert.doesNotMatch(source,/<dt\b[^>]*>Prepared<\/dt>|Published local demonstration|Supplied local demonstration|Bound original bytes/);
+    assert.ok(source.includes(`/commits/feat/encyclopedia-operating-principles/src/content/articles/${id}.md`));
+    const claims=record.claims.filter(claim=>claim.articleId===id);assert.equal(claims.length,3);for(const claim of claims){assert.ok(body.includes(`href="#source-${claim.citationId}"`));assert.ok(source.includes(`href="${claim.url}"`));assert.ok(claim.sectionsChecked&&claim.supports&&claim.limits&&claim.versionContext);}
   }
 });
 

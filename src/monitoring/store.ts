@@ -1,6 +1,6 @@
 import type { SqlDatabase } from '../editorial/contracts.ts';
 import { digest } from '../editorial/validation.ts';
-import type { SourceCatalog } from './catalog.ts';
+import { catalogSourceLimit, type SourceCatalog } from './catalog.ts';
 import { limits, MonitorError, type Job, type SourceState, type Lease, type Observation, type Candidate, type CandidatePayload, type SourceEvent, type Head, type Scenario } from './contracts.ts';
 
 type SourceRow = { id:string; url:string; title:string; article_ids:string; body_hash:string|null; etag:string|null; last_modified:string|null; checked_at:number; version:number };
@@ -16,15 +16,15 @@ export class MonitorStore {
   async seed(catalog:SourceCatalog) {
     await this.db.batch([
       ...catalog.sources.map(source=>this.db.prepare(`INSERT INTO monitor_sources(id,url,title,article_ids)
-        SELECT ?,?,?,? WHERE (SELECT COUNT(*) FROM monitor_sources)<24 OR EXISTS(SELECT 1 FROM monitor_sources WHERE id=?)
+        SELECT ?,?,?,? WHERE (SELECT COUNT(*) FROM monitor_sources)<? OR EXISTS(SELECT 1 FROM monitor_sources WHERE id=?)
         ON CONFLICT(id) DO UPDATE SET title=excluded.title, article_ids=excluded.article_ids`)
-        .bind(source.id,source.url,source.title,JSON.stringify(source.articleIds),source.id)),
+        .bind(source.id,source.url,source.title,JSON.stringify(source.articleIds),catalogSourceLimit,source.id)),
       ...catalog.articles.map(article=>this.db.prepare('INSERT INTO publication_heads(article_id) VALUES(?) ON CONFLICT DO NOTHING').bind(article.id)),
     ]);
     for(const source of catalog.sources) if(!await this.source(source.id)) throw new MonitorError('catalog_capacity');
   }
   async source(id:string) { const r=await this.db.prepare('SELECT * FROM monitor_sources WHERE id=?').bind(id).first<SourceRow>();return r?sourceRow(r):null; }
-  async sources() { return (await this.db.prepare('SELECT * FROM monitor_sources ORDER BY checked_at,id LIMIT 24').all<SourceRow>()).results.map(sourceRow); }
+  async sources() { return (await this.db.prepare('SELECT * FROM monitor_sources ORDER BY checked_at,id LIMIT ?').bind(catalogSourceLimit).all<SourceRow>()).results.map(sourceRow); }
   async job(id:string) { const r=await this.db.prepare('SELECT * FROM monitor_jobs WHERE id=?').bind(id).first<JobRow>();return r?jobRow(r):null; }
   async hasJobKey(key:string) { return !!await this.db.prepare('SELECT id FROM monitor_jobs WHERE dedupe_key=?').bind(key).first(); }
   async jobs() { return (await this.db.prepare('SELECT * FROM monitor_jobs ORDER BY created_at DESC,id LIMIT 20').all<JobRow>()).results.map(jobRow); }

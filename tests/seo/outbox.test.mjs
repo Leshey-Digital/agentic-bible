@@ -19,7 +19,7 @@ test('disabled or unconfigured indexing has no SQL effects or provider calls',as
 test('eight-article events preserve the 96-notification cap atomically under concurrency and restart',{timeout:60000},async()=>{
   const git=execFileSync('git',['rev-parse','--absolute-git-dir'],{encoding:'utf8'}).trim(),path=join(git,'seo-eight-article-test');rmSync(path,{recursive:true,force:true});let runtime,db;
   async function start(){runtime=new Miniflare({...convertV4MiniflareOptions({name:'seo-eight-article-test',modules:true,script:'export default {fetch(){return new Response("local test")}}',compatibilityDate:'2026-10-16',d1Databases:{EDITORIAL_DB:'seo-eight-article-test'},outboundService(){throw Error('external fetch forbidden');}}),resourcePersistencePath:path});db=await runtime.getD1Database('EDITORIAL_DB');}
-  const expanded={...manifest,entries:readingArticleIds.map(articleId=>({articleId,url:config.origin+`/articles/${articleId}/`,revision:'b'.repeat(64)}))};
+  const expanded={...manifest,entries:readingArticleIds.slice(0,8).map(articleId=>({articleId,url:config.origin+`/articles/${articleId}/`,revision:'b'.repeat(64)}))};
   const rows=async()=>({receipts:(await db.prepare('SELECT * FROM indexing_enqueue_receipts ORDER BY event_key').all()).results,notifications:(await db.prepare('SELECT * FROM indexing_notifications ORDER BY id').all()).results});
   await start();try{
     for(const sql of readFileSync('migrations/0006_indexing_outbox.sql','utf8').replace(/--[^\n]*/g,'').split(';').map(s=>s.trim()).filter(Boolean))await db.prepare(sql).run();
@@ -30,6 +30,23 @@ test('eight-article events preserve the 96-notification cap atomically under con
     const snapshot=await rows();assert.equal(snapshot.receipts.length,12);assert.equal(snapshot.notifications.length,96);for(const row of snapshot.receipts)assert.equal(JSON.parse(row.receipt).ids.length,8);
     await assert.rejects(enqueueIndexing(db,expanded,'eight-article-over-cap',config),{code:'indexing_capacity'});assert.deepEqual(await rows(),snapshot);assert.deepEqual(await enqueueIndexing(db,expanded,'eight-article-first',config),first);
     await runtime.dispose();await start();assert.deepEqual(await rows(),snapshot);assert.deepEqual(await enqueueIndexing(db,expanded,'eight-article-first',config),first);
+  }finally{await runtime.dispose();}
+});
+test('fourteen-article manifests preserve capacity with partial room, concurrent admission and restart',{timeout:60000},async()=>{
+  const git=execFileSync('git',['rev-parse','--absolute-git-dir'],{encoding:'utf8'}).trim(),path=join(git,'seo-fourteen-article-test');rmSync(path,{recursive:true,force:true});let runtime,db;
+  async function start(){runtime=new Miniflare({...convertV4MiniflareOptions({name:'seo-fourteen-article-test',modules:true,script:'export default {fetch(){return new Response("local test")}}',compatibilityDate:'2026-10-16',d1Databases:{EDITORIAL_DB:'seo-fourteen-article-test'},outboundService(){throw Error('external fetch forbidden');}}),resourcePersistencePath:path});db=await runtime.getD1Database('EDITORIAL_DB');}
+  const expanded={...manifest,entries:readingArticleIds.map(articleId=>({articleId,url:config.origin+`/articles/${articleId}/`,revision:'c'.repeat(64)}))};
+  const rows=async()=>({receipts:(await db.prepare('SELECT * FROM indexing_enqueue_receipts ORDER BY event_key').all()).results,notifications:(await db.prepare('SELECT * FROM indexing_notifications ORDER BY id').all()).results});
+  await start();try{
+    for(const sql of readFileSync('migrations/0006_indexing_outbox.sql','utf8').replace(/--[^\n]*/g,'').split(';').map(s=>s.trim()).filter(Boolean))await db.prepare(sql).run();
+    const first=await enqueueIndexing(db,expanded,'fourteen-first',config);assert.equal(first.ids.length,14);
+    for(let n=1;n<5;n++)await enqueueIndexing(db,expanded,'fourteen-release-'+n,config);
+    const raced=await Promise.allSettled(['fourteen-race-one','fourteen-race-two'].map(key=>enqueueIndexing(db,expanded,key,config)));assert.equal(raced.filter(r=>r.status==='fulfilled').length,1);assert.equal(raced.find(r=>r.status==='rejected').reason.code,'indexing_capacity');
+    const before=await rows();assert.equal(before.receipts.length,6);assert.equal(before.notifications.length,84);
+    await assert.rejects(enqueueIndexing(db,expanded,'fourteen-no-room',config),{code:'indexing_capacity'});assert.deepEqual(await rows(),before);
+    const remainder={...expanded,entries:expanded.entries.slice(0,12)},last=await enqueueIndexing(db,remainder,'fourteen-fill-remainder',config);assert.equal(last.ids.length,12);const snapshot=await rows();assert.equal(snapshot.notifications.length,96);
+    await assert.rejects(enqueueIndexing(db,manifest,'fourteen-full',config),{code:'indexing_capacity'});assert.deepEqual(await rows(),snapshot);
+    await runtime.dispose();await start();assert.deepEqual(await rows(),snapshot);assert.deepEqual(await enqueueIndexing(db,expanded,'fourteen-first',config),first);assert.deepEqual(await enqueueIndexing(db,remainder,'fourteen-fill-remainder',config),last);
   }finally{await runtime.dispose();}
 });
 test('actual local D1 outbox migration/replay/concurrency/restart/faults and bounds preserve unrelated data',{timeout:120000},async()=>{

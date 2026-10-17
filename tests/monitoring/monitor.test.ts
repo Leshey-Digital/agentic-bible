@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync, mkdtempSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { SqliteD1 } from '../editorial/sqlite.ts';
-import { validateCatalog } from '../../src/monitoring/catalog.ts';
+import { validateCatalog, sourceId, catalogSourceLimit } from '../../src/monitoring/catalog.ts';
 import { MonitorStore } from '../../src/monitoring/store.ts';
 import { runJob, runDue, scheduleChecks } from '../../src/monitoring/runner.ts';
 import { fixtureTransport } from '../../src/monitoring/fixtures.ts';
@@ -25,11 +25,22 @@ async function changed(store:MonitorStore,time=start) {
   return (await store.candidates())[0];
 }
 
-test('catalog comes from all eight article metadata sets and rejects external/private/credential URLs',async()=>{
-  assert.equal(catalog.articles.length,8);assert.equal(catalog.sources.length,22);
+test('catalog comes from all fourteen article metadata sets and rejects external/private/credential URLs',async()=>{
+  assert.equal(catalog.articles.length,14);assert.equal(catalog.sources.length,37);
   for(const url of ['http://127.0.0.1/','https://evil.invalid/','https://user:secret@www.anthropic.com/','https://www.anthropic.com:444/']) {
     const bad=structuredClone(catalog);bad.sources[0].url=url;await assert.rejects(validateCatalog(bad));
   }
+});
+
+test('metadata/local-fixture catalog enumerates all 48 bounded rows and refuses overflow without changing prior rows',async()=>{
+  const {db,store}=await setup();const full=structuredClone(catalog);
+  const synthetic=async(n:number)=>{const url=`https://docs.langchain.com/fixture-catalog/${n}`;return {id:await sourceId(url),url,title:'Supplied synthetic catalog capacity fixture',articleIds:['ai-agent']};};
+  try{
+    for(let n=0;full.sources.length<catalogSourceLimit;n++)full.sources.push(await synthetic(n));
+    await validateCatalog(full);await store.seed(full);const before=await store.sources();assert.equal(before.length,48);assert.equal(new Set(before.map(s=>s.id)).size,48);
+    const overflow={...full,sources:[...full.sources,await synthetic(100)]};await assert.rejects(validateCatalog(overflow));await assert.rejects(store.seed(overflow),{code:'catalog_capacity'});
+    assert.deepEqual(await store.sources(),before);assert.equal(db.raw.prepare('SELECT COUNT(*) AS n FROM monitor_sources').get()?.n,48);
+  }finally{db.raw.close();}
 });
 
 test('baseline, conditional 304 and same hash never invent a change; changed source auto-publishes with a later review flag',async()=>{

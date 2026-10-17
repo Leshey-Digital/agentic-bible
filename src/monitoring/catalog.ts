@@ -4,7 +4,9 @@ import { readingArticleIds } from '../lib/article-ids.ts';
 export interface CatalogSource { id: string; url: string; title: string; articleIds: string[]; }
 export interface SourceCatalog { version: 1; articles: { id: string; title: string }[]; sources: CatalogSource[]; }
 // Metadata validation only; this does not expand the independent HTTP transport allowlist.
-const allowedHosts = new Set(['www.anthropic.com', 'arxiv.org', 'platform.claude.com', 'developers.openai.com', 'modelcontextprotocol.io', 'docs.langchain.com']);
+const allowedHosts = new Set(['www.anthropic.com', 'arxiv.org', 'platform.claude.com', 'developers.openai.com', 'modelcontextprotocol.io', 'docs.langchain.com', 'docs.temporal.io', 'aws.amazon.com', 'datatracker.ietf.org', 'gvisor.dev', 'opentelemetry.io', 'openai.github.io', 'www.microsoft.com']);
+// Bounded metadata/local-fixture storage only. Transport, request/day and spending limits are independent.
+export const catalogSourceLimit = 48;
 const articleIds = new Set<string>(readingArticleIds);
 export const sourceId = async (url: string) => 's-' + (await digest(url)).slice(0, 24);
 export async function buildCatalog(articles: { id: string; data: { title: string; sources: { title: string; url: string }[] } }[]): Promise<SourceCatalog> {
@@ -19,7 +21,7 @@ export async function buildCatalog(articles: { id: string; data: { title: string
 }
 export async function validateCatalog(value: unknown): Promise<SourceCatalog> {
   const catalog = value as SourceCatalog;
-  if (!catalog || catalog.version !== 1 || !Array.isArray(catalog.articles) || catalog.articles.length !== readingArticleIds.length || !Array.isArray(catalog.sources) || catalog.sources.length < 1 || catalog.sources.length > 24) throw new Error('invalid_catalog');
+  if (!catalog || catalog.version !== 1 || !Array.isArray(catalog.articles) || catalog.articles.length !== readingArticleIds.length || !Array.isArray(catalog.sources) || catalog.sources.length < 1 || catalog.sources.length > catalogSourceLimit) throw new Error('invalid_catalog');
   if (new Set(catalog.articles.map(article => article.id)).size !== readingArticleIds.length) throw new Error('invalid_catalog');
   for (const article of catalog.articles) if (!articleIds.has(article.id) || typeof article.title !== 'string' || article.title.length > 100) throw new Error('invalid_catalog');
   const urls = new Set<string>(); const ids = new Set<string>();
