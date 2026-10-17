@@ -1,6 +1,7 @@
 import {test,expect} from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import {readFileSync,writeFileSync} from 'node:fs';
+import {waitForEditorialStyles} from './stylesheet-ready.ts';
 
 const origin='http://127.0.0.1:8788';
 const catalog=JSON.parse(readFileSync('dist/source-catalog.json','utf8'));
@@ -21,6 +22,7 @@ test('source change automatically publishes a fixture revision, flags it afterwa
   await expect(page.locator('.monitor-candidate')).toHaveCount(source.articleIds.length);
   for(const articleId of source.articleIds)await expect(page.locator('.monitor-candidate').filter({hasText:articleId+' · local fixture ledger'}).locator('h3')).toHaveText('published · review flagged');
   const candidate=page.locator('.monitor-candidate').filter({has:page.locator('.kicker',{hasText:/^ai-agent ·/})});
+  await waitForEditorialStyles(page);
   await page.setViewportSize({width:390,height:844});
   const measure=()=>page.evaluate(()=>({viewport:innerWidth,scrollWidth:document.documentElement.scrollWidth,clientWidth:document.documentElement.clientWidth,mobile:matchMedia('(max-width: 800px)').matches,grid:getComputedStyle(document.querySelector('.monitor-controls')!).gridTemplateColumns,overflow:[...document.querySelectorAll('body *')].filter(element=>element.getBoundingClientRect().right>innerWidth+.1).slice(0,12).map(element=>({tag:element.tagName,className:element.className,text:element.textContent?.slice(0,100),right:element.getBoundingClientRect().right,width:element.getBoundingClientRect().width,minWidth:getComputedStyle(element).minWidth,whiteSpace:getComputedStyle(element).whiteSpace,font:getComputedStyle(element).fontFamily}))}));
   const immediate=await measure();await page.evaluate(()=>new Promise<void>(done=>requestAnimationFrame(()=>requestAnimationFrame(()=>done()))));const geometry={immediate,afterPaint:await measure()};
@@ -36,6 +38,20 @@ test('source change automatically publishes a fixture revision, flags it afterwa
   await page.setViewportSize({width:1440,height:1000});
   expect((await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa']).analyze()).violations).toEqual([]);
   await page.screenshot({path:test.info().outputPath('monitoring-desktop.png'),fullPage:true});
+});
+
+test('native monitoring navigation waits for a delayed stylesheet before strict mobile layout checks',async({page})=>{
+  await page.goto('/admin/sign-in/');await page.getByRole('button',{name:'Start local test session'}).click();await page.getByRole('link',{name:'Source monitoring'}).click();await waitForEditorialStyles(page);
+  let releaseCss!:()=>void,cssRequested!:()=>void;const gate=new Promise<void>(done=>releaseCss=done),requested=new Promise<void>(done=>cssRequested=done);let intercepted=false;
+  await page.route('**/editorial.css',async route=>{if(intercepted)return route.continue();intercepted=true;const response=await route.fetch();cssRequested();await gate;await route.fulfill({response});});
+  const measure=()=>page.evaluate(()=>({viewport:innerWidth,scrollWidth:document.documentElement.scrollWidth,stylesheetLoaded:!!document.querySelector<HTMLLinkElement>('link[href="/editorial.css"]')?.sheet}));
+  try{
+    const clicked=page.getByRole('button',{name:'Queue next hourly fixture batch'}).click();await requested;await page.locator('.monitor-controls').waitFor({state:'attached'});await clicked;await page.setViewportSize({width:390,height:844});
+    const pending=await measure();expect(pending.stylesheetLoaded).toBe(false);
+    let readySettled=false;const ready=waitForEditorialStyles(page).then(()=>readySettled=true);await page.evaluate(()=>document.readyState);expect(readySettled,'DOM availability must not complete the layout-readiness guard').toBe(false);
+    releaseCss();await ready;const loaded=await measure();expect(loaded.stylesheetLoaded).toBe(true);expect(loaded.scrollWidth).toBeLessThanOrEqual(loaded.viewport);
+    const evidence={pending,loaded,nativeClickResolvedBeforeStyles:true,guardWaitedForStyles:true,strictWidthBoundary:true};writeFileSync(test.info().outputPath('monitoring-stylesheet-readiness.json'),JSON.stringify(evidence,null,2));console.info('Monitoring stylesheet readiness: '+JSON.stringify(evidence));
+  }finally{releaseCss();}
 });
 
 test('monitor APIs reject anonymous/reader/CSRF/arbitrary URL requests and preserve duplicate-run idempotency',async({page,request})=>{

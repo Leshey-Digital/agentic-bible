@@ -1,0 +1,19 @@
+{
+  "before": {
+    "clickResolved": true,
+    "width": 785,
+    "viewport": 390,
+    "grid": "none",
+    "sheets": [
+      false
+    ]
+  },
+  "after": {
+    "width": 390,
+    "viewport": 390,
+    "grid": "344px",
+    "sheets": [
+      true
+    ]
+  }
+}

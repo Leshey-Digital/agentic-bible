@@ -1,0 +1,188 @@
+{
+  "run": 38990505207,
+  "artifact": 12084598208,
+  "selection": {
+    "trace": "test-results/monitor-source-change-auto-6689e-ports-review-revert-restore/trace.zip",
+    "callId": "wliy@2311",
+    "snapshots": [],
+    "evaluation": {
+      "start": 34211.29,
+      "wall": null,
+      "after": [
+        {
+          "endTime": 34215.547
+        },
+        {
+          "endTime": 34214.201,
+          "result": {
+            "value": {
+              "b": false
+            }
+          }
+        }
+      ]
+    },
+    "css": [
+      {
+        "path": "http://127.0.0.1:8788/editorial.css",
+        "time": 28.183,
+        "monotonic": 33010.699,
+        "started": "2026-10-17T01:26:07.873Z",
+        "status": 200,
+        "content": {
+          "size": 9909,
+          "mimeType": "text/css; charset=utf-8"
+        },
+        "timings": {
+          "dns": -1,
+          "connect": -1,
+          "ssl": -1,
+          "send": 0,
+          "wait": 12.131,
+          "receive": 16.052
+        }
+      },
+      {
+        "path": "http://127.0.0.1:8788/editorial.css",
+        "time": 7.165,
+        "monotonic": 33190.008,
+        "started": "2026-10-17T01:26:08.056Z",
+        "status": 304,
+        "content": {
+          "size": -1,
+          "mimeType": "text/css; charset=utf-8"
+        },
+        "timings": {
+          "dns": -1,
+          "connect": -1,
+          "ssl": -1,
+          "send": 0,
+          "wait": 5.59,
+          "receive": 1.575
+        }
+      },
+      {
+        "path": "http://127.0.0.1:8788/editorial.css",
+        "time": 11.247,
+        "monotonic": 33346.8,
+        "started": "2026-10-17T01:26:08.216Z",
+        "status": 304,
+        "content": {
+          "size": -1,
+          "mimeType": "text/css; charset=utf-8"
+        },
+        "timings": {
+          "dns": -1,
+          "connect": -1,
+          "ssl": -1,
+          "send": 0,
+          "wait": 10.219,
+          "receive": 1.028
+        }
+      },
+      {
+        "path": "http://127.0.0.1:8788/editorial.css",
+        "time": 8.924,
+        "monotonic": 33683.369,
+        "started": "2026-10-17T01:26:08.552Z",
+        "status": 304,
+        "content": {
+          "size": -1,
+          "mimeType": "text/css; charset=utf-8"
+        },
+        "timings": {
+          "dns": -1,
+          "connect": -1,
+          "ssl": -1,
+          "send": 0,
+          "wait": 7.222,
+          "receive": 1.702
+        }
+      },
+      {
+        "path": "http://127.0.0.1:8788/editorial.css",
+        "time": -1,
+        "monotonic": 34167.238,
+        "started": "2026-10-17T01:26:09.032Z",
+        "status": -1,
+        "content": {
+          "size": -1,
+          "mimeType": "x-unknown"
+        },
+        "timings": {
+          "send": -1,
+          "wait": -1,
+          "receive": -1
+        }
+      }
+    ]
+  },
+  "phases": [
+    {
+      "phase": "before",
+      "sheets": [
+        {
+          "path": "/editorial.css",
+          "loaded": true
+        }
+      ],
+      "geometry": {
+        "viewport": 390,
+        "clientWidth": 390,
+        "scrollWidth": 785,
+        "grid": "none",
+        "overflow": [
+          {
+            "tag": "SELECT",
+            "className": "",
+            "text": "AgentDojo: A Dynamic Environment to Evaluate Prompt Injection Attacks and Defenses for LLM Agents — ",
+            "right": 785,
+            "width": 777,
+            "minWidth": "0px",
+            "whiteSpace": "pre",
+            "font": "Arial"
+          }
+        ]
+      },
+      "withOriginalCss": {
+        "viewport": 390,
+        "scrollWidth": 390,
+        "grid": "344px",
+        "overflow": []
+      }
+    },
+    {
+      "phase": "after",
+      "sheets": [
+        {
+          "path": "/editorial.css",
+          "loaded": true
+        }
+      ],
+      "geometry": {
+        "viewport": 390,
+        "clientWidth": 390,
+        "scrollWidth": 785,
+        "grid": "none",
+        "overflow": [
+          {
+            "tag": "SELECT",
+            "className": "",
+            "text": "AgentDojo: A Dynamic Environment to Evaluate Prompt Injection Attacks and Defenses for LLM Agents — ",
+            "right": 785,
+            "width": 777,
+            "minWidth": "0px",
+            "whiteSpace": "pre",
+            "font": "Arial"
+          }
+        ]
+      },
+      "withOriginalCss": {
+        "viewport": 390,
+        "scrollWidth": 390,
+        "grid": "344px",
+        "overflow": []
+      }
+    }
+  ]
+}

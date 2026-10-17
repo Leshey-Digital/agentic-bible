@@ -1,6 +1,6 @@
 export {};
 interface SearchResult { url: string; meta: { title?: string; description?: string }; plain_excerpt?: string; }
-interface Pagefind { options?: (config:{baseUrl:string})=>Promise<void>; search: (query: string) => Promise<{ results: { data: () => Promise<SearchResult> }[] }>; }
+interface Pagefind { options?: (config:{baseUrl?:string;noWorker:boolean})=>Promise<void>; search: (query: string) => Promise<{ results: { data: () => Promise<SearchResult> }[] }>; }
 const input = document.querySelector<HTMLInputElement>('#search-input')!;
 const form = document.querySelector<HTMLFormElement>('#search-form')!;
 const searchStatus = document.querySelector<HTMLElement>('#search-status')!;
@@ -25,7 +25,9 @@ async function search() {
   searchStatus.textContent = 'Searching the collection…';
   try {
     const moduleUrl = snapshotBase+'pagefind/pagefind.js';
-    engine ??= (import(/* @vite-ignore */ moduleUrl) as Promise<Pagefind>).then(async module=>{if(snapshotBase!=='/')await module.options?.({baseUrl:'/'});return module;});
+    // The MVP index is bounded to twenty entries. Avoid Pagefind's five-second
+    // worker-bootstrap fallback before a cold query can use the same local engine.
+    engine ??= (import(/* @vite-ignore */ moduleUrl) as Promise<Pagefind>).then(async module=>{await module.options?.({noWorker:true,...(snapshotBase!=='/'?{baseUrl:'/'}:{})});return module;});
     const pagefind = await engine;
     if (request !== sequence) return;
     const found = await pagefind.search(query);
