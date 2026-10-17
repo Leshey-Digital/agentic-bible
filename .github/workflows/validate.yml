@@ -9,14 +9,31 @@ concurrency:
   group: validate-${{ github.ref }}
   cancel-in-progress: true
 jobs:
-  validate:
+  original-trace-analysis:
+    if: github.head_ref == 'fix/catalog-seed-atomicity'
     runs-on: ubuntu-latest
-    timeout-minutes: 25
-    # Temporary read-only access to the same repository's original failure trace.
-    # Remove this permission and the diagnostic step after root-cause analysis.
+    timeout-minutes: 5
     permissions:
       contents: read
       actions: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .nvmrc
+      - run: npm install --global npm@11.9.0
+      - run: npm ci
+      - run: PLAYWRIGHT_BROWSERS_PATH=.git/playwright npx --no-install playwright install --with-deps chromium
+      - name: Inspect original stylesheet timing and loaded snapshot
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PLAYWRIGHT_BROWSERS_PATH: .git/playwright
+        run: node scripts/inspect-original-ci-trace.mjs
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
     env:
       ASTRO_TELEMETRY_DISABLED: '1'
       WRANGLER_SEND_METRICS: 'false'
@@ -34,11 +51,6 @@ jobs:
       - run: npm run validate
       - run: npm run staging:check
       - run: PLAYWRIGHT_BROWSERS_PATH=.git/playwright npx --no-install playwright install --with-deps chromium
-      - name: Inspect original mobile failure artifact
-        env:
-          GH_TOKEN: ${{ github.token }}
-          PLAYWRIGHT_BROWSERS_PATH: .git/playwright
-        run: node scripts/inspect-original-ci-trace.mjs
       - run: npm run test:browser
       - run: npm run test:editorial:browser
       - run: npm run test:integration:browser
@@ -55,5 +67,4 @@ jobs:
           path: |
             playwright-report/
             test-results/
-            .git/original-mobile-geometry.json
           retention-days: 7

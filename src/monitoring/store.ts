@@ -18,17 +18,20 @@ export class MonitorStore {
     // Both writes use whole-catalog admission inside D1's atomic batch. Inserting
     // a missing ID increases count and decreases missing by one, preserving this
     // predicate for the head write. A losing seed is a complete no-op, including
-    // existing metadata; storage errors roll the entire batch back.
+    // existing metadata; storage errors roll the entire batch back. Materialize
+    // each statement's decision before writes, independently of planner choices.
     const admission=`(SELECT COUNT(*) FROM monitor_sources)+(SELECT COUNT(DISTINCT json_extract(value,'$.id')) FROM json_each(?) incoming
       WHERE NOT EXISTS(SELECT 1 FROM monitor_sources WHERE id=json_extract(incoming.value,'$.id')))<=?`;
     const results=await this.db.batch([
-      this.db.prepare(`INSERT INTO monitor_sources(id,url,title,article_ids)
+      this.db.prepare(`WITH catalog_admission AS MATERIALIZED (SELECT ${admission} AS fits)
+        INSERT INTO monitor_sources(id,url,title,article_ids)
         SELECT json_extract(value,'$.id'),json_extract(value,'$.url'),json_extract(value,'$.title'),json_extract(value,'$.articleIds')
-        FROM json_each(?) WHERE ${admission}
+        FROM json_each(?) WHERE (SELECT fits FROM catalog_admission)
         ON CONFLICT(id) DO UPDATE SET title=excluded.title,article_ids=excluded.article_ids`)
-        .bind(sources,sources,catalogSourceLimit),
-      this.db.prepare(`INSERT INTO publication_heads(article_id) SELECT json_extract(value,'$.id') FROM json_each(?)
-        WHERE ${admission} ON CONFLICT DO NOTHING`).bind(JSON.stringify(catalog.articles),sources,catalogSourceLimit),
+        .bind(sources,catalogSourceLimit,sources),
+      this.db.prepare(`WITH catalog_admission AS MATERIALIZED (SELECT ${admission} AS fits)
+        INSERT INTO publication_heads(article_id) SELECT json_extract(value,'$.id') FROM json_each(?)
+        WHERE (SELECT fits FROM catalog_admission) ON CONFLICT DO NOTHING`).bind(sources,catalogSourceLimit,JSON.stringify(catalog.articles)),
     ]);
     // Inspect this batch's own result, never a later read another seed can change.
     if(results[0].meta.changes!==catalog.sources.length)throw new MonitorError('catalog_capacity');
