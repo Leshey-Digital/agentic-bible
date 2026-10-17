@@ -1,0 +1,52 @@
+[
+  {
+    "viewport": 320,
+    "width": 320,
+    "proseWidth": 274,
+    "font": 18,
+    "searchWidth": 82.203125,
+    "searchHeight": 44,
+    "titleY": 266.390625,
+    "contentsY": 811.75
+  },
+  {
+    "viewport": 390,
+    "width": 390,
+    "proseWidth": 344,
+    "font": 18,
+    "searchWidth": 88.203125,
+    "searchHeight": 44,
+    "titleY": 266.390625,
+    "contentsY": 680.359375
+  },
+  {
+    "viewport": 768,
+    "width": 768,
+    "proseWidth": 498,
+    "font": 18,
+    "searchWidth": 89.03125,
+    "searchHeight": 44,
+    "titleY": 268.578125,
+    "contentsY": 236.1875
+  },
+  {
+    "viewport": 1024,
+    "width": 1024,
+    "proseWidth": 638,
+    "font": 19,
+    "searchWidth": 120.09375,
+    "searchHeight": 44,
+    "titleY": 268.578125,
+    "contentsY": 236.1875
+  },
+  {
+    "viewport": 1440,
+    "width": 1440,
+    "proseWidth": 646,
+    "font": 19,
+    "searchWidth": 120.09375,
+    "searchHeight": 44,
+    "titleY": 268.578125,
+    "contentsY": 236.1875
+  }
+]

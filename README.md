@@ -112,6 +112,8 @@ The separate [bridge/SEO composition](docs/wiki-seo-integration.md) preserves ex
 
 ## License and contributions
 
+The separate [encyclopedia usability pass](openspec/changes/encyclopedia-usability/proposal.md) preserves the twenty-entry source and existing identity while improving reading measure, article actions, native contents/navigation, search feedback and admin recovery. Run `npm run test:browser` and `npm run test:hosted-admin:browser` after validation for keyboard, narrow/tablet/mobile, reduced-motion, no-script, real Pagefind and controlled signed-admin/D1 error/retry coverage. PR33 and all live release gates remain separate.
+
 The founder approved open-source direction. Specific licensing for code, articles, and submitted material is unresolved; no license is granted by these documents. Third-party contributions are not being solicited or accepted until the founder approves and publishes the relevant terms.
 
 ## Expanded encyclopedia collection
