@@ -1,0 +1,18 @@
+{
+  "immediate": {
+    "viewport": 390,
+    "scrollWidth": 390,
+    "clientWidth": 390,
+    "mobile": true,
+    "grid": "344px",
+    "overflow": []
+  },
+  "afterPaint": {
+    "viewport": 390,
+    "scrollWidth": 390,
+    "clientWidth": 390,
+    "mobile": true,
+    "grid": "344px",
+    "overflow": []
+  }
+}

@@ -1,6 +1,6 @@
 import {test,expect} from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
-import {readFileSync} from 'node:fs';
+import {readFileSync,writeFileSync} from 'node:fs';
 
 const origin='http://127.0.0.1:8788';
 const catalog=JSON.parse(readFileSync('dist/source-catalog.json','utf8'));
@@ -22,7 +22,10 @@ test('source change automatically publishes a fixture revision, flags it afterwa
   for(const articleId of source.articleIds)await expect(page.locator('.monitor-candidate').filter({hasText:articleId+' · local fixture ledger'}).locator('h3')).toHaveText('published · review flagged');
   const candidate=page.locator('.monitor-candidate').filter({has:page.locator('.kicker',{hasText:/^ai-agent ·/})});
   await page.setViewportSize({width:390,height:844});
-  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+  const measure=()=>page.evaluate(()=>({viewport:innerWidth,scrollWidth:document.documentElement.scrollWidth,clientWidth:document.documentElement.clientWidth,mobile:matchMedia('(max-width: 800px)').matches,grid:getComputedStyle(document.querySelector('.monitor-controls')!).gridTemplateColumns,overflow:[...document.querySelectorAll('body *')].filter(element=>element.getBoundingClientRect().right>innerWidth+.1).slice(0,12).map(element=>({tag:element.tagName,className:element.className,text:element.textContent?.slice(0,100),right:element.getBoundingClientRect().right,width:element.getBoundingClientRect().width,minWidth:getComputedStyle(element).minWidth,whiteSpace:getComputedStyle(element).whiteSpace,font:getComputedStyle(element).fontFamily}))}));
+  const immediate=await measure();await page.evaluate(()=>new Promise<void>(done=>requestAnimationFrame(()=>requestAnimationFrame(()=>done()))));const geometry={immediate,afterPaint:await measure()};
+  writeFileSync(test.info().outputPath('monitoring-mobile-geometry.json'),JSON.stringify(geometry,null,2));console.info('Monitoring mobile geometry: '+JSON.stringify(geometry));
+  expect(immediate.scrollWidth,JSON.stringify(geometry)).toBeLessThanOrEqual(immediate.viewport);
   expect((await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa']).analyze()).violations).toEqual([]);
   await page.screenshot({path:test.info().outputPath('monitoring-mobile.png'),fullPage:true});
   await candidate.getByRole('button',{name:'Clear review flag'}).click();await expect(candidate).toContainText('published · review cleared');

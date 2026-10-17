@@ -1,0 +1,9 @@
+# Preserve sealed wiki snapshots across application upgrades
+
+PR22's reader requires today's eight article routes when loading every schemaVersion 1 snapshot. Actual PR21 snapshots contain three articles, so a code upgrade turns healthy current/history pages into `site_corrupt` and prevents accepted receipt replay. Reproduce using the immutable PR21 runtime, its real local D1 receipts and both populated site/publisher stores.
+
+Decode the frozen V1 layout from each snapshot's own hash-bound catalog. Require its declared article pages exactly, the original three core entries and stable reading/search/Pagefind/history/review files. Retain all manifest, reference, path, inventory and byte checks. Current registry completeness belongs to the new-build writer. Do not run today's evolving content or source admission schemas on inert historical metadata.
+
+Keeping a list of historical application releases would couple storage to future catalog edits. Rebuilding old sites would change sealed bytes and receipts. A bounded versioned layout reader preserves the existing storage contract without either dependency. Its V1 limits are 20 article IDs, 128 inert source records and 32 KiB catalog bytes; these are reader bounds, not expanded live source admission or transport permissions. Unknown catalog versions fail closed.
+
+No storage migration, activation, deployment, resource, live fetch, paid call or license decision. New and pending operations retain `build_source_changed` on source changes. CI fetches repository history so it can execute exact PR21 code; it does not fetch an external fixture. Independent exact-head review remains required. PR22 and the six-article PR23 head stay immutable; integration into PR23 follows separate review. Rollback is reverting this successor; stored bytes stay unchanged.
