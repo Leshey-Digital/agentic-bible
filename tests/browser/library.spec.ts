@@ -12,7 +12,7 @@ test('reading, source anchors, related links and topic navigation work', async (
   await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'Topics' }).click();
   await page.getByRole('link', { name: /03.*Protocols/ }).click();
   await expect(page.getByRole('heading', { name: 'Protocols', exact: true })).toBeVisible();
-  await expect(page.locator('.article-list li')).toHaveCount(1);
+  await expect(page.locator('.article-list li')).toHaveCount(2);
 });
 
 test('real Pagefind supports success, empty, no-results, punctuation and rapid replacement', async ({ page }) => {
@@ -52,7 +52,7 @@ test('missing index has a useful fallback and retry action', async ({ page }) =>
 });
 
 test('all core pages pass automated accessibility and fit the viewport', async ({ page }) => {
-  for (const path of ['/', '/articles/ai-agent/', '/articles/tool-use/', '/articles/model-context-protocol/', '/articles/agent-orchestration/', '/articles/agent-memory/', '/articles/retrieval-augmented-generation/', '/articles/agent-evaluation/', '/articles/prompt-injection/', '/topics/', '/about/', '/search/']) {
+  for (const path of ['/', '/articles/ai-agent/', '/articles/tool-use/', '/articles/model-context-protocol/', '/articles/agent-orchestration/', '/articles/agent-memory/', '/articles/retrieval-augmented-generation/', '/articles/agent-evaluation/', '/articles/prompt-injection/', '/articles/agent-planning/', '/articles/durable-agent-execution/', '/articles/tool-permissions/', '/articles/agent-sandboxing/', '/articles/agent-observability/', '/articles/human-oversight/', '/topics/', '/about/', '/search/']) {
     await page.goto(path);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
     const audit = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
@@ -74,7 +74,22 @@ test('five new topics are discoverable through actual Pagefind and connected rea
     await page.locator('.prose a[href^="#source-"]').first().click();await expect(page.locator(':target')).toBeInViewport();
     await page.locator('.related a').first().click();await expect(page.getByRole('heading',{name:'AI agent',exact:true})).toBeVisible();
   }
-  await page.goto('/');await expect(page.locator('.article-list li')).toHaveCount(8);
+  await page.goto('/');await expect(page.locator('.article-list li')).toHaveCount(14);
+});
+
+test('six operating-principles topics connect actual Pagefind, evidence and revision context',async({page})=>{
+  for(const [query,id,title]of [
+    ['Tree of Thoughts','agent-planning','Agent planning'],['idempotency','durable-agent-execution','Durable agent execution'],
+    ['RFC 8707','tool-permissions','Tool permissions'],['Gofer','agent-sandboxing','Agent sandboxing'],
+    ['OpenTelemetry','agent-observability','Agent observability'],['Amershi','human-oversight','Human oversight'],
+  ]){
+    await page.goto('/search/');await expect(page.getByRole('searchbox')).toBeEnabled();await page.getByRole('searchbox').fill(query);
+    const result=page.locator(`#search-results a[href="/articles/${id}/"]`);await expect(result).toBeVisible();await result.click();
+    await expect(page.getByRole('heading',{name:title,exact:true})).toBeVisible();await expect(page.locator('#sources time')).toHaveText('17 October 2026');
+    await expect(page.locator('#revision a.text-link')).toHaveAttribute('href',new RegExp(`/commits/feat/encyclopedia-operating-principles/src/content/articles/${id}\\.md$`));
+    await page.locator('.prose a[href^="#source-"]').first().click();await expect(page.locator(':target')).toBeInViewport();
+    await page.locator('.related a').first().click();await expect(page.getByRole('heading',{name:'AI agent',exact:true})).toBeVisible();
+  }
 });
 
 test('keyboard skip link, search shortcut, 404 and staging headers work', async ({ page, request }) => {

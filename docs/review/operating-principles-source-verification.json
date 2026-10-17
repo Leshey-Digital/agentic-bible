@@ -1,0 +1,189 @@
+{
+  "checkedOn": "2026-10-17",
+  "checkedBy": "AI-assisted project draft",
+  "independentEditorialReview": "pending",
+  "baseHead": "398bacc73a4c8b8e8a40dd75d1aa7d96bb86c950",
+  "method": "Primary publisher/author documentation and versioned research, with relevant sections inspected; original examples labeled separately. No benchmark statistics or imported source text.",
+  "claims": [
+    {
+      "articleId": "agent-planning",
+      "citationId": "plan-solve",
+      "url": "https://arxiv.org/abs/2305.04091v3",
+      "kind": "primary-research",
+      "versionContext": "Version 3, 26 May 2023; ACL 2023. Section 2 separates devising a plan from carrying it out in reasoning prompts; its experiments are not production-agent trials.",
+      "sectionsChecked": "Section 2; abstract and experiment scope",
+      "supports": "Planning followed by execution in prompted reasoning",
+      "limits": "Reasoning benchmarks and historical models; not deployed-agent reliability"
+    },
+    {
+      "articleId": "agent-planning",
+      "citationId": "tree-thoughts",
+      "url": "https://arxiv.org/abs/2305.10601v2",
+      "kind": "primary-research",
+      "versionContext": "Version 2, 3 December 2023; NeurIPS 2023. Sections 3–4 describe candidate generation, evaluation and search in selected problem-solving tasks.",
+      "sectionsChecked": "Sections 3–4; candidate generation/evaluation and BFS/DFS search",
+      "supports": "Exploration and backtracking over intermediate candidate thoughts",
+      "limits": "Selected puzzle/writing tasks; model self-evaluation is not independent proof"
+    },
+    {
+      "articleId": "agent-planning",
+      "citationId": "react",
+      "url": "https://arxiv.org/abs/2210.03629v3",
+      "kind": "primary-research",
+      "versionContext": "Version 3, 10 March 2023; section 2 describes reasoning interleaved with actions and observations. Results concern the evaluated environments and models.",
+      "sectionsChecked": "Section 2; action/observation loop",
+      "supports": "Feedback informs subsequent reasoning and actions",
+      "limits": "Selected models and environments; no universally trustworthy observations"
+    },
+    {
+      "articleId": "durable-agent-execution",
+      "citationId": "langgraph-tasks",
+      "url": "https://docs.langchain.com/oss/python/langgraph/functional-api",
+      "kind": "vendor-implementation-docs",
+      "versionContext": "Living implementation documentation checked 17 October 2026; checkpointing, resumption and Idempotency sections distinguish saved task results from unfinished tasks that may run again.",
+      "sectionsChecked": "Checkpointing comparison; example resumption; Idempotency",
+      "supports": "Saved completed task results versus unfinished tasks that may execute again",
+      "limits": "Checkpointing does not guarantee every external effect occurs exactly once"
+    },
+    {
+      "articleId": "durable-agent-execution",
+      "citationId": "temporal-replay",
+      "url": "https://docs.temporal.io/workflows",
+      "kind": "vendor-implementation-docs",
+      "versionContext": "Living implementation documentation checked 17 October 2026; How Workflow replay works and Resuming a Workflow describe event history and replay constraints in Temporal.",
+      "sectionsChecked": "How Workflow replay works; Resuming a Workflow",
+      "supports": "Event-history replay, deterministic decisions and recorded activity results",
+      "limits": "Workflow replay is distinct from activity retries and end-to-end effects"
+    },
+    {
+      "articleId": "durable-agent-execution",
+      "citationId": "idempotent-apis",
+      "url": "https://aws.amazon.com/builders-library/making-retries-safe-with-idempotent-APIs/",
+      "kind": "vendor-engineering-guidance",
+      "versionContext": "Primary engineering guidance checked 17 October 2026; request identifiers, semantic equivalence, late requests and changed intent. An API-specific contract is needed; this is not a universal exactly-once guarantee.",
+      "sectionsChecked": "Retrying and side effects; client request identifiers; semantic equivalence; late requests; different intent",
+      "supports": "Unknown responses, request identity and API-specific deduplication contracts",
+      "limits": "No universal or unlimited exactly-once guarantee"
+    },
+    {
+      "articleId": "tool-permissions",
+      "citationId": "mcp-authorization",
+      "url": "https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization",
+      "kind": "versioned-protocol-specification",
+      "versionContext": "Versioned 25 November 2025 specification, checked 17 October 2026; HTTP authorization roles, resource parameters, scope and access-token validation. It does not define every application permission.",
+      "sectionsChecked": "Purpose and Scope; Roles; Resource Parameter; Token Handling; scope selection",
+      "supports": "HTTP authorization roles, resource audience and receiver token validation",
+      "limits": "Transport/version-specific; not every application permission or action-specific consent"
+    },
+    {
+      "articleId": "tool-permissions",
+      "citationId": "resource-indicators",
+      "url": "https://datatracker.ietf.org/doc/html/rfc8707",
+      "kind": "standards-track-rfc",
+      "versionContext": "February 2020 Standards Track RFC; sections 2–3 distinguish the intended resource from scope and explain audience restrictions. Describes an OAuth mechanism, not agent behavior or user approval of individual actions.",
+      "sectionsChecked": "Sections 2 and 3; scope/resource distinction and audience restrictions",
+      "supports": "Requested resource and access scope differ; intended audience and tenant boundary",
+      "limits": "OAuth mechanism is not proof of the user intent for an agent action"
+    },
+    {
+      "articleId": "tool-permissions",
+      "citationId": "mcp-security",
+      "url": "https://modelcontextprotocol.io/docs/2025-11-25/tutorials/security/security_best_practices",
+      "kind": "versioned-security-guidance",
+      "versionContext": "Versioned security guidance checked 17 October 2026; token passthrough and confused-deputy risks. These requirements do not prove that a particular deployment enforces them.",
+      "sectionsChecked": "Token passthrough; confused deputy risks",
+      "supports": "Delegated authority must not become unrestricted downstream access",
+      "limits": "Requirements do not establish compliance by a particular deployment"
+    },
+    {
+      "articleId": "agent-sandboxing",
+      "citationId": "gvisor-overview",
+      "url": "https://gvisor.dev/docs/",
+      "kind": "project-implementation-docs",
+      "versionContext": "Living project documentation checked 17 October 2026; Sentry and Gofer describe an application-kernel isolation design and compatibility boundaries.",
+      "sectionsChecked": "Components; Sentry; Gofer; Application compatibility",
+      "supports": "Application-kernel boundary, mediated files and compatibility limits",
+      "limits": "One implementation; no equivalence among all sandbox products"
+    },
+    {
+      "articleId": "agent-sandboxing",
+      "citationId": "gvisor-security",
+      "url": "https://gvisor.dev/docs/architecture_guide/security/",
+      "kind": "project-security-design",
+      "versionContext": "Living security design documentation checked 17 October 2026; goals, host interactions, resource controls and hardware-side-channel limitations. No blanket sandbox or virtual-machine ranking follows.",
+      "sectionsChecked": "Goals; Other Vectors; host controls; hardware-side-channel limits",
+      "supports": "System interface exposure, resource/network controls and residual risks",
+      "limits": "Sandbox is not a substitute for secure architecture; no blanket security ranking"
+    },
+    {
+      "articleId": "agent-sandboxing",
+      "citationId": "claude-sandbox",
+      "url": "https://www.anthropic.com/engineering/claude-code-sandboxing",
+      "kind": "vendor-engineering-guidance",
+      "versionContext": "Engineering announcement published 20 October 2025, checked 17 October 2026; filesystem/network isolation in that product’s described runtime. Vendor-reported statistics and present product defaults are not reproduced here.",
+      "sectionsChecked": "Sandboxed bash tool; filesystem/network restrictions and subprocess coverage",
+      "supports": "Described runtime separates filesystem and network isolation",
+      "limits": "Historical vendor description; omit internal statistics and current-default claims"
+    },
+    {
+      "articleId": "agent-observability",
+      "citationId": "telemetry-primer",
+      "url": "https://opentelemetry.io/docs/concepts/observability-primer/",
+      "kind": "project-conceptual-docs",
+      "versionContext": "Living project documentation checked 17 October 2026; instrumentation, signals, metrics, logs and distributed tracing. Describes software telemetry, not an agent factual-accuracy measure.",
+      "sectionsChecked": "What is Observability; Reliability and metrics; Understanding distributed tracing",
+      "supports": "Instrumentation, logs, traces and numeric aggregation answer different questions",
+      "limits": "Operational telemetry does not establish agent factual correctness"
+    },
+    {
+      "articleId": "agent-observability",
+      "citationId": "telemetry-traces",
+      "url": "https://opentelemetry.io/docs/concepts/signals/traces/",
+      "kind": "project-conceptual-docs",
+      "versionContext": "Living project documentation checked 17 October 2026; trace/span identifiers, parent relationships, timing, attributes and status. Instrumented status reflects the operation being tracked.",
+      "sectionsChecked": "Root/child span examples; trace and span identifiers; attributes/status",
+      "supports": "Operation timing and linkage form a trace with defined scope",
+      "limits": "Operation status is not task-level or factual success"
+    },
+    {
+      "articleId": "agent-observability",
+      "citationId": "agents-tracing",
+      "url": "https://openai.github.io/openai-agents-python/tracing/",
+      "kind": "vendor-implementation-docs",
+      "versionContext": "Living Python SDK documentation checked 17 October 2026; agent/tool/handoff spans, sensitive-data controls and export/redaction behavior. SDK-specific behavior is not enabled or installed by this article.",
+      "sectionsChecked": "Traces and spans; Sensitive data; Custom tracing processors; Redaction before export",
+      "supports": "Agent/tool tracing, potentially sensitive inputs/outputs and export/redaction boundaries",
+      "limits": "SDK-specific; no instrumentation installed or export enabled here"
+    },
+    {
+      "articleId": "human-oversight",
+      "citationId": "human-ai-guidelines",
+      "url": "https://www.microsoft.com/en-us/research/publication/guidelines-for-human-ai-interaction/",
+      "kind": "primary-research",
+      "versionContext": "Primary research publication and linked camera-ready paper, checked 17 October 2026; Linked-paper guideline discussion address capabilities, dismissal, correction and controls. Design evaluation is not proof that human review prevents every error.",
+      "sectionsChecked": "Linked CHI 2019 camera-ready paper, guideline discussion and correction/dismissal examples",
+      "supports": "Communicating capabilities, supporting dismissal/correction and user controls",
+      "limits": "Design-guideline evaluation; not a guarantee of effective review or correctness"
+    },
+    {
+      "articleId": "human-oversight",
+      "citationId": "langgraph-interrupts",
+      "url": "https://docs.langchain.com/oss/python/langgraph/interrupts",
+      "kind": "vendor-implementation-docs",
+      "versionContext": "Living implementation documentation checked 17 October 2026; pausing, resuming with external input, thread identity and re-execution rules. An interrupt mechanism is not a complete reviewer-authentication or authorization policy.",
+      "sectionsChecked": "Pausing/resuming; same thread identity; Rules of interrupts; node re-execution",
+      "supports": "External resume input and repeated pre-interrupt node code",
+      "limits": "Mechanism does not authenticate a reviewer or establish approval scope"
+    },
+    {
+      "articleId": "human-oversight",
+      "citationId": "mcp-tools",
+      "url": "https://modelcontextprotocol.io/specification/2025-11-25/server/tools",
+      "kind": "versioned-protocol-specification",
+      "versionContext": "Versioned 25 November 2025 specification, checked 17 October 2026; User Interaction Model recommends human ability to deny invocations and visible tool/confirmation UI. Protocol guidance is distinct from this project’s article-publication policy.",
+      "sectionsChecked": "User Interaction Model",
+      "supports": "Recommended deny ability, visible invocations and confirmations",
+      "limits": "Attributed protocol recommendation, distinct from project article-publication policy"
+    }
+  ]
+}

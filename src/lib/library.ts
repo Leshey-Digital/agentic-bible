@@ -13,4 +13,4 @@ export async function library() {
 export const articleUrl = (id: string) => `/articles/${id}/`;
 export const topicUrl = (topic: string) => `/topics/${topic.toLowerCase()}/`;
 export const repository = 'https://github.com/Leshey-Digital/agentic-bible';
-export const sourceBranch = 'feat/encyclopedia-agent-topics';
+export const sourceBranch = 'feat/encyclopedia-operating-principles';

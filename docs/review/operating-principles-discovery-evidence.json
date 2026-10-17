@@ -1,0 +1,192 @@
+{
+  "baseHead": "398bacc73a4c8b8e8a40dd75d1aa7d96bb86c950",
+  "scope": "local builds and controlled browser/Worker tests only; no deployment or indexing submission",
+  "mvpArticles": {
+    "current": 14,
+    "target": 20,
+    "remaining": 6,
+    "clusters": {
+      "Foundations": 6,
+      "Capabilities": 6,
+      "Protocols": 2
+    }
+  },
+  "productionCandidate": {
+    "schemaVersion": 1,
+    "mode": "canonical",
+    "origin": "https://agenticbible.si",
+    "entries": [
+      {
+        "articleId": "agent-evaluation",
+        "url": "https://agenticbible.si/articles/agent-evaluation/",
+        "revision": "14643868b187191d7ab0e4e5bb5054c81a8d2ec835668aee78e22c5fe9dbf808"
+      },
+      {
+        "articleId": "agent-memory",
+        "url": "https://agenticbible.si/articles/agent-memory/",
+        "revision": "14fd069b896cc82a7a65d9914c4bb9395bf29246e02f935fbab359e9c090585f"
+      },
+      {
+        "articleId": "agent-observability",
+        "url": "https://agenticbible.si/articles/agent-observability/",
+        "revision": "b6e5d3d7384d81f0f13a52dabcbab082494b9f5adb0c5872f192529d9f4197e7"
+      },
+      {
+        "articleId": "agent-orchestration",
+        "url": "https://agenticbible.si/articles/agent-orchestration/",
+        "revision": "a4f21b3f6b7e1a707ce5f87445137a3fe78b3727d41b995d1d23b10e6b7e46d5"
+      },
+      {
+        "articleId": "agent-planning",
+        "url": "https://agenticbible.si/articles/agent-planning/",
+        "revision": "5d2d97261842b15949e9d4b8d8fa5a9def89582093da757f681daebae6482a81"
+      },
+      {
+        "articleId": "agent-sandboxing",
+        "url": "https://agenticbible.si/articles/agent-sandboxing/",
+        "revision": "e503cc40fda5716f2857d417d647491aedaa95b02fabedc0f1136d57d07cb431"
+      },
+      {
+        "articleId": "ai-agent",
+        "url": "https://agenticbible.si/articles/ai-agent/",
+        "revision": "0de7fcfa22448f9306140dcb7496ee2fcf208bedbdfae91130682ee630f3d85b"
+      },
+      {
+        "articleId": "durable-agent-execution",
+        "url": "https://agenticbible.si/articles/durable-agent-execution/",
+        "revision": "4e22ef4d1ed72d2d5d499ff8cf6bc2145257af7b19aa9d543be1f635537fd9e5"
+      },
+      {
+        "articleId": "human-oversight",
+        "url": "https://agenticbible.si/articles/human-oversight/",
+        "revision": "7a1063297c485b381691c1a9399c878bd7275c280d76e6f6c9a59b363afb6b5d"
+      },
+      {
+        "articleId": "model-context-protocol",
+        "url": "https://agenticbible.si/articles/model-context-protocol/",
+        "revision": "8fdd86b9a21495d1dbd3f539374d1233209913aa61363f35c4c02e108cb9ae12"
+      },
+      {
+        "articleId": "prompt-injection",
+        "url": "https://agenticbible.si/articles/prompt-injection/",
+        "revision": "b3c86e2917fa24fa6f6233408f7fc58fa56ffa007c3cb099e6b83c4e15573963"
+      },
+      {
+        "articleId": "retrieval-augmented-generation",
+        "url": "https://agenticbible.si/articles/retrieval-augmented-generation/",
+        "revision": "ececd7198902abb0a552ac71d035a156b6af76b2b707aa4707cc0743cdf1d112"
+      },
+      {
+        "articleId": "tool-permissions",
+        "url": "https://agenticbible.si/articles/tool-permissions/",
+        "revision": "2afb62330cc8cb640c2d9cc41ed8cae68987cf5aff3eda5f29a399530c6c277d"
+      },
+      {
+        "articleId": "tool-use",
+        "url": "https://agenticbible.si/articles/tool-use/",
+        "revision": "bf433486d5b9facf273cda4c2929cfd3c01b91ba1a5baeaf5be7469f693a4ffc"
+      }
+    ]
+  },
+  "metadataCatalog": {
+    "articles": 14,
+    "uniqueCitationUrls": 37,
+    "boundedLocalFixtureSourceCapacity": 48
+  },
+  "newArticleBodyWords": {
+    "agent-planning": 641,
+    "durable-agent-execution": 647,
+    "tool-permissions": 644,
+    "agent-sandboxing": 620,
+    "agent-observability": 649,
+    "human-oversight": 650
+  },
+  "syntheticComposition": {
+    "sourceHeads": {
+      "bridge": "6066255556e1c7b6ec6fbf3f17915048e5eff6bf",
+      "seo": "76d32e80714b5ba8040e73150cab914e4a3f8bb8"
+    },
+    "productionOrigin": "https://agenticbible.si",
+    "productionArticles": [
+      "agent-evaluation",
+      "agent-memory",
+      "agent-observability",
+      "agent-orchestration",
+      "agent-planning",
+      "agent-sandboxing",
+      "ai-agent",
+      "durable-agent-execution",
+      "human-oversight",
+      "model-context-protocol",
+      "prompt-injection",
+      "retrieval-augmented-generation",
+      "tool-permissions",
+      "tool-use"
+    ],
+    "first": {
+      "eventId": "wiki-tool-use-original-demo",
+      "fingerprint": "5ddedb6a61594a4fd5311077209c5ac8aa9376dfe6d9f9f41371e23502763aba",
+      "sequence": 1,
+      "kind": "apply",
+      "publisher": {
+        "id": "39c1ce6f0bad0d7efd53926cd047b82bde8a9c08f0138c2afaeaf2571df20944",
+        "manifestHash": "73139f2ec2f4b87efe6b6da9a04c565915cbeda780a53b958252ca166dbb81ee"
+      },
+      "articleRevision": "8949ae864d618c6a73c883aa5ef67d680ec0b411990249c39d62eafc4a172369",
+      "evidenceHash": "26b06c1d962e33b58e3997c87366dd0e783f995aebc05fb0cdb9f5145ceedf29",
+      "outcome": "site-activated",
+      "site": {
+        "id": "8d7d3907d7920c82e36238f79fd029028545d564ab9cd920b2d53284b3474b90",
+        "manifestHash": "0727e5b6b8b6aec2e554331cd5dd0d8d7171ac4de264ff461c2d3be02db113d4"
+      },
+      "parent": null
+    },
+    "second": {
+      "eventId": "seo-composition-second",
+      "fingerprint": "f74cdbf77bc5b9490ca6acde8e267fe8c8dfc1e683ace9f975b39ed03c0424ef",
+      "sequence": 2,
+      "kind": "apply",
+      "publisher": {
+        "id": "d42e59036dc77579907c3bce76781197fcbf94e0961eb3e9fff179144d94d8ed",
+        "manifestHash": "b87e74fb418d71f169998ab619de6ab00ab4d1798961fb560fd1e7e3a48a2507"
+      },
+      "articleRevision": "f856bd331d75370fbac2399f4b6f8b2744e207ec94c7fd7754449e8e3c31b2f4",
+      "evidenceHash": "26b06c1d962e33b58e3997c87366dd0e783f995aebc05fb0cdb9f5145ceedf29",
+      "outcome": "site-activated",
+      "site": {
+        "id": "1a7127d692774bc380be21f026f90b39acd2a3ed286ea5953ebcd7c4d17a0625",
+        "manifestHash": "350e8d185454a00383911694a7d0b549fcbc8b688f4fd96df4f726a7a47f1176"
+      },
+      "parent": {
+        "id": "8d7d3907d7920c82e36238f79fd029028545d564ab9cd920b2d53284b3474b90",
+        "manifestHash": "0727e5b6b8b6aec2e554331cd5dd0d8d7171ac4de264ff461c2d3be02db113d4"
+      }
+    },
+    "restored": {
+      "eventId": "seo-composition-rollback",
+      "fingerprint": "b352120846320dedf065e730b7a4f365566b1221f2d5cdadb6cef4ddf3c2d2d6",
+      "sequence": 3,
+      "kind": "rollback",
+      "publisher": {
+        "id": "9a3fa8a70efcc77050cb93e980256e4ac950481dbdcf734c422703f773abf4ad",
+        "manifestHash": "8d93bb7751bc52daae2fce8a048b6f5c05f5af622378076235492c247bd963a4"
+      },
+      "articleRevision": "8949ae864d618c6a73c883aa5ef67d680ec0b411990249c39d62eafc4a172369",
+      "evidenceHash": "26b06c1d962e33b58e3997c87366dd0e783f995aebc05fb0cdb9f5145ceedf29",
+      "outcome": "site-activated",
+      "site": {
+        "id": "a19e954dad63f5d5aff82efd42fbc76e199726975a714d9640bfe0df21a16e9f",
+        "manifestHash": "c5d793162563deb84bf7b66ea8a0f980bed370ed9c6fadfa569a7669341be2d3"
+      },
+      "parent": {
+        "id": "1a7127d692774bc380be21f026f90b39acd2a3ed286ea5953ebcd7c4d17a0625",
+        "manifestHash": "350e8d185454a00383911694a7d0b549fcbc8b688f4fd96df4f726a7a47f1176"
+      }
+    },
+    "bridgeSourceFetches": 0,
+    "indexingSubmissions": 0,
+    "syntheticSitemap": false,
+    "chargesPreserved": true,
+    "originalMarkdownAndDistPreserved": true
+  }
+}
