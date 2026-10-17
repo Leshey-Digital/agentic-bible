@@ -5,4 +5,5 @@
 - [x] Add three-versus-fourteen catalog/search, six-topic historical absence and new-topic missing-output regressions.
 - [x] Run full combined validation, actual old-runtime upgrades, browsers/native restarts and staging dry run; record observed evidence.
 - [x] Prepare a separate draft handoff, preserving both source heads. The draft PR records actual publication and exact-head CI outcomes.
+- [ ] Diagnose the first CI's monitoring viewport overflow with the strict assertion and bounded geometry evidence; no retry-to-green or unrelated layout change.
 - [ ] Independent source and composition acceptance. Do not start another content branch while source review catches up.
