@@ -15,6 +15,7 @@ const articles = defineCollection({
     publication: z.object({
       revisionId:z.string().regex(/^[a-f0-9]{64}$/),publisherSnapshot:z.string().regex(/^[a-f0-9]{64}$/),
       flags:z.array(z.enum(['editorial-review','source-recency','coverage-gap','limited-source-coverage'])),
+      reviewedCorrections:z.array(z.object({approvalId:z.uuid(),submissionId:z.uuid(),submissionVersion:z.number().int().positive(),reviewer:z.literal('local-editor'),approvedAt:z.number().int().nonnegative()})).max(6).optional(),
       evidence:z.array(z.object({citationId:z.string(),sourceId:z.string(),url:z.url(),hash:z.string().regex(/^[a-f0-9]{64}$/),receiptKey:z.string()})),
     }).optional(),
     related: z.array(z.string()).min(1),

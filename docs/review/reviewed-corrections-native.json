@@ -1,0 +1,60 @@
+{
+  "submission": "e783a29e-084d-4368-b365-e3bebdbef311",
+  "approval": "0c6ad128-1876-4353-bb94-c181d2e33d66",
+  "first": {
+    "articleRevision": "0eb8c55566d21d0fb6c6f2f9433d1ebdadb1b6051a5cd7540516e1b50d643240",
+    "eventId": "correction-0c6ad128-1876-4353-bb94-c181d2e33d66",
+    "evidenceHash": "67066224228ced98c225eff23746eb960b306d2dac52821fdfb11d21dc63d02b",
+    "fingerprint": "67066224228ced98c225eff23746eb960b306d2dac52821fdfb11d21dc63d02b",
+    "kind": "apply",
+    "publisher": {
+      "id": "b9a5632fed0cd666e5cc2f6fb21cc66c33a7e1decf6358ce2b6aeacb55ec248a",
+      "manifestHash": "c419d14cbad57eb0c4c05160ffdcdb0cd7e28979a82c8105d66ea8d24169290c"
+    },
+    "sequence": 1,
+    "outcome": "site-activated",
+    "site": {
+      "id": "3e1107f175d4872026bca093a7ed81f55ea195fdb1dcf47af2bae1d86fffd3f2",
+      "manifestHash": "ab5b3f2c68eb83b17cf10d180f3b59ba74794b7c21e462d1869645bfe05ee0c8"
+    },
+    "parent": null
+  },
+  "restored": {
+    "eventId": "correction-3a34cc08-f83e-4dca-99c0-318b2afa7780",
+    "fingerprint": "609f99e9a36d11e98e326105e79df2284f2a10c0189d5dde8c3ddafa64b3f2de",
+    "sequence": 2,
+    "kind": "rollback",
+    "publisher": {
+      "id": "0a8049963434d9217cb20c563b34578570799db23fab7445e7af8fa9c9cbbb87",
+      "manifestHash": "9707e14bc33b8155f2f37ead0c716038ee8227a86d465f352815e78b777d4157"
+    },
+    "articleRevision": null,
+    "evidenceHash": "609f99e9a36d11e98e326105e79df2284f2a10c0189d5dde8c3ddafa64b3f2de",
+    "outcome": "site-activated",
+    "site": {
+      "id": "86ac31ff879b7bd458b8c113b3e77872445a67accc4e52fb54de922fd7a59b8d",
+      "manifestHash": "c577632cb5ff0f21dd5da9393a9dc7ce43c8ee35fc280bf72ea407cba1879fd4"
+    },
+    "parent": {
+      "id": "3e1107f175d4872026bca093a7ed81f55ea195fdb1dcf47af2bae1d86fffd3f2",
+      "manifestHash": "ab5b3f2c68eb83b17cf10d180f3b59ba74794b7c21e462d1869645bfe05ee0c8"
+    }
+  },
+  "nativeD1": true,
+  "forgedAuthorityRejected": true,
+  "reviewAuditRollback": true,
+  "concurrentApprovalsOneWinner": true,
+  "sevenRecordCapacityRejectedAtomically": true,
+  "eighthRecordReservedForRollback": true,
+  "pendingReviewLocked": true,
+  "changedReplayRejected": true,
+  "publisherInterruptionRecovered": true,
+  "activationInterruptionRecovered": true,
+  "completionFaultRolledBackAndReplayed": true,
+  "exactReplayAfterRollback": true,
+  "originalProseAndCodeRetained": true,
+  "untrustedTextNotCopied": true,
+  "originalMarkdownAndDistPreserved": true,
+  "sourceFetches": 0,
+  "paidCalls": 0
+}

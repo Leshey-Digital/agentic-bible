@@ -51,14 +51,21 @@ test('missing index has a useful fallback and retry action', async ({ page }) =>
   await expect(page.getByRole('searchbox')).toHaveValue('agent');
 });
 
-test('all core pages pass automated accessibility and fit the viewport', async ({ page }) => {
-  for (const path of ['/', '/articles/ai-agent/', '/articles/tool-use/', '/articles/model-context-protocol/', '/articles/agent-orchestration/', '/articles/agent-memory/', '/articles/retrieval-augmented-generation/', '/articles/agent-evaluation/', '/articles/prompt-injection/', '/articles/agent-planning/', '/articles/durable-agent-execution/', '/articles/tool-permissions/', '/articles/agent-sandboxing/', '/articles/agent-observability/', '/articles/human-oversight/', '/articles/context-engineering/', '/articles/structured-outputs/', '/articles/agent-identity/', '/articles/agent-to-agent-communication/', '/articles/agent-budgets/', '/articles/computer-use-agents/', '/topics/', '/about/', '/search/']) {
+// Fixed coverage: the same 24 pages, once per desktop/mobile project, with unchanged 30-second per-test and axe/viewport assertions.
+const accessibilityPages = ['/', '/articles/ai-agent/', '/articles/tool-use/', '/articles/model-context-protocol/', '/articles/agent-orchestration/', '/articles/agent-memory/', '/articles/retrieval-augmented-generation/', '/articles/agent-evaluation/', '/articles/prompt-injection/', '/articles/agent-planning/', '/articles/durable-agent-execution/', '/articles/tool-permissions/', '/articles/agent-sandboxing/', '/articles/agent-observability/', '/articles/human-oversight/', '/articles/context-engineering/', '/articles/structured-outputs/', '/articles/agent-identity/', '/articles/agent-to-agent-communication/', '/articles/agent-budgets/', '/articles/computer-use-agents/', '/topics/', '/about/', '/search/'] as const;
+for (const path of accessibilityPages) {
+  test(`automated accessibility and viewport: ${path}`, async ({ page, browser }, testInfo) => {
+    if (path === '/') {
+      const runtime = { project: testInfo.project.name, version: browser.version() };
+      console.log('Browser runtime: ' + JSON.stringify(runtime));
+      await testInfo.attach('browser-runtime', { body: JSON.stringify(runtime), contentType: 'application/json' });
+    }
     await page.goto(path);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
     const audit = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
     expect(audit.violations, `${path}: accessibility violations`).toEqual([]);
-  }
-});
+  });
+}
 
 test('five new topics are discoverable through actual Pagefind and connected reading',async({page})=>{
   for(const [query,id,title]of [

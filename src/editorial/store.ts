@@ -12,7 +12,8 @@ const fromRow = (row: Row): Submission => ({
 
 export class D1EditorialStore implements EditorialStore {
   private db: SqlDatabase;
-  constructor(db: SqlDatabase) { this.db = db; }
+  private readonly guardCorrections: boolean;
+  constructor(db: SqlDatabase, guardCorrections = false) { this.db = db; this.guardCorrections = guardCorrections; }
   async submit(input: SubmissionInput, clientHash: string, now: number) {
     const fingerprint = await digest(JSON.stringify([clientHash, input.articleId, input.kind, input.message, input.sourceUrl]));
     const replay = await this.db.prepare('SELECT id, fingerprint FROM submissions WHERE request_key = ?').bind(input.requestKey).first<{ id: string; fingerprint: string }>();
@@ -74,7 +75,7 @@ export class D1EditorialStore implements EditorialStore {
   async update(id: string, change: Change, actor: string, now: number) {
     const eventId = crypto.randomUUID();
     const result = await this.db.batch([
-      this.db.prepare(`UPDATE submissions SET status = ?, tags = ?, version = version + 1, last_event_id = ?, updated_at = ? WHERE id = ? AND version = ?`)
+      this.db.prepare(`UPDATE submissions SET status = ?, tags = ?, version = version + 1, last_event_id = ?, updated_at = ? WHERE id = ? AND version = ? ${this.guardCorrections ? "AND NOT EXISTS (SELECT 1 FROM correction_operations o WHERE o.submission_id=submissions.id AND o.state='approved')" : ""}`)
         .bind(change.status, JSON.stringify(change.tags), eventId, now, id, change.version),
       this.db.prepare(`INSERT INTO editorial_audit (id, submission_id, actor, action, status, tags, created_at)
         SELECT ?, id, ?, 'review-updated', status, tags, ? FROM submissions WHERE id = ? AND last_event_id = ?`)
