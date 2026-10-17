@@ -1,0 +1,29 @@
+{
+  "legacyHead": "c3d1d7a47e55862c53840d52ad4c71631bd9ad9e",
+  "oldArticles": 3,
+  "newArticles": 8,
+  "legacyHttpStatus": 200,
+  "currentHttpStatus": 200,
+  "legacyReplays": 2,
+  "replayD1Sql": 0,
+  "statusAndCurrentUnchanged": true,
+  "futureProof": {
+    "legacyServing": 200,
+    "currentServing": 200,
+    "legacyReplays": 2,
+    "currentReplay": true,
+    "replayD1Sql": 0,
+    "changedSourceWrite": "build_source_changed",
+    "changedSourcePending": "build_source_changed",
+    "chargesPreserved": true,
+    "sourceFetches": 0
+  },
+  "corruptCurrentHttpStatus": 503,
+  "missingDeclaredArticleRejected": true,
+  "newMissingArticleRejected": true,
+  "unlistedArticleRejected": true,
+  "oldSnapshotsUnchanged": true,
+  "publisherJobsAndPointerUnchanged": true,
+  "originalMarkdownAndDistPreserved": true,
+  "sourceFetches": 0
+}
