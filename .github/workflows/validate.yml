@@ -77,6 +77,7 @@ jobs:
             .git/wiki-runtime-network-isolation.json
             .git/seo-cli-network-isolation.json
             .git/reviewed-corrections-network-isolation.json
+            .git/correction-collision-*.json
             .git/reviewed-corrections-native-evidence.json
             .git/reviewed-corrections-sigkill-evidence.json
             .git/reviewed-corrections-browser-*.json

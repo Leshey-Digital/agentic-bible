@@ -1,0 +1,7 @@
+# Correlate correction side effects with the winning approval
+
+Independent PR29 review reproduced a P2 using actual workerd/D1: two initial lookups return null for one request key; `ON CONFLICT DO NOTHING` preserves the winning approval, but a losing batch's submission UPDATE checks only that the key exists in approved state. Another submission can advance without an audit, or a successor version advances the winning item again and poisons retry after restart.
+
+Preserve frozen PR29 `0579936052e8ec15baf4f779e02cd10c22b1c615` and paused hosted adapter PR30 `18f76512ff53267ae2e0be113f2b1e67f8b7b02c`. Create a separate focused successor. Reproduce both schedules with actual D1 and deterministic barriers, then correlate every post-insert submission/audit write with the complete immutable winning candidate: key, fingerprint/command, submission/revision, reviewer/kind and creation time. Rejecting a key conflict must not mutate or audit any row. Matching duplicate input with a different server timestamp must still return the original approval.
+
+Retain stale-base checks, atomic admission, pending locks, source pins, explicit approval and existing retry/security limits. Prove the accepted approval remains retryable after real D1 restart, including a rollback collision where command fingerprints alone do not bind the submission. No schema/provider/architecture change, main/PR merge, deployment, credential, paid call, indexing or licensing change.
