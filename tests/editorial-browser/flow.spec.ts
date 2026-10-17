@@ -1,5 +1,6 @@
 import { test, expect, type APIRequestContext, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import {waitForEditorialStyles} from './stylesheet-ready.ts';
 
 const origin = 'http://127.0.0.1:8788';
 const suggestion = () => ({ requestKey: crypto.randomUUID(), articleId: 'ai-agent', kind: 'correction', message: `Synthetic browser suggestion ${crypto.randomUUID()}: clarify the distinction between an agent and a fixed workflow.`, sourceUrl: 'https://www.anthropic.com/engineering/building-effective-agents', website: '' });
@@ -85,6 +86,7 @@ test('local submission persists through refresh and becomes a tagged, audited in
   expect((await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze()).violations).toEqual([]);
   await page.getByRole('link', { name: 'Back to needs follow-up' }).click();
   await expect(page.locator('.inbox-list')).toContainText(text.slice(0, 80));
+  await waitForEditorialStyles(page);
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.screenshot({ path: test.info().outputPath('editorial-inbox-desktop.png'), fullPage: true });
   expect((await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze()).violations).toEqual([]);

@@ -1,5 +1,6 @@
 import {test,expect,type Page} from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import {waitForEditorialStyles} from './stylesheet-ready.ts';
 
 const origin='http://127.0.0.1:8788';
 const google={tagId:'GT-SYNTHETIC1',ga4Id:'G-TEST000001',enabled:true};
@@ -38,6 +39,7 @@ test('admin edits providers independently, preserves valid stale/invalid input a
   await saveForm(page,'Save Google settings');expect((await conflict).status()).toBe(409);
   await expect(page.getByRole('alert')).toContainText('Your valid entered settings are kept');await expect(page.getByLabel('Google tag ID',{exact:true})).toHaveValue('GT-MYNEWEDIT1');
   await saveForm(page,'Save Google settings');await expect(page.getByRole('status')).toContainText('Settings saved');
+  await waitForEditorialStyles(page);
   await page.setViewportSize({width:1440,height:1000});expect((await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa']).analyze()).violations).toEqual([]);
   await page.screenshot({path:test.info().outputPath('settings-desktop.png'),fullPage:true});
   await page.setViewportSize({width:390,height:844});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);expect((await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa']).analyze()).violations).toEqual([]);
