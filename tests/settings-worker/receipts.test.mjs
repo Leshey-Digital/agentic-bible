@@ -15,7 +15,7 @@ test('actual Worker/D1 no-op receipts survive restart, failures, capacity and ex
   // Reset only this suite's disposable synthetic DB, never interactive or other suite state.
   const state=resolve('.git/settings-receipt-worker-state');rmSync(state,{recursive:true,force:true});mkdirSync(state,{recursive:true});
   const cli=resolve('node_modules/wrangler/bin/wrangler.js');const common=['--config','wrangler.editorial.local.jsonc','--persist-to',state];
-  const env={...process.env,XDG_CONFIG_HOME:resolve('.git/runtime-config'),XDG_CACHE_HOME:resolve('.git/runtime-cache'),WRANGLER_SEND_METRICS:'false'};
+  const env={...process.env,XDG_CONFIG_HOME:resolve('.git/runtime-config'),XDG_CACHE_HOME:resolve('.git/runtime-cache'),WRANGLER_SEND_METRICS:'false',CLOUDFLARE_CF_FETCH_ENABLED:'false'};
   const logPath=resolve(state,'worker.log');const fd=openSync(logPath,'a');const origin='http://127.0.0.1:8788';let child;let cookie;let csrf;
   const command=args=>{const result=spawnSync(process.execPath,[cli,...args,...common],{env,encoding:'utf8',timeout:60_000});assert.equal(result.status,0,'Local D1 command failed');};
   const sql=statement=>{const path=resolve(state,'fixture.sql');writeFileSync(path,statement);command(['d1','execute','EDITORIAL_DB','--local','--file',path]);};

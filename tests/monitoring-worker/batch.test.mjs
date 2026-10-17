@@ -8,7 +8,7 @@ test('actual Worker/D1 receipts survive restart, failed completion and retention
   // Only this dedicated disposable directory is reset. Interactive/editorial browser state is untouched.
   const state=resolve('.git/monitor-command-worker-state');rmSync(state,{recursive:true,force:true});mkdirSync(state,{recursive:true});
   const cli=resolve('node_modules/wrangler/bin/wrangler.js');
-  const env={...process.env,XDG_CONFIG_HOME:resolve('.git/runtime-config'),XDG_CACHE_HOME:resolve('.git/runtime-cache'),WRANGLER_SEND_METRICS:'false'};
+  const env={...process.env,XDG_CONFIG_HOME:resolve('.git/runtime-config'),XDG_CACHE_HOME:resolve('.git/runtime-cache'),WRANGLER_SEND_METRICS:'false',CLOUDFLARE_CF_FETCH_ENABLED:'false'};
   const common=['--config','wrangler.editorial.local.jsonc','--persist-to',state];
   const log=openSync(resolve(state,'worker.log'),'a');let child;
   const origin='http://127.0.0.1:8788';

@@ -15,6 +15,7 @@ jobs:
     env:
       ASTRO_TELEMETRY_DISABLED: '1'
       WRANGLER_SEND_METRICS: 'false'
+      CLOUDFLARE_CF_FETCH_ENABLED: 'false'
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
@@ -42,7 +43,11 @@ jobs:
         if: always()
         with:
           name: browser-evidence
+          include-hidden-files: true
           path: |
             playwright-report/
             test-results/
+            .git/wiki-bridge-parallel-diagnostics.json
+            .git/wiki-upgrade-*-diagnostics.json
+            .git/wiki-runtime-network-isolation.json
           retention-days: 7

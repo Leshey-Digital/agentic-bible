@@ -27,7 +27,7 @@ test('controlled HTTP collection and separately supplied revisions retain distin
       if(scenario==='304'){expect(request.headers.get('if-none-match')).toBe(requests<4?'"controlled-v1"':'"controlled-v2"');return new ControlledResponse(null,{status:304});}
       if(scenario==='redirect')return new ControlledResponse(null,{status:302,headers:{Location:'http://169.254.169.254/private'}});
       return new ControlledResponse(scenario==='baseline'?'Synthetic controlled document one.':'Synthetic controlled document two.',{headers:{'Content-Type':'text/plain',ETag:scenario==='baseline'?'"controlled-v1"':'"controlled-v2"'}});
-    }}),resourcePersistencePath:persist});
+    }}),cf:false,resourcePersistencePath:persist});
     return runtime.getD1Database('EDITORIAL_DB');
   }
   const collect=async(key:string)=>{

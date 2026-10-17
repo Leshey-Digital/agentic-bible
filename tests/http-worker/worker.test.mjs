@@ -12,7 +12,7 @@ test('actual workerd/D1 HTTP observations survive restart with atomic budgets, r
   const bundled=await build({entryPoints:['tests/http-worker/entry.ts'],bundle:true,write:false,format:'esm',platform:'browser',target:'es2022',external:['node:*']});
   let mf;let db;let calls=[];let respond=()=>new Response('Synthetic documentation',{headers:{'Content-Type':'text/plain',ETag:'"v1"','Last-Modified':'Thu, 01 Oct 2026 00:00:00 GMT'}});
   async function start(){mf=new Miniflare({...convertV4MiniflareOptions({name:'http-observations-test',modules:true,script:bundled.outputFiles[0].text,compatibilityDate:'2026-10-16',d1Databases:{EDITORIAL_DB:'http-observations'},d1Persist:path,
-    outboundService:async request=>{calls.push({url:request.url,headers:Object.fromEntries(request.headers),method:request.method});return respond(request);}}),resourcePersistencePath:path});db=await mf.getD1Database('EDITORIAL_DB');}
+    outboundService:async request=>{calls.push({url:request.url,headers:Object.fromEntries(request.headers),method:request.method});return respond(request);}}),cf:false,resourcePersistencePath:path});db=await mf.getD1Database('EDITORIAL_DB');}
   async function stop(){await mf.dispose();mf=undefined;}
   const sql=statement=>db.prepare(statement).run();
   const rows=async(table)=> (await db.prepare(`SELECT * FROM ${table} ORDER BY rowid`).all()).results;

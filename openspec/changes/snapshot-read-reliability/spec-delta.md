@@ -1,0 +1,5 @@
+# Proposed reliability requirements
+
+Bounded regular-file reads allocate in proportion to observed bytes and reject oversized, symlink/nonregular and changed files without relaxing byte caps. Every snapshot request retains fresh full inventory/hash validation; a pinned current request performs one current inventory validation, while an ancestor request still validates its current authority and its distinct target. Actual response bytes match the verified manifest; corrupt output remains503 without fallback or cross-request caching.
+
+Local workerd/D1 startup makes no external metadata request, including the immutable archived runtime's test harness. Actual D1 behavior/receipts remain exercised. Invalid child ownership rejects before importing Astro/Pagefind, reading the plan or creating output, within the unchanged five-second test boundary. Existing child deadline/owner-death protection remains effective during imports. Failed/parallel builds retain bounded safe phase/exit/error-code diagnostics; raw error messages, source/contribution data, credentials and network payloads are excluded.
