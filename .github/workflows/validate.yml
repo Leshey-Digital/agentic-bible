@@ -82,6 +82,7 @@ jobs:
             .git/hosted-projection-build-proof.json
             .git/hosted-runtime-browser-*.json
             .git/reviewed-corrections-network-isolation.json
+            .git/correction-collision-*.json
             .git/reviewed-corrections-native-evidence.json
             .git/reviewed-corrections-sigkill-evidence.json
             .git/reviewed-corrections-browser-*.json

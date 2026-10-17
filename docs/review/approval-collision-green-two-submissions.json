@@ -1,0 +1,57 @@
+{
+  "scenario": "two-submissions",
+  "store": "collision-two-submissions-04e45091-11b2-4338-adcf-228b36e2de87",
+  "initialLookupsBothNull": true,
+  "outcomes": [
+    {
+      "status": "fulfilled"
+    },
+    {
+      "status": "rejected",
+      "code": "approval_key_conflict"
+    }
+  ],
+  "winnerVersion": 2,
+  "loserVersion": 1,
+  "winningApprovalVersion": 1,
+  "winnerAuditEntries": 2,
+  "loserAuditEntries": 1,
+  "noArticlePublished": true,
+  "candidates": [
+    {
+      "fingerprint": "e8af64a5add0f5851157f278117552354e0002ad702d547626f70aab675ac587",
+      "submissionId": "15a2fc14-ae7c-4cf0-ab52-e42fc6658cea",
+      "version": 1,
+      "createdAt": 1792215521288
+    },
+    {
+      "fingerprint": "37c3d32f10ededa75810e7747db2a4e0d218d53b2b646bc1ea22341b4786786f",
+      "submissionId": "866015ea-fb6f-4370-b5aa-b945b074e97d",
+      "version": 1,
+      "createdAt": 1792215521289
+    }
+  ],
+  "realD1RestartPreservedState": true,
+  "winnerRetryAfterRealD1Restart": true,
+  "exactCompletedReplay": true,
+  "rejectedRequestNoMutation": true,
+  "receipt": {
+    "eventId": "correction-6684368b-5232-40cc-9da6-494c6337dada",
+    "fingerprint": "e8af64a5add0f5851157f278117552354e0002ad702d547626f70aab675ac587",
+    "sequence": 1,
+    "kind": "apply",
+    "publisher": {
+      "id": "d24f33d0565480b678475d7abc4668838d6a67862c4342f9ff41d79ca8987c44",
+      "manifestHash": "a3ab8e316b01bf5f181dcb6b8e8578af5106bc376e5165befeecb28c448910be"
+    },
+    "articleRevision": "b67c44598a10fc95934592475d8f8df87040ff946aabc52614db7c4765ec947c",
+    "evidenceHash": "e8af64a5add0f5851157f278117552354e0002ad702d547626f70aab675ac587",
+    "outcome": "site-activated",
+    "site": {
+      "id": "da913f3df21134c53daa9dd4af53b0b2dc79b46b8f52a44a286aa8eaa6b61a1d",
+      "manifestHash": "5b0068b224a9abbb30dffdbaae37c9ecdcb7fda26aeb5fb69ecc68d0ce3512a5"
+    },
+    "parent": null
+  },
+  "originalMarkdownAndDistPreserved": true
+}

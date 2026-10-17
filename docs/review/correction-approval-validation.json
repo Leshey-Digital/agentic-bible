@@ -1,0 +1,129 @@
+{
+  "baseHead": "0579936052e8ec15baf4f779e02cd10c22b1c615",
+  "checkout": "/workspace/agentic-bible-approval-correlation",
+  "branch": "fix/correction-approval-correlation",
+  "runtime": {
+    "node": "v24.19.0",
+    "npm": "11.9.0",
+    "localChromium": "154.0.8037.57",
+    "ciPackagePinnedChromium": "156.0.8078.4"
+  },
+  "validationTests": 132,
+  "browserCases": 101,
+  "nativeRestartChecks": 2,
+  "astroFiles": 96,
+  "astroDiagnostics": 0,
+  "stagingDryRun": {
+    "assets": 107,
+    "bindings": 0,
+    "deployed": false
+  },
+  "commands": [
+    {
+      "command": "npm run validate",
+      "exitCode": 0,
+      "seconds": 106.31,
+      "log": "/tmp/approval-correlation-validate.log",
+      "nodeTests": 132,
+      "browserCases": 0
+    },
+    {
+      "command": "npm run test:wiki-seo:browser",
+      "exitCode": 0,
+      "seconds": 12.85,
+      "log": "/tmp/approval-correlation-test-wiki-seo-browser.log",
+      "nodeTests": 0,
+      "browserCases": 1
+    },
+    {
+      "command": "npm run test:browser",
+      "exitCode": 0,
+      "seconds": 83.93,
+      "log": "/tmp/approval-correlation-test-browser.log",
+      "nodeTests": 0,
+      "browserCases": 68
+    },
+    {
+      "command": "npm run test:editorial:browser",
+      "exitCode": 0,
+      "seconds": 36.52,
+      "log": "/tmp/approval-correlation-test-editorial-browser.log",
+      "nodeTests": 0,
+      "browserCases": 23
+    },
+    {
+      "command": "npm run test:integration:browser",
+      "exitCode": 0,
+      "seconds": 10.37,
+      "log": "/tmp/approval-correlation-test-integration-browser.log",
+      "nodeTests": 0,
+      "browserCases": 1
+    },
+    {
+      "command": "npm run test:monitoring:worker",
+      "exitCode": 0,
+      "seconds": 17.21,
+      "log": "/tmp/approval-correlation-test-monitoring-worker.log",
+      "nodeTests": 1,
+      "browserCases": 0
+    },
+    {
+      "command": "npm run test:settings:worker",
+      "exitCode": 0,
+      "seconds": 22.85,
+      "log": "/tmp/approval-correlation-test-settings-worker.log",
+      "nodeTests": 1,
+      "browserCases": 0
+    },
+    {
+      "command": "npm run test:publication:browser",
+      "exitCode": 0,
+      "seconds": 7.57,
+      "log": "/tmp/approval-correlation-test-publication-browser.log",
+      "nodeTests": 0,
+      "browserCases": 1
+    },
+    {
+      "command": "npm run test:combined:browser",
+      "exitCode": 0,
+      "seconds": 5.72,
+      "log": "/tmp/approval-correlation-test-combined-browser.log",
+      "nodeTests": 0,
+      "browserCases": 1
+    },
+    {
+      "command": "npm run test:wiki-bridge:browser",
+      "exitCode": 0,
+      "seconds": 26.42,
+      "log": "/tmp/approval-correlation-test-wiki-bridge-browser.log",
+      "nodeTests": 0,
+      "browserCases": 4
+    },
+    {
+      "command": "npm run test:corrections:browser",
+      "exitCode": 0,
+      "seconds": 36.69,
+      "log": "/tmp/approval-correlation-test-corrections-browser.log",
+      "nodeTests": 0,
+      "browserCases": 2
+    },
+    {
+      "command": "npm run staging:check",
+      "exitCode": 0,
+      "seconds": 1.11,
+      "log": "/tmp/approval-correlation-staging-check.log",
+      "nodeTests": 0,
+      "browserCases": 0
+    }
+  ],
+  "reproductionNotes": [
+    "Unmodified archived PR29 with new schedule tests fails both expected regression assertions after real D1 restart; red proofs retained separately.",
+    "First archive harness attempt lacked ordinary dist and failed before reproduction; supplied existing static dist, then reproduced both defects.",
+    "First full validation attempt encountered the then-unwritten handoff link; created the handoff and the complete final run passed.",
+    "An exploratory inline --input-type=module restart probe failed in Miniflare worker inheritance; normal .mjs tests perform and pass real restart checks."
+  ],
+  "notRun": [
+    "No deployment, remote D1 migration, production authentication, paid call, live indexing or main merge."
+  ],
+  "publication": "Exact published commit and terminal CI results are recorded in the separate draft PR."
+}

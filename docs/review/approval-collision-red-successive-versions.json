@@ -1,0 +1,39 @@
+{
+  "scenario": "successive-versions",
+  "store": "collision-successive-versions-1318f4fa-d973-4c85-8b2c-a16d3894d5bb",
+  "initialLookupsBothNull": true,
+  "outcomes": [
+    {
+      "status": "rejected",
+      "code": "review_changed_pending"
+    },
+    {
+      "status": "rejected",
+      "code": "approval_key_conflict"
+    }
+  ],
+  "winnerVersion": 3,
+  "loserVersion": 3,
+  "winningApprovalVersion": 1,
+  "winnerAuditEntries": 2,
+  "loserAuditEntries": 2,
+  "noArticlePublished": true,
+  "candidates": [
+    {
+      "fingerprint": "34c50e1cf31ebdcefa2d2c77ac27053d53daaeee4ed4fd2a41301d9262647e72",
+      "submissionId": "c19a4698-2696-48aa-93e8-28386bbd3849",
+      "version": 1,
+      "createdAt": 1792215406369
+    },
+    {
+      "fingerprint": "787ed5ce6d5efd826887b44fd3bec16d68c1e9cbd9b14ff40ec7c32931fa0928",
+      "submissionId": "c19a4698-2696-48aa-93e8-28386bbd3849",
+      "version": 2,
+      "createdAt": 1792215406370
+    }
+  ],
+  "realD1RestartPreservedState": true,
+  "poisonedRetryFailureCode": "bridge_outcome_unconfirmed_retry_same_event",
+  "sourceHead": "0579936052e8ec15baf4f779e02cd10c22b1c615",
+  "actualArchivedRuntime": true
+}

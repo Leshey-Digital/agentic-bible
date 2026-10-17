@@ -5,6 +5,7 @@ import {readFileSync,writeFileSync} from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import {join} from 'node:path';
 import {close} from 'pagefind';
+import {collisionDatabase} from './approval-race-db.mjs';
 import {correctionPreview} from '../../src/corrections/server.ts';
 import {approve,baseline,operation,reviewedCommand,complete} from '../../src/corrections/approval.ts';
 import {canonical} from '../../src/publishing/contracts.ts';
@@ -58,6 +59,6 @@ test('concurrent identical review requests with different server timestamps shar
   const app=await correctionPreview('same-'+randomUUID());try{
     const store=new D1EditorialStore(app.db,true),id=(await store.submit({requestKey:randomUUID(),articleId:'tool-use',kind:'correction',message:'Synthetic identical review concurrency exercise for a local correction.',sourceUrl:'',website:''},'same-test',Date.now())).id,b=app.coordinator.bridge;
     const input={requestKey:randomUUID(),submissionId:id,version:1,note:'Identical reviewed requests must share the first approved decision rather than change its server timestamp.',citationId:'openai',expectedSite:canonical(null),expectedPublisher:canonical(null),sourceTreeHash:projectFiles(b.repo).hash,originalMarkdownHash:baseline(b.repo).hash,confirm:'reviewed',kind:'apply'},now=Date.now();
-    const results=await Promise.all([approve(app.db,b,input,'local-editor',now),approve(app.db,b,input,'local-editor',now+1)]);assert.deepEqual(results[0],results[1]);assert.equal((await app.db.prepare('SELECT COUNT(*) AS n FROM correction_operations').first()).n,1);assert.equal((await store.audit(id)).length,2);assert.equal((await store.get(id)).version,2);
+    const collision=collisionDatabase(app.db,values=>values[7]===now);const results=await Promise.all([approve(collision,b,input,'local-editor',now),approve(collision,b,input,'local-editor',now+1)]);assert.deepEqual(results[0],results[1]);assert.equal((await app.db.prepare('SELECT COUNT(*) AS n FROM correction_operations').first()).n,1);assert.equal((await store.audit(id)).length,2);assert.equal((await store.get(id)).version,2);
   }finally{await app.close();}
 });
