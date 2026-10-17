@@ -67,6 +67,13 @@ jobs:
       - run: npm run test:corrections:browser
       - run: npm run test:hosted:browser
       - run: npm run test:hosted-admin:browser
+      - run: npm run release:prepare
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: release-candidate
+          include-hidden-files: true
+          path: .git/release-candidate/
+          retention-days: 30
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:
@@ -81,8 +88,11 @@ jobs:
             .git/seo-cli-network-isolation.json
             .git/hosted-github-proposal-proof.json
             .git/hosted-connected-native-proof.json
+            .git/release-native-serving-proof.json
+            .git/release-controller-proof.json
             .git/hosted-connected-build-proof.json
             .git/hosted-admin-browser-*.json
+            .git/hosted-draft-response-*.json
             .git/hosted-projection-build-proof.json
             .git/hosted-runtime-browser-*.json
             .git/reviewed-corrections-network-isolation.json

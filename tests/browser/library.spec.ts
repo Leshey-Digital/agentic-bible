@@ -1,5 +1,7 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import {readFileSync} from 'node:fs';
+const sourceCommit=JSON.parse(readFileSync('dist/release-source.json','utf8')).commit;
 
 test('reading, source anchors, related links and topic navigation work', async ({ page }) => {
   await page.goto('/');
@@ -93,7 +95,7 @@ test('six operating-principles topics connect actual Pagefind, evidence and revi
     await page.goto('/search/');await expect(page.getByRole('searchbox')).toBeEnabled();await page.getByRole('searchbox').fill(query);
     const result=page.locator(`#search-results a[href="/articles/${id}/"]`);await expect(result).toBeVisible();await result.click();
     await expect(page.getByRole('heading',{name:title,exact:true})).toBeVisible();await expect(page.locator('#sources time')).toHaveText('17 October 2026');
-    await expect(page.locator('#revision a.text-link')).toHaveAttribute('href',new RegExp(`/commits/feat/encyclopedia-mvp-twenty/src/content/articles/${id}\\.md$`));
+    await expect(page.locator('#revision a.text-link')).toHaveAttribute('href',new RegExp(`/commits/${sourceCommit}/src/content/articles/${id}\\.md$`));
     await page.locator('.prose a[href^="#source-"]').first().click();await expect(page.locator(':target')).toBeInViewport();
     await page.locator('.related a').first().click();await expect(page.getByRole('heading',{name:'AI agent',exact:true})).toBeVisible();
   }
@@ -163,7 +165,7 @@ test('final six topics connect real search, citation anchors, revision history a
     const result=page.locator(`#search-results a[href="/articles/${id}/"]`);await expect(result).toBeVisible();await result.click();
     await expect(page.getByRole('heading',{name:title,exact:true})).toBeVisible();await expect(page.locator('.article-status')).toContainText('Working draft');
     await expect(page.locator('#sources time')).toHaveText('17 October 2026');await expect(page.locator('#revision')).toContainText('Pending · no reviewer assigned');
-    await expect(page.locator('#revision a.text-link')).toHaveAttribute('href',new RegExp(`/commits/feat/encyclopedia-mvp-twenty/src/content/articles/${id}\\.md$`));
+    await expect(page.locator('#revision a.text-link')).toHaveAttribute('href',new RegExp(`/commits/${sourceCommit}/src/content/articles/${id}\\.md$`));
     await page.locator('.prose a[href^="#source-"]').first().click();await expect(page.locator(':target')).toBeInViewport();
     await page.locator('.related a').first().click();await expect(page.getByRole('heading',{name:'AI agent',exact:true})).toBeVisible();
   }

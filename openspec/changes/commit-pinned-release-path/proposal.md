@@ -1,0 +1,7 @@
+# Commit-pinned public history and staging release contract
+
+Preserve PR32 `c8b485f205c55cbbf71cb4770e34de65a9942a18` and all earlier frozen heads. Existing CI validates/builds/tests but provides no reusable release artifact or release orchestration, and article history follows a moving feature branch.
+
+Bind public article history to a verified Git commit containing the exact twenty Markdown files. Unversioned/synthetic copies must not claim Git provenance. Extend the existing validation workflow to package the tested static assets and default-closed Worker, with bounded byte inventories, source/target pins and a compiled manifest binding. Add explicit manual staging deploy/rollback orchestration using existing GitHub Actions artifacts and Cloudflare Worker versions; no new canonical store or service. Require accepted main source, successful exact-source CI, explicit target/current-version pins and owner enablement/protected environment. Preserve historical artifacts and reuse old version/artifact on rollback rather than rebuilding a moving branch.
+
+Exercise actual local Git/ASTRO/Pagefind/Wrangler artifacts plus controlled Cloudflare/GitHub transports, interruption, tampering, stale active version and rollback verification. No actual merge, live deployment, secret creation/configuration, purchase, indexing or licensing change. Setup inputs/minimum scopes and owner handoff remain explicit.
