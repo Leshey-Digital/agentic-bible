@@ -1,0 +1,24 @@
+{
+  "shippedEntrypoint": true,
+  "realRs256Verification": true,
+  "actualWorkerdD1": true,
+  "controlledGitHub": true,
+  "immutableApprovalRestart": true,
+  "lostPullResponseRestartRecovery": true,
+  "oneDraft": true,
+  "completedReplayNoRemoteCalls": true,
+  "publicIntake": false,
+  "published": false,
+  "receipt": {
+    "schemaVersion": 1,
+    "state": "draft-proposed",
+    "published": false,
+    "approvalId": "cfb0cd10-38a4-4a8d-845d-a59c5610a683",
+    "baseCommit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "headCommit": "cd03e6513b64c235540f1ca1f439229a954b06f8",
+    "branch": "content-corrections/cfb0cd10-38a4-4a8d-845d-a59c5610a683",
+    "pullRequest": 900000001,
+    "url": "https://github.com/Leshey-Digital/agentic-bible/pull/900000001",
+    "markdownSha256": "36e0a7b0269f7e7fcb7d2da173e80463c83f1dfbfb0aa741752d18572c94f3b2"
+  }
+}

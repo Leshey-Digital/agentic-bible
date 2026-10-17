@@ -1,0 +1,13 @@
+{
+  "shippedWorker": true,
+  "actualWorkerdD1": true,
+  "controlledSignedGateway": true,
+  "controlledGitHub": true,
+  "project": "mobile",
+  "sourceReviewApprovalDraftReplayRevocation": true,
+  "refreshPreservesSavedApproval": true,
+  "axe": true,
+  "noOverflow": true,
+  "externalBrowserRequests": [],
+  "published": false
+}

@@ -1,0 +1,7 @@
+# Connect hosted admin approval to GitHub proposals
+
+Compose frozen PR30 `18f76512ff53267ae2e0be113f2b1e67f8b7b02c` and PR31 `b11766919a3b99c4b29f8f7a208b9e6cc8313c69` on a separate successor, preserving both ancestors and prioritizing independent findings.
+
+The shipped Worker currently has no implementations for its identity, approved-note and credential transport ports. Add a configurable RS256 signed-assertion verifier using explicitly pinned issuer, audience, public JWKs and admin subjects; no identity service is chosen or configured. Add bounded immutable D1 admin-authored approvals, explicit revocation, a pinned Git source preview and a restricted server-only bearer transport. A small authenticated admin interface performs source review, approval and distinct draft-proposal actions. Default configuration stays closed.
+
+GitHub remains canonical source/history, followed by validated build and authorized deployment. No dynamic D1 canonical overlay, automated merge, deployment or provider call is introduced. Generated test keys and controlled GitHub responses exercise the shipped entrypoint through real workerd/D1, restart/replay and actual projected-source build/Workers serving. Retain all source suites and exact-head CI. Production identity/key rotation, D1/secret binding, accepted source/release pins, deployment/rollback and legal/retention decisions remain operator/review gates.
