@@ -26,8 +26,8 @@ test('all generated links and fragments resolve, including article citations', (
   }
 });
 
-test('fourteen substantive articles include provenance, review status and connected ideas', () => {
-  assert.equal(articlePages.length, 14);
+test('twenty substantive articles include provenance, review status and connected ideas', () => {
+  assert.equal(articlePages.length, 20);
   for (const page of articlePages) {
     const source = html(page);
     assert.match(source, /Editorial review pending/);
@@ -46,7 +46,7 @@ test('new genuine entries have substantive prose, audited citations and actual G
   for(const id of ['agent-orchestration','agent-memory','retrieval-augmented-generation','agent-evaluation','prompt-injection']){
     const source=html(`dist/articles/${id}/index.html`),body=/<div class="prose"[^>]*>([^]*?)<\/div>/.exec(source)?.[1]??'';
     assert.ok(body.replace(/<[^>]*>/g,' ').split(/\s+/).length>500,`${id}: substantive article body`);
-    assert.match(source,new RegExp(`/commits/feat/encyclopedia-operating-principles/src/content/articles/${id}\\.md`));
+    assert.match(source,new RegExp(`/commits/feat/encyclopedia-mvp-twenty/src/content/articles/${id}\\.md`));
     assert.doesNotMatch(source,/Published local demonstration|Supplied local demonstration|Bound original bytes/);
     const claims=record.claims.filter(claim=>claim.articleId===id);assert.equal(claims.length,3);
     for(const claim of claims){assert.ok(body.includes(`href="#source-${claim.citationId}"`));assert.ok(source.includes(`href="${claim.url}"`));assert.ok(claim.sectionsChecked&&claim.supports&&claim.limits&&claim.versionContext);}
@@ -61,7 +61,7 @@ test('six operating-principles entries retain genuine provenance, source dates, 
     const source=html(`dist/articles/${id}/index.html`),body=/<div class="prose"[^>]*>([^]*?)<\/div>/.exec(source)?.[1]??'';
     assert.ok(body.replace(/<[^>]*>/g,' ').split(/\s+/).length>550,id);assert.match(source,/datetime="2026-10-17"[^>]*>17 October 2026/);
     assert.doesNotMatch(source,/<dt\b[^>]*>Prepared<\/dt>|Published local demonstration|Supplied local demonstration|Bound original bytes/);
-    assert.ok(source.includes(`/commits/feat/encyclopedia-operating-principles/src/content/articles/${id}.md`));
+    assert.ok(source.includes(`/commits/feat/encyclopedia-mvp-twenty/src/content/articles/${id}.md`));
     const claims=record.claims.filter(claim=>claim.articleId===id);assert.equal(claims.length,3);for(const claim of claims){assert.ok(body.includes(`href="#source-${claim.citationId}"`));assert.ok(source.includes(`href="${claim.url}"`));assert.ok(claim.sectionsChecked&&claim.supports&&claim.limits&&claim.versionContext);}
   }
 });
@@ -96,4 +96,22 @@ test('Pagefind artifacts and the isolated static-only staging configuration exis
   assert.equal(config.workers_dev, false);
   assert.equal(config.preview_urls, false);
   for (const key of ['main', 'routes', 'd1_databases', 'kv_namespaces', 'ai', 'triggers', 'secrets']) assert.ok(!(key in config), `unexpected ${key}`);
+});
+
+test('twenty-entry inventory has eighteen scoped primary records for final six working drafts',()=>{
+  const record=JSON.parse(readFileSync('docs/review/mvp-twenty-source-verification.json','utf8'));
+  assert.equal(record.independentEditorialReview,'pending');assert.equal(record.checkedOn,'2026-10-17');assert.equal(record.claims.length,18);
+  for(const id of ["context-engineering", "structured-outputs", "agent-identity", "agent-to-agent-communication", "agent-budgets", "computer-use-agents"]){const source=html(`dist/articles/${id}/index.html`),body=/<div class="prose"[^>]*>([^]*?)<\/div>/.exec(source)?.[1]??'';
+    assert.ok(body.replace(/<[^>]*>/g,' ').split(/\s+/).length>550,id);assert.match(source,/datetime="2026-10-17"[^>]*>17 October 2026/);
+    assert.ok(source.includes(`/commits/feat/encyclopedia-mvp-twenty/src/content/articles/${id}.md`));
+    const claims=record.claims.filter(c=>c.articleId===id);assert.equal(claims.length,3);for(const c of claims){assert.ok(body.includes(`href="#source-${c.citationId}"`));assert.ok(source.includes(`href="${c.url}"`));assert.ok(c.sectionsChecked&&c.supports&&c.limits&&c.versionContext);}
+  }
+  const catalog=JSON.parse(html('dist/source-catalog.json'));assert.equal(catalog.articles.length,20);assert.equal(catalog.sources.length,51);
+  assert.ok(Buffer.byteLength(html('dist/source-catalog.json'))<=32768,'current catalog remains inside frozen V1 reader contract');
+});
+
+test('rendered numeric claim citations point to their matching source-list ordinal',()=>{
+  for(const page of articlePages){const source=html(page),ids=attrs(source,'id').filter(id=>id.startsWith('source-'));
+    for(const [,id,label]of source.matchAll(/<a href="#(source-[^"]+)">(\d+)<\/a>/g))assert.equal(Number(label),ids.indexOf(id)+1,`${page}: ${id}`);
+  }
 });

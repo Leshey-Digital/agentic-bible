@@ -1,0 +1,106 @@
+{
+  "baseHead": "5f5095eb8c5f9ece289ce40c82e8f4fbd139e480",
+  "environment": {
+    "node": "24.19.0",
+    "npm": "11.9.0",
+    "chromium": "154.0.8037.57"
+  },
+  "fullValidate": {
+    "command": "npm run validate",
+    "exitCode": 0,
+    "passedTests": 115,
+    "astroCheckedFiles": 90,
+    "diagnostics": 0,
+    "note": "The full run preceded final citation normalization and the new numeric-citation regression. A frozen-source rebuild and all eight static checks followed; terminal CI must run the full final 116-check set at the published head."
+  },
+  "checks": [
+    {
+      "command": "npm run build",
+      "exitCode": 0,
+      "seconds": 2.12,
+      "log": "/tmp/agentic-mvp-build.log"
+    },
+    {
+      "command": "npm run test",
+      "exitCode": 0,
+      "seconds": 0.28,
+      "log": "/tmp/agentic-mvp-test.log"
+    },
+    {
+      "command": "npm run test:wiki-seo:browser",
+      "exitCode": 0,
+      "seconds": 36.89,
+      "log": "/tmp/agentic-mvp-test-wiki-seo-browser.log",
+      "passedBrowserCases": 1
+    },
+    {
+      "command": "npm run test:browser",
+      "exitCode": 0,
+      "seconds": 71.05,
+      "log": "/tmp/agentic-mvp-test-browser.log",
+      "passedBrowserCases": 22
+    },
+    {
+      "command": "npm run test:editorial:browser",
+      "exitCode": 0,
+      "seconds": 38.21,
+      "log": "/tmp/agentic-mvp-test-editorial-browser.log",
+      "passedBrowserCases": 23
+    },
+    {
+      "command": "npm run test:integration:browser",
+      "exitCode": 0,
+      "seconds": 10.94,
+      "log": "/tmp/agentic-mvp-test-integration-browser.log",
+      "passedBrowserCases": 1
+    },
+    {
+      "command": "npm run test:monitoring:worker",
+      "exitCode": 0,
+      "seconds": 17.29,
+      "log": "/tmp/agentic-mvp-test-monitoring-worker.log"
+    },
+    {
+      "command": "npm run test:settings:worker",
+      "exitCode": 0,
+      "seconds": 23.06,
+      "log": "/tmp/agentic-mvp-test-settings-worker.log"
+    },
+    {
+      "command": "npm run test:publication:browser",
+      "exitCode": 0,
+      "seconds": 7.9,
+      "log": "/tmp/agentic-mvp-test-publication-browser.log",
+      "passedBrowserCases": 1
+    },
+    {
+      "command": "npm run test:combined:browser",
+      "exitCode": 0,
+      "seconds": 9.43,
+      "log": "/tmp/agentic-mvp-test-combined-browser.log",
+      "passedBrowserCases": 1
+    },
+    {
+      "command": "npm run test:wiki-bridge:browser",
+      "exitCode": 0,
+      "seconds": 107.21,
+      "log": "/tmp/agentic-mvp-test-wiki-bridge-browser.log",
+      "passedBrowserCases": 3
+    },
+    {
+      "command": "npm run staging:check",
+      "exitCode": 0,
+      "seconds": 1.16,
+      "log": "/tmp/agentic-mvp-staging-check.log"
+    }
+  ],
+  "totalPassedBrowserCases": 52,
+  "stagingDryRun": {
+    "assets": 107,
+    "bindings": 0,
+    "deployed": false
+  },
+  "initialFailure": "mvp-twenty-local-failure.json",
+  "paidCalls": 0,
+  "liveIndexingSubmissions": 0
+}

@@ -1,0 +1,9 @@
+{
+  "command": "npm run test:wiki-seo:browser",
+  "outcome": "failed",
+  "error": "build_source_changed",
+  "cause": "The drafting agent edited the A2A article citation while the test was active. The existing source-pinning guard rejected the second operation; no guard, assertion, timeout or runtime behavior was relaxed.",
+  "correction": "Freeze all captured source before repeating the affected build/static/composition and retained browser checks.",
+  "localLog": "/tmp/agentic-mvp-initial-composition-source-change.log",
+  "localTrace": ".git/mvp-twenty-initial-composition-failure/trace.zip"
+}

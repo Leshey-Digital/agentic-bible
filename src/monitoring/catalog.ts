@@ -4,9 +4,9 @@ import { readingArticleIds } from '../lib/article-ids.ts';
 export interface CatalogSource { id: string; url: string; title: string; articleIds: string[]; }
 export interface SourceCatalog { version: 1; articles: { id: string; title: string }[]; sources: CatalogSource[]; }
 // Metadata validation only; this does not expand the independent HTTP transport allowlist.
-const allowedHosts = new Set(['www.anthropic.com', 'arxiv.org', 'platform.claude.com', 'developers.openai.com', 'modelcontextprotocol.io', 'docs.langchain.com', 'docs.temporal.io', 'aws.amazon.com', 'datatracker.ietf.org', 'gvisor.dev', 'opentelemetry.io', 'openai.github.io', 'www.microsoft.com']);
+const allowedHosts = new Set(['www.anthropic.com', 'arxiv.org', 'platform.claude.com', 'developers.openai.com', 'modelcontextprotocol.io', 'docs.langchain.com', 'docs.temporal.io', 'aws.amazon.com', 'datatracker.ietf.org', 'gvisor.dev', 'opentelemetry.io', 'openai.github.io', 'www.microsoft.com', 'json-schema.org', 'spiffe.io', 'a2a-protocol.org', 'www.jsonrpc.org']);
 // Bounded metadata/local-fixture storage only. Transport, request/day and spending limits are independent.
-export const catalogSourceLimit = 48;
+export const catalogSourceLimit = 64;
 const articleIds = new Set<string>(readingArticleIds);
 export const sourceId = async (url: string) => 's-' + (await digest(url)).slice(0, 24);
 export async function buildCatalog(articles: { id: string; data: { title: string; sources: { title: string; url: string }[] } }[]): Promise<SourceCatalog> {
