@@ -1,0 +1,29 @@
+{
+  "submission": "def0dc8a-a309-4abb-8846-ae7a34429350",
+  "first": {
+    "id": "64b3f1a8bcc83217073f450dce5a7c5f4b0bf13e2c94e5176d4fd9ad517ad7bf",
+    "manifestHash": "df083c898e979903a1ca841b8bf9b7f5e8523f072832ca443ec519e5065aa35c"
+  },
+  "second": {
+    "id": "bef76684252755307404db3eadf2e48e0a2fa7020aae005a66a8b7504cc51bf7",
+    "manifestHash": "b50b0ef2d6166fc0422f8955fea7416b278adf536cf7fb3dfd9abcbd08b59986"
+  },
+  "restored": {
+    "id": "bdccf93587df880d3db326cd04006fa2379052b21e6bc0611c58c3ad6d37d367",
+    "manifestHash": "df7cc0fd142f0c0965b90f41abd82da49ee1648cbec452c326b8a39a5cac2196"
+  },
+  "version": null,
+  "explicitAdminReview": true,
+  "unauthorizedCsrfAndStaleRejected": true,
+  "interruptedAcceptanceRestarted": true,
+  "lostCompletedResponseReplayed": true,
+  "untrustedTextNotPublished": true,
+  "priorNotesAndOriginalCodeRetained": true,
+  "attribution": true,
+  "currentAndHistoricalPagefind": true,
+  "rollbackAndHistoricalReplay": true,
+  "sourceFetches": 0,
+  "paidCalls": 0,
+  "externalRequests": [],
+  "originalMarkdownAndDistPreserved": true
+}

@@ -38,5 +38,6 @@ export interface SqlDatabase {
 export interface EditorialEnv {
   EDITORIAL_DB?: SqlDatabase;
   LOCAL_EDITORIAL_MODE?: string;
+  LOCAL_CORRECTIONS_MODE?: string;
   ASSETS: { fetch(request: Request): Promise<Response> };
 }

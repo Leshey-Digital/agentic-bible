@@ -1,7 +1,7 @@
 import {mkdtempSync,mkdirSync,writeFileSync,readFileSync,symlinkSync,rmSync,lstatSync,readdirSync} from 'node:fs';
 import {spawn} from 'node:child_process';
 import {join,resolve} from 'node:path';
-import {canonical,qualityFlags} from '../publishing/contracts.ts';
+import {canonical,qualityFlags,hash as hashOriginal} from '../publishing/contracts.ts';
 import {readingArticleIds} from '../lib/article-ids.ts';
 import {escape} from '../publishing/render.ts';
 import type {PublicationStore} from '../publishing/store.ts';
@@ -11,10 +11,10 @@ import {bounded,inventory,walk,write} from './files.ts';
 import {reject,bridgeLimits} from './limits.ts';
 import {pinWikiLinks} from './html.ts';
 
-function markdown(article:Article,publisher:Reference,bindings:Binding[]){
+function markdown(article:Article,publisher:Reference,bindings:Binding[],citationOrder=article.sources.map(s=>s.id)){
   const text=(value:string)=>escape(value.replace(/[\\`*_[\]{}()#+.!|>~-]/g,'\\$&'));
   const front={title:article.title,description:article.description,topic:article.topic,order:2,status:'Published local demonstration',verified:article.verified,author:'Supplied local demonstration',related:article.related,sources:article.sources,publication:{revisionId:'',publisherSnapshot:publisher.id,flags:article.concerns,evidence:bindings.map(b=>({citationId:b.citationId,sourceId:b.sourceId,url:b.url,hash:b.bodyHash,receiptKey:b.receiptKey}))}};
-  const body=article.blocks.map(block=>block.type==='heading'?`## ${text(block.text)}`:block.content.map(part=>part.type==='text'?text(part.text):part.type==='citation'?` [${article.sources.findIndex(s=>s.id===part.sourceId)+1}](#source-${part.sourceId}) `:` [${text(part.label)}](/articles/${part.articleId}/) `).join('')).join('\n\n');
+  const body=article.blocks.map(block=>block.type==='heading'?`## ${text(block.text)}`:block.content.map(part=>part.type==='text'?text(part.text):part.type==='citation'?` [${citationOrder.indexOf(part.sourceId)+1}](#source-${part.sourceId}) `:` [${text(part.label)}](/articles/${part.articleId}/) `).join('')).join('\n\n');
   return {front,body};
 }
 export async function buildWiki(options:{repo:string;captureRoot:string;capture:{eventId:string;jobId:string;attempt:number};project:Record<string,Buffer>;output:string;siteId:string;publisher:PublicationStore;reference:Reference;bindings:Binding[];proofs:{eventId:string;revisionId:string;bindings:Binding[]}[];started?:()=>void|Promise<void>}){
@@ -25,10 +25,23 @@ export async function buildWiki(options:{repo:string;captureRoot:string;capture:
   let child:ReturnType<typeof spawn>|undefined;
   try{
     for(const [path,value]of Object.entries(options.project))write(join(project,path),value);
-    if(revision){const article=options.publisher.revision(revision);const {front,body}=markdown(article,options.reference,options.bindings);front.publication.revisionId=revision;front.publication.flags=qualityFlags(article);writeFileSync(join(project,'src/content/articles/tool-use.md'),'---\n'+Object.entries(front).map(([key,value])=>key+': '+JSON.stringify(value)).join('\n')+'\n---\n\n'+body+'\n');}
+    if(revision){const article=options.publisher.revision(revision);const path=join(project,'src/content/articles/tool-use.md');
+      const baseline=readFileSync(path,'utf8'),parts=/^---\n([^]*?)\n---\n([^]*)$/.exec(baseline);
+      const order=article.reviewedCorrections?[...parts![1].matchAll(/^  - id: (.+)$/gm)].map(m=>m[1]):undefined;
+      const {front,body}=markdown(article,options.reference,options.bindings);front.publication.revisionId=revision;front.publication.flags=qualityFlags(article);
+      if(article.reviewedCorrections){
+        if(!parts||order?.length!==3)reject('unsupported_correction_baseline');
+        const corrected=markdown(article,options.reference,options.bindings,order).body;
+        const publication={...front.publication,reviewedCorrections:article.reviewedCorrections};
+        const meta=parts[1].replace(/^status: .+$/m,'status: Published local demonstration');
+        writeFileSync(path,'---\n'+meta+'\npublication: '+JSON.stringify(publication)+'\n---\n'+parts[2]+'\n## Reviewed corrections\n\n'+corrected+'\n');
+      }else writeFileSync(path,'---\n'+Object.entries(front).map(([key,value])=>key+': '+JSON.stringify(value)).join('\n')+'\n---\n\n'+body+'\n');
+    }
     symlinkSync(resolve(options.repo,'node_modules'),join(project,'node_modules'),'dir');
     const publisherFiles:Record<string,string>={};for(const path of Object.keys(pinned.files)){if(path.startsWith('history/')||path==='review/index.html'||path.startsWith('assets/'))publisherFiles[path]=bounded(join(options.publisher.root,'releases',options.reference.id,path),16*1024*1024).toString('base64');}
-    const plan=join(scratch,'plan.json'),planBytes=canonical({siteId:options.siteId,publisherFiles,proofs:options.proofs,publisherBase:`/local-publications/releases/${options.reference.id}/`});if(Buffer.byteLength(planBytes)>bridgeLimits.projectBytes)reject('capture_plan_too_large');writeFileSync(plan,planBytes);
+    const reviewedHistory=(pinned.state.history['tool-use']??[]).some(id=>options.publisher.revision(id).reviewedCorrections);
+    const correctionBaseline=reviewedHistory?{markdownHash:hashOriginal(options.project['src/content/articles/tool-use.md']),html:bounded(join(options.repo,'dist/articles/tool-use/index.html'),1024*1024).toString('base64')}:undefined;
+    const plan=join(scratch,'plan.json'),planBytes=canonical({siteId:options.siteId,publisherFiles,proofs:options.proofs,...(correctionBaseline?{correctionBaseline}:{}),publisherBase:`/local-publications/releases/${options.reference.id}/`});if(Buffer.byteLength(planBytes)>bridgeLimits.projectBytes)reject('capture_plan_too_large');writeFileSync(plan,planBytes);
     await new Promise<void>((done,failed)=>{
       child=spawn(process.execPath,[join(project,'scripts/wiki-bridge-build.mjs'),project,built,plan,String(process.pid)],{cwd:project,env:{PATH:process.env.PATH??'',ASTRO_TELEMETRY_DISABLED:'1',AGENTIC_BIBLE_LOCAL_WIKI_BUILD:'1'},stdio:'ignore'});
       const monitor=setInterval(()=>{try{if(captureSize(scratch)>bridgeLimits.captureBytes){child!.kill('SIGKILL');clearInterval(monitor);failed(new Error('capture capacity'));}}catch{child!.kill('SIGKILL');clearInterval(monitor);failed(new Error('capture accounting'));}},100);
@@ -40,6 +53,7 @@ export async function buildWiki(options:{repo:string;captureRoot:string;capture:
     // Astro keeps static prerender intermediates within cwd when outDir is external.
     // Complete the build inside its private project, then bounded-copy across filesystems.
     for(const path of Object.keys(inventory(built)))write(join(options.output,path),bounded(join(built,path),16*1024*1024));
+    if(reviewedHistory&&!revision){const path=join(options.output,'articles/tool-use/index.html');writeFileSync(path,readFileSync(path,'utf8').replace('</article>','<section class="revision" data-pagefind-ignore><h2>Retained correction history</h2><a href="/history/">Read reviewed correction history</a></section></article>'));}
     // Pin every internal navigation/asset link to this immutable full-site snapshot.
     const base=`/wiki-snapshots/${options.siteId}/`;
     for(const path of walk(options.output).filter(path=>path.endsWith('.html'))){let html=readFileSync(path,'utf8');html=pinWikiLinks(html,base).replace('<body','<body data-wiki-snapshot-base="'+base+'"');writeFileSync(path,html);}

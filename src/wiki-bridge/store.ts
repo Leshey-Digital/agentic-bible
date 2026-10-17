@@ -1,3 +1,4 @@
+import {reviewedCommand,verifyApproval,type ReviewedCommand} from '../corrections/approval.ts';
 import {DatabaseSync} from 'node:sqlite';
 import {execFileSync} from 'node:child_process';
 import {mkdirSync,existsSync,lstatSync,readdirSync,renameSync,rmSync,realpathSync} from 'node:fs';
@@ -64,7 +65,15 @@ export class WikiBridge {
     return {mode:'local-synthetic-only',active:active?{...active.reference,sequence:active.manifest.state.sequence,articleRevision:active.manifest.state.articleRevision,publisher:active.manifest.state.publisher}:null,pending,storage:this.storageUsage()};
   }
   async execute(value:unknown,db:SqlDatabase,sourceDirectory:string,options:Options={}):Promise<SiteReceipt>{
-    const command=bridgeInput(value);const fingerprint=hash(canonical(command));const jobId=hash(command.eventId);const jobDir=this.path(`jobs/${jobId}`);const jobPath=join(jobDir,'operation.json');let mutex:DatabaseSync|undefined;
+    const command=bridgeInput(value);if(command.kind==='apply'&&command.revision.article.reviewedCorrections)reject('reviewed_approval_required');
+    return this.executeCommand(command,db,sourceDirectory,options);
+  }
+  async executeReviewed(approvalId:string,db:SqlDatabase,options:Options={}):Promise<SiteReceipt>{
+    const command=await reviewedCommand(approvalId,db);
+    return this.executeCommand(command,db,'',options,()=>verifyApproval(command,db));
+  }
+  private async executeCommand(command:BridgeCommand|ReviewedCommand,db:SqlDatabase,sourceDirectory:string,options:Options,reviewed?:()=>Promise<{bindings:Binding[];files:Record<string,Buffer>;evidenceHash:string}>):Promise<SiteReceipt>{
+    const fingerprint=hash(canonical(command));const jobId=hash(command.eventId);const jobDir=this.path(`jobs/${jobId}`);const jobPath=join(jobDir,'operation.json');let mutex:DatabaseSync|undefined;
     try{mutex=new DatabaseSync(this.path('mutex.sqlite'));mutex.exec('PRAGMA busy_timeout=0;CREATE TABLE IF NOT EXISTS bridge_mutex(id INTEGER PRIMARY KEY);BEGIN IMMEDIATE;');}catch(error){mutex?.close();return reject(/locked|busy/i.test(String(error))?'bridge_busy':'bridge_storage_unavailable');}
     let stage:string|undefined;
     try{
@@ -76,15 +85,15 @@ export class WikiBridge {
       const jobs=this.path('jobs');if(existsSync(jobs))for(const id of readdirSync(jobs)){if(id===jobId)continue;const other=json(this.path(`jobs/${id}/operation.json`)) as Job;if(other.phase!=='complete'&&!current?.manifest.state.events.some(e=>e.eventId===other.command.eventId))reject('bridge_pending_operation');}
       if(canonical(current?.reference??null)!==canonical(command.expectedSite))reject('stale_site_parent');
       const original=bounded(join(this.repo,'src/content/articles/tool-use.md'),128*1024);if(hash(original)!==command.originalMarkdownHash||current&&current.manifest.state.originalMarkdownHash!==command.originalMarkdownHash)reject('stale_original_markdown');
-      const project=projectFiles(this.repo);if(job&&job.sourceTreeHash!==project.hash||current&&current.manifest.state.sourceTreeHash!==project.hash)reject('build_source_changed');
+      const project=projectFiles(this.repo);if('authority' in command&&command.authority.sourceTreeHash!==project.hash)reject('build_source_changed');if(job&&job.sourceTreeHash!==project.hash||current&&current.manifest.state.sourceTreeHash!==project.hash)reject('build_source_changed');
       const sequence=(current?.manifest.state.sequence??0)+1;if(sequence>8||command.kind==='apply'&&sequence===8)reject('bridge_capacity');
       let validated:{bindings:Binding[];files:Record<string,Buffer>;evidenceHash:string};let target:SiteManifest|null=null;
       if(command.kind==='apply'){
         if(command.revision.baseRevision!==null&&!digest(command.revision.baseRevision))reject('invalid_publisher_base');validateCrosslinks(command.revision.article,new Set(baselineArticles));
-        validated=await validateEvidence(command,db,sourceDirectory);
+        validated=reviewed?await reviewed():await validateEvidence(command,db,sourceDirectory);
       }else{
         if(command.targetSite){if(!current!.manifest.state.ancestors.some(ref=>canonical(ref)===canonical(command.targetSite)))reject('rollback_site_not_ancestor');target=this.load(command.targetSite);}
-        validated=await this.revalidateBindings(target?.state.bindings??[],target?.state.articleRevision??null,db);
+        validated=reviewed?await reviewed():await this.revalidateBindings(target?.state.bindings??[],target?.state.articleRevision??null,db);
       }
       const pub=this.publisher.current();const publisherCommand=command.kind==='apply'?command.revision:{schemaVersion:1,kind:'rollback',eventId:command.eventId,expectedRelease:command.expectedPublisher!.id,targetRelease:target?.state.publisher.id??null};
       const pubFingerprint=hash(canonical(publisherCommand));const ownAccepted=pub?.manifest.state.receipts.find(r=>r.eventId===command.eventId);
@@ -103,7 +112,7 @@ export class WikiBridge {
       const pinned=this.publisher.current()!;if(pinned.manifest.state.receipts.at(-1)?.eventId!==command.eventId)reject('publisher_changed_pending');
       if(job.publisher&&canonical(job.publisher)!==canonical(pinned.reference))reject('publisher_changed_pending');
       job.publisher=pinned.reference;job.articleReceipt=articleReceipt;job.phase='article-accepted/site-pending';atomic(jobPath,job);await options.checkpoint?.('after-article-journal');
-      const event:Event={eventId:command.eventId,fingerprint,sequence,kind:command.kind,publisher:pinned.reference,articleRevision:pinned.manifest.state.articles['tool-use']??null,evidenceHash:hash(canonical(job.bindings))};
+      const event:Event={eventId:command.eventId,fingerprint,sequence,kind:command.kind,publisher:pinned.reference,articleRevision:pinned.manifest.state.articles['tool-use']??null,evidenceHash:reviewed?validated.evidenceHash:hash(canonical(job.bindings))};
       const state:SiteState={schemaVersion:1,mode:'local-synthetic-only',sequence,originalMarkdownHash:command.originalMarkdownHash,sourceTreeHash:job.sourceTreeHash,publisher:pinned.reference,articleRevision:event.articleRevision,bindings:job.bindings,proofs:[...(current?.manifest.state.proofs??[]),...(command.kind==='apply'?[{eventId:command.eventId,revisionId:event.articleRevision!,bindings:job.bindings}]:[])],parent:current?.reference??null,ancestors:[...(current?.manifest.state.ancestors??[]),...(current?[current.reference]:[])],events:[...(current?.manifest.state.events??[]),event]};
       const siteId=hash(canonical(state));const destination=this.path(`sites/${siteId}`);let ref:Reference;
       if(existsSync(destination)){
@@ -120,7 +129,7 @@ export class WikiBridge {
       if(canonical(this.current()?.reference??null)!==canonical(command.expectedSite))reject('stale_site_parent');
       if(canonical(this.publisher.current()?.reference)!==canonical(pinned.reference))reject('publisher_changed_pending');
       if(projectFiles(this.repo).hash!==job.sourceTreeHash)reject('build_source_changed');
-      const finalEvidence=command.kind==='apply'?await validateEvidence(command,db,sourceDirectory):await this.revalidateBindings(job.bindings,event.articleRevision,db);if(canonical(finalEvidence.bindings)!==canonical(job.bindings))reject('evidence_changed_pending');
+      const finalEvidence=reviewed?await reviewed():command.kind==='apply'?await validateEvidence(command,db,sourceDirectory):await this.revalidateBindings(job.bindings,event.articleRevision,db);if(canonical(finalEvidence.bindings)!==canonical(job.bindings)||reviewed&&finalEvidence.evidenceHash!==validated.evidenceHash)reject('evidence_changed_pending');
       atomic(this.path('current.json'),ref);await options.checkpoint?.('after-activate');
       current=this.current()!;const receipt=this.receipt(current,event);job.phase='complete';job.receipt=receipt;atomic(jobPath,job);return receipt;
     }catch(error){if(error instanceof BridgeError||error instanceof PublicationError)throw error;return reject('bridge_outcome_unconfirmed_retry_same_event');}

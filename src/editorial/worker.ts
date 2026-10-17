@@ -31,7 +31,7 @@ export async function handle(request: Request, env: EditorialEnv): Promise<Respo
   if (path === '/api/editorial/status' && request.method === 'GET') return json({ enabled: isLocal && !!env.EDITORIAL_DB, mode: 'local-synthetic-only', publicIntake: false });
   if (!isLocal) return admin ? html(messagePage('Admin access is not configured', 'Local fixture identities are unavailable here. A verified production identity provider is required.'), 503) : json({ error: 'Public intake and production admin access are not configured.' }, 503);
   if (!env.EDITORIAL_DB) return json({ error: 'Editorial storage is unavailable. Keep your draft and try again after local setup.' }, 503);
-  const store: EditorialStore = new D1EditorialStore(env.EDITORIAL_DB);
+  const store: EditorialStore = new D1EditorialStore(env.EDITORIAL_DB,env.LOCAL_CORRECTIONS_MODE==='reviewed-notes');
   if (!['GET', 'HEAD'].includes(request.method) && !sameOrigin(request)) return json({ error: 'Use a same-origin request.' }, 403);
 
   if (path === '/api/submissions' && request.method === 'POST') {

@@ -16,7 +16,7 @@
     "test:docs": "node scripts/validate-docs.mjs",
     "test": "node --test tests/static.test.mjs",
     "test:browser": "PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright test",
-    "validate": "npm run test:docs && npm run check && npm run build && npm test && npm run test:editorial && npm run test:monitoring && npm run test:settings && npm run test:integration && npm run test:http-sources && npm run test:http-worker && npm run test:publication && npm run test:seo && npm run test:seo:build && npm run test:wiki-bridge",
+    "validate": "npm run test:docs && npm run check && npm run build && npm test && npm run test:editorial && npm run test:monitoring && npm run test:settings && npm run test:integration && npm run test:http-sources && npm run test:http-worker && npm run test:publication && npm run test:seo && npm run test:seo:build && npm run test:wiki-bridge && npm run test:corrections",
     "staging:check": "node scripts/assert-staging-discovery.mjs && XDG_CONFIG_HOME=.git/runtime-config XDG_CACHE_HOME=.git/runtime-cache WRANGLER_SEND_METRICS=false wrangler deploy --dry-run --config wrangler.staging.jsonc",
     "staging:local": "node scripts/assert-staging-discovery.mjs && XDG_CONFIG_HOME=.git/runtime-config XDG_CACHE_HOME=.git/runtime-cache WRANGLER_SEND_METRICS=false wrangler dev --local --config wrangler.staging.jsonc --ip 127.0.0.1 --port 8787",
     "browser:install": "PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright install chromium",
@@ -47,7 +47,10 @@
     "test:seo:build": "node --test tests/seo/build.test.mjs",
     "indexing:queue": "node scripts/indexing-outbox.mjs queue",
     "indexing:status": "node scripts/indexing-outbox.mjs status",
-    "test:wiki-seo:browser": "AGENTIC_BIBLE_DISCOVERY_MODE=production AGENTIC_BIBLE_CANONICAL_ORIGIN=https://agenticbible.si PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright test --config playwright.wiki-seo-integration.config.ts"
+    "test:wiki-seo:browser": "AGENTIC_BIBLE_DISCOVERY_MODE=production AGENTIC_BIBLE_CANONICAL_ORIGIN=https://agenticbible.si PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright test --config playwright.wiki-seo-integration.config.ts",
+    "corrections:local": "node scripts/reviewed-corrections.mjs",
+    "test:corrections": "node --test tests/corrections/*.test.mjs",
+    "test:corrections:browser": "PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright test --config playwright.corrections.config.ts"
   },
   "dependencies": {
     "astro": "7.4.0"

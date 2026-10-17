@@ -1,0 +1,25 @@
+{
+  "signal": "SIGKILL",
+  "approval": "65050748-39a6-4a47-9bae-615979fe8ddc",
+  "publisherReceipts": 1,
+  "receipt": {
+    "eventId": "correction-65050748-39a6-4a47-9bae-615979fe8ddc",
+    "fingerprint": "d106e5fc75d0ff7b0bfbafffb80fb94b4b56770c8111db0ae14b3f851a37600b",
+    "sequence": 1,
+    "kind": "apply",
+    "publisher": {
+      "id": "17655fb021832068890218d6f8a1650933b8de85d14bad5fd05c2dafc020095c",
+      "manifestHash": "7bf09fd17ed53adbde8ddc36d9c6301c6bb17617a833b5d6e51ed2f4dceb084e"
+    },
+    "articleRevision": "4cca9ffd4599df3f09f64f08ccf87c098c4d45228282e31c4ab734cff9aa0bbf",
+    "evidenceHash": "d106e5fc75d0ff7b0bfbafffb80fb94b4b56770c8111db0ae14b3f851a37600b",
+    "outcome": "site-activated",
+    "site": {
+      "id": "847c50fdce06cd2153302b38c5578fd14a368f1e32efd9e4df596145c7afa46b",
+      "manifestHash": "1943ada800ef60ee01ed04a77d8c927e151cde12a5ec3969ee1184f119d40600"
+    },
+    "parent": null
+  },
+  "realD1Restart": true,
+  "duplicatePublication": false
+}

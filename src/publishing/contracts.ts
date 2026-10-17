@@ -1,3 +1,4 @@
+import {correctionCredits,type CorrectionCredit} from '../corrections/credits.ts';
 import {createHash} from 'node:crypto';
 import {validateSource} from '../editorial/validation.ts';
 
@@ -7,7 +8,7 @@ export const concerns=['editorial-review','source-recency','coverage-gap','limit
 export type Concern=typeof concerns[number];
 export type Inline={type:'text';text:string}|{type:'citation';sourceId:string}|{type:'article';articleId:string;label:string};
 export type Block={type:'heading';id:string;text:string}|{type:'paragraph';content:Inline[]};
-export type Article={id:string;title:string;description:string;topic:'Foundations'|'Capabilities'|'Protocols';verified:string;provenance:'supplied-local-fixture';sources:{id:string;title:string;url:string;publisher:string;context:string}[];related:string[];blocks:Block[];concerns:Concern[]};
+export type Article={id:string;title:string;description:string;topic:'Foundations'|'Capabilities'|'Protocols';verified:string;provenance:'supplied-local-fixture';sources:{id:string;title:string;url:string;publisher:string;context:string}[];related:string[];blocks:Block[];concerns:Concern[];reviewedCorrections?:CorrectionCredit[]};
 export type Publish={schemaVersion:1;kind:'publish';eventId:string;baseRevision:string|null;article:Article};
 export type Rollback={schemaVersion:1;kind:'rollback';eventId:string;expectedRelease:string;targetRelease:string|null};
 export type Command=Publish|Rollback;
@@ -33,7 +34,7 @@ function text(v:unknown,max:number,min=1):string{
 function slug(v:unknown,max=50):string{const value=text(v,max);if(!/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/.test(value)||['__proto__','constructor','prototype'].includes(value))fail('invalid_identifier');return value;}
 const list=(v:unknown,min:number,max:number):unknown[]=>{if(!Array.isArray(v)||v.length<min||v.length>max)fail('invalid_list');return v;};
 export function articleInput(value:unknown):Article{
-  shape(value,['id','title','description','topic','verified','provenance','sources','related','blocks','concerns']);
+  shape(value,['id','title','description','topic','verified','provenance','sources','related','blocks','concerns',...(record(value)&&'reviewedCorrections' in value?['reviewedCorrections']:[])]);
   const id=slug(value.id);const title=text(value.title,100);const description=text(value.description,240);
   if(typeof value.topic!=='string'||!['Foundations','Capabilities','Protocols'].includes(value.topic))fail('invalid_topic');
   const verified=text(value.verified,10);if(!/^\d{4}-\d{2}-\d{2}$/.test(verified)||!Number.isFinite(Date.parse(verified))||new Date(verified).toISOString().slice(0,10)!==verified)fail('invalid_date');
@@ -64,7 +65,7 @@ export function articleInput(value:unknown):Article{
   if(!paragraphs||sources.some(s=>!used.has(s.id)))fail('unused_or_missing_evidence');
   const related=list(value.related,1,6).map(v=>slug(v));if(new Set(related).size!==related.length||related.includes(id))fail('invalid_related');
   const flags=list(value.concerns,0,3).map(v=>{if(!(concerns as readonly unknown[]).includes(v)||v==='limited-source-coverage')fail('invalid_quality_concern');return v as Concern;});
-  return {id,title,description,topic:value.topic as Article['topic'],verified,provenance:'supplied-local-fixture',sources,related,blocks,concerns:[...new Set(flags)].sort()};
+  return {id,title,description,topic:value.topic as Article['topic'],verified,provenance:'supplied-local-fixture',sources,related,blocks,concerns:[...new Set(flags)].sort(),...(value.reviewedCorrections?{reviewedCorrections:correctionCredits(value.reviewedCorrections)}:{})};
 }
 export function commandInput(value:unknown):Command{
   let size=0;try{size=Buffer.byteLength(JSON.stringify(value));}catch{fail('invalid_schema');}if(size>publicationLimits.inputBytes)fail('input_too_large');
