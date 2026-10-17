@@ -35,7 +35,7 @@ test('eight-article events preserve the 96-notification cap atomically under con
 test('fourteen-article manifests preserve capacity with partial room, concurrent admission and restart',{timeout:60000},async()=>{
   const git=execFileSync('git',['rev-parse','--absolute-git-dir'],{encoding:'utf8'}).trim(),path=join(git,'seo-fourteen-article-test');rmSync(path,{recursive:true,force:true});let runtime,db;
   async function start(){runtime=new Miniflare({...convertV4MiniflareOptions({name:'seo-fourteen-article-test',modules:true,script:'export default {fetch(){return new Response("local test")}}',compatibilityDate:'2026-10-16',d1Databases:{EDITORIAL_DB:'seo-fourteen-article-test'},outboundService(){throw Error('external fetch forbidden');}}),resourcePersistencePath:path});db=await runtime.getD1Database('EDITORIAL_DB');}
-  const expanded={...manifest,entries:readingArticleIds.map(articleId=>({articleId,url:config.origin+`/articles/${articleId}/`,revision:'c'.repeat(64)}))};
+  const expanded={...manifest,entries:readingArticleIds.slice(0,14).map(articleId=>({articleId,url:config.origin+`/articles/${articleId}/`,revision:'c'.repeat(64)}))};
   const rows=async()=>({receipts:(await db.prepare('SELECT * FROM indexing_enqueue_receipts ORDER BY event_key').all()).results,notifications:(await db.prepare('SELECT * FROM indexing_notifications ORDER BY id').all()).results});
   await start();try{
     for(const sql of readFileSync('migrations/0006_indexing_outbox.sql','utf8').replace(/--[^\n]*/g,'').split(';').map(s=>s.trim()).filter(Boolean))await db.prepare(sql).run();
@@ -47,6 +47,23 @@ test('fourteen-article manifests preserve capacity with partial room, concurrent
     const remainder={...expanded,entries:expanded.entries.slice(0,12)},last=await enqueueIndexing(db,remainder,'fourteen-fill-remainder',config);assert.equal(last.ids.length,12);const snapshot=await rows();assert.equal(snapshot.notifications.length,96);
     await assert.rejects(enqueueIndexing(db,manifest,'fourteen-full',config),{code:'indexing_capacity'});assert.deepEqual(await rows(),snapshot);
     await runtime.dispose();await start();assert.deepEqual(await rows(),snapshot);assert.deepEqual(await enqueueIndexing(db,expanded,'fourteen-first',config),first);assert.deepEqual(await enqueueIndexing(db,remainder,'fourteen-fill-remainder',config),last);
+  }finally{await runtime.dispose();}
+});
+test('twenty-article manifests preserve capacity with partial room, concurrent admission and restart',{timeout:60000},async()=>{
+  const git=execFileSync('git',['rev-parse','--absolute-git-dir'],{encoding:'utf8'}).trim(),path=join(git,'seo-twenty-article-test');rmSync(path,{recursive:true,force:true});let runtime,db;
+  async function start(){runtime=new Miniflare({...convertV4MiniflareOptions({name:'seo-twenty-article-test',modules:true,script:'export default {fetch(){return new Response("local test")}}',compatibilityDate:'2026-10-16',d1Databases:{EDITORIAL_DB:'seo-twenty-article-test'},outboundService(){throw Error('external fetch forbidden');}}),resourcePersistencePath:path});db=await runtime.getD1Database('EDITORIAL_DB');}
+  const expanded={...manifest,entries:readingArticleIds.slice(0,20).map(articleId=>({articleId,url:config.origin+`/articles/${articleId}/`,revision:'c'.repeat(64)}))};
+  const rows=async()=>({receipts:(await db.prepare('SELECT * FROM indexing_enqueue_receipts ORDER BY event_key').all()).results,notifications:(await db.prepare('SELECT * FROM indexing_notifications ORDER BY id').all()).results});
+  await start();try{
+    for(const sql of readFileSync('migrations/0006_indexing_outbox.sql','utf8').replace(/--[^\n]*/g,'').split(';').map(s=>s.trim()).filter(Boolean))await db.prepare(sql).run();
+    const first=await enqueueIndexing(db,expanded,'twenty-first',config);assert.equal(first.ids.length,20);
+    for(let n=1;n<3;n++)await enqueueIndexing(db,expanded,'twenty-release-'+n,config);
+    const raced=await Promise.allSettled(['twenty-race-one','twenty-race-two'].map(key=>enqueueIndexing(db,expanded,key,config)));assert.equal(raced.filter(r=>r.status==='fulfilled').length,1);assert.equal(raced.find(r=>r.status==='rejected').reason.code,'indexing_capacity');
+    const before=await rows();assert.equal(before.receipts.length,4);assert.equal(before.notifications.length,80);
+    await assert.rejects(enqueueIndexing(db,expanded,'twenty-no-room',config),{code:'indexing_capacity'});assert.deepEqual(await rows(),before);
+    const remainder={...expanded,entries:expanded.entries.slice(0,16)},last=await enqueueIndexing(db,remainder,'twenty-fill-remainder',config);assert.equal(last.ids.length,16);const snapshot=await rows();assert.equal(snapshot.notifications.length,96);
+    await assert.rejects(enqueueIndexing(db,manifest,'twenty-full',config),{code:'indexing_capacity'});assert.deepEqual(await rows(),snapshot);
+    await runtime.dispose();await start();assert.deepEqual(await rows(),snapshot);assert.deepEqual(await enqueueIndexing(db,expanded,'twenty-first',config),first);assert.deepEqual(await enqueueIndexing(db,remainder,'twenty-fill-remainder',config),last);
   }finally{await runtime.dispose();}
 });
 test('actual local D1 outbox migration/replay/concurrency/restart/faults and bounds preserve unrelated data',{timeout:120000},async()=>{

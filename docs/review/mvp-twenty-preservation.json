@@ -1,0 +1,102 @@
+{
+  "baseHead": "5f5095eb8c5f9ece289ce40c82e8f4fbd139e480",
+  "branch": "feat/encyclopedia-mvp-twenty",
+  "previousArticles": [
+    {
+      "path": "src/content/articles/agent-evaluation.md",
+      "sha256": "a02bfef9fc5fdcefe08e52d82a2563d155d0cc9ef9c68293ca1a1920546ac061",
+      "unchanged": true
+    },
+    {
+      "path": "src/content/articles/agent-memory.md",
+      "sha256": "b148a65bdc33304a533d50d4299d4225e1bc9ecc76f2148212d0808930022de0",
+      "unchanged": true
+    },
+    {
+      "path": "src/content/articles/agent-observability.md",
+      "sha256": "049b0dc639c785f012b4956e5c054e1940527cffe2254dfb0ba6db612e750c6d",
+      "unchanged": true
+    },
+    {
+      "path": "src/content/articles/agent-orchestration.md",
+      "sha256": "f2fe90af6be60a7722819d6e78a3d2a89bc72c8ac2a5b3dc8a87d4a49cbd3d6f",
+      "unchanged": true
+    },
+    {
+      "path": "src/content/articles/agent-planning.md",
+      "sha256": "c4c69bbe4318cb5a1776e65033314adf4d2926d39c471166240d546aba1aadc2",
+      "unchanged": true
+    },
+    {
+      "path": "src/content/articles/agent-sandboxing.md",
+      "sha256": "2941adb2262f3b6f089540b0b8fee45e52ed4641867cd84c589ac9c543b0068c",
+      "unchanged": true
+    },
+    {
+      "path": "src/content/articles/ai-agent.md",
+      "sha256": "8b9991a3d7f13ca51c359b63442557beabfcb1714df04ce849491c4aedb1a3a6",
+      "unchanged": true
+    },
+    {
+      "path": "src/content/articles/durable-agent-execution.md",
+      "sha256": "637a4b2158524d5fd1ed74bbac4b8f0b0d9d44e22e0387081a4e7951c8723805",
+      "unchanged": true
+    },
+    {
+      "path": "src/content/articles/human-oversight.md",
+      "sha256": "05f95df8fbbb3c6c78dd992ad08ed8d9c7c86fec2b27dd370ab24435d5c5fe59",
+      "unchanged": true
+    },
+    {
+      "path": "src/content/articles/model-context-protocol.md",
+      "sha256": "1b038336e7ce0438e97a36eb2e536a9dd87dd5bf3a068eae394a978bb76a2abf",
+      "unchanged": true
+    },
+    {
+      "path": "src/content/articles/prompt-injection.md",
+      "sha256": "44db0f983ce79da5fbf32a22c66fefb6867d788cdd7c016a3334f7ca2d6be1e7",
+      "unchanged": true
+    },
+    {
+      "path": "src/content/articles/retrieval-augmented-generation.md",
+      "sha256": "455019da889922747a8b4e023ffb3f90859b5d080e85f97ab3d4b6d79a9d5216",
+      "unchanged": true
+    },
+    {
+      "path": "src/content/articles/tool-permissions.md",
+      "sha256": "274e5ae371484412776644847bb5494ac234cf1beac6398e1098678ea7e76756",
+      "unchanged": true
+    },
+    {
+      "path": "src/content/articles/tool-use.md",
+      "sha256": "cf1e3a2bbb77a85d472e2509fa8eefda9bccbae2a73f1931902354de50aa9681",
+      "unchanged": true
+    }
+  ],
+  "protectedFilesUnchanged": [
+    "src/monitoring/http-registry.ts",
+    "src/monitoring/http-policy.ts",
+    "src/wiki-bridge/snapshot-v1.ts",
+    "package.json",
+    "package-lock.json",
+    "wrangler.staging.jsonc",
+    ".github/workflows/validate.yml"
+  ],
+  "migrationsUnchanged": true,
+  "readingArticles": 20,
+  "clusters": {
+    "Foundations": 8,
+    "Capabilities": 8,
+    "Protocols": 4
+  },
+  "sourceURLs": 51,
+  "catalogBytes": 10827,
+  "metadataSourceLimit": 64,
+  "frozenReaderLimitsUnchanged": true,
+  "liveTransportTargets": 6,
+  "deployments": 0,
+  "paidProviderCalls": 0,
+  "liveIndexingSubmissions": 0,
+  "applicationLiveSourceFetches": 0,
+  "sourceVerification": "Public primary sources inspected separately through read-only browsing; application transport remains disabled."
+}

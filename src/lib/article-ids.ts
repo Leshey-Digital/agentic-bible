@@ -4,4 +4,5 @@ export const readingArticleIds = [
   'agent-memory', 'retrieval-augmented-generation', 'agent-evaluation', 'prompt-injection',
   'agent-planning', 'durable-agent-execution', 'tool-permissions',
   'agent-sandboxing', 'agent-observability', 'human-oversight',
+  'context-engineering', 'structured-outputs', 'agent-identity', 'agent-to-agent-communication', 'agent-budgets', 'computer-use-agents',
 ] as const;

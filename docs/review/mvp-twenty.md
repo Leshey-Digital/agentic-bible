@@ -1,0 +1,23 @@
+# Twenty-entry working collection handoff
+
+Branch `feat/encyclopedia-mvp-twenty` descends directly from preserved PR26 `5f5095eb8c5f9ece289ce40c82e8f4fbd139e480`. PR26 independent acceptance remains separate. All fourteen previous article files remain unchanged; six originals add eighteen [primary claim records](mvp-twenty-source-verification.json), checked 17 October 2026. [Topic boundaries](mvp-twenty-source-verification.md) distinguish the entries. All twenty are working drafts pending independent editorial review.
+
+## Bounded change
+
+The deduplicated catalog grows from 37 to 51 source URLs for twenty articles. A 48-row ceiling cannot hold 51. The metadata/local-fixture ceiling becomes 64, sufficient for the 37 prior active URLs plus at most eighteen additions, and bounded below the frozen V1 128-source contract. A previous store containing arbitrary retired metadata may still reject at capacity, atomically, without eviction. Actual Worker/D1 coverage retains rejection at limit minus one plus two new IDs, head rollback, late failure, competing admission, idempotence and restart. Live transport remains exactly six targets; request/day/retry and paid controls, migrations and deployment configs are unchanged. No live resource or spending change occurs.
+
+The existing 96-notification/32-receipt indexing limits remain. Retain eight- and fourteen-article cases and add twenty-article 60→80 concurrent admission, whole-event rejection at 100, a sixteen-item remainder to 96 and restart/replay. Indexing stays disabled and tests use local controlled data.
+
+## Validation status
+
+Local checks passed; [command results](mvp-twenty-validation.json) record exact commands and counts. Full `npm run validate` passed 115 tests and Astro checked 90 files with zero diagnostics. After final citation normalization, a frozen-source rebuild and all eight static checks passed, including a new numeric-citation/source-order regression. The final full set is 116 checks; terminal exact-head CI is recorded in the draft PR after publication.
+
+All seven retained browser commands passed **52 cases**: reading 22, editorial 23, integration 1, supplied publication 1, combined 1, wiki bridge 3 and wiki/SEO composition 1. Both native Worker restart commands passed one test each. `staging:check` passed with **107 assets, no bindings and no deployment**. Node 24.19.0/npm 11.9.0 and local Chromium 154.0.8037.57 were used. The catalog is **10,827 bytes**, within the unchanged frozen V1 32-KiB bound.
+
+Evidence: [preservation](mvp-twenty-preservation.json), [native atomic catalog](mvp-twenty-catalog-d1.json), [real historical upgrade](mvp-twenty-upgrade.json), [historical/current browser search](mvp-twenty-upgrade-browser.json), [cold search](mvp-twenty-cold-search.json), and [canonical/synthetic discovery](mvp-twenty-discovery.json). The controlled cold twenty-entry query took 939 ms, zero Worker attempts and no fallback warning; this is one diagnostic case, not a general latency guarantee.
+
+One [local composition failure](mvp-twenty-local-failure.json) is preserved: the drafting agent changed a citation during the active test and the source-pinning guard returned `build_source_changed`. Freeze the source before running these suites. The subsequent run passed without relaxing guards, assertions, timeouts or retries. No CI failure has been hidden or retried to green. Historical three-entry snapshots must retain their own current/pinned/history pages, search, inventories, replay, charges and zero source fetches. Fresh snapshots must contain twenty complete entries; missing new pages remain corruption, and new/pending builds still require current source pins. No frozen-reader limit changes.
+
+## Remaining gates and rollback
+
+Independent PR26/composition and content review, licenses/contributor terms, production identity/security, monetary enforcement, source-to-article automation, provider/measurement setup and deployment remain separate. Revert this branch to its exact PR26 parent for code/content rollback; no database migration or remote rollback is introduced. Automated checks use owned disposable Git-directory stores and leave interactive `.wrangler/editorial` untouched. If a later manual session upgrades an interactive store to the 51-source catalog, preserve a prior snapshot: reverting the code to a 48-row ceiling can reject that populated store, so restore the prior snapshot rather than silently pruning rows. This run performs no interactive-store upgrade. Do not silently discard a populated local metadata store to evade capacity. No main merge, deployment, credential, paid call or live indexing submission.

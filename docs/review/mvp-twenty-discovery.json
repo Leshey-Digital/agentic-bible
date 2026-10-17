@@ -1,0 +1,98 @@
+{
+  "sourceHeads": {
+    "preservedParent": "5f5095eb8c5f9ece289ce40c82e8f4fbd139e480",
+    "bridge": "6066255556e1c7b6ec6fbf3f17915048e5eff6bf",
+    "seo": "76d32e80714b5ba8040e73150cab914e4a3f8bb8",
+    "content": "54b9d0793af36c00c9feca7a8933d3c1a9fa9d95",
+    "snapshotCompatibility": "f3d03eda69a82abc7f527f5f14e062f56a40a1b0"
+  },
+  "productionOrigin": "https://agenticbible.si",
+  "productionArticles": [
+    "agent-budgets",
+    "agent-evaluation",
+    "agent-identity",
+    "agent-memory",
+    "agent-observability",
+    "agent-orchestration",
+    "agent-planning",
+    "agent-sandboxing",
+    "agent-to-agent-communication",
+    "ai-agent",
+    "computer-use-agents",
+    "context-engineering",
+    "durable-agent-execution",
+    "human-oversight",
+    "model-context-protocol",
+    "prompt-injection",
+    "retrieval-augmented-generation",
+    "structured-outputs",
+    "tool-permissions",
+    "tool-use"
+  ],
+  "productionSitemapArticles": 20,
+  "first": {
+    "eventId": "wiki-tool-use-original-demo",
+    "fingerprint": "5ddedb6a61594a4fd5311077209c5ac8aa9376dfe6d9f9f41371e23502763aba",
+    "sequence": 1,
+    "kind": "apply",
+    "publisher": {
+      "id": "39c1ce6f0bad0d7efd53926cd047b82bde8a9c08f0138c2afaeaf2571df20944",
+      "manifestHash": "73139f2ec2f4b87efe6b6da9a04c565915cbeda780a53b958252ca166dbb81ee"
+    },
+    "articleRevision": "8949ae864d618c6a73c883aa5ef67d680ec0b411990249c39d62eafc4a172369",
+    "evidenceHash": "52213df865f9f6c647bcc9dc416906089ce64f4564a17067e140ec350d0542df",
+    "outcome": "site-activated",
+    "site": {
+      "id": "648a212b49314709b1b5f7e33dbe219c2f66ea6c9dee8692b6791ce8045d9a5f",
+      "manifestHash": "5a2da463a823a2fab87f870e7ad05e29e8fd96d0f1088cab52de31e2dae37f98"
+    },
+    "parent": null
+  },
+  "second": {
+    "eventId": "seo-composition-second",
+    "fingerprint": "53ea50a4db50b757d79837f58afddc1d57734f36bf371281c3d167aaf7e584a0",
+    "sequence": 2,
+    "kind": "apply",
+    "publisher": {
+      "id": "d42e59036dc77579907c3bce76781197fcbf94e0961eb3e9fff179144d94d8ed",
+      "manifestHash": "b87e74fb418d71f169998ab619de6ab00ab4d1798961fb560fd1e7e3a48a2507"
+    },
+    "articleRevision": "f856bd331d75370fbac2399f4b6f8b2744e207ec94c7fd7754449e8e3c31b2f4",
+    "evidenceHash": "52213df865f9f6c647bcc9dc416906089ce64f4564a17067e140ec350d0542df",
+    "outcome": "site-activated",
+    "site": {
+      "id": "8cff69ea775a0ff9eba7855411c244f1e2db4dece4e56b9f38325cef19e3873e",
+      "manifestHash": "082eb3c808bfc5d357afb176c5e9347784427e3033bd59e3332971db07b9fea6"
+    },
+    "parent": {
+      "id": "648a212b49314709b1b5f7e33dbe219c2f66ea6c9dee8692b6791ce8045d9a5f",
+      "manifestHash": "5a2da463a823a2fab87f870e7ad05e29e8fd96d0f1088cab52de31e2dae37f98"
+    }
+  },
+  "restored": {
+    "eventId": "seo-composition-rollback",
+    "fingerprint": "5dfc85b6e2f2ad039039fc862f35d211770e96bd6f3d42b4bc030a6bce7f6014",
+    "sequence": 3,
+    "kind": "rollback",
+    "publisher": {
+      "id": "9a3fa8a70efcc77050cb93e980256e4ac950481dbdcf734c422703f773abf4ad",
+      "manifestHash": "8d93bb7751bc52daae2fce8a048b6f5c05f5af622378076235492c247bd963a4"
+    },
+    "articleRevision": "8949ae864d618c6a73c883aa5ef67d680ec0b411990249c39d62eafc4a172369",
+    "evidenceHash": "52213df865f9f6c647bcc9dc416906089ce64f4564a17067e140ec350d0542df",
+    "outcome": "site-activated",
+    "site": {
+      "id": "c5084b8a3cdef62c2bfbe04ce6b84f1ec6b582b022a8e45339c7fc78d20ea902",
+      "manifestHash": "230734898e770518e1f1dbbd7e890b269c0d24586bbd464cfc1ea2cc5c0c19be"
+    },
+    "parent": {
+      "id": "8cff69ea775a0ff9eba7855411c244f1e2db4dece4e56b9f38325cef19e3873e",
+      "manifestHash": "082eb3c808bfc5d357afb176c5e9347784427e3033bd59e3332971db07b9fea6"
+    }
+  },
+  "bridgeSourceFetches": 0,
+  "indexingSubmissions": 0,
+  "syntheticSitemap": false,
+  "chargesPreserved": true,
+  "originalMarkdownAndDistPreserved": true
+}

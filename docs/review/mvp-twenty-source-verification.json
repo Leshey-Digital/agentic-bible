@@ -1,0 +1,189 @@
+{
+  "checkedOn": "2026-10-17",
+  "checkedBy": "AI-assisted project draft",
+  "independentEditorialReview": "pending",
+  "baseHead": "5f5095eb8c5f9ece289ce40c82e8f4fbd139e480",
+  "method": "Primary author papers, specifications and publisher documentation inspected. Versioned documents distinguished from living vendor guides. Original illustrative designs are labeled and no benchmark scores or imported source prose are used.",
+  "claims": [
+    {
+      "articleId": "context-engineering",
+      "citationId": "context-guide",
+      "url": "https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents",
+      "kind": "primary-documentation",
+      "versionContext": "29 September 2025 engineering article; context components, just-in-time retrieval and compaction. Vendor practice, not a universal reliability result.",
+      "sectionsChecked": "Context engineering versus prompting; anatomy of effective context; long-horizon tasks",
+      "supports": "Iterative context selection and lossy compaction",
+      "limits": "Vendor recommendations and examples, not guarantees across all agents"
+    },
+    {
+      "articleId": "context-engineering",
+      "citationId": "lost-middle",
+      "url": "https://arxiv.org/abs/2307.03172v3",
+      "kind": "primary-research",
+      "versionContext": "Version 3, 20 November 2023; multi-document question answering and key-value retrieval. Historical models and task-specific position effects.",
+      "sectionsChecked": "Abstract; sections 2–3 task setup and position experiments",
+      "supports": "Position of relevant information affected the evaluated models",
+      "limits": "Does not establish the performance of every contemporary model or application"
+    },
+    {
+      "articleId": "context-engineering",
+      "citationId": "langchain-context",
+      "url": "https://docs.langchain.com/oss/python/langchain/context-engineering",
+      "kind": "primary-documentation",
+      "versionContext": "Living Python documentation checked 17 October 2026; model context, tool context and lifecycle hooks are framework-specific categories.",
+      "sectionsChecked": "What you can control; transient context; data sources; model context",
+      "supports": "Framework distinguishes per-call model input from persistent state and tool access",
+      "limits": "Framework terminology is not a standard and context tuning cannot repair every failure"
+    },
+    {
+      "articleId": "structured-outputs",
+      "citationId": "schema-core",
+      "url": "https://json-schema.org/draft/2020-12/json-schema-core",
+      "kind": "primary-documentation",
+      "versionContext": "Draft 2020-12; sections 4.3 and 8.1 describe schemas, vocabularies and dialect identification. A schema is not evidence of factual truth.",
+      "sectionsChecked": "Sections 4.3 and 8.1.1",
+      "supports": "Schemas describe JSON instances and identify dialects",
+      "limits": "A dialect contract does not verify external facts or authorize an action"
+    },
+    {
+      "articleId": "structured-outputs",
+      "citationId": "schema-validation",
+      "url": "https://json-schema.org/draft/2020-12/json-schema-validation",
+      "kind": "primary-documentation",
+      "versionContext": "Draft 2020-12; validation keywords and section 7 format vocabularies. Format assertion support is optional unless required by the selected vocabulary.",
+      "sectionsChecked": "Sections 6–7, especially 7.2.1–7.2.2",
+      "supports": "Structural assertions and the annotation/assertion distinction for format",
+      "limits": "Validator configuration and supported vocabularies affect checks"
+    },
+    {
+      "articleId": "structured-outputs",
+      "citationId": "openai-structured",
+      "url": "https://developers.openai.com/api/docs/guides/structured-outputs",
+      "kind": "primary-documentation",
+      "versionContext": "Living API guide checked 17 October 2026; supported schema subset, JSON mode comparison, refusals and incomplete responses. Model/API support is specific.",
+      "sectionsChecked": "JSON mode comparison; supported schemas; refusals; incomplete responses",
+      "supports": "Provider constrained output has a supported subset and exceptional response paths",
+      "limits": "Shape compliance does not make content true; support depends on the selected model/API"
+    },
+    {
+      "articleId": "agent-identity",
+      "citationId": "spiffe",
+      "url": "https://spiffe.io/docs/latest/spiffe-about/spiffe-concepts/",
+      "kind": "primary-documentation",
+      "versionContext": "Living project documentation checked 17 October 2026; workload, SPIFFE ID, trust domain and SVID. Workload identity is not a person or a permission grant.",
+      "sectionsChecked": "Workload; SPIFFE ID; trust domain; SVID; workload API",
+      "supports": "Cryptographically verifiable workload identity within a trust domain",
+      "limits": "Does not establish a model persona, user intent or resource authorization"
+    },
+    {
+      "articleId": "agent-identity",
+      "citationId": "token-exchange",
+      "url": "https://datatracker.ietf.org/doc/html/rfc8693",
+      "kind": "primary-documentation",
+      "versionContext": "January 2020 RFC; sections 1.1, 2 and 4 distinguish delegation/impersonation, subject/actor tokens and actor claims.",
+      "sectionsChecked": "Sections 1.1, 2.1, 4.1",
+      "supports": "Token exchange can express subject and acting-party relationships",
+      "limits": "Issuance and authorization policy remain deployment-specific"
+    },
+    {
+      "articleId": "agent-identity",
+      "citationId": "mcp-auth",
+      "url": "https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization",
+      "kind": "primary-documentation",
+      "versionContext": "Version 2025-11-25; HTTP authorization, resource targeting, token audience validation and token passthrough restrictions.",
+      "sectionsChecked": "Authorization flow; resource indicators; token usage/security",
+      "supports": "Receiver validates intended token audience and resource-bound authorization",
+      "limits": "Specific protocol version/transport; not a universal agent identity standard"
+    },
+    {
+      "articleId": "agent-to-agent-communication",
+      "citationId": "a2a",
+      "url": "https://a2a-protocol.org/v0.3.0/specification/",
+      "kind": "primary-documentation",
+      "versionContext": "Version 0.3.0; Agent Cards, messages, tasks, artifacts and lifecycle. This pinned version is not a claim about the newest specification.",
+      "sectionsChecked": "Section 3.2 protocol bindings; sections 5–8; AgentCard, Message, Task, Artifact and TaskState definitions",
+      "supports": "Discovery, multiple protocol bindings and task exchange with explicit state",
+      "limits": "Protocol compliance does not prove trustworthy capabilities or successful work"
+    },
+    {
+      "articleId": "agent-to-agent-communication",
+      "citationId": "jsonrpc",
+      "url": "https://www.jsonrpc.org/specification",
+      "kind": "primary-documentation",
+      "versionContext": "Origin 26 March 2010, updated 4 January 2013; sections 1, 4–6. Request identifiers correlate responses; notifications have no response.",
+      "sectionsChecked": "Sections 1, 4, 4.1, 5 and 6",
+      "supports": "Request/response correlation and notification semantics",
+      "limits": "Transport-agnostic RPC does not specify task completion or exactly-once execution"
+    },
+    {
+      "articleId": "agent-to-agent-communication",
+      "citationId": "mcp-architecture",
+      "url": "https://modelcontextprotocol.io/specification/2025-11-25/architecture",
+      "kind": "primary-documentation",
+      "versionContext": "Version 2025-11-25; host/client/server architecture and connections. Used as a separate interface example, not a universal division of protocol roles.",
+      "sectionsChecked": "Core components; architecture; design principles",
+      "supports": "MCP defines a host/client/server integration boundary",
+      "limits": "A system may combine protocols; their names do not establish interoperability"
+    },
+    {
+      "articleId": "agent-budgets",
+      "citationId": "sdk-turns",
+      "url": "https://openai.github.io/openai-agents-python/running_agents/",
+      "kind": "primary-documentation",
+      "versionContext": "Living Python SDK guide checked 17 October 2026; agent loop and max_turns. Turn limits are SDK-specific, not currency caps.",
+      "sectionsChecked": "The agent loop; max_turns and MaxTurnsExceeded",
+      "supports": "SDK raises a distinct exception when its configured turn bound is exceeded",
+      "limits": "A turn is not a fixed number of tokens, tools, seconds or money"
+    },
+    {
+      "articleId": "agent-budgets",
+      "citationId": "graph-limit",
+      "url": "https://docs.langchain.com/oss/python/langgraph/errors/GRAPH_RECURSION_LIMIT",
+      "kind": "primary-documentation",
+      "versionContext": "Living LangGraph Python troubleshooting guide checked 17 October 2026; graph steps before a stop condition and recursion_limit configuration.",
+      "sectionsChecked": "Error description; cyclic graph example; troubleshooting",
+      "supports": "Graph step limits can bound an otherwise continuing execution",
+      "limits": "Graph steps are not a universal agent budget or billing measure"
+    },
+    {
+      "articleId": "agent-budgets",
+      "citationId": "retry-safety",
+      "url": "https://aws.amazon.com/builders-library/making-retries-safe-with-idempotent-APIs/",
+      "kind": "primary-documentation",
+      "versionContext": "Living engineering article checked 17 October 2026; timeouts, caller request identifiers and idempotent API semantics.",
+      "sectionsChecked": "Retry and semantic equivalence; unique client request identifiers; late requests",
+      "supports": "An uncertain response does not prove a side effect did not happen",
+      "limits": "Provider/API-specific contracts are needed; stopping the caller cannot undo an external effect"
+    },
+    {
+      "articleId": "computer-use-agents",
+      "citationId": "osworld",
+      "url": "https://arxiv.org/abs/2404.07972v1",
+      "kind": "primary-research",
+      "versionContext": "Version 1, 11 April 2024; environment, observation/action spaces and execution-based evaluation. Historical benchmark setup and models, not current universal performance.",
+      "sectionsChecked": "Sections 2–3; observation and action spaces; execution-based evaluation",
+      "supports": "Desktop tasks can be evaluated against resulting application state",
+      "limits": "Benchmark environments and baseline results do not guarantee arbitrary desktop competence"
+    },
+    {
+      "articleId": "computer-use-agents",
+      "citationId": "webarena",
+      "url": "https://arxiv.org/abs/2307.13854v2",
+      "kind": "primary-research",
+      "versionContext": "Version 2, 24 October 2023; self-hosted web environment and task evaluation. Browser observations/actions need not be screenshot-only.",
+      "sectionsChecked": "Sections 2–3; environment and functional evaluation",
+      "supports": "A controlled interactive web benchmark tests task outcomes",
+      "limits": "Controlled sites, historical models and task distribution limit generalization"
+    },
+    {
+      "articleId": "computer-use-agents",
+      "citationId": "computer-tool",
+      "url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/computer-use-tool",
+      "kind": "primary-documentation",
+      "versionContext": "Living platform documentation checked 17 October 2026; application-executed action loop and security warnings. Tool/model versions and supported actions vary.",
+      "sectionsChecked": "Security considerations; understand the agent loop; implement the tool",
+      "supports": "Application executes requested computer actions and returns observations",
+      "limits": "Vendor-specific interface; isolation and injection precautions do not establish complete safety"
+    }
+  ]
+}

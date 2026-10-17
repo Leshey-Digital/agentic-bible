@@ -19,7 +19,7 @@ Last prepared: 2026-10-16. This document distinguishes founder direction from te
 
 ## Implementation choices and remaining proposals
 - First feature branch implements Astro + TypeScript static pages, Pagefind, Markdown and GitHub file history, with local Workers Static Assets validation. D1 remains deferred until a concrete mutable-data need justifies it.
-- The authorized first slice contains AI agent, tool use and Model Context Protocol. The accepted MVP scope is 20 articles across three clusters; the remaining article list is unfinished.
+- The authorized first slice contains AI agent, tool use and Model Context Protocol. The accepted MVP scope is 20 articles across three clusters; the final working collection now contains twenty entries on its separate review branch, with independent editorial acceptance pending; see [the content handoff](review/mvp-twenty.md).
 - An OpenSpec-style directory workflow plus AGENTS.md, GitHub issues, and draft PRs.
 - Automatic article publication and post-publication review flags are now approved policy. The publishing pipeline, admin review inbox and escalation delivery are not implemented in this static slice. Code review and deployment checks remain separate.
 - The next stacked branch implements a local synthetic correction/source inbox with role-scoped test sessions, human-entered suggestion tags, dispositions and audit records. Public intake, production identity, article publishing, email delivery and live settings integrations remain disabled. This is implementation progress, not a change to the automatic-publication policy.
@@ -31,7 +31,7 @@ Last prepared: 2026-10-16. This document distinguishes founder direction from te
 ## Decisions still needed
 - Active zone agenticbible.si was verified in foundation preparation. The user specifies https://agenticbible.si for explicit production builds in the bridge/SEO composition; ownership/deployment prerequisites remain unexercised. Default staging stays staging.agenticbible.si and no release is performed here.
 - Code/content licensing and contributor terms before accepting third-party submissions.
-- Initial three articles and cluster boundaries.
+- Independent editorial acceptance of the twenty working drafts and their proposed cluster boundaries.
 - Provider/model, approved numeric spending caps, billing alerts, overage/stop behavior.
 - Approved analytics providers, account ownership, consent/retention requirements and private security contact.
 - Release evidence and launch prerequisites; advertising provider and activation decision later.
