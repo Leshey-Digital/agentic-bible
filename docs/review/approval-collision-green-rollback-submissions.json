@@ -1,0 +1,60 @@
+{
+  "scenario": "rollback-submissions",
+  "store": "collision-rollback-submissions-1ecf94da-19fc-4044-8709-0975840e1ab6",
+  "initialLookupsBothNull": true,
+  "outcomes": [
+    {
+      "status": "fulfilled"
+    },
+    {
+      "status": "rejected",
+      "code": "approval_key_conflict"
+    }
+  ],
+  "winnerVersion": 2,
+  "loserVersion": 1,
+  "winningApprovalVersion": 1,
+  "winnerAuditEntries": 2,
+  "loserAuditEntries": 1,
+  "noArticlePublished": null,
+  "candidates": [
+    {
+      "fingerprint": "89573e6ad3f187f06493472c3da115363a338ad8f308e9b0401bb3f8984205a2",
+      "submissionId": "7de91f7a-ec9f-4b79-8b18-321b6ac86b59",
+      "version": 1,
+      "createdAt": 1792215531399
+    },
+    {
+      "fingerprint": "89573e6ad3f187f06493472c3da115363a338ad8f308e9b0401bb3f8984205a2",
+      "submissionId": "dc9511e4-d38d-468b-8e81-ee42de7f8f05",
+      "version": 1,
+      "createdAt": 1792215531400
+    }
+  ],
+  "realD1RestartPreservedState": true,
+  "winnerRetryAfterRealD1Restart": true,
+  "exactCompletedReplay": true,
+  "rejectedRequestNoMutation": true,
+  "receipt": {
+    "eventId": "correction-7cfaa9cc-212c-4e83-86f7-30659ab9bbe4",
+    "fingerprint": "89573e6ad3f187f06493472c3da115363a338ad8f308e9b0401bb3f8984205a2",
+    "sequence": 2,
+    "kind": "rollback",
+    "publisher": {
+      "id": "a7af316dc7b8d6f82ae889f37352ab899965a37a1654feca26d177e48ed4fe9d",
+      "manifestHash": "d9ea932c5c87b847ce3f84447ba04bf4409111a506f755e1b5e41cd72515ead3"
+    },
+    "articleRevision": null,
+    "evidenceHash": "89573e6ad3f187f06493472c3da115363a338ad8f308e9b0401bb3f8984205a2",
+    "outcome": "site-activated",
+    "site": {
+      "id": "e7f61412d4a427be856decc79437a663b0e1661f949fec15d980f98813fd172a",
+      "manifestHash": "0a4402a3bb757d7fb5ac20be6a5e0937141f34ef73d98fd5b63980a2caef722d"
+    },
+    "parent": {
+      "id": "67afdbdc4f465ff09ddf0b2dd64aa19c45407a8e4f4b91f8a47363b3a53fbf7f",
+      "manifestHash": "5ba83a1985db3bc906faa1df05612dbaf9f68aa545373513f17df4d512ac39cf"
+    }
+  },
+  "originalMarkdownAndDistPreserved": true
+}
