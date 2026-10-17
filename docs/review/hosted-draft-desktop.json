@@ -1,0 +1,11 @@
+{
+  "shippedWorker": true,
+  "actualWorkerdD1": true,
+  "controlledSignedAssertions": true,
+  "heldAfterDurableApproval": true,
+  "originalApprovalRetained": true,
+  "newerTextCitationConfirmationSelectionPreserved": true,
+  "meaningfulStatus": true,
+  "githubProposals": 0,
+  "project": "desktop"
+}
