@@ -38,7 +38,7 @@ const localBridge=process.env.AGENTIC_BIBLE_LOCAL_WIKI_BUILD==='1';
       </nav>
       <a class="header-search" href="/search/" aria-label="Search the library" aria-current={active === 'search' ? 'page' : undefined}>
         <svg width="17" height="17" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" stroke-width="1.6"/><path d="m13 13 4 4" stroke="currentColor" stroke-width="1.6"/></svg>
-        <span>Search library</span><kbd>/</kbd>
+        <span>Search</span><kbd aria-hidden="true">/</kbd>
       </a>
     </header>
     <div class="preview-strip" role="region" aria-label="Edition status"><div class="shell"><span class="status-dot"></span> {localBridge?'Local synthetic wiki demonstration':'Preview edition'} <span class="strip-detail">{localBridge?'Supplied revisions; integrity binding is not factual or source-authenticity proof. No live release.':'Sourced working drafts. Editorial review pending.'}</span></div></div>

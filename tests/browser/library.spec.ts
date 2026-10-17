@@ -11,6 +11,7 @@ test('reading, source anchors, related links and topic navigation work', async (
   await expect(page.locator('#source-patterns')).toBeInViewport();
   await page.locator('.related').getByRole('link', { name: 'Capabilities Tool use' }).click();
   await expect(page.getByRole('heading', { name: 'Tool use', exact: true })).toBeVisible();
+  expect(await page.locator('.prose pre').evaluate(el=>el.scrollWidth<=el.clientWidth)).toBe(true);
   await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'Topics' }).click();
   await page.getByRole('link', { name: /03.*Protocols/ }).click();
   await expect(page.getByRole('heading', { name: 'Protocols', exact: true })).toBeVisible();
@@ -41,12 +42,14 @@ test('real Pagefind supports success, empty, no-results, punctuation and rapid r
   await expect(page.locator('#search-results a')).not.toHaveCount(0);
 });
 
-test('missing index has a useful fallback and retry action', async ({ page }) => {
+test('missing index has a useful fallback and retry action', async ({ page },info) => {
   await page.route('**/pagefind/**', route => route.abort());
   await page.goto('/search/');
   await page.getByRole('searchbox').fill('agent');
   await expect(page.getByRole('heading', { name: 'Search is unavailable' })).toBeVisible();
+  await expect(page.locator('#search-results')).toHaveAttribute('aria-busy','false');
   await expect(page.getByRole('link', { name: 'AI agent Foundations' })).toBeVisible();
+  await page.screenshot({path:info.outputPath('search-unavailable.png'),fullPage:true});
   await page.unroute('**/pagefind/**');
   await page.getByRole('button', { name: 'Retry search' }).click();
   await expect(page.locator('#search-results a')).not.toHaveCount(0);
@@ -133,10 +136,13 @@ test('read and search send no external requests and have no runtime or CSP error
 });
 
 test('articles, sources and browse fallback work without JavaScript', async ({ browser, baseURL }) => {
-  const context = await browser.newContext({ javaScriptEnabled: false, baseURL });
+  const context = await browser.newContext({ javaScriptEnabled: false, baseURL, viewport:{width:390,height:844} });
   const page = await context.newPage();
   await page.goto('/articles/tool-use/');
   await expect(page.getByRole('heading', { name: 'Tool use', exact: true })).toBeVisible();
+  await page.locator('[data-article-contents] summary').click();
+  await page.getByRole('navigation',{name:'On this page'}).getByRole('link',{name:'Anatomy of a tool call'}).click();
+  await expect(page.locator('#anatomy-of-a-tool-call')).toBeInViewport();
   await page.locator('.prose a[href="#source-openai"]').first().click();
   await expect(page.locator('#source-openai')).toBeInViewport();
   await page.goto('/search/');

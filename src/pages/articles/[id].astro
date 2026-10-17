@@ -13,9 +13,11 @@ const history = sourceCommit ? `${repository}/commits/${sourceCommit}/src/conten
 ---
 <Base title={article.data.title} description={article.data.description} active="library" seoArticle={article}>
   <div class="article-breadcrumb"><a href="/">Library</a><span>/</span><a href={topicUrl(article.data.topic)}>{article.data.topic}</a></div>
-  <div class="reading-layout"><aside class="contents"><p class="eyebrow">On this page</p><nav aria-label="On this page"><a href="#overview">Overview</a>{headings.filter(h => h.depth === 2).map(h => <a href={`#${h.slug}`}>{h.text}</a>)}<a href="#sources">Sources & context</a><a href="#revision">Revision record</a></nav><div class="contents-bottom"><span class="eyebrow">Part of the collection</span><a href={topicUrl(article.data.topic)}>{article.data.topic} <svg class="icon-arrow" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 13 13 3M3 3h10v10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" /></svg></a></div></aside>
+  <div class="reading-layout">
   <article class="article" data-pagefind-body>
-    <header id="overview"><p class="eyebrow" data-pagefind-meta="topic">{article.data.topic} / Reference entry {String(article.data.order).padStart(2, '0')}</p><h1 data-pagefind-meta="title">{article.data.title}</h1><p class="article-deck" data-pagefind-meta="description">{article.data.description}</p><div class="article-status" data-pagefind-ignore><span class="draft-pill"><span class="status-dot"></span> {article.data.status}</span><span>{publication?(publication.flags.length?'Post-publication review flagged':'No post-publication flag supplied'):'Editorial review pending'}</span></div></header>
+    <header id="overview"><p class="eyebrow" data-pagefind-meta="topic">{article.data.topic} / Reference entry {String(article.data.order).padStart(2, '0')}</p><h1 data-pagefind-meta="title">{article.data.title}</h1><p class="article-deck" data-pagefind-meta="description">{article.data.description}</p><div class="article-status" data-pagefind-ignore><span class="draft-pill"><span class="status-dot"></span> {article.data.status}</span><span>{publication?(publication.flags.length?'Post-publication review flagged':'No post-publication flag supplied'):'Editorial review pending'}</span></div><nav class="article-actions" aria-label="Article actions" data-pagefind-ignore><a href="#sources">Sources ({article.data.sources.length})</a><a href="#revision">Revision history</a><a href={`/contribute/?article=${article.id}`}>Contribution options</a></nav></header>
+    <aside class="contents" data-pagefind-ignore><details data-article-contents><summary>On this page</summary><nav aria-label="On this page"><a href="#overview">Overview</a>{headings.filter(h => h.depth === 2).map(h => <a href={`#${h.slug}`}>{h.text}</a>)}<a href="#sources">Sources & context</a><a href="#revision">Revision record</a></nav></details><div class="contents-bottom"><span class="eyebrow">Part of the collection</span><a href={topicUrl(article.data.topic)}>{article.data.topic} <svg class="icon-arrow" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 13 13 3M3 3h10v10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" /></svg></a></div></aside>
+
     <div class="prose"><Content /></div>
     <p class="article-feedback" data-pagefind-ignore><a href={`/contribute/?article=${article.id}`}>Suggest a correction or primary source</a> · Public intake remains on hold; the local synthetic form covers only the original three entries.</p>
     <section class="sources" id="sources" aria-labelledby="sources-title" data-pagefind-ignore><p class="eyebrow">Follow the evidence</p><h2 id="sources-title">Sources & context</h2><p>{publication&&!corrections?<>Supplied evidence date: <time datetime={article.data.verified}>{article.data.verified}</time>. Source bytes match charged local observation receipts. Integrity binding is not factual or source-authenticity proof.</>:<>Primary sources checked on <time datetime={article.data.verified}>{checkedDate}</time>. A source check is not independent editorial approval.</>}</p><ol>{article.data.sources.map(source => <li id={`source-${source.id}`}><a href={source.url}>{source.title} <span aria-hidden="true"><svg class="icon-arrow" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 13 13 3M3 3h10v10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" /></svg></span></a><span class="source-publisher">{source.publisher}</span><p>{source.context}</p>{publication?.evidence.filter(e=>e.citationId===source.id).map(e=><p>Bound original bytes: <code>{e.hash}</code> · Source <code>{e.sourceId}</code> · Receipt <code>{e.receiptKey}</code></p>)}</li>)}</ol></section>
@@ -24,3 +26,12 @@ const history = sourceCommit ? `${repository}/commits/${sourceCommit}/src/conten
   </article></div>
 </Base>
 <style>.article code { overflow-wrap:anywhere; }</style>
+
+<script>
+  const contents = document.querySelector<HTMLDetailsElement>('[data-article-contents]');
+  const desktop = window.matchMedia('(min-width: 721px)');
+  if (contents) {
+    contents.open = desktop.matches;
+    desktop.addEventListener('change', event => { contents.open = event.matches; });
+  }
+</script>

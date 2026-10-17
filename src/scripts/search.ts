@@ -18,6 +18,7 @@ async function search() {
   const request = ++sequence;
   const query = input.value.trim();
   results.replaceChildren();
+  results.setAttribute('aria-busy', query ? 'true' : 'false');
   error.hidden = true;
   empty.hidden = true;
   history.replaceState(null, '', query ? `#q=${encodeURIComponent(query)}` : location.pathname);
@@ -52,6 +53,8 @@ async function search() {
     engine = undefined;
     searchStatus.textContent = 'Search could not be completed.';
     error.hidden = false;
+  } finally {
+    if (request === sequence) results.setAttribute('aria-busy', 'false');
   }
 }
 input.addEventListener('input', () => {

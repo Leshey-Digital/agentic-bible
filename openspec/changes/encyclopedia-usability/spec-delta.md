@@ -1,0 +1,7 @@
+# Proposed specification delta
+
+- Reading: every genuine article retains original Markdown and commit-pinned history; bounded prose width, clear source context and title-first mobile layout support sustained reading. Sources, revision history and contribution options are reachable near the title and remain honest about closed intake.
+- Navigation: search is labelled and has a touch-sized target within the header; all navigation remains visible without a JavaScript menu. Native contents disclosure is keyboard-operable and links remain available without JavaScript.
+- Search: real local full-text search exposes searching/busy, empty, success and recoverable index-failure states. Stale responses never replace newer input. Browsing all twenty articles remains available without JavaScript or an index.
+- Admin: loading, success and error feedback identify the operation and next safe action near its controls. Initial list failure has a retry that preserves the current draft. A failed follow-up read cannot erase a confirmed write or claim the saved list is empty/current. Older list responses cannot replace a newer list or success message. Existing approval, replay/revocation and delayed-response ownership remain unchanged. No provider error body, token or internal stack is displayed.
+- Verification: actual desktop/mobile screenshots and keyboard/reduced-motion/no-script/error coverage accompany the candidate. No approved identity, dependencies, live privileges or release gates change.
