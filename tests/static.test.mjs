@@ -7,6 +7,8 @@ function walk(root) { return readdirSync(root).flatMap(name => { const p = join(
 const pages = walk('dist').filter(path => path.endsWith('.html'));
 const html = path => readFileSync(path, 'utf8');
 const attrs = (source, name) => [...source.matchAll(new RegExp(`\\b${name}="([^"]*)"`, 'g'))].map(m => m[1]);
+const sourceCommit=JSON.parse(readFileSync('dist/release-source.json','utf8')).commit;
+assert.match(sourceCommit,/^[a-f0-9]{40}$/);
 const articlePages = pages.filter(p => p.startsWith('dist/articles/'));
 
 test('all generated links and fragments resolve, including article citations', () => {
@@ -46,7 +48,7 @@ test('new genuine entries have substantive prose, audited citations and actual G
   for(const id of ['agent-orchestration','agent-memory','retrieval-augmented-generation','agent-evaluation','prompt-injection']){
     const source=html(`dist/articles/${id}/index.html`),body=/<div class="prose"[^>]*>([^]*?)<\/div>/.exec(source)?.[1]??'';
     assert.ok(body.replace(/<[^>]*>/g,' ').split(/\s+/).length>500,`${id}: substantive article body`);
-    assert.match(source,new RegExp(`/commits/feat/encyclopedia-mvp-twenty/src/content/articles/${id}\\.md`));
+    assert.match(source,new RegExp(`/commits/${sourceCommit}/src/content/articles/${id}\\.md`));
     assert.doesNotMatch(source,/Published local demonstration|Supplied local demonstration|Bound original bytes/);
     const claims=record.claims.filter(claim=>claim.articleId===id);assert.equal(claims.length,3);
     for(const claim of claims){assert.ok(body.includes(`href="#source-${claim.citationId}"`));assert.ok(source.includes(`href="${claim.url}"`));assert.ok(claim.sectionsChecked&&claim.supports&&claim.limits&&claim.versionContext);}
@@ -61,7 +63,7 @@ test('six operating-principles entries retain genuine provenance, source dates, 
     const source=html(`dist/articles/${id}/index.html`),body=/<div class="prose"[^>]*>([^]*?)<\/div>/.exec(source)?.[1]??'';
     assert.ok(body.replace(/<[^>]*>/g,' ').split(/\s+/).length>550,id);assert.match(source,/datetime="2026-10-17"[^>]*>17 October 2026/);
     assert.doesNotMatch(source,/<dt\b[^>]*>Prepared<\/dt>|Published local demonstration|Supplied local demonstration|Bound original bytes/);
-    assert.ok(source.includes(`/commits/feat/encyclopedia-mvp-twenty/src/content/articles/${id}.md`));
+    assert.ok(source.includes(`/commits/${sourceCommit}/src/content/articles/${id}.md`));
     const claims=record.claims.filter(claim=>claim.articleId===id);assert.equal(claims.length,3);for(const claim of claims){assert.ok(body.includes(`href="#source-${claim.citationId}"`));assert.ok(source.includes(`href="${claim.url}"`));assert.ok(claim.sectionsChecked&&claim.supports&&claim.limits&&claim.versionContext);}
   }
 });
@@ -103,7 +105,7 @@ test('twenty-entry inventory has eighteen scoped primary records for final six w
   assert.equal(record.independentEditorialReview,'pending');assert.equal(record.checkedOn,'2026-10-17');assert.equal(record.claims.length,18);
   for(const id of ["context-engineering", "structured-outputs", "agent-identity", "agent-to-agent-communication", "agent-budgets", "computer-use-agents"]){const source=html(`dist/articles/${id}/index.html`),body=/<div class="prose"[^>]*>([^]*?)<\/div>/.exec(source)?.[1]??'';
     assert.ok(body.replace(/<[^>]*>/g,' ').split(/\s+/).length>550,id);assert.match(source,/datetime="2026-10-17"[^>]*>17 October 2026/);
-    assert.ok(source.includes(`/commits/feat/encyclopedia-mvp-twenty/src/content/articles/${id}.md`));
+    assert.ok(source.includes(`/commits/${sourceCommit}/src/content/articles/${id}.md`));
     const claims=record.claims.filter(c=>c.articleId===id);assert.equal(claims.length,3);for(const c of claims){assert.ok(body.includes(`href="#source-${c.citationId}"`));assert.ok(source.includes(`href="${c.url}"`));assert.ok(c.sectionsChecked&&c.supports&&c.limits&&c.versionContext);}
   }
   const catalog=JSON.parse(html('dist/source-catalog.json'));assert.equal(catalog.articles.length,20);assert.equal(catalog.sources.length,51);

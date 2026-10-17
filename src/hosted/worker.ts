@@ -1,5 +1,6 @@
 import {ProposalError,uuid,type Ports,type RuntimeEnv} from './contracts.ts';
 import {proposeGitHubCorrection} from './github.ts';
+import {runtimeRelease} from '../release/public.ts';
 import {configuredPorts} from './configuration.ts';
 import {createApproval,listApprovals,revokeApproval} from './approvals.ts';
 import {sourcePreview} from './source.ts';
@@ -12,7 +13,7 @@ const json=(body:unknown,status=200)=>Response.json(body,{status,headers});
 export function createHostedRuntime(ports:Ports={}){return {async fetch(request:Request,env:RuntimeEnv):Promise<Response>{
   const url=new URL(request.url),path=url.pathname;
   try{
-    if(path==='/api/runtime/status'&&request.method==='GET')return json({schemaVersion:1,contentAuthority:'github-build',releaseCommit:null,releaseVerified:false,publicIntake:false,adminVerifierConfigured:!!ports.verifyAdmin,adminApprovalsConfigured:!!ports.hostedApprovals,gitHubProposalsConfigured:!!ports.verifyAdmin&&!!ports.approvedNote&&!!ports.sendGitHub&&!!env.EDITORIAL_DB,hostedCanonicalWrites:false,localFixtureIdentity:false});
+    if(path==='/api/runtime/status'&&request.method==='GET')return json({schemaVersion:1,contentAuthority:'github-build',...await runtimeRelease(env.ASSETS),publicIntake:false,adminVerifierConfigured:!!ports.verifyAdmin,adminApprovalsConfigured:!!ports.hostedApprovals,gitHubProposalsConfigured:!!ports.verifyAdmin&&!!ports.approvedNote&&!!ports.sendGitHub&&!!env.EDITORIAL_DB,hostedCanonicalWrites:false,localFixtureIdentity:false});
     if(path==='/api/editorial/status'&&request.method==='GET')return json({enabled:!!ports.hostedApprovals,mode:ports.hostedApprovals?'hosted-admin-notes':'hosted-unconfigured',publicIntake:false});
     const connectedAdmin=ports.hostedApprovals&&path!=='/api/admin/corrections/github-proposal'&&(path.startsWith('/admin/corrections/')||path.startsWith('/api/admin/corrections/'));
     if(connectedAdmin){
