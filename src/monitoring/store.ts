@@ -14,14 +14,24 @@ export class MonitorStore {
   db: SqlDatabase;
   constructor(db: SqlDatabase) { this.db=db; }
   async seed(catalog:SourceCatalog) {
-    await this.db.batch([
-      ...catalog.sources.map(source=>this.db.prepare(`INSERT INTO monitor_sources(id,url,title,article_ids)
-        SELECT ?,?,?,? WHERE (SELECT COUNT(*) FROM monitor_sources)<? OR EXISTS(SELECT 1 FROM monitor_sources WHERE id=?)
-        ON CONFLICT(id) DO UPDATE SET title=excluded.title, article_ids=excluded.article_ids`)
-        .bind(source.id,source.url,source.title,JSON.stringify(source.articleIds),catalogSourceLimit,source.id)),
-      ...catalog.articles.map(article=>this.db.prepare('INSERT INTO publication_heads(article_id) VALUES(?) ON CONFLICT DO NOTHING').bind(article.id)),
+    const sources=JSON.stringify(catalog.sources);
+    // Both writes use whole-catalog admission inside D1's atomic batch. Inserting
+    // a missing ID increases count and decreases missing by one, preserving this
+    // predicate for the head write. A losing seed is a complete no-op, including
+    // existing metadata; storage errors roll the entire batch back.
+    const admission=`(SELECT COUNT(*) FROM monitor_sources)+(SELECT COUNT(DISTINCT json_extract(value,'$.id')) FROM json_each(?) incoming
+      WHERE NOT EXISTS(SELECT 1 FROM monitor_sources WHERE id=json_extract(incoming.value,'$.id')))<=?`;
+    const results=await this.db.batch([
+      this.db.prepare(`INSERT INTO monitor_sources(id,url,title,article_ids)
+        SELECT json_extract(value,'$.id'),json_extract(value,'$.url'),json_extract(value,'$.title'),json_extract(value,'$.articleIds')
+        FROM json_each(?) WHERE ${admission}
+        ON CONFLICT(id) DO UPDATE SET title=excluded.title,article_ids=excluded.article_ids`)
+        .bind(sources,sources,catalogSourceLimit),
+      this.db.prepare(`INSERT INTO publication_heads(article_id) SELECT json_extract(value,'$.id') FROM json_each(?)
+        WHERE ${admission} ON CONFLICT DO NOTHING`).bind(JSON.stringify(catalog.articles),sources,catalogSourceLimit),
     ]);
-    for(const source of catalog.sources) if(!await this.source(source.id)) throw new MonitorError('catalog_capacity');
+    // Inspect this batch's own result, never a later read another seed can change.
+    if(results[0].meta.changes!==catalog.sources.length)throw new MonitorError('catalog_capacity');
   }
   async source(id:string) { const r=await this.db.prepare('SELECT * FROM monitor_sources WHERE id=?').bind(id).first<SourceRow>();return r?sourceRow(r):null; }
   async sources() { return (await this.db.prepare('SELECT * FROM monitor_sources ORDER BY checked_at,id LIMIT ?').bind(catalogSourceLimit).all<SourceRow>()).results.map(sourceRow); }

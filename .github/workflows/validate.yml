@@ -12,6 +12,11 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    # Temporary read-only access to the same repository's original failure trace.
+    # Remove this permission and the diagnostic step after root-cause analysis.
+    permissions:
+      contents: read
+      actions: read
     env:
       ASTRO_TELEMETRY_DISABLED: '1'
       WRANGLER_SEND_METRICS: 'false'
@@ -29,6 +34,11 @@ jobs:
       - run: npm run validate
       - run: npm run staging:check
       - run: PLAYWRIGHT_BROWSERS_PATH=.git/playwright npx --no-install playwright install --with-deps chromium
+      - name: Inspect original mobile failure artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PLAYWRIGHT_BROWSERS_PATH: .git/playwright
+        run: node scripts/inspect-original-ci-trace.mjs
       - run: npm run test:browser
       - run: npm run test:editorial:browser
       - run: npm run test:integration:browser
@@ -45,4 +55,5 @@ jobs:
           path: |
             playwright-report/
             test-results/
+            .git/original-mobile-geometry.json
           retention-days: 7
