@@ -14,7 +14,7 @@ Independent review timed out inside a single 24-page/30-second aggregate axe cas
 
 On existing Chromium 154.0.8037.57, `CI=1 npm run test:browser` passed all 68 cases; all 24 page audits completed for each project. `CI=1 npm run test:browser -- --grep 'automated accessibility and viewport' --workers=1` passed all 48 named page cases. The proof lists every completed path for both runs. Runtime version is logged and attached to each project's root-page audit. These are Chromium desktop/mobile emulation and partial automated accessibility checks, not Safari/device or full accessibility certification.
 
-The lock pins Playwright 1.64.1 and its CI Chromium revision 1248 (156.0.8078.4). CI version/output is verified separately on the new exact head and recorded in PR29. Prior passing Chromium 156 CI does not erase the independent Chromium 154 aggregate timeout. No timeout or retry threshold was raised.
+The lock pins Playwright 1.64.1 and its CI Chromium revision 1248 (156.0.8078.4). An initial follow-up CI run at `a843b0134994b16695d60ace0f6f20a6a78b312a` passed all 129 tests/101 browser cases on actual Chromium 155.0.8059.0, revealed by the new runtime logging. Automatic executable selection had not enforced the bundled manifest. CI now explicitly selects the test controller's bundled executable, launches it to compare its actual version with that exact package manifest, and sets `CHROMIUM_PATH` for every retained browser suite. New-head version/output is verified separately and recorded in PR29. Prior passing Chromium 156 CI does not erase the independent Chromium 154 aggregate timeout. No timeout or retry threshold was raised.
 
 ## Validation and unchanged application
 

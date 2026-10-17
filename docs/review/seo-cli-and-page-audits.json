@@ -210,5 +210,16 @@
   "fullSuiteWorkers": 2,
   "retries": 0,
   "expectedCIBrowserCases": 101,
-  "independentReview": "pending"
+  "independentReview": "pending",
+  "preSelectionCI": {
+    "head": "a843b0134994b16695d60ace0f6f20a6a78b312a",
+    "run": 39003390010,
+    "attempt": 1,
+    "conclusion": "success",
+    "validationTests": 129,
+    "browserCases": 101,
+    "actualBrowser": "155.0.8059.0",
+    "completedAccessibilityPagesPerProject": 24,
+    "note": "Automatic executable selection used Chromium 155 despite bundled manifest 156; successor CI explicitly selects and verifies the bundled executable."
+  }
 }

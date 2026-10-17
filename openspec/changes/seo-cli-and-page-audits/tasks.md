@@ -4,4 +4,5 @@
 - [x] Add shared explicit SEO environment and actual CLI cold-cache/blocked-external positive control.
 - [x] Split all 24 pages into named cases with unchanged axe/viewport rigor and record browser versions.
 - [x] Complete full reading, single-worker page subset and full validation on local Chromium 154.
+- [x] Record successful follow-up CI on actual Chromium 155 and add explicit bundled-executable selection/version verification.
 - [ ] Update PR29 and verify new exact-head CI with pinned Chromium 156; independent review remains pending.

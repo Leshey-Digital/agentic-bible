@@ -30,6 +30,30 @@ jobs:
       - run: npm run validate
       - run: npm run staging:check
       - run: PLAYWRIGHT_BROWSERS_PATH=.git/playwright npx --no-install playwright install --with-deps chromium
+      - name: Select and verify package-pinned Chromium
+        env:
+          PLAYWRIGHT_BROWSERS_PATH: .git/playwright
+        run: |
+          node --input-type=module <<'NODE'
+          import { chromium } from '@playwright/test';
+          import { appendFileSync, readFileSync } from 'node:fs';
+          import { createRequire } from 'node:module';
+          import { dirname, join } from 'node:path';
+          const require = createRequire(import.meta.url);
+          const fromTest = createRequire(require.resolve('@playwright/test/package.json'));
+          const playwrightPackage = fromTest.resolve('playwright/package.json');
+          const fromPlaywright = createRequire(playwrightPackage);
+          const corePackage = fromPlaywright.resolve('playwright-core/package.json');
+          const manifest = JSON.parse(readFileSync(join(dirname(corePackage), 'browsers.json'), 'utf8'));
+          const pinned = manifest.browsers.find(item => item.name === 'chromium');
+          const executable = chromium.executablePath();
+          const browser = await chromium.launch({ executablePath: executable });
+          let actual;
+          try { actual = browser.version(); } finally { await browser.close(); }
+          if (actual !== pinned.browserVersion) throw new Error('Installed Chromium differs from package manifest');
+          appendFileSync(process.env.GITHUB_ENV, 'CHROMIUM_PATH=' + executable + '\n');
+          console.log('Pinned browser selection: ' + JSON.stringify({ playwright: JSON.parse(readFileSync(playwrightPackage, 'utf8')).version, revision: pinned.revision, expected: pinned.browserVersion, actual }));
+          NODE
       - run: npm run test:browser
       - run: npm run test:editorial:browser
       - run: npm run test:integration:browser
