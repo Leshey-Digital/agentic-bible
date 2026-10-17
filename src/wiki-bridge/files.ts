@@ -1,10 +1,20 @@
-import {writeFileSync,readdirSync,lstatSync,mkdirSync,renameSync,openSync,closeSync,readSync,fsyncSync,constants} from 'node:fs';
+import {writeFileSync,readdirSync,lstatSync,mkdirSync,renameSync,openSync,closeSync,readSync,fsyncSync,fstatSync,constants} from 'node:fs';
 import {join,dirname,relative} from 'node:path';
 import {canonical,hash} from '../publishing/contracts.ts';
 import {bridgeLimits,reject} from './limits.ts';
 export const safePath=(path:string)=>path.length<240&&/^[a-zA-Z0-9_./-]+$/.test(path)&&path.split('/').every(part=>part!==''&&part!=='.'&&part!=='..');
 export function bounded(path:string,max:number):Buffer{
-  const fd=openSync(path,constants.O_RDONLY|constants.O_NOFOLLOW);try{const data=Buffer.alloc(max+1);let length=0;while(length<data.length){const n=readSync(fd,data,length,data.length-length,null);if(!n)break;length+=n;}if(length>max)reject('bounded_file_too_large');return data.subarray(0,length);}finally{closeSync(fd);}
+  const fd=openSync(path,constants.O_RDONLY|constants.O_NOFOLLOW|constants.O_NONBLOCK);
+  try{
+    const stat=fstatSync(fd);if(!stat.isFile())reject('bounded_file_not_regular');
+    if(!Number.isSafeInteger(stat.size)||stat.size>max)reject('bounded_file_too_large');
+    // One sentinel detects growth without reserving the caller's maximum for every tiny file.
+    const data=Buffer.alloc(stat.size+1);let length=0;
+    while(length<data.length){const n=readSync(fd,data,length,data.length-length,null);if(!n)break;length+=n;}
+    if(length>max)reject('bounded_file_too_large');
+    if(length!==stat.size||fstatSync(fd).size!==stat.size)reject('bounded_file_changed');
+    return data.subarray(0,length);
+  }finally{closeSync(fd);}
 }
 export function sync(path:string){const fd=openSync(path,'r');try{fsyncSync(fd);}finally{closeSync(fd);}}
 export function write(path:string,value:string|Uint8Array){mkdirSync(dirname(path),{recursive:true});writeFileSync(path,value);sync(path);}

@@ -6,7 +6,7 @@ import { resolve } from 'node:path';
 const state = resolve(process.argv[2]==='integration'?'.git/integration-browser-state':'.git/editorial-browser-state');
 rmSync(state, { recursive: true, force: true });
 const cli = resolve('node_modules/wrangler/bin/wrangler.js');
-const env = { ...process.env, XDG_CONFIG_HOME: resolve('.git/runtime-config'), XDG_CACHE_HOME: resolve('.git/runtime-cache'), WRANGLER_SEND_METRICS: 'false' };
+const env = { ...process.env, XDG_CONFIG_HOME: resolve('.git/runtime-config'), XDG_CACHE_HOME: resolve('.git/runtime-cache'), WRANGLER_SEND_METRICS: 'false', CLOUDFLARE_CF_FETCH_ENABLED: 'false' };
 const common = ['--config', 'wrangler.editorial.local.jsonc', '--persist-to', state];
 const migration = spawnSync(process.execPath, [cli, 'd1', 'migrations', 'apply', 'EDITORIAL_DB', '--local', ...common], { env, encoding: 'utf8' });
 if (migration.status !== 0) { process.stderr.write(migration.stderr); process.stdout.write(migration.stdout); process.exit(migration.status ?? 1); }

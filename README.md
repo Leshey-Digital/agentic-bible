@@ -126,6 +126,10 @@ The separate [catalog/reliability successor](openspec/changes/catalog-atomicity-
 
 The [final six source audit](docs/review/mvp-twenty-source-verification.md) and [twenty-entry handoff](docs/review/mvp-twenty.md) record the working collection, bounded metadata adjustment and validation. The content-count target is reached; independent editorial review and production readiness remain separate.
 
+The separate [snapshot-read reliability candidate](docs/review/snapshot-read-reliability.md) reduces bounded-read allocation, verifies the actual served bytes, disables local framework metadata lookup and retains safe build/network failure diagnostics. Validation executes real three/eight/fourteen/twenty-entry snapshot paths without changing archived source or artifacts; prior unexplained failures remain explicit review gaps.
+
 ## Explicit local reviewed corrections
 
 The [reviewed community-correction coordinator](docs/reviewed-community-corrections.md) connects existing on-site synthetic intake/admin review to one canonical tool-use correction-note path. Run `npm run validate`, then `npm run corrections:local` with port 8788 free. An admin writes a cited note and explicitly approves it; ordinary dispositions and contributor text cannot publish. Full original prose, opaque contribution/reviewer attribution, readable history, real twenty-entry search, rollback and same-reference recovery remain local. Run `test:corrections` and `test:corrections:browser`; [handoff](docs/review/reviewed-community-corrections.md). This adds no real production authentication, public intake, live source/provider call or deployment.
+
+The [reviewed-corrections composition](openspec/changes/reviewed-corrections-composition/proposal.md) retains both preserved correction and PR28 ancestry, with correction runtime metadata isolation, recoverable completion faults and explicit reconfirmation after stale approval. Independent review of the source and composition remain separate gates.

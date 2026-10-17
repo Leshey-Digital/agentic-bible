@@ -1,95 +1,96 @@
 {
-  "baseHead": "d3c80414634480fdf479131bd96e490c58b1d1a0",
-  "fullValidationTests": 119,
-  "typeCheckedFiles": 95,
-  "diagnostics": 0,
-  "retainedAndCorrectionBrowserCases": 54,
-  "suites": [
+  "sourceHeads": {
+    "correctionCheckpoint": "a222eece3f4719a77c1da4cc39d5ab6b0bfa268a",
+    "pr28": "1cb4d1ed56e46acffe82240b9cbe6cd7df139ab3"
+  },
+  "validationTests": 128,
+  "astroFiles": 96,
+  "astroErrors": 0,
+  "astroWarnings": 0,
+  "commands": [
+    {
+      "command": "npm run validate",
+      "exitCode": 0,
+      "seconds": 114.7,
+      "browserCases": 0
+    },
     {
       "command": "npm run test:wiki-seo:browser",
       "exitCode": 0,
-      "seconds": 60.74,
-      "log": "/tmp/corrections-test-wiki-seo-browser.log",
+      "seconds": 12.8,
       "browserCases": 1
     },
     {
       "command": "npm run test:browser",
       "exitCode": 0,
-      "seconds": 76.33,
-      "log": "/tmp/corrections-test-browser.log",
+      "seconds": 71.33,
       "browserCases": 22
     },
     {
       "command": "npm run test:editorial:browser",
       "exitCode": 0,
-      "seconds": 43.8,
-      "log": "/tmp/corrections-test-editorial-browser.log",
+      "seconds": 38.83,
       "browserCases": 23
     },
     {
       "command": "npm run test:integration:browser",
       "exitCode": 0,
-      "seconds": 12.83,
-      "log": "/tmp/corrections-test-integration-browser.log",
+      "seconds": 11.86,
       "browserCases": 1
     },
     {
       "command": "npm run test:monitoring:worker",
       "exitCode": 0,
-      "seconds": 20.45,
-      "log": "/tmp/corrections-test-monitoring-worker.log"
+      "seconds": 17.54,
+      "browserCases": 0
     },
     {
       "command": "npm run test:settings:worker",
       "exitCode": 0,
-      "seconds": 29.63,
-      "log": "/tmp/corrections-test-settings-worker.log"
+      "seconds": 22.89,
+      "browserCases": 0
     },
     {
       "command": "npm run test:publication:browser",
       "exitCode": 0,
-      "seconds": 9.77,
-      "log": "/tmp/corrections-test-publication-browser.log",
+      "seconds": 7.99,
       "browserCases": 1
     },
     {
       "command": "npm run test:combined:browser",
       "exitCode": 0,
-      "seconds": 10.41,
-      "log": "/tmp/corrections-test-combined-browser.log",
+      "seconds": 5.97,
       "browserCases": 1
     },
     {
       "command": "npm run test:wiki-bridge:browser",
       "exitCode": 0,
-      "seconds": 109.71,
-      "log": "/tmp/corrections-test-wiki-bridge-browser.log",
-      "browserCases": 3
-    },
-    {
-      "command": "npm run test:corrections:browser",
-      "exitCode": 0,
-      "seconds": 93.27,
-      "log": "/tmp/corrections-test-corrections-browser.log",
-      "browserCases": 2
+      "seconds": 27.18,
+      "browserCases": 4
     },
     {
       "command": "npm run staging:check",
       "exitCode": 0,
-      "seconds": 1.13,
-      "log": "/tmp/corrections-staging-check.log"
+      "seconds": 1.08,
+      "browserCases": 0
+    },
+    {
+      "command": "npm run test:corrections:browser",
+      "exitCode": 0,
+      "browserCases": 2,
+      "seconds": 37.4
     }
   ],
-  "finalAffectedChecks": {
-    "nativeTests": 3,
-    "browserCases": 2,
-    "note": "After accessible history-citation labels were aligned with original source ordinals, affected native/browser suites and type check passed again. The seven/eight-record boundary assertions passed in this final native run."
+  "resolvedLocalFailure": {
+    "tests": 2,
+    "cause": "diagnostic publisher stubs lacked the empty history map required by composed builder",
+    "repair": "added empty history map; retained original assertions; focused and complete validation passed"
   },
-  "staging": {
+  "independentReview": "pending",
+  "deployed": false,
+  "browserCases": 55,
+  "stagingDryRun": {
     "assets": 107,
-    "bindings": 0,
-    "deployed": false
-  },
-  "publication": "Local checkpoint only; reviewer reliability findings now take priority. No PR created for this correction branch yet.",
-  "networkLimit": "Application and browser counters observed no external source/provider calls. Miniflare startup CF-metadata traffic is outside those counters; its inherited isolation defect is being fixed separately."
+    "bindings": 0
+  }
 }

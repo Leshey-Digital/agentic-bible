@@ -11,7 +11,7 @@ test('actual workerd/D1 expired budget-blocked leases preserve accounting and re
   const bundled=await build({entryPoints:['tests/http-worker/entry.ts'],bundle:true,write:false,format:'esm',platform:'browser',target:'es2022',external:['node:*']});
   let mf;let db;let fetches=0;let temporary=true;
   async function start(){mf=new Miniflare({...convertV4MiniflareOptions({name:'http-status-test',modules:true,script:bundled.outputFiles[0].text,compatibilityDate:'2026-10-16',d1Databases:{EDITORIAL_DB:'http-status'},d1Persist:path,
-    outboundService:()=>{fetches++;return temporary?new Response('temporary',{status:503}):new Response('Synthetic status recovery',{headers:{'Content-Type':'text/plain'}});}}),resourcePersistencePath:path});db=await mf.getD1Database('EDITORIAL_DB');}
+    outboundService:()=>{fetches++;return temporary?new Response('temporary',{status:503}):new Response('Synthetic status recovery',{headers:{'Content-Type':'text/plain'}});}}),cf:false,resourcePersistencePath:path});db=await mf.getD1Database('EDITORIAL_DB');}
   async function restart(){await mf.dispose();mf=undefined;await start();}
   const source=httpSources[0].id;const key=crypto.randomUUID();const now=Date.UTC(2030,0,1,12);const day=Math.floor(now/86400000);const nextDay=(day+1)*86400000;
   const action=async(time,extra={})=>{const response=await mf.dispatchFetch('http://localhost/check',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:source,key,now:time,...extra})});const value=await response.json();assert.equal(response.status,200,JSON.stringify(value));return value;};

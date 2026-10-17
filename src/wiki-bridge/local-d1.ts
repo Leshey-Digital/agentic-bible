@@ -15,6 +15,6 @@ export async function localObservations(name='wiki-observations-local',prepare=f
     mkdirSync(path,{recursive:true});writeFileSync(marker,'local-synthetic-observations\n');
   }
   const script=prepare?(await build({entryPoints:['tests/http-worker/entry.ts'],bundle:true,write:false,format:'esm',platform:'browser',target:'es2022',external:['node:*']})).outputFiles[0].text:'export default {fetch(){return new Response("read-only D1 binding",{status:405})}}';
-  const runtime=new Miniflare({...convertV4MiniflareOptions({name:'wiki-observation-local',modules:true,script,compatibilityDate:'2026-10-16',d1Databases:{EDITORIAL_DB:'wiki-observations'},outboundService:send??(()=>{throw new Error('bridge_source_fetch_forbidden');})}),resourcePersistencePath:path});
+  const runtime=new Miniflare({...convertV4MiniflareOptions({name:'wiki-observation-local',modules:true,script,compatibilityDate:'2026-10-16',d1Databases:{EDITORIAL_DB:'wiki-observations'},outboundService:send??(()=>{throw new Error('bridge_source_fetch_forbidden');})}),cf:false,resourcePersistencePath:path});
   return {runtime,db:await runtime.getD1Database('EDITORIAL_DB'),path};
 }
