@@ -115,5 +115,23 @@
   "controlledGitHubOnly": true,
   "liveGitHubContentWrites": false,
   "deployed": false,
-  "independentReview": "pending"
+  "independentReview": "pending",
+  "initialRuntimeHead": "275b65d562df2451ddc4f56fff7e8a48d196cf4f",
+  "gitTreeGuardFollowup": {
+    "regularBlobModeRequired": "100644",
+    "matchingBlobIdentity": true,
+    "symlinkAndTruncatedTreeRejected": true,
+    "fullValidation": {
+      "tests": 136,
+      "pass": 136,
+      "fail": 0,
+      "cancelled": 0
+    },
+    "hostedNativeTests": 7,
+    "hostedBrowserCases": 2,
+    "runtimeDryRunBindings": [
+      "ASSETS"
+    ],
+    "allRetainedSuitesRerunInExactHeadCI": true
+  }
 }
