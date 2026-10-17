@@ -66,6 +66,7 @@ jobs:
       - run: npm run test:wiki-seo:browser
       - run: npm run test:corrections:browser
       - run: npm run test:hosted:browser
+      - run: npm run test:hosted-admin:browser
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:
@@ -79,9 +80,13 @@ jobs:
             .git/wiki-runtime-network-isolation.json
             .git/seo-cli-network-isolation.json
             .git/hosted-github-proposal-proof.json
+            .git/hosted-connected-native-proof.json
+            .git/hosted-connected-build-proof.json
+            .git/hosted-admin-browser-*.json
             .git/hosted-projection-build-proof.json
             .git/hosted-runtime-browser-*.json
             .git/reviewed-corrections-network-isolation.json
+            .git/correction-collision-*.json
             .git/reviewed-corrections-native-evidence.json
             .git/reviewed-corrections-sigkill-evidence.json
             .git/reviewed-corrections-browser-*.json

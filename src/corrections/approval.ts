@@ -71,12 +71,16 @@ export async function approve(db:SqlDatabase,bridge:WikiBridge,input:ReviewInput
     command={schemaVersion:1,mode:'local-synthetic-only',kind:'apply',eventId:'correction-'+input.requestKey,originalMarkdownHash:original.hash,expectedSite:current?.reference??null,expectedPublisher:prior?.reference??null,revision:{schemaVersion:1,kind:'publish',eventId:'correction-'+input.requestKey,baseRevision:prior?.manifest.state.articles['tool-use']??null,article},evidence:[],authority};
   }
   const json=canonical(command);if(Buffer.byteLength(json)>32768)reject('correction_capacity');
+  // Losing ON CONFLICT admission must not authorize later writes by key alone.
+  // Rollback command fingerprints do not include submission metadata, so bind the full stored tuple.
+  const fingerprint=hash(json),winning="o.id=? AND o.fingerprint=? AND o.submission_id=? AND o.submission_version=? AND o.reviewer=? AND o.kind=? AND o.command_json=? AND o.created_at=? AND o.state='approved'";
+  const candidate=[input.requestKey,fingerprint,input.submissionId,input.version,reviewer,input.kind,json,now];
   await db.batch([
     db.prepare(`INSERT INTO correction_operations(id,fingerprint,submission_id,submission_version,reviewer,kind,command_json,state,created_at)
       SELECT ?,?,?,?,?,?,?,'approved',? FROM submissions WHERE id=? AND version=? AND article_id='tool-use' AND kind='correction' AND status IN ('new','follow-up',${input.kind==='rollback'?"'resolved'":"'new'"})
-      AND NOT EXISTS(SELECT 1 FROM correction_operations WHERE state='approved') AND (SELECT COUNT(*) FROM correction_operations)<? ON CONFLICT DO NOTHING`).bind(input.requestKey,hash(json),input.submissionId,input.version,reviewer,input.kind,json,now,input.submissionId,input.version,input.kind==='apply'?7:8),
-    db.prepare(`UPDATE submissions SET version=version+1,last_event_id=?,updated_at=? WHERE id=? AND version=? AND EXISTS(SELECT 1 FROM correction_operations WHERE id=? AND state='approved')`).bind(input.requestKey,now,input.submissionId,input.version,input.requestKey),
-    db.prepare(`INSERT OR IGNORE INTO editorial_audit(id,submission_id,actor,action,status,tags,created_at) SELECT o.id,s.id,o.reviewer,'correction-approved',s.status,s.tags,o.created_at FROM correction_operations o JOIN submissions s ON s.id=o.submission_id WHERE o.id=? AND s.last_event_id=o.id`).bind(input.requestKey),
+      AND NOT EXISTS(SELECT 1 FROM correction_operations WHERE state='approved') AND (SELECT COUNT(*) FROM correction_operations)<? ON CONFLICT DO NOTHING`).bind(input.requestKey,fingerprint,input.submissionId,input.version,reviewer,input.kind,json,now,input.submissionId,input.version,input.kind==='apply'?7:8),
+    db.prepare(`UPDATE submissions SET version=version+1,last_event_id=?,updated_at=? WHERE id=? AND version=? AND EXISTS(SELECT 1 FROM correction_operations o WHERE ${winning} AND o.submission_id=submissions.id AND o.submission_version=submissions.version)`).bind(input.requestKey,now,input.submissionId,input.version,...candidate),
+    db.prepare(`INSERT OR IGNORE INTO editorial_audit(id,submission_id,actor,action,status,tags,created_at) SELECT o.id,s.id,o.reviewer,'correction-approved',s.status,s.tags,o.created_at FROM correction_operations o JOIN submissions s ON s.id=o.submission_id WHERE ${winning} AND s.last_event_id=o.id AND s.version=o.submission_version+1`).bind(...candidate),
   ]);
   const saved=await operation(db,input.requestKey);if(!saved)reject('stale_review_or_pending_or_capacity');
   const savedCommand=await reviewedCommand(saved.id,db);if(!sameReviewInput(saved,input,reviewer,savedCommand))reject('approval_key_conflict');await verifyApproval(savedCommand,db);return saved;

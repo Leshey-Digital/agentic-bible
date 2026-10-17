@@ -1,0 +1,172 @@
+{
+  "checkout": "/workspace/agentic-bible-hosted-integration",
+  "branch": "feat/hosted-corrections-integration",
+  "frozenSources": {
+    "PR30": "18f76512ff53267ae2e0be113f2b1e67f8b7b02c",
+    "PR31": "b11766919a3b99c4b29f8f7a208b9e6cc8313c69"
+  },
+  "compositionCommit": "745511b2711d03d23d5913578bed3e5e3b92b2c9",
+  "PR31IndependentReview": "Bounded acceptance reported by parent: prevention for new transactions only, no retrospective recovery or repair of poisoned fixtures.",
+  "validationTests": 143,
+  "browserCases": 105,
+  "nativeRestartChecks": 2,
+  "astroFiles": 108,
+  "astroDiagnostics": 0,
+  "localChromium": "154.0.8037.57",
+  "ciPinnedChromium": "156.0.8078.4",
+  "stagingDryRun": {
+    "assets": 107,
+    "bindings": 0,
+    "deployed": false
+  },
+  "runtimeDryRun": {
+    "assets": 107,
+    "bindings": [
+      "ASSETS"
+    ],
+    "workerKiB": 44.98,
+    "gzipKiB": 12.72,
+    "D1BindingConfigured": false,
+    "identityTrustConfigured": false,
+    "githubCredentialConfigured": false,
+    "deployed": false
+  },
+  "commands": [
+    {
+      "command": "npm run validate",
+      "exitCode": 0,
+      "seconds": 119.4,
+      "log": "/tmp/hosted-integration-validate.log",
+      "nodeTests": 143,
+      "browserCases": 0
+    },
+    {
+      "command": "npm run test:wiki-seo:browser",
+      "exitCode": 0,
+      "seconds": 12.57,
+      "log": "/tmp/hosted-integration-test-wiki-seo-browser.log",
+      "nodeTests": 0,
+      "browserCases": 1
+    },
+    {
+      "command": "npm run test:browser",
+      "exitCode": 0,
+      "seconds": 81.67,
+      "log": "/tmp/hosted-integration-test-browser.log",
+      "nodeTests": 0,
+      "browserCases": 68
+    },
+    {
+      "command": "npm run test:editorial:browser",
+      "exitCode": 0,
+      "seconds": 36.38,
+      "log": "/tmp/hosted-integration-test-editorial-browser.log",
+      "nodeTests": 0,
+      "browserCases": 23
+    },
+    {
+      "command": "npm run test:integration:browser",
+      "exitCode": 0,
+      "seconds": 11.37,
+      "log": "/tmp/hosted-integration-test-integration-browser.log",
+      "nodeTests": 0,
+      "browserCases": 1
+    },
+    {
+      "command": "npm run test:monitoring:worker",
+      "exitCode": 0,
+      "seconds": 17.77,
+      "log": "/tmp/hosted-integration-test-monitoring-worker.log",
+      "nodeTests": 1,
+      "browserCases": 0
+    },
+    {
+      "command": "npm run test:settings:worker",
+      "exitCode": 0,
+      "seconds": 23.64,
+      "log": "/tmp/hosted-integration-test-settings-worker.log",
+      "nodeTests": 1,
+      "browserCases": 0
+    },
+    {
+      "command": "npm run test:publication:browser",
+      "exitCode": 0,
+      "seconds": 7.46,
+      "log": "/tmp/hosted-integration-test-publication-browser.log",
+      "nodeTests": 0,
+      "browserCases": 1
+    },
+    {
+      "command": "npm run test:combined:browser",
+      "exitCode": 0,
+      "seconds": 5.88,
+      "log": "/tmp/hosted-integration-test-combined-browser.log",
+      "nodeTests": 0,
+      "browserCases": 1
+    },
+    {
+      "command": "npm run test:wiki-bridge:browser",
+      "exitCode": 0,
+      "seconds": 26.58,
+      "log": "/tmp/hosted-integration-test-wiki-bridge-browser.log",
+      "nodeTests": 0,
+      "browserCases": 4
+    },
+    {
+      "command": "npm run test:corrections:browser",
+      "exitCode": 0,
+      "seconds": 36.47,
+      "log": "/tmp/hosted-integration-test-corrections-browser.log",
+      "nodeTests": 0,
+      "browserCases": 2
+    },
+    {
+      "command": "npm run test:hosted:browser",
+      "exitCode": 0,
+      "seconds": 8.73,
+      "log": "/tmp/hosted-integration-test-hosted-browser.log",
+      "nodeTests": 0,
+      "browserCases": 2
+    },
+    {
+      "command": "npm run test:hosted-admin:browser",
+      "exitCode": 0,
+      "seconds": 5.98,
+      "log": "/tmp/hosted-integration-test-hosted-admin-browser.log",
+      "nodeTests": 0,
+      "browserCases": 2
+    },
+    {
+      "command": "npm run staging:check",
+      "exitCode": 0,
+      "seconds": 1.04,
+      "log": "/tmp/hosted-integration-staging-check.log",
+      "nodeTests": 0,
+      "browserCases": 0
+    },
+    {
+      "command": "npm run runtime:check",
+      "exitCode": 0,
+      "seconds": 1.02,
+      "log": "/tmp/hosted-integration-runtime-check.log",
+      "nodeTests": 0,
+      "browserCases": 0
+    }
+  ],
+  "scope": "Actual shipped workerd/D1 with generated test signing keys and controlled GitHub; no live identity/GitHub/deployment proof.",
+  "setupAndFailureEvidence": [
+    "Initial D1 exec migration loader failed before endpoint tests; corrected and fixtures dispose on setup failure.",
+    "Minimal native probe established Request.credentials is absent in workerd; wrapper supports this and guards header/destination/method restrictions.",
+    "Miniflare Node outbound service resets redirect representation; native Worker explicitly guards/sets manual redirects.",
+    "Initial browser traces retained in Git-directory hosted-admin-initial-failure; duplicate draft link fixed after screenshot inspection.",
+    "Full run deliberately cancelled before source change for issuer/audience/subject ownership namespace; regression and final full run passed.",
+    "First completed full run caught inherited trusted-authority HTTP status regression; corrected code to preserve original 503 assertion, then all 143 passed."
+  ],
+  "publication": "Candidate source/package content committed unchanged after these checks; exact published head and terminal CI recorded in draft PR.",
+  "notRun": [
+    "Live identity setup/key rotation/account membership",
+    "Real D1 binding/migration or GitHub secret configuration",
+    "Live GitHub article proposal or event/CI authentication proof",
+    "Main/source PR merge, deployment/rollback, paid/provider call, live indexing or licensing choice"
+  ]
+}

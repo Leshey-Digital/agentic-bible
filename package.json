@@ -54,7 +54,8 @@
     "test:hosted:browser": "PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright test --config playwright.hosted.config.ts",
     "corrections:local": "node scripts/reviewed-corrections.mjs",
     "test:corrections": "node --import ./tests/support/network-diagnostics.mjs --test tests/corrections/*.test.mjs",
-    "test:corrections:browser": "PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright test --config playwright.corrections.config.ts"
+    "test:corrections:browser": "PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright test --config playwright.corrections.config.ts",
+    "test:hosted-admin:browser": "PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright test --config playwright.hosted-admin.config.ts"
   },
   "dependencies": {
     "astro": "7.4.0"
