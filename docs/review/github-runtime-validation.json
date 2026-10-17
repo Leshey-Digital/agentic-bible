@@ -1,0 +1,119 @@
+{
+  "frozenPR29": "0579936052e8ec15baf4f779e02cd10c22b1c615",
+  "observedRemoteMain": "2ad330e06fcc4dd46a8fc95291ccc3cd1c597327",
+  "remoteMainArticles": [
+    "ai-agent",
+    "model-context-protocol",
+    "tool-use"
+  ],
+  "fullValidation": {
+    "tests": 136,
+    "pass": 136,
+    "fail": 0,
+    "cancelled": 0
+  },
+  "astroFiles": 102,
+  "astroDiagnostics": 0,
+  "browserCases": 103,
+  "commands": [
+    {
+      "command": "npm run validate",
+      "exitCode": 0,
+      "seconds": 115.55,
+      "browserCases": 0
+    },
+    {
+      "command": "npm run test:wiki-seo:browser",
+      "exitCode": 0,
+      "seconds": 13.16,
+      "browserCases": 1
+    },
+    {
+      "command": "npm run test:browser",
+      "exitCode": 0,
+      "seconds": 85.33,
+      "browserCases": 68
+    },
+    {
+      "command": "npm run test:editorial:browser",
+      "exitCode": 0,
+      "seconds": 37.41,
+      "browserCases": 23
+    },
+    {
+      "command": "npm run test:integration:browser",
+      "exitCode": 0,
+      "seconds": 11.51,
+      "browserCases": 1
+    },
+    {
+      "command": "npm run test:monitoring:worker",
+      "exitCode": 0,
+      "seconds": 17.27,
+      "browserCases": 0
+    },
+    {
+      "command": "npm run test:settings:worker",
+      "exitCode": 0,
+      "seconds": 22.25,
+      "browserCases": 0
+    },
+    {
+      "command": "npm run test:publication:browser",
+      "exitCode": 0,
+      "seconds": 7.69,
+      "browserCases": 1
+    },
+    {
+      "command": "npm run test:combined:browser",
+      "exitCode": 0,
+      "seconds": 5.84,
+      "browserCases": 1
+    },
+    {
+      "command": "npm run test:wiki-bridge:browser",
+      "exitCode": 0,
+      "seconds": 26.68,
+      "browserCases": 4
+    },
+    {
+      "command": "npm run test:corrections:browser",
+      "exitCode": 0,
+      "seconds": 36.91,
+      "browserCases": 2
+    },
+    {
+      "command": "npm run test:hosted:browser",
+      "exitCode": 0,
+      "seconds": 8.79,
+      "browserCases": 2
+    },
+    {
+      "command": "npm run staging:check",
+      "exitCode": 0,
+      "seconds": 1.07,
+      "browserCases": 0
+    },
+    {
+      "command": "npm run runtime:check",
+      "exitCode": 0,
+      "seconds": 1.08,
+      "browserCases": 0
+    }
+  ],
+  "staticDryRun": {
+    "assets": 107,
+    "bindings": []
+  },
+  "runtimeDryRun": {
+    "assets": 107,
+    "bindings": [
+      "ASSETS"
+    ],
+    "D1Configured": false
+  },
+  "controlledGitHubOnly": true,
+  "liveGitHubContentWrites": false,
+  "deployed": false,
+  "independentReview": "pending"
+}

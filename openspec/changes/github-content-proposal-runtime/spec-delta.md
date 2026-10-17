@@ -1,0 +1,9 @@
+# Proposed runtime requirements
+
+A hosted runtime serves GitHub-built static reading/search and reports publication capability honestly. Local fixture identity, arbitrary headers, missing D1/authority/transport and remote-origin requests cannot authorize hosted changes. Default admin/write routes fail closed even when local fixture flags or cookies are supplied.
+
+An explicitly configured verified admin may request a trusted approval by opaque ID. The authority port supplies the reviewed note, citation, public opaque attribution, submission revision, expected Git head and baseline SHA-256; request-body text/identity is never authority. Local synthetic approvals are rejected. Verify GitHub source bytes and stale bases before mutations. Construct only a plain-text appended note to tool-use, preserving baseline metadata/prose/code and all other Git files.
+
+Publish only a draft proposal: Git tree based on the pinned base tree, commit with that single base parent, deterministic create-only branch and a draft PR to main. Existing branch/tree/parent/approval markers and PR head/base must match. Never PATCH refs, merge or claim hosted activation. Actual D1 leases, reservations, bounded retries and receipts survive restart; lost responses and completion faults cannot create duplicate visible branches/PRs. Re-read trusted approval before visible GitHub effects and completion; revocation can leave a pending draft requiring manual closure, never a confirmed success. Conflict, capacity, stale/foreign branch, revoked approval, unauthorized, redirect, oversized response and exhausted budget fail closed.
+
+Validate actual Workers/D1 and controlled GitHub REST, plus real local Wrangler Static Assets routing. No controlled result proves a live GitHub/Cloudflare deployment or production auth. Preserve PR29 and all article bytes.

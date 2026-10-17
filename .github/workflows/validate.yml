@@ -29,6 +29,7 @@ jobs:
       - run: npm ci
       - run: npm run validate
       - run: npm run staging:check
+      - run: npm run runtime:check
       - run: PLAYWRIGHT_BROWSERS_PATH=.git/playwright npx --no-install playwright install --with-deps chromium
       - name: Select and verify package-pinned Chromium
         env:
@@ -64,6 +65,7 @@ jobs:
       - run: npm run test:wiki-bridge:browser
       - run: npm run test:wiki-seo:browser
       - run: npm run test:corrections:browser
+      - run: npm run test:hosted:browser
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:
@@ -76,6 +78,9 @@ jobs:
             .git/wiki-upgrade-*-diagnostics.json
             .git/wiki-runtime-network-isolation.json
             .git/seo-cli-network-isolation.json
+            .git/hosted-github-proposal-proof.json
+            .git/hosted-projection-build-proof.json
+            .git/hosted-runtime-browser-*.json
             .git/reviewed-corrections-network-isolation.json
             .git/reviewed-corrections-native-evidence.json
             .git/reviewed-corrections-sigkill-evidence.json
