@@ -117,3 +117,15 @@ test('rendered numeric claim citations point to their matching source-list ordin
     for(const [,id,label]of source.matchAll(/<a href="#(source-[^"]+)">(\d+)<\/a>/g))assert.equal(Number(label),ids.indexOf(id)+1,`${page}: ${id}`);
   }
 });
+
+test('contribution choices exactly match the published source catalog while static intake stays disabled', () => {
+  const page = html('dist/contribute/index.html');
+  const catalog = JSON.parse(readFileSync('dist/source-catalog.json', 'utf8'));
+  const select = /<select\b[^>]*id="article-id"[^>]*>([^]*?)<\/select>/.exec(page)?.[1] ?? '';
+  const choices = [...select.matchAll(/<option\b[^>]*value="([^"]+)"/g)].map(match => match[1]);
+  assert.equal(choices.length, 20);
+  assert.deepEqual(choices.sort(), catalog.articles.map(article => article.id).sort());
+  assert.match(page, /<fieldset\b[^>]*disabled/);
+  assert.match(page, /Public submissions are on hold/);
+  assert.doesNotMatch(page, /only.*AI agent, Tool use, and Model Context Protocol/);
+});

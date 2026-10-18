@@ -1,4 +1,7 @@
-export const articleIds = ['ai-agent', 'tool-use', 'model-context-protocol'] as const;
+import { readingArticleIds } from '../lib/article-ids.ts';
+// The compiled canonical reading inventory also governs source-catalog completeness.
+// Request data, fixture metadata and fetched assets cannot expand intake authority.
+export const articleIds = readingArticleIds;
 export const dispositions = ['new', 'follow-up', 'resolved', 'dismissed'] as const;
 export type Disposition = typeof dispositions[number];
 export type SubmissionInput = {

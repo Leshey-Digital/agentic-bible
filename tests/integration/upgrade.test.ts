@@ -59,7 +59,7 @@ test('populated editorial → source ledger → settings upgrades retain all pri
     const legacyChange=await legacySettings(db);
     const prior=snapshot(db,[...editorialTables,...sourceTables,'measurement_settings','measurement_audit']);
     // Any additive migrations introduced by an accepted follow-up must preserve the populated stack too.
-    for(const filename of readdirSync('migrations').filter(name=>name.endsWith('.sql')&&!['0001_editorial.sql','0002_source_monitoring.sql','0003_measurement_settings.sql'].includes(name)).sort())db.raw.exec(readFileSync(join('migrations',filename),'utf8'));
+    for(const filename of readdirSync('migrations').filter(name=>name.endsWith('.sql')&&!['0001_editorial.sql','0002_source_monitoring.sql','0003_measurement_settings.sql'].includes(name)).sort())db.raw.exec('BEGIN;'+readFileSync(join('migrations',filename),'utf8')+'COMMIT;');
     assert.deepEqual(snapshot(db,[...editorialTables,...sourceTables,'measurement_settings','measurement_audit']),prior);
     db.raw.close();db=new SqliteD1(path,false);
     assert.deepEqual(snapshot(db,[...editorialTables,...sourceTables,'measurement_settings','measurement_audit']),prior);

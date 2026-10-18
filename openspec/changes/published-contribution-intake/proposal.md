@@ -1,0 +1,11 @@
+# Published collection contribution intake
+
+The canonical reading/source catalog contains twenty entries, while intake validation, its selector and the original SQL constraint support only three. Extend the existing local synthetic inbox to the complete published collection without opening hosted/public intake.
+
+Reuse `src/lib/article-ids.ts`, the existing compiled canonical reading inventory already enforced by source-catalog and wiki completeness checks. Re-export it for intake rather than maintaining a second list or trusting request/env/fetched catalog data. Build-time selector consistency rejects missing, extra or duplicate collection IDs. Article text, metadata publication status, historical snapshots and valid derived builds retain their existing contracts.
+
+The original SQL CHECK is a second blocker: additive migration 0017 replaces the submissions table with bounded slug storage, retaining both unique keys and all remaining constraints/defaults/indexes. Inventory membership remains enforced at the Worker and direct store boundary. Inside one migration transaction, snapshot dependent audit/correction rows, clear children, replace the parent and restore the exact children; never disable foreign keys. Retain original migration 0001 and all existing records. This uses existing local D1 only, with no new service or paid work.
+
+Alternatives rejected: another twenty-ID validator/SQL list would drift; runtime source-catalog authorization would allow asset/request/environment authority confusion; content-hash gates would reject established controlled article revisions. Canonical IDs are code/release authority, not evidence that every working draft is factually complete or publicly deployed.
+
+Risks: the migration must run atomically and requires all preceding migrations. Older three-ID code cannot use newly expanded submissions; rollback requires preserving the database and using compatible code, not forcing records through the original CHECK. Build/source-catalog completeness protects stale inventory; malformed or caller-selected source catalogs cannot authorize intake. Terms, live identity/privacy/abuse controls and public enablement remain unresolved and closed. No OAuth, account, network, deployment configuration, article bytes, remote migration, publication or release changes are in scope.
