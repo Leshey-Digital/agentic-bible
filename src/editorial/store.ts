@@ -13,7 +13,8 @@ const fromRow = (row: Row): Submission => ({
 export class D1EditorialStore implements EditorialStore {
   private db: SqlDatabase;
   private readonly guardCorrections: boolean;
-  constructor(db: SqlDatabase, guardCorrections = false) { this.db = db; this.guardCorrections = guardCorrections; }
+  private readonly submitter: 'local-submitter' | 'hosted-submitter';
+  constructor(db: SqlDatabase, guardCorrections = false, submitter: 'local-submitter' | 'hosted-submitter' = 'local-submitter') { this.db = db; this.guardCorrections = guardCorrections; this.submitter = submitter; }
   async submit(input: SubmissionInput, clientHash: string, now: number) {
     input = submissionInput(input);
     const fingerprint = await digest(JSON.stringify([clientHash, input.articleId, input.kind, input.message, input.sourceUrl]));
@@ -26,7 +27,7 @@ export class D1EditorialStore implements EditorialStore {
     if (duplicate) return { id: duplicate.id, duplicate: true };
     const id = crypto.randomUUID(); const eventId = crypto.randomUUID(); const window = Math.floor(now / 600_000);
     const result = await this.db.batch([
-      this.db.prepare(`INSERT INTO rate_windows (client_hash, window, count) VALUES (?, ?, 1)
+      this.db.prepare(`INSERT INTO rate_windows (client_hash, window, count) SELECT ?, ?, 1 WHERE (SELECT COUNT(*) FROM rate_windows) < 2048
         ON CONFLICT(client_hash, window) DO UPDATE SET count = count + 1 WHERE count < 5`).bind(clientHash, window),
       // changes() belongs to the immediately preceding statement in this transaction.
       this.db.prepare(`INSERT INTO submissions
@@ -34,8 +35,8 @@ export class D1EditorialStore implements EditorialStore {
         SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ? WHERE changes() > 0 AND (SELECT COUNT(*) FROM submissions) < 1000 ON CONFLICT DO NOTHING`)
         .bind(id, input.requestKey, fingerprint, input.articleId, input.kind, input.message, input.sourceUrl, eventId, now, now),
       this.db.prepare(`INSERT INTO editorial_audit (id, submission_id, actor, action, status, tags, created_at)
-        SELECT ?, id, 'local-submitter', 'submitted', status, tags, ? FROM submissions WHERE id = ? AND last_event_id = ?`)
-        .bind(eventId, now, id, eventId),
+        SELECT ?, id, ?, 'submitted', status, tags, ? FROM submissions WHERE id = ? AND last_event_id = ?`)
+        .bind(eventId, this.submitter, now, id, eventId),
       this.db.prepare('DELETE FROM rate_windows WHERE rowid IN (SELECT rowid FROM rate_windows WHERE window < ? LIMIT 100)').bind(window - 1),
       this.db.prepare('DELETE FROM local_sessions WHERE token_hash IN (SELECT token_hash FROM local_sessions WHERE expires_at < ? LIMIT 100)').bind(now),
     ]);
@@ -76,7 +77,7 @@ export class D1EditorialStore implements EditorialStore {
   async update(id: string, change: Change, actor: string, now: number) {
     const eventId = crypto.randomUUID();
     const result = await this.db.batch([
-      this.db.prepare(`UPDATE submissions SET status = ?, tags = ?, version = version + 1, last_event_id = ?, updated_at = ? WHERE id = ? AND version = ? ${this.guardCorrections ? "AND NOT EXISTS (SELECT 1 FROM correction_operations o WHERE o.submission_id=submissions.id AND o.state='approved')" : ""}`)
+      this.db.prepare(`UPDATE submissions SET status = ?, tags = ?, version = version + 1, last_event_id = ?, updated_at = ? WHERE id = ? AND version = ? ${this.submitter === 'hosted-submitter' ? "AND (SELECT COUNT(*) FROM editorial_audit WHERE submission_id=submissions.id)<64 AND (SELECT COUNT(*) FROM editorial_audit)<16000" : ""} ${this.guardCorrections ? "AND NOT EXISTS (SELECT 1 FROM correction_operations o WHERE o.submission_id=submissions.id AND o.state='approved')" : ""}`)
         .bind(change.status, JSON.stringify(change.tags), eventId, now, id, change.version),
       this.db.prepare(`INSERT INTO editorial_audit (id, submission_id, actor, action, status, tags, created_at)
         SELECT ?, id, ?, 'review-updated', status, tags, ? FROM submissions WHERE id = ? AND last_event_id = ?`)

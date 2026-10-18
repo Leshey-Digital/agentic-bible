@@ -7,7 +7,11 @@ import {sourcePreview} from './source.ts';
 import {createRestorationApproval,revokeRestorationApproval} from '../maintenance-history/restoration-approvals.ts';
 import {MaintenanceReviewError,verifiedCatalog,listMaintenanceReviews,saveMaintenanceReview} from '../maintenance-history/review.ts';
 import {maintenanceAdminHtml,maintenanceAdminCss,maintenanceAdminJs} from '../maintenance-history/admin.ts';
-import {adminHtml,adminCss,adminJs} from './admin.ts';
+import {adminHtml,adminForInboxHtml,adminCss,adminJs} from './admin.ts';
+import {createContributionHandler,intakeConfigured} from './contributions.ts';
+import {adminTrust,verifySignedAdmin} from './identity.ts';
+import {contributionAdminHtml,contributionAdminCss,contributionAdminJs} from './contribution-admin.ts';
+import {integrationAdminHtml,integrationAdminCss,integrationAdminJs} from '../integration-settings/admin.ts';
 import {createIntegrationSettingsContract} from '../integration-settings/contracts.ts';
 const origin='https://staging.agenticbible.si';
 const headers={'Cache-Control':'no-store','X-Robots-Tag':'noindex, nofollow','X-Content-Type-Options':'nosniff','Referrer-Policy':'same-origin','Content-Security-Policy':"default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; img-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'"};
@@ -17,6 +21,7 @@ const json=(body:unknown,status=200)=>Response.json(body,{status,headers});
 // Integration settings require separate trusted server-code adapters; configuredPorts
 // never constructs them from bindings, request fields or local fixture identities.
 export function createHostedRuntime(ports:Ports={}){
+const contributions=ports.contributions?createContributionHandler(ports.contributions,ports.sendGitHub):undefined;
 const integrationSettings=ports.integrationSettings?createIntegrationSettingsContract(ports.integrationSettings):undefined;
 return {async fetch(request:Request,env:RuntimeEnv):Promise<Response>{
   const url=new URL(request.url),path=url.pathname;
@@ -24,7 +29,15 @@ return {async fetch(request:Request,env:RuntimeEnv):Promise<Response>{
     // Decode once only to reject aliases of the private settings namespace. Never
     // dispatch a decoded alias; malformed encodings retain existing route behavior.
     let decodedPath=path;try{decodedPath=decodeURIComponent(path);}catch{}
-    if(decodedPath!==path&&(decodedPath==='/api/admin/settings'||decodedPath.startsWith('/api/admin/settings/')))return json({error:'hosted_admin_and_public_intake_not_configured'},503);
+    if(decodedPath!==path&&(decodedPath==='/api/submissions'||decodedPath==='/api/admin/submissions'||decodedPath.startsWith('/api/admin/submissions/')||decodedPath.startsWith('/admin/contributions/')||decodedPath.startsWith('/admin/integrations/')||decodedPath==='/api/admin/settings'||decodedPath.startsWith('/api/admin/settings/')))return json({error:'hosted_admin_and_public_intake_not_configured'},503);
+    if(path.startsWith('/admin/integrations/')){
+      if(url.origin!==origin)return json({error:'hosted_origin_required'},403);
+      if(!integrationSettings)return json({error:'integration_settings_unconfigured'},503);
+      const trust=adminTrust(ports.integrationSettings?.trust),admin=trust?await verifySignedAdmin(request,trust):null;
+      if(!admin||request.headers.get('sec-fetch-site')==='cross-site')return json({error:'verified_admin_required'},403);
+      if(request.method!=='GET'||url.search)return json({error:'invalid_request'},400);
+      const asset=path==='/admin/integrations/'?[integrationAdminHtml,'text/html; charset=utf-8']:path==='/admin/integrations/style.css'?[integrationAdminCss,'text/css; charset=utf-8']:path==='/admin/integrations/app.js'?[integrationAdminJs,'text/javascript; charset=utf-8']:null;return asset?new Response(asset[0],{headers:{...headers,'Content-Type':asset[1]}}):json({error:'not_found'},404);
+    }
     if(path==='/api/admin/settings/integrations/github-content'){
       if(url.origin!==origin)return json({error:'hosted_origin_required'},403);
       if(url.search)return json({error:'invalid_request'},400);
@@ -34,8 +47,18 @@ return {async fetch(request:Request,env:RuntimeEnv):Promise<Response>{
       for(const [key,value] of Object.entries(headers))secured.set(key,value);
       return new Response(response.body,{status:response.status,headers:secured});
     }
-    if(path==='/api/runtime/status'&&request.method==='GET')return json({schemaVersion:1,contentAuthority:'github-build',...await runtimeRelease(env.ASSETS),publicIntake:false,adminVerifierConfigured:!!ports.verifyAdmin,adminApprovalsConfigured:!!ports.hostedApprovals,gitHubProposalsConfigured:!!ports.verifyAdmin&&!!ports.approvedNote&&!!ports.sendGitHub&&!!env.EDITORIAL_DB,hostedCanonicalWrites:false,localFixtureIdentity:false});
-    if(path==='/api/editorial/status'&&request.method==='GET')return json({enabled:!!ports.hostedApprovals,mode:ports.hostedApprovals?'hosted-admin-notes':'hosted-unconfigured',publicIntake:false});
+    if(path==='/api/submissions'||path==='/api/admin/submissions'||path.startsWith('/api/admin/submissions/')||path.startsWith('/admin/contributions/')){
+      if(url.origin!==origin)return json({error:'hosted_origin_required'},403);
+      if(!contributions||!env.EDITORIAL_DB)return json({error:'hosted_contributions_unconfigured',publicIntake:false,reason:'trusted_server_adapters_and_approved_policy_required'},503);
+      if(path.startsWith('/admin/contributions/')){
+        const trust=adminTrust(ports.contributions?.trust);const admin=trust?await verifySignedAdmin(request,trust):null;if(!admin||request.headers.get('sec-fetch-site')==='cross-site')return json({error:'verified_admin_required'},403);
+        if(request.method!=='GET'||url.search)return json({error:'invalid_request'},400);
+        const asset=path==='/admin/contributions/'?[contributionAdminHtml,'text/html; charset=utf-8']:path==='/admin/contributions/style.css'?[contributionAdminCss,'text/css; charset=utf-8']:path==='/admin/contributions/app.js'?[contributionAdminJs,'text/javascript; charset=utf-8']:null;return asset?new Response(asset[0],{headers:{...headers,'Content-Type':asset[1]}}):json({error:'not_found'},404);
+      }
+      const response=await contributions(request,env.EDITORIAL_DB),secured=new Headers(response.headers);for(const [key,value]of Object.entries(headers))secured.set(key,value);return new Response(response.body,{status:response.status,headers:secured});
+    }
+    if(path==='/api/runtime/status'&&request.method==='GET')return json({schemaVersion:1,contentAuthority:'github-build',...await runtimeRelease(env.ASSETS),publicIntake:!!env.EDITORIAL_DB&&intakeConfigured(ports.contributions),integrationSettingsConfigured:!!integrationSettings&&!!adminTrust(ports.integrationSettings?.trust),contributionAdminConfigured:!!env.EDITORIAL_DB&&!!adminTrust(ports.contributions?.trust),publicIntakeReason:intakeConfigured(ports.contributions)?'trusted_policy_configured':'approved_terms_privacy_moderation_and_rate_identity_required',adminVerifierConfigured:!!ports.verifyAdmin,adminApprovalsConfigured:!!ports.hostedApprovals,gitHubProposalsConfigured:!!ports.verifyAdmin&&!!ports.approvedNote&&!!ports.sendGitHub&&!!env.EDITORIAL_DB,hostedCanonicalWrites:false,localFixtureIdentity:false});
+    if(path==='/api/editorial/status'&&request.method==='GET')return json({enabled:!!ports.hostedApprovals||!!env.EDITORIAL_DB&&!!adminTrust(ports.contributions?.trust),mode:ports.contributions?'hosted-contributions':ports.hostedApprovals?'hosted-admin-notes':'hosted-unconfigured',publicIntake:!!env.EDITORIAL_DB&&intakeConfigured(ports.contributions),reason:intakeConfigured(ports.contributions)?'trusted_policy_configured':'approved_terms_privacy_moderation_and_rate_identity_required',policy:intakeConfigured(ports.contributions)?{termsPath:ports.contributions!.policy!.termsPath,privacyPath:ports.contributions!.policy!.privacyPath,revision:ports.contributions!.policy!.policyRevision}:null});
     const maintenancePath=path==='/admin/'||path.startsWith('/admin/maintenance/')||path.startsWith('/api/admin/maintenance/');
     if(maintenancePath){
       if(url.origin!==origin)return json({error:'hosted_origin_required'},403);
@@ -56,15 +79,20 @@ return {async fetch(request:Request,env:RuntimeEnv):Promise<Response>{
       if(!ports.verifyAdmin||!ports.approvedNote||!ports.sendGitHub||!env.EDITORIAL_DB)return json({error:'hosted_identity_approval_and_github_not_configured'},503);
       const admin=await ports.verifyAdmin(request);if(!admin||admin.role!=='admin'||admin.csrfVerified!==true||admin.expiresAt<=Date.now())return json({error:'verified_admin_required'},403);
       if(request.method==='GET'&&path.startsWith('/admin/corrections/')){
-        const asset=path==='/admin/corrections/'?[adminHtml,'text/html; charset=utf-8']:path==='/admin/corrections/style.css'?[adminCss,'text/css; charset=utf-8']:path==='/admin/corrections/app.js'?[adminJs,'text/javascript; charset=utf-8']:null;
+        const asset=path==='/admin/corrections/'?[ports.contributions?adminForInboxHtml:adminHtml,'text/html; charset=utf-8']:path==='/admin/corrections/style.css'?[adminCss,'text/css; charset=utf-8']:path==='/admin/corrections/app.js'?[adminJs,'text/javascript; charset=utf-8']:null;
         return asset?new Response(asset[0],{headers:{...headers,'Content-Type':asset[1]}}):json({error:'not_found'},404);
       }
-      if(request.method==='GET'&&path==='/api/admin/corrections/approvals')return json(await listApprovals(env.EDITORIAL_DB,admin));
+      if(request.method==='GET'&&path==='/api/admin/corrections/approvals')return json(await listApprovals(env.EDITORIAL_DB,admin,!!ports.contributions));
       if(request.method==='GET'&&path==='/api/admin/corrections/base'){if(request.headers.get('x-agentic-bible-request')!=='admin'||request.headers.get('sec-fetch-site')==='cross-site')return json({error:'same_origin_required'},403);return json(await sourcePreview(env.EDITORIAL_DB,ports.sendGitHub));}
       if(request.method==='POST'&&['/api/admin/corrections/approvals','/api/admin/corrections/revoke'].includes(path)){
         if(request.headers.get('origin')!==origin||request.headers.get('sec-fetch-site')==='cross-site')return json({error:'same_origin_required'},403);
         if(request.headers.get('content-type')?.split(';')[0]!=='application/json')return json({error:'json_required'},415);const input=await inputJson(request);
-        if(path.endsWith('/approvals'))return json(await createApproval(env.EDITORIAL_DB,input,admin));
+        if(path.endsWith('/approvals')){
+          // Actual-inbox composition permits old standalone authority replay only.
+          // New notes must bind the reviewed current submission through its route.
+          if(ports.contributions){const existing=uuid(input?.approvalId)?await ports.approvedNote(input.approvalId,admin):null;if(!existing)return json({error:'actual_submission_review_required'},409);}
+          return json(await createApproval(env.EDITORIAL_DB,input,admin));
+        }
         if(!input||Object.keys(input).join(',')!=='approvalId'||!uuid(input.approvalId))return json({error:'approval_id_only'},400);return json(await revokeApproval(env.EDITORIAL_DB,input.approvalId,admin));
       }
     }

@@ -1,4 +1,4 @@
-export {};
+import {policyPath} from '../hosted/policy.ts';
 const form = document.querySelector<HTMLFormElement>('#contribution-form')!;
 const fields = document.querySelector<HTMLFieldSetElement>('#contribution-fields')!;
 const message = document.querySelector<HTMLElement>('#intake-status')!;
@@ -11,6 +11,8 @@ const recoveryHelp = document.querySelector<HTMLElement>('#draft-recovery')!;
 const draftKey = 'agentic-bible:synthetic-suggestion:v1';
 const names = ['articleId', 'kind', 'message', 'sourceUrl', 'requestKey'] as const;
 const control = (name: string) => form.elements.namedItem(name) as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
+let sendLabel = 'Send local suggestion';
+let inboxDescription = 'It is available in the local editorial inbox.';
 let recoveryNeeded = false;
 let saving = false;
 let restoredArticle = false;
@@ -48,7 +50,17 @@ async function init() {
   try {
     const response = await fetch('/api/editorial/status', { credentials: 'same-origin' });
     const state = await response.json();
-    if (!response.ok || !state.enabled || state.mode !== 'local-synthetic-only') return;
+    if (!response.ok) return;
+    if (state.mode === 'hosted-contributions' && state.publicIntake === true && state.policy && policyPath(state.policy.termsPath) && policyPath(state.policy.privacyPath)) {
+      fields.disabled = false; sendLabel = 'Send suggestion'; send.textContent = sendLabel; inboxDescription = 'It is available for editorial review.';
+      message.textContent = 'Suggestions enter editorial review and do not directly change an article. No email delivery is configured.';
+      for (const item of document.querySelectorAll<HTMLElement>('[data-local-intake]')) item.hidden = true;
+      const policy = document.querySelector<HTMLElement>('#hosted-intake-policy')!; policy.hidden = false;
+      const terms = document.querySelector<HTMLAnchorElement>('#contribution-terms')!; terms.href = state.policy.termsPath;
+      const privacy = document.querySelector<HTMLAnchorElement>('#contribution-privacy')!; privacy.href = state.policy.privacyPath;
+      return;
+    }
+    if (!state.enabled || state.mode !== 'local-synthetic-only') return;
     fields.disabled = false;
     document.querySelector<HTMLElement>('#editorial-inbox-link')!.hidden = false;
     message.textContent = 'Local synthetic preview only. Saved suggestions go to the local editorial inbox. No email is sent.';
@@ -79,7 +91,7 @@ form.addEventListener('submit', async event => {
       return;
     }
     receipt.hidden = false;
-    receipt.textContent = result.reference ? `Suggestion saved. Reference ${result.reference}. ${result.duplicate ? 'This matches a previously saved suggestion.' : 'It is available in the local editorial inbox.'}` : 'Suggestion received.';
+    receipt.textContent = result.reference ? `Suggestion saved. Reference ${result.reference}. ${result.duplicate ? 'This matches a previously saved suggestion.' : inboxDescription}` : 'Suggestion received.';
     if (names.every(name => control(name).value === submitted[name])) {
       form.reset(); requestKey.value = crypto.randomUUID(); showRecovery(false);
       try { sessionStorage.removeItem(draftKey); } catch { /* Saved successfully even if browser storage is blocked. */ }
@@ -97,6 +109,6 @@ form.addEventListener('submit', async event => {
     if (requestKey.value === submitted.requestKey) { showRecovery(true); persist(); }
     error.textContent = 'Could not confirm the save. Your draft and request reference are kept. Retry unchanged to confirm it, or keep your draft with a new reference.';
   }
-  finally { saving = false; send.disabled = false; renew.disabled = false; send.textContent = 'Send local suggestion'; }
+  finally { saving = false; send.disabled = false; renew.disabled = false; send.textContent = sendLabel; }
 });
 void init();

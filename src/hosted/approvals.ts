@@ -5,7 +5,11 @@ export const ownerHash=(admin:VerifiedAdmin)=>hash('agentic-bible-hosted-admin\n
 async function stored(db:SqlDatabase,id:string){return db.prepare('SELECT n.*,r.revoked_at FROM hosted_reviewed_notes n LEFT JOIN hosted_note_revocations r ON r.approval_id=n.id WHERE n.id=?').bind(id).first<Stored>();}
 export async function lookupApproval(db:SqlDatabase,id:string,admin:VerifiedAdmin):Promise<ApprovedNote|null>{
   if(admin.expiresAt<=Date.now())return null;const row=await stored(db,id);if(!row||row.revoked_at!==null||row.owner_hash!==await ownerHash(admin))return null;
-  const note=approved(JSON.parse(row.note_json),id,Date.now());if(await hash(canonical(note))!==row.fingerprint||note.reviewerRef!=='admin-'+row.owner_hash.slice(0,24)||note.approvedAt!==row.approved_at)reject('hosted_approval_corrupt');return note;
+  const bound=Object.hasOwn(JSON.parse(row.input_json),'submissionId')?null:await db.prepare('SELECT r.submission_id,r.submission_version,s.version,s.status,s.article_id FROM hosted_submission_reviews r JOIN submissions s ON s.id=r.submission_id WHERE r.approval_id=?').bind(id).first<{submission_id:string;submission_version:number;version:number;status:string;article_id:string}>();
+  if(!Object.hasOwn(JSON.parse(row.input_json),'submissionId')&&!bound)return null;
+  if(bound&&(bound.version!==bound.submission_version||bound.status!=='follow-up'))return null;
+  const note=approved(JSON.parse(row.note_json),id,Date.now());
+  if(bound&&(note.submissionId!==bound.submission_id||note.submissionRevision!==bound.submission_version||(note.schemaVersion===2?note.articleId!==bound.article_id:bound.article_id!=='tool-use')))reject('hosted_approval_corrupt');if(await hash(canonical(note))!==row.fingerprint||note.reviewerRef!=='admin-'+row.owner_hash.slice(0,24)||note.approvedAt!==row.approved_at)reject('hosted_approval_corrupt');return note;
 }
 export async function createApproval(db:SqlDatabase,value:any,admin:VerifiedAdmin,now=Date.now()){
   const keys=['approvalId','submissionId','submissionRevision','baseCommit','baseMarkdownSha256','note','citationId','confirm'];
@@ -21,7 +25,7 @@ export async function revokeApproval(db:SqlDatabase,id:string,admin:VerifiedAdmi
   if(!uuid(id))reject('invalid_hosted_approval');const owner=await ownerHash(admin),row=await stored(db,id);if(!row||row.owner_hash!==owner)reject('hosted_approval_required');
   await db.prepare('INSERT INTO hosted_note_revocations(approval_id,owner_hash,revoked_at) SELECT id,owner_hash,? FROM hosted_reviewed_notes WHERE id=? AND owner_hash=? ON CONFLICT DO NOTHING').bind(now,id,owner).run();return {approvalId:id,revoked:true,published:false};
 }
-export async function listApprovals(db:SqlDatabase,admin:VerifiedAdmin){
-  const rows=await db.prepare('SELECT n.*,r.revoked_at FROM hosted_reviewed_notes n LEFT JOIN hosted_note_revocations r ON r.approval_id=n.id WHERE n.owner_hash=? ORDER BY n.approved_at DESC LIMIT 4').bind(await ownerHash(admin)).all<Stored>();
-  return rows.results.map(row=>({approvalId:row.id,note:JSON.parse(row.note_json).note,citationId:JSON.parse(row.note_json).citationId,baseCommit:JSON.parse(row.note_json).baseCommit,approvedAt:row.approved_at,revoked:row.revoked_at!==null}));
+export async function listApprovals(db:SqlDatabase,admin:VerifiedAdmin,actualInbox=false){
+  const rows=await db.prepare('SELECT n.*,r.revoked_at FROM hosted_reviewed_notes n LEFT JOIN hosted_note_revocations r ON r.approval_id=n.id WHERE n.owner_hash=? ORDER BY n.approved_at DESC LIMIT ?').bind(await ownerHash(admin),actualInbox?limits.submissionRows:limits.rows).all<Stored>();
+  return rows.results.map(row=>{const note=JSON.parse(row.note_json);return {approvalId:row.id,note:note.note,citationId:note.citationId,...(note.schemaVersion===2?{articleId:note.articleId}:{}),baseCommit:note.baseCommit,approvedAt:row.approved_at,revoked:row.revoked_at!==null};});
 }

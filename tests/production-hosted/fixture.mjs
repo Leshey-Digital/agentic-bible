@@ -1,0 +1,20 @@
+import assert from 'node:assert/strict';
+import {mkdtempSync,readFileSync} from 'node:fs';
+import {join} from 'node:path';
+import {execFileSync} from 'node:child_process';
+import {build} from 'esbuild';
+import {Miniflare,convertV4MiniflareOptions} from 'miniflare';
+import {remote} from './remote.mjs';
+import {articleIds} from '../../src/editorial/contracts.ts';
+const origin='https://staging.agenticbible.si',git=execFileSync('git',['rev-parse','--absolute-git-dir'],{encoding:'utf8'}).trim();
+const pair=await crypto.subtle.generateKey({name:'RSASSA-PKCS1-v1_5',modulusLength:2048,publicExponent:new Uint8Array([1,0,1]),hash:'SHA-256'},true,['sign','verify']);
+const trust={issuer:'https://synthetic-gateway.invalid',audience:'synthetic-hosted',assertionHeader:'cf-access-jwt-assertion',subjects:['synthetic-owner'],keys:[{...await crypto.subtle.exportKey('jwk',pair.publicKey),kid:'synthetic',alg:'RS256',use:'sig'}]};
+const bundles=await Promise.all(['tests/production-hosted/entry.ts','src/hosted/worker.ts'].map(entry=>build({entryPoints:[entry],bundle:true,write:false,platform:'browser',format:'esm',target:'es2022'})));
+async function token(claims={}){const now=Math.floor(Date.now()/1000),enc=v=>Buffer.from(JSON.stringify(v)).toString('base64url'),data=enc({alg:'RS256',kid:'synthetic'})+'.'+enc({iss:trust.issuer,aud:trust.audience,sub:'synthetic-owner',iat:now,exp:now+300,...claims});return data+'.'+Buffer.from(await crypto.subtle.sign('RSASSA-PKCS1-v1_5',pair.privateKey,Buffer.from(data))).toString('base64url');}
+async function fixture({shipped=false,policy=true,articleId='tool-use',distinctClients=false}={}){let runtime,db,assets=0,outbound=0,useShipped=shipped;const directory=mkdtempSync(join(git,'production-hosted-')),gh=remote(articleId);async function start(){runtime=new Miniflare({...convertV4MiniflareOptions({modules:true,script:bundles[useShipped?1:0].outputFiles[0].text,compatibilityDate:'2026-10-16',bindings:{HOSTED_ADMIN_TRUST:JSON.stringify(trust),GITHUB_CONTENT_TOKEN:'synthetic-github-test-value',TEST_CLIENT_KEYS:distinctClients?'distinct-synthetic-ingress':'single-synthetic-ingress',TEST_POLICY:policy?'synthetic-approved':'closed',LOCAL_EDITORIAL_MODE:'synthetic-only'},d1Databases:{EDITORIAL_DB:'production-hosted-test'},serviceBindings:{ASSETS:()=>{assets++;return new Response('asset');}},outboundService:request=>{outbound++;return gh.send(request);}}),cf:false,resourcePersistencePath:directory});db=await runtime.getD1Database('EDITORIAL_DB');}
+await start();for(const name of ['0001_editorial.sql','0007_reviewed_corrections.sql','0008_github_content_proposals.sql','0009_hosted_reviewed_notes.sql','0017_published_contribution_intake.sql','0018_hosted_submission_reviews.sql']){const statements=readFileSync('migrations/'+name,'utf8').replace(/--[^\n]*/g,'').split(';').filter(s=>s.trim()).map(s=>db.prepare(s));await db.batch(statements);}
+async function request(path,body,options={}){const response=await runtime.dispatchFetch(origin+path,{method:options.method??(body?'POST':'GET'),headers:{Origin:origin,'Content-Type':'application/json','X-Agentic-Bible-Request':'admin','cf-access-jwt-assertion':await token(options.claims),...options.headers},body:body===undefined?undefined:JSON.stringify(body)});const text=await response.text();assert.equal(response.headers.get('cache-control'),'no-store');return {status:response.status,value:text.startsWith('{')||text.startsWith('[')?JSON.parse(text):text};}
+return {request,gh,get db(){return db},get counts(){return{assets,outbound}},restart:async(nextShipped=useShipped)=>{await runtime.dispose();useShipped=nextShipped;await start();},close:()=>runtime.dispose()};}
+const input=(articleId='tool-use',message='Synthetic contribution describes a bounded source claim for careful editorial follow-up.')=>({requestKey:crypto.randomUUID(),articleId,kind:'correction',message,sourceUrl:'https://example.org/synthetic-reference',website:''});
+
+export {fixture,token,trust,input};
