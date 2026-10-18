@@ -3,11 +3,13 @@ import '../styles/global.css';
 import { repository } from '../lib/library';
 import {discoveryPolicy,pageDiscovery} from '../seo/policy.ts';
 import {articleStructuredData,eligibleArticle,jsonLd,type SeoArticle} from '../seo/articles.ts';
-interface Props { title: string; description?: string; active?: 'library' | 'topics' | 'about' | 'search'; seoArticle?:SeoArticle; }
-const { title, description = 'A sourced reference library for AI agents and the technology around them.', active,seoArticle } = Astro.props;
+interface Props { title: string; description?: string; active?: 'library' | 'topics' | 'about' | 'search'; seoArticle?:SeoArticle; seoImage?:string; seoImageAlt?:string; }
+const { title, description = `${title} — Agentic Bible, a sourced reference for AI agents and their technology.`, active,seoArticle,seoImage,seoImageAlt='Agentic Bible — a sourced reference for AI agents and their technology' } = Astro.props;
 const discovery=discoveryPolicy();
 const page=pageDiscovery(discovery,Astro.url.pathname,!!seoArticle&&!eligibleArticle(seoArticle));
 const structured=seoArticle?articleStructuredData(seoArticle,discovery):null;
+if(seoImage&&!/^\/[A-Za-z0-9/_-]+\.(?:png|jpe?g|webp)$/.test(seoImage))throw new Error('invalid_social_image');
+const socialImage=seoImage?new URL(seoImage,discovery.origin).href:null;
 const maintenancePreview=process.env.AGENTIC_BIBLE_MAINTENANCE_HISTORY_MODE==='controlled-static-preview';
 const localBridge=process.env.AGENTIC_BIBLE_LOCAL_WIKI_BUILD==='1';
 ---
@@ -18,6 +20,16 @@ const localBridge=process.env.AGENTIC_BIBLE_LOCAL_WIKI_BUILD==='1';
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title} · Agentic Bible</title>
     <meta name="description" content={description} />
+    <meta property="og:title" content={`${title} · Agentic Bible`} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content={seoArticle?'article':'website'} />
+    <meta property="og:site_name" content="Agentic Bible" />
+    {page.canonical&&<meta property="og:url" content={page.canonical} />}
+    {socialImage&&<><meta property="og:image" content={socialImage} /><meta property="og:image:alt" content={seoImageAlt} /></>}
+    <meta name="twitter:card" content={socialImage?'summary_large_image':'summary'} />
+    <meta name="twitter:title" content={`${title} · Agentic Bible`} />
+    <meta name="twitter:description" content={description} />
+    {socialImage&&<><meta name="twitter:image" content={socialImage} /><meta name="twitter:image:alt" content={seoImageAlt} /></>}
     <meta name="robots" content={page.indexable?'index, follow':'noindex, nofollow'} />
     <meta name="color-scheme" content="light" />
     {page.canonical&&<link rel="canonical" href={page.canonical} />}
