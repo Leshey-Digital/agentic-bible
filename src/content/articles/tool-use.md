@@ -31,16 +31,49 @@ sources:
 
 A tool definition describes a name, purpose, and expected arguments. The model returns a structured request with arguments; the application decides how to handle it. In OpenAI’s function-calling flow, the application sends the execution result back with the corresponding call identifier before asking for a further response. Schema constraints help structure the request, but do not establish that its contents are correct or authorized. [1](#source-openai)
 
-Here is an illustrative interface, not a live integration:
+## A request, execution, and result
+
+The following original example uses a generic application envelope, not an OpenAI, Claude, or MCP wire format. All records are invented. A read-only `find_source` tool looks up an article’s registered citations in a local catalog; it does not fetch arbitrary URLs. The model requests:
 
 ```json
 {
+  "call_id": "lookup-1",
   "name": "find_source",
   "arguments": { "article_id": "ai-agent" }
 }
 ```
 
-This example would ask a program to find evidence. It would not itself fetch a page, approve a correction, or publish an article. Keeping those actions separate makes the boundary easier to inspect.
+Before execution, the application checks that `find_source` is an allowed tool, that the arguments contain exactly one string `article_id`, that the article exists, and that the caller may read its citations. It then queries the catalog. A successful result returns the same call identifier:
+
+```json
+{
+  "call_id": "lookup-1",
+  "status": "ok",
+  "result": {
+    "article_id": "ai-agent",
+    "sources": [
+      { "source_id": "demo-source-1", "title": "Example agent specification" }
+    ]
+  }
+}
+```
+
+The application checks the result’s shape and correlation before passing it back to the model. The model could then report that the catalog lists one citation. This result establishes neither that the source is reachable nor that it supports a particular claim. Permission to read the catalog also grants no permission to edit or publish an article.
+
+If the catalog is unavailable, an alternative response for that same request is:
+
+```json
+{
+  "call_id": "lookup-1",
+  "status": "error",
+  "error": {
+    "code": "catalog_unavailable",
+    "message": "The catalog could not be read. No source list was returned."
+  }
+}
+```
+
+An error is not an empty successful lookup. In this example, the application may retry a transient read failure once within the original deadline, then return an unresolved outcome. Invalid arguments or denied access require correction or authority, not an automatic retry. These are illustrative application rules, not provider guarantees. A missing reply leaves completion unknown; for a tool that writes, check durable status or an idempotency record before repeating the operation. A call identifier correlates messages but does not by itself prevent duplicate execution.
 
 ## Where execution happens
 
@@ -52,7 +85,7 @@ This distinction matters when interpreting traces. A generated request can show 
 
 [Model Context Protocol](/articles/model-context-protocol/) offers a shared tool interface. Its tools specification separates protocol-level failures, such as an unknown tool, from tool-execution errors, such as an upstream API failure. It also specifies input schemas and permits structured output schemas. [3](#source-mcp-tools)
 
-For a proposed citation-checker, an unreachable source should be represented as an error or an unresolved observation. Retrying indefinitely would be poor operating policy. Our project’s intended controls include bounded attempts, timeouts, deduplication, and a spend stop. Those controls are future requirements; this static site has no tool executor or model connection.
+The generic example’s `status` and `error` fields are its own contract. An MCP implementation instead uses the protocol’s specified error and tool-result shapes. A citation-checker would also distinguish an unreachable source from evidence that contradicts a claim. Bounded attempts, deadlines and resource limits belong to the executor; the model requesting another call does not override them.
 
 ## Authority stays with the application
 
