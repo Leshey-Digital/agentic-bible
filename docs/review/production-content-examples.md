@@ -21,7 +21,18 @@ Human oversight receives a grammar-only correction: “the linked paper’s guid
 
 ## Verification and limits
 
-Verification is in progress. Private command logs and short source-location evidence live under `.git/production-content-evidence`; the final checkpoint handoff records the exact commit.
+Passed on content checkpoint `47fc752` (the final handoff records the subsequent documentation checkpoint and exact-head rerun):
+
+- `python3 tests/content-readiness/examples_test.py`: 5/5 checks passed.
+- `npm run test:docs`: 312 Markdown files, 376 relative links, no missing targets or conflict markers.
+- `npm run check`: 158 files, zero errors, warnings or hints.
+- `npm run build`: Astro build and Pagefind index passed; all twenty article pages indexed.
+- `npm test`: 9/9 generated static checks passed, including route/fragment/citation links, twenty-entry inventory, provenance, disabled intake and staging exclusion.
+- Inventory comparison against the assigned base: all twenty canonical filenames and top-level article metadata unchanged; exactly four authorized articles changed, with the other sixteen blobs unchanged. `git diff --check` passed.
+
+The first Astro invocation, before committing article edits, stopped with `release_source_article_changed`, as required by the existing commit-pinned source guard. Committing the content checkpoint resolved the prerequisite; no guard was changed. An initial documentation command’s log redirection ran before its evidence directory existed; the completed rerun above passed. No content/test assertion failure remains.
+
+Private command logs, preservation hashes and short source-location evidence live under `.git/production-content-evidence`. Full `npm run validate`, browser/native suites and deployment dry runs were not run by this component; the parent coordinates complete combined qualification and any shared browser ports.
 
 The focused command is `python3 tests/content-readiness/examples_test.py`, using already available Python jsonschema 4.26.0. It checks the actual Markdown snippets with a Draft 2020-12 validator, malformed JSON rejection, required/extra/type/boundary cases, the false year’s continued schema validity, and correlation of the generic tool request and alternative results. It is not an executor or API integration test. No npm dependency or package script is added.
 
