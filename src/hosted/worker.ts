@@ -78,7 +78,12 @@ return {async fetch(request:Request,env:RuntimeEnv):Promise<Response>{
       if(request.method==='POST'&&['/api/admin/corrections/approvals','/api/admin/corrections/revoke'].includes(path)){
         if(request.headers.get('origin')!==origin||request.headers.get('sec-fetch-site')==='cross-site')return json({error:'same_origin_required'},403);
         if(request.headers.get('content-type')?.split(';')[0]!=='application/json')return json({error:'json_required'},415);const input=await inputJson(request);
-        if(path.endsWith('/approvals'))return json(await createApproval(env.EDITORIAL_DB,input,admin));
+        if(path.endsWith('/approvals')){
+          // Actual-inbox composition permits old standalone authority replay only.
+          // New notes must bind the reviewed current submission through its route.
+          if(ports.contributions){const existing=uuid(input?.approvalId)?await ports.approvedNote(input.approvalId,admin):null;if(!existing)return json({error:'actual_submission_review_required'},409);}
+          return json(await createApproval(env.EDITORIAL_DB,input,admin));
+        }
         if(!input||Object.keys(input).join(',')!=='approvalId'||!uuid(input.approvalId))return json({error:'approval_id_only'},400);return json(await revokeApproval(env.EDITORIAL_DB,input.approvalId,admin));
       }
     }

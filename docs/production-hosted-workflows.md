@@ -16,6 +16,8 @@ A trusted server composition can pass `Ports.contributions` with the existing si
 
 The submitted review is admitted in one actual D1 batch: immutable existing `hosted_reviewed_notes`, new `hosted_submission_reviews` binding and editorial audit. Every follow-up insertion correlates the complete winning candidate, including owner/input/note/fingerprint/server timestamp and current eligible submission revision. Conflicting approval IDs cannot create authority or audit. Identical successful review replay returns existing authority without another audit.
 
+When actual contributions are mounted, the legacy standalone create route rejects new notes with `actual_submission_review_required`; existing active old-format notes remain readable/replayable. Without that adapter, the existing standalone signed review path remains available.
+
 Legacy reviewed notes preserve their input schema containing `submissionId`; the new review command omits that field and binds its URL item through the immutable new table. Lookup requires this binding for the new command format. This avoids querying a nonexistent new table for legacy stores while failing closed if new-format binding is missing. Changed revisions, rejected/dismissed submissions or revocation invalidate bound proposal authority, including completed-proposal replay. Existing repeated proposal rechecks, request budgets, controlled GitHub transport/outbox and draft-only receipts remain authoritative. Git stays canonical; no direct publish/revert is added by editorial dispositions.
 
 ## Persistence, limits and verification
