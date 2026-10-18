@@ -67,7 +67,7 @@ test('pinned Wrangler retries ambiguous creates; SIGKILL and same-UUID replay re
    remote.write({...remote.read(),wrongBytes:true});
    await assert.rejects(executeRelease(a.root,p,controlledPorts(remote.origin,remote.evidence),join(remote.directory,'bad-serving.json')),/bytes_changed|capacity/);
    assert.equal(remote.read().activations,1);assert.equal(verifyCandidate(a.root).id,a.id);
-   proof.push({fault,actualWrangler:JSON.parse(readFileSync('node_modules/wrangler/package.json')).version,createdVersions:2,interruption:'SIGKILL before uploaded journal',selectedVersion:selected,verifiedAssets:receipt.verifiedAssets,reupload:false,conflictingSiblingRejected:true,sourceAndWriterChangesRejected:true,activeSelectionRetained:true,servedCorruptionRejected:true,externalConnections:0,blockedPackageUpdateReads:blocked.length,liveDeployment:false});
+   proof.push({fault,actualWrangler:JSON.parse(readFileSync('node_modules/wrangler/package.json')).version,createdVersions:2,interruption:'SIGKILL after ports.upload returns, before uploaded journal',selectedVersion:selected,verifiedAssets:receipt.verifiedAssets,reupload:false,conflictingSiblingRejected:true,sourceAndWriterChangesRejected:true,activeSelectionRetained:true,servedCorruptionRejected:true,externalConnections:0,blockedPackageUpdateReads:blocked.length,liveDeployment:false});
   }finally{await remote.close();}
  });await t.test(fault+' successful CLI return',async()=>{
   const remote=await provider(a.root,fault);try{
