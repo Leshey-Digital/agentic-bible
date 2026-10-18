@@ -46,6 +46,9 @@ export async function extractMaintenanceSource(sourceId:unknown,input:Uint8Array
   if(!(input instanceof Uint8Array)||input.byteLength<1||input.byteLength>extractionLimits.rawBytes)reject('adapter_raw_limit');
   if(typeof contentType!=='string'||!/^text\/html(?:;\s*charset\s*=\s*(?:utf-8|"utf-8"))?$/i.test(contentType))reject('adapter_profile_content_type');
   const bytes=Uint8Array.from(input);let html:string;
+  // TextDecoder strips a leading UTF-8 BOM by default. Reject it in the raw
+  // bytes so character-derived spans cannot be shifted before byte mapping.
+  if(bytes[0]===0xef&&bytes[1]===0xbb&&bytes[2]===0xbf)reject('adapter_raw_bom');
   try{html=new TextDecoder('utf-8',{fatal:true}).decode(bytes);}catch{return reject('adapter_raw_encoding');}
   if(html.charCodeAt(0)===0xfeff)reject('adapter_html_structure');safeText(html);
   const stack:{name:string;excluded:boolean}[]=[],spans:EvidenceSpan[]=[];
