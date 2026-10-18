@@ -175,3 +175,7 @@ A separate successor adds explicit signed restoration approval and a default-dis
 ## Controlled maintenance after restoration
 
 `npm run test:maintenance-base` covers separate signed restoration followed by a canonical-base-bound fake generation, atomic writer, strict public history build and source-matching release candidate on owned Git/shared local D1. It is included in `validate`. The port is opt-in fixture-only; no route, schedule, provider, credential or deployment is enabled. [Contract, stale-base recovery and production gaps](docs/restored-maintenance-base.md).
+
+## Controlled hosted operating pipeline
+
+`npm run test:maintenance-pipeline` exercises one explicit default-disabled source → provider/receipt ledger → canonical writer → exact review-artifact ingestion coordinator. Tests use actual shared local D1, owned Git and the shipped signed-review Worker; live activation remains unavailable. [Stage, recovery and residual-gap contract](docs/controlled-maintenance-pipeline.md). Twenty unchanged article drafts retain their prior PR22/23/27 source-review acceptance.
