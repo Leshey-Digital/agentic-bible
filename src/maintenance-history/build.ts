@@ -10,4 +10,4 @@ export function maintenanceBuild(){
  if(!sourceCommit||execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim()!==sourceCommit)throw Error('history_build_source_pin_required');
  return readCanonicalMaintenance({mode,repo:process.cwd(),sourceCommit});
 }
-export function maintenanceCatalog(){const view=maintenanceBuild(),generic=view.history.some(e=>e.articleId!=='tool-use');return {schemaVersion:generic?2:1,mode:'controlled-static-preview',enabled:view.enabled,sourceCommit:'sourceCommit' in view?view.sourceCommit:null,noindex:true,history:view.history.map(({receipt,current,articleId})=>({... (generic?{articleId}:{}),receipt,current}))};}
+export function maintenanceCatalog(){const view=maintenanceBuild(),generic=view.history.some(e=>e.articleId!=='tool-use'||e.qualityRequired);return {schemaVersion:generic?2:1,mode:'controlled-static-preview',enabled:view.enabled,sourceCommit:'sourceCommit' in view?view.sourceCommit:null,noindex:true,history:view.history.map(({receipt,current,articleId})=>({... (generic?{articleId}:{}),receipt,current}))};}

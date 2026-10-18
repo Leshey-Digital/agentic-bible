@@ -18,3 +18,11 @@
 - [ ] Live source compatibility, trusted semantic/provider/endpoint/model/price/credential selection remain unconfigured.
 
 Live execution, paid calls, deployment, credentials and remote migrations remain unperformed and unauthorized by this checkpoint.
+
+# Finite storage extension
+
+- [x] Independent writer/restorer pre-dispatch shared-history guard, including a new target without prior target metadata.
+- [x] Explicit quality/generalized metadata/history/catalog capacity 64; legacy default 16 and private publication formats/limits preserved.
+- [x] Actual D1 legacy/quality metadata boundary and sixty-fifth-record negative controls.
+- [x] Preserve quality-required target profile through history/restoration; reject legacy downgrade.
+- [ ] Qualify twenty actual producer/writer contexts sharing one Git/D1 and a final complete signed-review build.
