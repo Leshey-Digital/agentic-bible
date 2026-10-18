@@ -15,3 +15,23 @@ test('GitHub release reads require successful main-push CI, exact workflow and o
 test('live workflow entrypoint remains closed without owner enablement and exact main workflow context',()=>{
  const result=spawnSync(process.execPath,['scripts/release-workflow.mjs'],{encoding:'utf8',env:{PATH:process.env.PATH,GITHUB_ACTIONS:'true',GITHUB_REPOSITORY:'Leshey-Digital/agentic-bible',GITHUB_REF:'refs/heads/main',RELEASE_OWNER_ENABLED:'false'}});assert.notEqual(result.status,0);assert.match(result.stderr,/release_disabled_outside_owner_enabled_main_workflow/);assert.ok(!result.stderr.includes('controlled-read-token'));
 });
+test('version reconciliation validates all matches, respects durable selection and stays bounded',async()=>{
+ const id='a'.repeat(64),request=randomUUID(),marker='ab-candidate:'+id+':'+request,ids=Array.from({length:6},(_,i)=>'00000000-0000-4000-a000-00000000000'+i);
+ async function lookup({listed=ids,selected,detail={},markerOverride=marker}={}){
+  const calls=[],ports=cloudflarePorts('controlled-cloudflare-token',async()=>{}, {send:async req=>{
+   calls.push(req.url);assert.equal(req.method,'GET');assert.ok(req.url.startsWith('https://api.cloudflare.com/client/v4/accounts/'+releaseTarget.account+'/workers/scripts/'+releaseTarget.worker+'/versions'));
+   const path=new URL(req.url).pathname,version=path.split('/').at(-1),result=path.endsWith('/versions')?{items:listed.map(version=>({id:version,annotations:{'workers/message':marker}}))}:{id:version,resources:{bindings:[{name:'ASSETS',type:'assets'}]},annotations:{'workers/message':markerOverride},...detail};return Response.json({success:true,result});
+  }});return {result:await ports.findVersion(id,request,selected),calls};
+ }
+ const bounded=await lookup({listed:[...ids].reverse()});assert.equal(bounded.result,ids[0]);assert.equal(bounded.calls.length,7);
+ assert.equal((await lookup({selected:ids[5]})).result,ids[5]);
+ assert.equal((await lookup({listed:[]})).result,null);
+ await assert.rejects(lookup({listed:[],selected:ids[0]}),/selection_missing/);
+ await assert.rejects(lookup({selected:randomUUID()}),/selection_missing/);
+ await assert.rejects(lookup({listed:[...ids,randomUUID()]}),/duplicate_version_limit/);
+ await assert.rejects(lookup({listed:Array(100).fill(ids[0])}),/history_boundary/);
+ await assert.rejects(lookup({listed:[ids[0],ids[0]]}),/history_conflict/);
+ await assert.rejects(lookup({listed:['../wrong-target']}),/history_conflict/);
+ await assert.rejects(lookup({detail:{id:randomUUID()}}),/foreign_version/);
+ await assert.rejects(lookup({markerOverride:'ab-candidate:'+id+':'+randomUUID()}),/marker_conflict/);
+});

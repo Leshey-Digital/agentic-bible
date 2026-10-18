@@ -1,0 +1,103 @@
+{
+  "baseHead": "697d546fc5b6560fe1c38e573584c855c86c13af",
+  "baseline": {
+    "command": "node --test tests/release/cli-recovery.test.mjs",
+    "releaseFiles": "PR34 exact head",
+    "faults": [
+      "drop",
+      "500"
+    ],
+    "result": "release_duplicate_versions for both same-UUID retries after actual pinned CLI created two versions and SIGKILL left upload-pending"
+  },
+  "fixed": [
+    {
+      "fault": "drop",
+      "actualWrangler": "4.151.1",
+      "createdVersions": 2,
+      "interruption": "SIGKILL before uploaded journal",
+      "selectedVersion": "11111111-1111-4111-a111-111111111111",
+      "verifiedAssets": 77,
+      "reupload": false,
+      "conflictingSiblingRejected": true,
+      "sourceAndWriterChangesRejected": true,
+      "activeSelectionRetained": true,
+      "servedCorruptionRejected": true,
+      "externalConnections": 0,
+      "blockedPackageUpdateReads": 1,
+      "liveDeployment": false
+    },
+    {
+      "fault": "drop",
+      "successfulCliReturn": true,
+      "createdVersions": 2,
+      "allSiblingsVerified": true,
+      "verifiedAssets": 77,
+      "liveDeployment": false
+    },
+    {
+      "fault": "500",
+      "actualWrangler": "4.151.1",
+      "createdVersions": 2,
+      "interruption": "SIGKILL before uploaded journal",
+      "selectedVersion": "11111111-1111-4111-a111-111111111111",
+      "verifiedAssets": 77,
+      "reupload": false,
+      "conflictingSiblingRejected": true,
+      "sourceAndWriterChangesRejected": true,
+      "activeSelectionRetained": true,
+      "servedCorruptionRejected": true,
+      "externalConnections": 0,
+      "blockedPackageUpdateReads": 1,
+      "liveDeployment": false
+    },
+    {
+      "fault": "500",
+      "successfulCliReturn": true,
+      "createdVersions": 2,
+      "allSiblingsVerified": true,
+      "verifiedAssets": 77,
+      "liveDeployment": false
+    }
+  ],
+  "localChecks": {
+    "fullValidateBeforeTwoAdditionalCliReturnCases": {
+      "exit": 0,
+      "tests": 155,
+      "astroFiles": 116,
+      "errors": 0,
+      "warnings": 0,
+      "hints": 0
+    },
+    "finalReleaseSuite": {
+      "command": "npm run test:release",
+      "exit": 0,
+      "tests": 14
+    },
+    "additional": [
+      {
+        "check": "docs",
+        "exit": 0,
+        "seconds": 0.19
+      },
+      {
+        "check": "staging-dry-run",
+        "exit": 0,
+        "seconds": 1.91
+      },
+      {
+        "check": "runtime-dry-run",
+        "exit": 0,
+        "seconds": 1.41
+      },
+      {
+        "check": "browser",
+        "exit": 0,
+        "seconds": 123.69
+      }
+    ],
+    "browserCases": 74,
+    "localChromium": "154.0.8037.57"
+  },
+  "liveDeployment": false,
+  "secretsConfigured": false
+}
