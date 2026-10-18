@@ -67,7 +67,8 @@
     "maintenance:collect:demo": "node scripts/maintenance-collection-demo.mjs demo",
     "maintenance:collect:status": "node scripts/maintenance-collection-demo.mjs status",
     "maintenance:collect:local": "node scripts/maintenance-collection-demo.mjs preview",
-    "test:maintenance-github": "node --test tests/maintenance-github/writer.test.mjs"
+    "test:maintenance-github": "node --test tests/maintenance-github/writer.test.mjs",
+    "test:maintenance-history": "node --test tests/maintenance-history/history.test.mjs"
   },
   "dependencies": {
     "astro": "7.4.0"

@@ -1,0 +1,7 @@
+# Build-time hosted history/review preparation
+
+Frozen maintenance PR38 remains c35dd1e2a170205c2e5766ebf0983bd8d6a3a412. Prepare the next read-side slice on this separate branch: derive bounded history and active review flags from canonical Git records, reconstructing the writer's historical receipt from the actual atomic commit. Use immutable Git source rather than per-page GitHub calls or mutable D1 article overlays.
+
+This preparatory module has no route, public page, credential, provider call or review mutation. Explicit controlled-static-preview mode is required. It supports only the existing synthetic writer record profile; a future production authority is a separate design. Verify regular files, exact descriptor/pointer schema, SHA-256 hashes, one creation commit, expected parent/message, three-file atomic changes, current Markdown and previous-history chain. Returned data exposes source summaries and flag enums, not private reservation tokens or simulated accounting.
+
+Tests should compare reconstructed receipts with actual completed writer receipts using owned workerd/D1 and real Git, then exercise immutable history tamper, pointer/Markdown conflicts, symlink and partial projection rejection. Empty source remains empty. Missing historical objects stop without lazy fetching. Static Astro history/review pages, no-JavaScript browser coverage and authenticated append-only admin dispositions remain subsequent steps; do not claim the hosted service exists from this verifier alone.
