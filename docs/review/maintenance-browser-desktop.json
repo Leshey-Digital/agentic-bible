@@ -1,0 +1,17 @@
+{
+  "project": "desktop",
+  "mode": "local-synthetic-only",
+  "deterministicFakeProvider": true,
+  "actualNativeProofRequired": true,
+  "automaticLocalPublication": true,
+  "twentyEntrySearch": true,
+  "sourceAnchors": true,
+  "history": true,
+  "postPublicationFlag": true,
+  "axe": true,
+  "noOverflow": true,
+  "externalRequests": [],
+  "runtimeErrors": [],
+  "livePublished": false,
+  "realSpend": 0
+}

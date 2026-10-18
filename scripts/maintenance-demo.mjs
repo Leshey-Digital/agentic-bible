@@ -17,7 +17,7 @@ try{
   const command=JSON.parse(readFileSync('fixtures/wiki-bridge/packet.json','utf8'));command.eventId=command.revision.eventId='maintenance-extractive-demo';let calls=0;
   const result=await runMaintenance(command,{enabled:true,provider:deterministicProvider(()=>calls++),policy:demonstrationPolicy,db:local.db,bridge:new WikiBridge(name),sourceDirectory:'fixtures/wiki-bridge/sources'});
   const row=await new MaintenanceBudget(local.db).job(command.eventId);console.log(JSON.stringify({mode:'local-synthetic-only',deterministicFakeProvider:true,providerCalls:calls,controlledSourceFetches:collector.fetches,budgetUnit:demonstrationPolicy.unit,reservedCost:row.reserved_cost,actualSimulatedCost:row.actual_cost,realSpend:0,...result}));
- }else if(action==='status'){console.log(JSON.stringify({mode:'local-synthetic-only',providerConfigured:false,liveWritesEnabled:false,bridge:new WikiBridge(name).status()}));}
+ }else if(action==='status'){console.log(JSON.stringify({mode:'local-synthetic-only',realProviderConfigured:false,deterministicFakeProviderAvailable:true,liveWritesEnabled:false,bridge:new WikiBridge(name).status()}));}
  else throw new MaintenanceError('maintenance_unsupported_command');
 }catch(error){console.error(error instanceof MaintenanceError?error.code:'maintenance_outcome_unconfirmed');process.exitCode=1;}
 finally{await local?.runtime.dispose();await close();}

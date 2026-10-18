@@ -1,0 +1,211 @@
+{
+  "base": "697d546fc5b6560fe1c38e573584c855c86c13af",
+  "branch": "feat/bounded-maintenance-proposals",
+  "validationTests": 158,
+  "browserCases": 123,
+  "nativeProducerTests": 7,
+  "maintenanceBrowserCases": 2,
+  "astroFiles": 120,
+  "diagnostics": 0,
+  "checks": [
+    {
+      "command": "npm run validate",
+      "exitCode": 0,
+      "log": "maintenance-full-validation.log"
+    },
+    {
+      "command": "npm run test:browser",
+      "exitCode": 0,
+      "seconds": 86.57,
+      "log": "maintenance-retained-test-browser.log",
+      "browserCases": 74
+    },
+    {
+      "command": "npm run test:editorial:browser",
+      "exitCode": 0,
+      "seconds": 38.32,
+      "log": "maintenance-retained-test-editorial-browser.log",
+      "browserCases": 23
+    },
+    {
+      "command": "npm run test:integration:browser",
+      "exitCode": 0,
+      "seconds": 11.8,
+      "log": "maintenance-retained-test-integration-browser.log",
+      "browserCases": 1
+    },
+    {
+      "command": "npm run test:monitoring:worker",
+      "exitCode": 0,
+      "seconds": 18.13,
+      "log": "maintenance-retained-test-monitoring-worker.log"
+    },
+    {
+      "command": "npm run test:settings:worker",
+      "exitCode": 0,
+      "seconds": 22.98,
+      "log": "maintenance-retained-test-settings-worker.log"
+    },
+    {
+      "command": "npm run test:publication:browser",
+      "exitCode": 0,
+      "seconds": 7.28,
+      "log": "maintenance-retained-test-publication-browser.log",
+      "browserCases": 1
+    },
+    {
+      "command": "npm run test:combined:browser",
+      "exitCode": 0,
+      "seconds": 5.63,
+      "log": "maintenance-retained-test-combined-browser.log",
+      "browserCases": 1
+    },
+    {
+      "command": "npm run test:wiki-bridge:browser",
+      "exitCode": 0,
+      "seconds": 25.61,
+      "log": "maintenance-retained-test-wiki-bridge-browser.log",
+      "browserCases": 4
+    },
+    {
+      "command": "npm run test:wiki-seo:browser",
+      "exitCode": 0,
+      "seconds": 11.96,
+      "log": "maintenance-retained-test-wiki-seo-browser.log",
+      "browserCases": 1
+    },
+    {
+      "command": "npm run test:corrections:browser",
+      "exitCode": 0,
+      "seconds": 35.86,
+      "log": "maintenance-retained-test-corrections-browser.log",
+      "browserCases": 2
+    },
+    {
+      "command": "npm run test:hosted:browser",
+      "exitCode": 0,
+      "seconds": 9.05,
+      "log": "maintenance-retained-test-hosted-browser.log",
+      "browserCases": 2
+    },
+    {
+      "command": "npm run test:hosted-admin:browser",
+      "exitCode": 0,
+      "seconds": 19.94,
+      "log": "maintenance-retained-test-hosted-admin-browser.log",
+      "browserCases": 12
+    },
+    {
+      "command": "npm run test:maintenance:browser",
+      "exitCode": 0,
+      "seconds": 6.64,
+      "log": "maintenance-retained-test-maintenance-browser.log",
+      "browserCases": 2
+    },
+    {
+      "command": "npm run staging:check",
+      "exitCode": 0,
+      "seconds": 1.01,
+      "log": "maintenance-retained-staging-check.log"
+    },
+    {
+      "command": "npm run runtime:check",
+      "exitCode": 0,
+      "seconds": 1.03,
+      "log": "maintenance-retained-runtime-check.log"
+    }
+  ],
+  "nativePersistenceChecks": 2,
+  "dryRuns": 2,
+  "sourceArticlesPreserved": [
+    {
+      "path": "src/content/articles/agent-budgets.md",
+      "sha256": "4d08ff128eb132755f7f0b8ef442b45129c43fa0abfcd777fd1ca7881ea199dd"
+    },
+    {
+      "path": "src/content/articles/agent-evaluation.md",
+      "sha256": "a02bfef9fc5fdcefe08e52d82a2563d155d0cc9ef9c68293ca1a1920546ac061"
+    },
+    {
+      "path": "src/content/articles/agent-identity.md",
+      "sha256": "7c91ffeff39be1efbe4460ae8ed2fb5520083b85e4474807a9c53f55984e2fb8"
+    },
+    {
+      "path": "src/content/articles/agent-memory.md",
+      "sha256": "b148a65bdc33304a533d50d4299d4225e1bc9ecc76f2148212d0808930022de0"
+    },
+    {
+      "path": "src/content/articles/agent-observability.md",
+      "sha256": "049b0dc639c785f012b4956e5c054e1940527cffe2254dfb0ba6db612e750c6d"
+    },
+    {
+      "path": "src/content/articles/agent-orchestration.md",
+      "sha256": "f2fe90af6be60a7722819d6e78a3d2a89bc72c8ac2a5b3dc8a87d4a49cbd3d6f"
+    },
+    {
+      "path": "src/content/articles/agent-planning.md",
+      "sha256": "c4c69bbe4318cb5a1776e65033314adf4d2926d39c471166240d546aba1aadc2"
+    },
+    {
+      "path": "src/content/articles/agent-sandboxing.md",
+      "sha256": "2941adb2262f3b6f089540b0b8fee45e52ed4641867cd84c589ac9c543b0068c"
+    },
+    {
+      "path": "src/content/articles/agent-to-agent-communication.md",
+      "sha256": "3dbf81152cbb8c971a323061af080de5fb464a3acd4453d690e905a96ccb65cb"
+    },
+    {
+      "path": "src/content/articles/ai-agent.md",
+      "sha256": "8b9991a3d7f13ca51c359b63442557beabfcb1714df04ce849491c4aedb1a3a6"
+    },
+    {
+      "path": "src/content/articles/computer-use-agents.md",
+      "sha256": "d7a7f169f547c84963f616ba8b8091eae9e35421bab513bb8d13ef1aea64c5aa"
+    },
+    {
+      "path": "src/content/articles/context-engineering.md",
+      "sha256": "690cdc7482ed85bbe542b154a63d44f57f654d6f8667161d8c5996de4e3c451d"
+    },
+    {
+      "path": "src/content/articles/durable-agent-execution.md",
+      "sha256": "637a4b2158524d5fd1ed74bbac4b8f0b0d9d44e22e0387081a4e7951c8723805"
+    },
+    {
+      "path": "src/content/articles/human-oversight.md",
+      "sha256": "05f95df8fbbb3c6c78dd992ad08ed8d9c7c86fec2b27dd370ab24435d5c5fe59"
+    },
+    {
+      "path": "src/content/articles/model-context-protocol.md",
+      "sha256": "1b038336e7ce0438e97a36eb2e536a9dd87dd5bf3a068eae394a978bb76a2abf"
+    },
+    {
+      "path": "src/content/articles/prompt-injection.md",
+      "sha256": "44db0f983ce79da5fbf32a22c66fefb6867d788cdd7c016a3334f7ca2d6be1e7"
+    },
+    {
+      "path": "src/content/articles/retrieval-augmented-generation.md",
+      "sha256": "455019da889922747a8b4e023ffb3f90859b5d080e85f97ab3d4b6d79a9d5216"
+    },
+    {
+      "path": "src/content/articles/structured-outputs.md",
+      "sha256": "845e9153c1f788913d1750e108a7948141feaee583cf41491ed44992ed6b5c41"
+    },
+    {
+      "path": "src/content/articles/tool-permissions.md",
+      "sha256": "274e5ae371484412776644847bb5494ac234cf1beac6398e1098678ea7e76756"
+    },
+    {
+      "path": "src/content/articles/tool-use.md",
+      "sha256": "cf1e3a2bbb77a85d472e2509fa8eefda9bccbae2a73f1931902354de50aa9681"
+    }
+  ],
+  "dependencyVersionsChanged": false,
+  "packageScriptsChanged": true,
+  "localBrowser": "Chromium 154.0.8037.57 built on Debian GNU/Linux 13 (trixie)",
+  "realSpend": 0,
+  "provider": "deterministic-extractive-fake",
+  "canonicalGitHubWriterConnected": false,
+  "liveReleaseEnabled": false,
+  "independentAcceptance": false,
+  "externalPublication": "Not attempted; prepared checkpoint remains local."
+}

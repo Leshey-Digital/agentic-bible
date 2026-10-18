@@ -22,11 +22,11 @@
       "manifestHash": "d338b02a1c7554f998ccf31cf884b77d889b7e3d18fd9d81be6c2d72cdfd546b"
     },
     "articleRevision": "a7bc7beb503c2bdf478b61fdf9bfef1a84d8f642bea5304a56458ea21493915f",
-    "evidenceHash": "b2cacc9e308324faa6f28268e8dc84ceebe0c04c741aa162fd89d85f0c87dfe0",
+    "evidenceHash": "11f7b5fe4fdf589033e3e2e243bd22f7e28eedd667dd36ac5058bbfd35d7e2e6",
     "outcome": "site-activated",
     "site": {
-      "id": "3fb494b9960dab694e6da9f2dac9c6d36ffcbaa026f67f98089b0a92f91f8adb",
-      "manifestHash": "d960b6f83d14a906c0ffd15bd09c584c4629decc45fe34087a2f83d2edbccdc7"
+      "id": "599f308bd591d7581427bda579b10df48ad7432fb13ea74755ea61c35b955e29",
+      "manifestHash": "edb701f68eac641bbfea7840df8a6b819239285008a627389c41e720b15d7023"
     },
     "parent": null
   },

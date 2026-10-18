@@ -67,6 +67,7 @@ jobs:
       - run: npm run test:corrections:browser
       - run: npm run test:hosted:browser
       - run: npm run test:hosted-admin:browser
+      - run: npm run test:maintenance:browser
       - run: npm run release:prepare
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
@@ -94,6 +95,8 @@ jobs:
             .git/hosted-admin-browser-*.json
             .git/hosted-draft-response-*.json
             .git/usability-widths-*.json
+            .git/maintenance-native-proof.json
+            .git/maintenance-browser-*.json
             .git/hosted-projection-build-proof.json
             .git/hosted-runtime-browser-*.json
             .git/reviewed-corrections-network-isolation.json
