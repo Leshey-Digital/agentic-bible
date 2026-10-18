@@ -8,6 +8,9 @@ import {createRestorationApproval,revokeRestorationApproval} from '../maintenanc
 import {MaintenanceReviewError,verifiedCatalog,listMaintenanceReviews,saveMaintenanceReview} from '../maintenance-history/review.ts';
 import {maintenanceAdminHtml,maintenanceAdminCss,maintenanceAdminJs} from '../maintenance-history/admin.ts';
 import {adminHtml,adminCss,adminJs} from './admin.ts';
+import {createContributionHandler,intakeConfigured} from './contributions.ts';
+import {adminTrust,verifySignedAdmin} from './identity.ts';
+import {contributionAdminHtml,contributionAdminCss,contributionAdminJs} from './contribution-admin.ts';
 import {createIntegrationSettingsContract} from '../integration-settings/contracts.ts';
 const origin='https://staging.agenticbible.si';
 const headers={'Cache-Control':'no-store','X-Robots-Tag':'noindex, nofollow','X-Content-Type-Options':'nosniff','Referrer-Policy':'same-origin','Content-Security-Policy':"default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; img-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'"};
@@ -17,6 +20,7 @@ const json=(body:unknown,status=200)=>Response.json(body,{status,headers});
 // Integration settings require separate trusted server-code adapters; configuredPorts
 // never constructs them from bindings, request fields or local fixture identities.
 export function createHostedRuntime(ports:Ports={}){
+const contributions=ports.contributions?createContributionHandler(ports.contributions):undefined;
 const integrationSettings=ports.integrationSettings?createIntegrationSettingsContract(ports.integrationSettings):undefined;
 return {async fetch(request:Request,env:RuntimeEnv):Promise<Response>{
   const url=new URL(request.url),path=url.pathname;
@@ -24,7 +28,7 @@ return {async fetch(request:Request,env:RuntimeEnv):Promise<Response>{
     // Decode once only to reject aliases of the private settings namespace. Never
     // dispatch a decoded alias; malformed encodings retain existing route behavior.
     let decodedPath=path;try{decodedPath=decodeURIComponent(path);}catch{}
-    if(decodedPath!==path&&(decodedPath==='/api/admin/settings'||decodedPath.startsWith('/api/admin/settings/')))return json({error:'hosted_admin_and_public_intake_not_configured'},503);
+    if(decodedPath!==path&&(decodedPath==='/api/submissions'||decodedPath==='/api/admin/submissions'||decodedPath.startsWith('/api/admin/submissions/')||decodedPath.startsWith('/admin/contributions/')||decodedPath==='/api/admin/settings'||decodedPath.startsWith('/api/admin/settings/')))return json({error:'hosted_admin_and_public_intake_not_configured'},503);
     if(path==='/api/admin/settings/integrations/github-content'){
       if(url.origin!==origin)return json({error:'hosted_origin_required'},403);
       if(url.search)return json({error:'invalid_request'},400);
@@ -34,8 +38,18 @@ return {async fetch(request:Request,env:RuntimeEnv):Promise<Response>{
       for(const [key,value] of Object.entries(headers))secured.set(key,value);
       return new Response(response.body,{status:response.status,headers:secured});
     }
-    if(path==='/api/runtime/status'&&request.method==='GET')return json({schemaVersion:1,contentAuthority:'github-build',...await runtimeRelease(env.ASSETS),publicIntake:false,adminVerifierConfigured:!!ports.verifyAdmin,adminApprovalsConfigured:!!ports.hostedApprovals,gitHubProposalsConfigured:!!ports.verifyAdmin&&!!ports.approvedNote&&!!ports.sendGitHub&&!!env.EDITORIAL_DB,hostedCanonicalWrites:false,localFixtureIdentity:false});
-    if(path==='/api/editorial/status'&&request.method==='GET')return json({enabled:!!ports.hostedApprovals,mode:ports.hostedApprovals?'hosted-admin-notes':'hosted-unconfigured',publicIntake:false});
+    if(path==='/api/submissions'||path==='/api/admin/submissions'||path.startsWith('/api/admin/submissions/')||path.startsWith('/admin/contributions/')){
+      if(url.origin!==origin)return json({error:'hosted_origin_required'},403);
+      if(!contributions||!env.EDITORIAL_DB)return json({error:'hosted_contributions_unconfigured',publicIntake:false,reason:'trusted_server_adapters_and_approved_policy_required'},503);
+      if(path.startsWith('/admin/contributions/')){
+        const trust=adminTrust(ports.contributions?.trust);const admin=trust?await verifySignedAdmin(request,trust):null;if(!admin||request.headers.get('sec-fetch-site')==='cross-site')return json({error:'verified_admin_required'},403);
+        if(request.method!=='GET'||url.search)return json({error:'invalid_request'},400);
+        const asset=path==='/admin/contributions/'?[contributionAdminHtml,'text/html; charset=utf-8']:path==='/admin/contributions/style.css'?[contributionAdminCss,'text/css; charset=utf-8']:path==='/admin/contributions/app.js'?[contributionAdminJs,'text/javascript; charset=utf-8']:null;return asset?new Response(asset[0],{headers:{...headers,'Content-Type':asset[1]}}):json({error:'not_found'},404);
+      }
+      const response=await contributions(request,env.EDITORIAL_DB),secured=new Headers(response.headers);for(const [key,value]of Object.entries(headers))secured.set(key,value);return new Response(response.body,{status:response.status,headers:secured});
+    }
+    if(path==='/api/runtime/status'&&request.method==='GET')return json({schemaVersion:1,contentAuthority:'github-build',...await runtimeRelease(env.ASSETS),publicIntake:!!env.EDITORIAL_DB&&intakeConfigured(ports.contributions),contributionAdminConfigured:!!env.EDITORIAL_DB&&!!adminTrust(ports.contributions?.trust),publicIntakeReason:intakeConfigured(ports.contributions)?'trusted_policy_configured':'approved_terms_privacy_moderation_and_rate_identity_required',adminVerifierConfigured:!!ports.verifyAdmin,adminApprovalsConfigured:!!ports.hostedApprovals,gitHubProposalsConfigured:!!ports.verifyAdmin&&!!ports.approvedNote&&!!ports.sendGitHub&&!!env.EDITORIAL_DB,hostedCanonicalWrites:false,localFixtureIdentity:false});
+    if(path==='/api/editorial/status'&&request.method==='GET')return json({enabled:!!ports.hostedApprovals,mode:ports.contributions?'hosted-contributions':ports.hostedApprovals?'hosted-admin-notes':'hosted-unconfigured',publicIntake:!!env.EDITORIAL_DB&&intakeConfigured(ports.contributions),reason:intakeConfigured(ports.contributions)?'trusted_policy_configured':'approved_terms_privacy_moderation_and_rate_identity_required',policy:intakeConfigured(ports.contributions)?{termsPath:ports.contributions!.policy!.termsPath,privacyPath:ports.contributions!.policy!.privacyPath,revision:ports.contributions!.policy!.policyRevision}:null});
     const maintenancePath=path==='/admin/'||path.startsWith('/admin/maintenance/')||path.startsWith('/api/admin/maintenance/');
     if(maintenancePath){
       if(url.origin!==origin)return json({error:'hosted_origin_required'},403);
