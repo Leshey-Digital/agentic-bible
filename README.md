@@ -2,6 +2,8 @@
 
 A planned living encyclopedia of AI agents and the technology around them: sourced, interconnected articles with transparent revision history.
 
+**Hosted status, 2026-10-18:** the qualified `b41a422881921638833f92b2361a70eb1647d01f` release is live on staging. Reading assets are verified; hosted contributions, admin, settings and article automation remain disabled. See the [resumable MVP implementation handoff](docs/mvp-implementation-handoff.md) for exact release evidence, local successor branches and next work. Preparation-time status statements below are historical; they do not establish current hosted capability.
+
 **Current branch:** the saved-environment qualification/direct-connector replacement starts from reviewed main `fd44aeb5111145e12785a076fcc27dd323d6a193`. That main contains the accepted twenty-article MVP, maintenance pipeline, currency-dispatch and monitor corrections. All twenty article files and their source-review acceptance remain unchanged. Content/source review does not establish factual completeness or live publication.
 
 [Local qualification and direct release](docs/local-qualified-releases.md) replaces required GitHub Actions build/test/artifact/release service. This candidate archives executable Actions workflows, retains every full local check, binds immutable qualified bytes to independent review pins, and uses the existing Cloudflare connector without exporting credentials. No Workers Builds service is selected. Independent review and actual live protocol/hostname/serving validation remain required; no deployment is performed here. Public intake, identity/provider/analytics/ads/indexing ports stay closed by default. Static reading/search requires no Jev key.
