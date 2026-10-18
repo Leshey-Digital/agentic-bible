@@ -155,3 +155,7 @@ The [maintenance audit](docs/automated-maintenance-gap.md) identifies separate m
 ## Captured source-body maintenance connection
 
 The default-disabled [source collector](docs/maintenance-source-collection.md) connects original controlled response bodies and charged D1 receipts to the existing fake producer, automatic local wiki publication and later human flags. Run `npm run test:maintenance-sources` (also in validate), `npm run maintenance:collect:demo`, then `npm run maintenance:collect:local` for the separate read-only loopback preview on port 8799. Successful restart/replay makes no additional source or provider request. No live discovery, HTML normalization, real provider, canonical GitHub write or release is enabled; [checkpoint evidence](docs/review/maintenance-source-collection.md).
+
+## Controlled canonical maintenance writer
+
+The default-disabled [canonical writer](docs/canonical-maintenance-writer.md) consumes completed sourced maintenance output and atomically updates article Markdown, immutable history and the review pointer through an expected-head protected controlled GitHub mutation. `npm run test:maintenance-github` exercises actual D1 and an owned real Git repository, including replay, concurrent writers, lost responses and conflicts. It is included in validate. No real GitHub transport, credential, article publication or release is configured; [checkpoint evidence](docs/review/canonical-maintenance-writer.md).

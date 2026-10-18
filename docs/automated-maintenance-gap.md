@@ -20,3 +20,7 @@ No live source/model/GitHub write, paid call, secret, deployment, merge, indexin
 ## Controlled body collection successor
 
 The separate [source collection connection](maintenance-source-collection.md) now captures original bounded plain-text responses through the existing charged HTTP/D1 validator, persists immutable body/journal evidence and feeds it directly into the fake producer. This replaces the separation of manually supplied fixture paths for the explicit controlled demo/native journey. Live discovery, scheduling, HTML normalization/authenticity, real provider/currency allocation, canonical GitHub writer and hosted release/review connections remain absent. No new human article preapproval is introduced.
+
+## Controlled canonical writer successor
+
+The separate [canonical maintenance writer](canonical-maintenance-writer.md) now consumes a completed, revalidated fake-producer result and atomically commits article/history/review metadata through a controlled expected-head GitHub port backed by real owned Git. Community approval remains separate. No live GitHub identity/transport or automatic hosted release is configured; hosted JSON-history/review ingestion and live content/source/currency authority remain gaps.

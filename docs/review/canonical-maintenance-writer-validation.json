@@ -1,0 +1,203 @@
+{
+  "checks": [
+    {
+      "command": "npm run validate",
+      "exitCode": 0,
+      "seconds": 277.98,
+      "log": "maintenance-writer-validate.log",
+      "tests": 188
+    },
+    {
+      "command": "npm run test:browser",
+      "exitCode": 0,
+      "seconds": 90.72,
+      "log": "maintenance-writer-test-browser.log",
+      "cases": 74
+    },
+    {
+      "command": "npm run test:maintenance:browser",
+      "exitCode": 0,
+      "seconds": 7.5,
+      "log": "maintenance-writer-test-maintenance-browser.log",
+      "cases": 2
+    },
+    {
+      "command": "npx --no-install playwright test --config playwright.maintenance-collection.config.ts",
+      "exitCode": 0,
+      "seconds": 7.45,
+      "log": "maintenance-writer-collection-browser.log",
+      "cases": 2
+    },
+    {
+      "command": "npm run staging:check",
+      "exitCode": 0,
+      "seconds": 1.09,
+      "log": "maintenance-writer-staging-check.log"
+    },
+    {
+      "command": "npm run runtime:check",
+      "exitCode": 0,
+      "seconds": 1.13,
+      "log": "maintenance-writer-runtime-check.log"
+    }
+  ],
+  "completed": true,
+  "allPassed": true,
+  "base": "0a24129e34369e887273851b7e4241ec48260548",
+  "branch": "feat/canonical-maintenance-writer",
+  "validationTests": 188,
+  "writerNativeCases": 14,
+  "browserCases": 78,
+  "dryRuns": 2,
+  "astroFiles": 127,
+  "astroDiagnostics": 0,
+  "localBrowser": "Chromium 154.0.8037.57",
+  "canonicalProvider": "controlled GitHub-shaped port backed by an owned real bare Git repository",
+  "actualWorkerdD1": true,
+  "realSpend": 0,
+  "remoteArticlePublished": false,
+  "independentAcceptance": false,
+  "ci": "Not run; local implementation checkpoint only.",
+  "validationScope": "Full retained native validation plus reading/search and both maintenance browser journeys, staging/runtime dry runs. New writer is a default-closed Node library; hosted/admin/release UI and transport code are unchanged.",
+  "notRerunHere": [
+    "test:editorial:browser",
+    "test:integration:browser",
+    "test:monitoring:worker",
+    "test:settings:worker",
+    "test:publication:browser",
+    "test:combined:browser",
+    "test:wiki-bridge:browser",
+    "test:wiki-seo:browser",
+    "test:corrections:browser",
+    "test:hosted:browser",
+    "test:hosted-admin:browser"
+  ],
+  "previousFullMatrix": "docs/review/maintenance-source-collection-validation.json at preserved 0a24129",
+  "testedFiles": [
+    {
+      "path": "src/maintenance-github/contracts.ts",
+      "sha256": "63d3ab2877b6fa96035816acb47bd0ffec5f742c2eef56c2f1a0fbe00282780f"
+    },
+    {
+      "path": "src/maintenance-github/outbox.ts",
+      "sha256": "62dcb342421894c0430fe5985f4f51f09338a47394b5ed1b97b0060066f25cc7"
+    },
+    {
+      "path": "src/maintenance-github/transport.ts",
+      "sha256": "0a04090a241d3a64f773b7042363e1090c8f5d8ac03ff5033e2a6ddad7493e83"
+    },
+    {
+      "path": "src/maintenance-github/writer.ts",
+      "sha256": "4999117fdaab0def12e0219e56147bc4e64b223bcf33ebdf09357ce678d50c0b"
+    },
+    {
+      "path": "src/wiki-bridge/build.ts",
+      "sha256": "12d0ba5601ac001461c201db0acec1c7c9660bb9c105e7897caf9a0bc20f3a08"
+    },
+    {
+      "path": "src/wiki-bridge/maintenance.ts",
+      "sha256": "b1a9b06d4ad3aa700c19a9060d903107d714b4e4b5f1029aed3cbb5f0834156c"
+    },
+    {
+      "path": "migrations/0011_canonical_maintenance_writes.sql",
+      "sha256": "24f57fd01bab0b2ef5c92c983fffe6c6681902983ef10dda0b2b306e86945618"
+    },
+    {
+      "path": "package.json",
+      "sha256": "29b535a492d59747b4c4187b6c832ae6c76f3058244d1d779defb7ad4695b0d2"
+    },
+    {
+      "path": "tests/maintenance-github/provider.mjs",
+      "sha256": "164dbe68debe9931f3feed9b0adc2b73d052f53ed35b8bc31482264499fd5cfc"
+    },
+    {
+      "path": "tests/maintenance-github/writer.test.mjs",
+      "sha256": "c07bc9543e51ef4563d7b68d6863b08fee06043c0b59284d65859f315f3f0c3c"
+    }
+  ],
+  "originalArticleHashes": [
+    {
+      "path": "src/content/articles/agent-budgets.md",
+      "sha256": "4d08ff128eb132755f7f0b8ef442b45129c43fa0abfcd777fd1ca7881ea199dd"
+    },
+    {
+      "path": "src/content/articles/agent-evaluation.md",
+      "sha256": "a02bfef9fc5fdcefe08e52d82a2563d155d0cc9ef9c68293ca1a1920546ac061"
+    },
+    {
+      "path": "src/content/articles/agent-identity.md",
+      "sha256": "7c91ffeff39be1efbe4460ae8ed2fb5520083b85e4474807a9c53f55984e2fb8"
+    },
+    {
+      "path": "src/content/articles/agent-memory.md",
+      "sha256": "b148a65bdc33304a533d50d4299d4225e1bc9ecc76f2148212d0808930022de0"
+    },
+    {
+      "path": "src/content/articles/agent-observability.md",
+      "sha256": "049b0dc639c785f012b4956e5c054e1940527cffe2254dfb0ba6db612e750c6d"
+    },
+    {
+      "path": "src/content/articles/agent-orchestration.md",
+      "sha256": "f2fe90af6be60a7722819d6e78a3d2a89bc72c8ac2a5b3dc8a87d4a49cbd3d6f"
+    },
+    {
+      "path": "src/content/articles/agent-planning.md",
+      "sha256": "c4c69bbe4318cb5a1776e65033314adf4d2926d39c471166240d546aba1aadc2"
+    },
+    {
+      "path": "src/content/articles/agent-sandboxing.md",
+      "sha256": "2941adb2262f3b6f089540b0b8fee45e52ed4641867cd84c589ac9c543b0068c"
+    },
+    {
+      "path": "src/content/articles/agent-to-agent-communication.md",
+      "sha256": "3dbf81152cbb8c971a323061af080de5fb464a3acd4453d690e905a96ccb65cb"
+    },
+    {
+      "path": "src/content/articles/ai-agent.md",
+      "sha256": "8b9991a3d7f13ca51c359b63442557beabfcb1714df04ce849491c4aedb1a3a6"
+    },
+    {
+      "path": "src/content/articles/computer-use-agents.md",
+      "sha256": "d7a7f169f547c84963f616ba8b8091eae9e35421bab513bb8d13ef1aea64c5aa"
+    },
+    {
+      "path": "src/content/articles/context-engineering.md",
+      "sha256": "690cdc7482ed85bbe542b154a63d44f57f654d6f8667161d8c5996de4e3c451d"
+    },
+    {
+      "path": "src/content/articles/durable-agent-execution.md",
+      "sha256": "637a4b2158524d5fd1ed74bbac4b8f0b0d9d44e22e0387081a4e7951c8723805"
+    },
+    {
+      "path": "src/content/articles/human-oversight.md",
+      "sha256": "05f95df8fbbb3c6c78dd992ad08ed8d9c7c86fec2b27dd370ab24435d5c5fe59"
+    },
+    {
+      "path": "src/content/articles/model-context-protocol.md",
+      "sha256": "1b038336e7ce0438e97a36eb2e536a9dd87dd5bf3a068eae394a978bb76a2abf"
+    },
+    {
+      "path": "src/content/articles/prompt-injection.md",
+      "sha256": "44db0f983ce79da5fbf32a22c66fefb6867d788cdd7c016a3334f7ca2d6be1e7"
+    },
+    {
+      "path": "src/content/articles/retrieval-augmented-generation.md",
+      "sha256": "455019da889922747a8b4e023ffb3f90859b5d080e85f97ab3d4b6d79a9d5216"
+    },
+    {
+      "path": "src/content/articles/structured-outputs.md",
+      "sha256": "845e9153c1f788913d1750e108a7948141feaee583cf41491ed44992ed6b5c41"
+    },
+    {
+      "path": "src/content/articles/tool-permissions.md",
+      "sha256": "274e5ae371484412776644847bb5494ac234cf1beac6398e1098678ea7e76756"
+    },
+    {
+      "path": "src/content/articles/tool-use.md",
+      "sha256": "cf1e3a2bbb77a85d472e2509fa8eefda9bccbae2a73f1931902354de50aa9681"
+    }
+  ],
+  "lockfileChanged": false,
+  "hostedAdminChanged": false,
+  "releaseCodeChanged": false
+}

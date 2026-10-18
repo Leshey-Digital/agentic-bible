@@ -45,3 +45,22 @@ function verified(row:ProposalRow,command:Apply,request:ProviderRequest,policy:R
   if(canonical(packet)!==row.packet||checked.actualCost!==row.actual_cost||tokens(request)!==row.input_tokens||policy.maxOutputTokens!==row.output_tokens||checked.actualCost>row.reserved_cost)stop('maintenance_proposal_corrupt');return packet;
  }catch{return stop('maintenance_proposal_corrupt');}
 }
+
+// Read-only authorization for a downstream writer; never generates or resumes publication.
+export async function completedMaintenance(value:unknown,context:Pick<Context,'db'|'bridge'|'sourceDirectory'|'policy'|'clock'>){
+ const policy=policyInput(context.policy),command=bridgeInput(value);if(command.kind!=='apply'||command.revision.article.reviewedCorrections)stop('maintenance_not_community_approval');
+ const now=(context.clock??Date.now)();if(!Number.isSafeInteger(now)||now<0||now>253402300799999)stop('maintenance_clock');
+ const project=projectFiles(context.bridge.repo);if(hash(project.files['src/content/articles/tool-use.md'])!==command.originalMarkdownHash)stop('maintenance_original_changed');
+ const evidence=await validateEvidence(command,context.db,context.sourceDirectory);if(evidence.bindings.some(b=>b.observedAt>now||now-b.observedAt>policy.maxSourceAgeMs))stop('maintenance_stale_evidence');
+ const request:ProviderRequest={schemaVersion:1,kind:'extractive-source-data',sources:command.evidence.map(e=>sourceData(e.citationId,e.bodyHash,evidence.files[e.bodyHash])),maxOutputTokens:policy.maxOutputTokens};
+ const fingerprint=hash(canonical({command,sourceTreeHash:project.hash,evidenceHash:evidence.evidenceHash,bridge:context.bridge.root,policy,provider:'fake-extractive-v1'}));
+ const row=await new MaintenanceBudget(context.db).job(command.eventId);if(!row||row.state!=='complete'||row.fingerprint!==fingerprint||!row.receipt)stop('maintenance_completed_authority_required');
+ if(row.reserved_cost!==tokens(request)*policy.inputRate+policy.maxOutputTokens*policy.outputRate)stop('maintenance_proposal_corrupt');
+ const saved=verified(row,command,request,policy,evidence.bindings.map(b=>b.observedAt)),current=context.bridge.current(),event=current?.manifest.state.events.find(e=>e.eventId===command.eventId&&e.fingerprint===hash(canonical(saved)));
+ if(!current||!event)stop('maintenance_receipt_unavailable');
+ const receipt={...event,outcome:'site-activated' as const,site:event.sequence===current.manifest.state.sequence?current.reference:current.manifest.state.ancestors[event.sequence-1],parent:event.sequence===1?null:current.manifest.state.ancestors[event.sequence-2]};
+ if(canonical(receipt)!==row.receipt)stop('maintenance_receipt_corrupt');
+ const site=context.bridge.load(receipt.site),publisher=context.bridge.publisher.load(receipt.publisher),articleRevision=hash(canonical(saved.revision.article));
+ if(site.state.sourceTreeHash!==project.hash||site.state.articleRevision!==articleRevision||canonical(site.state.publisher)!==canonical(receipt.publisher)||publisher.state.articles['tool-use']!==articleRevision||canonical(context.bridge.publisher.revision(articleRevision))!==canonical(saved.revision.article)||!publisher.state.receipts.some(r=>r.eventId===command.eventId&&r.fingerprint===hash(canonical(saved.revision))))stop('maintenance_receipt_corrupt');
+ return {command:saved,fingerprint,packetHash:row.packet_hash!,providerResponseHash:hash(row.response!),sourceTreeHash:project.hash,evidenceHash:evidence.evidenceHash,bindings:evidence.bindings,receipt,articleRevision,generation:{unit:policy.unit,inputTokens:row.input_tokens,reservedOutputTokens:row.output_tokens,actualOutputTokens:JSON.parse(row.response!).usage.outputTokens,reservedCost:row.reserved_cost,actualCost:row.actual_cost}};
+}

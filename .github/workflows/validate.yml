@@ -98,6 +98,8 @@ jobs:
             .git/usability-widths-*.json
             .git/maintenance-native-proof.json
             .git/maintenance-source-collection-native.json
+            .git/canonical-maintenance-writer-native.json
+            .git/canonical-maintenance-build-proof.json
             .git/source-collection-browser-*.json
             .git/maintenance-browser-*.json
             .git/hosted-projection-build-proof.json
