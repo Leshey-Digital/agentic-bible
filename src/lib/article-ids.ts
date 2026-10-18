@@ -1,4 +1,5 @@
-// Genuine reading entries. Synthetic publisher fixtures and editorial intake keep their separate scopes.
+// Canonical published reading inventory, shared by intake and source-catalog validation.
+// Synthetic publisher fixture IDs never expand this compile-time authority.
 export const readingArticleIds = [
   'ai-agent', 'tool-use', 'model-context-protocol', 'agent-orchestration',
   'agent-memory', 'retrieval-augmented-generation', 'agent-evaluation', 'prompt-injection',

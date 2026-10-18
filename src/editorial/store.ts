@@ -1,5 +1,5 @@
 import type { EditorialStore, SqlDatabase, Submission, SubmissionInput, Change, Disposition, Session, AuditEntry } from './contracts.ts';
-import { digest, InputError, RateLimitError, ReplayConflictError, CapacityError } from './validation.ts';
+import { digest, submissionInput, InputError, RateLimitError, ReplayConflictError, CapacityError } from './validation.ts';
 
 interface Row {
   id: string; article_id: Submission['articleId']; kind: Submission['kind']; message: string; source_url: string;
@@ -15,6 +15,7 @@ export class D1EditorialStore implements EditorialStore {
   private readonly guardCorrections: boolean;
   constructor(db: SqlDatabase, guardCorrections = false) { this.db = db; this.guardCorrections = guardCorrections; }
   async submit(input: SubmissionInput, clientHash: string, now: number) {
+    input = submissionInput(input);
     const fingerprint = await digest(JSON.stringify([clientHash, input.articleId, input.kind, input.message, input.sourceUrl]));
     const replay = await this.db.prepare('SELECT id, fingerprint FROM submissions WHERE request_key = ?').bind(input.requestKey).first<{ id: string; fingerprint: string }>();
     if (replay) {

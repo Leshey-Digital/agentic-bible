@@ -35,7 +35,7 @@ export async function correctionPreview(name='local',checkpoint?:(phase:BridgePh
   await db.prepare('CREATE TABLE IF NOT EXISTS correction_local_migrations(name TEXT PRIMARY KEY)').run();
   for(const file of readdirSync('migrations').filter(f=>f.endsWith('.sql')).sort()){
     if(await db.prepare('SELECT name FROM correction_local_migrations WHERE name=?').bind(file).first())continue;
-    await db.batch([...readFileSync(join('migrations',file),'utf8').replace(/--[^\n]*/g,'').split(/;(?=\s*(?:CREATE|INSERT|UPDATE|DELETE|$))/).map(s=>s.trim()).filter(Boolean).map(sql=>db.prepare(sql)),db.prepare('INSERT INTO correction_local_migrations(name) VALUES(?)').bind(file)]);
+    await db.batch([...readFileSync(join('migrations',file),'utf8').replace(/--[^\n]*/g,'').split(/;(?=\s*(?:PRAGMA|CREATE|INSERT|UPDATE|DELETE|DROP|ALTER|$))/).map(s=>s.trim()).filter(Boolean).map(sql=>db.prepare(sql)),db.prepare('INSERT INTO correction_local_migrations(name) VALUES(?)').bind(file)]);
   }
   const coordinator=new CorrectionCoordinator(db,'wiki-bridge-corrections-'+name),wiki=wikiServer(coordinator.bridge);await new Promise<void>(done=>wiki.listen(0,'127.0.0.1',done));const wikiAddress=wiki.address();const wikiOrigin='http://127.0.0.1:'+(typeof wikiAddress==='object'&&wikiAddress?wikiAddress.port:0);
   const dispatch=(path:string,request:Request)=>runtime.dispatchFetch(localOrigin+path,{redirect:'manual',headers:{cookie:request.headers.get('cookie')??''}});

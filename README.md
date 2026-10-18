@@ -58,7 +58,9 @@ npm run editorial:local
 
 Open `http://127.0.0.1:8788/contribute/` to submit synthetic corrections or sources, then `/admin/` to choose an explicit local editor/admin or reader test identity. This is not a production sign-in mechanism. State persists in `.wrangler/editorial`; no remote D1 database or real credential is created. The existing static staging config is unchanged.
 
-`npm run validate` now also executes nine server/SQLite tests. Run `npm run test:editorial:browser` separately for the actual Worker/local-D1 end-to-end suite. It requires port 8788 to be free and resets only its isolated `.git/editorial-browser-state`; it preserves interactive data. Run `npm run test:browser` for reading/search regression checks. [HTTP, storage, authentication and integration contracts](docs/editorial-contracts.md) document the exact boundaries and production gates.
+The [published-collection intake successor](openspec/changes/published-contribution-intake/proposal.md) reuses the canonical twenty-entry reading inventory for local suggestions and form choices. Additive migration 0017 preserves existing submissions/audits/correction references and requires atomic per-migration application; hosted/public intake remains disabled.
+
+`npm run validate` also executes server/SQLite and native Worker/D1 tests. Run `npm run test:editorial:browser` separately for the actual Worker/local-D1 end-to-end suite. It requires port 8788 to be free and resets only its isolated `.git/editorial-browser-state`; it preserves interactive data. Run `npm run test:browser` for reading/search regression checks. [HTTP, storage, authentication and integration contracts](docs/editorial-contracts.md) document the exact boundaries and production gates.
 
 ## Local source monitoring
 
