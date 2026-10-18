@@ -105,6 +105,7 @@ jobs:
             .git/hosted-maintenance-review-browser-*.json
             .git/maintenance-review-reload-*.json
             .git/quoted-source-url-proof.json
+            .git/restored-maintenance-base-*-proof.json
             .git/canonical-restoration-native-proof.json
             .git/canonical-restoration-sigkill-proof.json
             .git/canonical-restoration-build-proof.json

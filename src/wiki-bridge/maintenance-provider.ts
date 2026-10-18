@@ -6,7 +6,7 @@ export type Policy={unit:'SIMULATED_MICRO_USD';maxInputTokens:number;maxOutputTo
 // Explicit fake-only demonstration values, not an approved real provider allocation/rate card.
 export const demonstrationPolicy:Readonly<Policy>=Object.freeze({unit:'SIMULATED_MICRO_USD',maxInputTokens:8192,maxOutputTokens:2048,inputRate:1,outputRate:1,runCost:10000,dayCost:20000,monthCost:60000,dayRequests:2,monthRequests:6,maxSourceAgeMs:86400000});
 export type SourceData={citationId:string;bodyHash:string;untrusted:true;text:string};
-export type ProviderRequest={schemaVersion:1;kind:'extractive-source-data';sources:SourceData[];maxOutputTokens:number};
+export type ProviderRequest={schemaVersion:1;kind:'extractive-source-data';sources:SourceData[];maxOutputTokens:number;canonicalBase?:{untrusted:true;sourceCommit:string;receiptHash:string;articleRevision:string;markdownSha256:string;markdown:string}};
 export type Extract={citationId:string;bodyHash:string;start:number;end:number;quote:string};
 export type Output={kind:'complete-source-paragraphs';extracts:Extract[]};
 export type Provider={kind:'deterministic-extractive-fake';id:'fake-extractive-v1';tokenizer:'synthetic-utf8-bytes';invoke:(request:ProviderRequest,signal:AbortSignal)=>Promise<Response>};
