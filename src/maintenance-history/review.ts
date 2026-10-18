@@ -2,7 +2,7 @@ import {canonical,hash,digest,gitSha,uuid,type VerifiedAdmin} from '../hosted/co
 import {ownerHash} from '../hosted/approvals.ts';
 import type {SqlDatabase} from '../editorial/contracts.ts';
 declare const __AGENTIC_MAINTENANCE_CATALOG_SHA256__:string|undefined;
-export class MaintenanceReviewError extends Error{constructor(public code:string,public status=409){super(code);}}
+export class MaintenanceReviewError extends Error{code:string;status:number;constructor(code:string,status=409){super(code);this.code=code;this.status=status;}}
 function reject(code:string,status=409):never{throw new MaintenanceReviewError(code,status);}
 export const historyBindingConfigured=()=>typeof __AGENTIC_MAINTENANCE_CATALOG_SHA256__==='string'&&digest(__AGENTIC_MAINTENANCE_CATALOG_SHA256__);
 export type CatalogEntry={current:boolean;receipt:{schemaVersion:1;mode:'local-synthetic-only';state:'canonical-commit-verified';livePublished:false;eventId:string;authorityHash:string;baseCommit:string;commit:string;articleRevision:string;markdownSha256:string;historyPath:string;historySha256:string;flags:string[]}};
