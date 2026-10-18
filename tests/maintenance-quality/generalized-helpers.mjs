@@ -1,0 +1,13 @@
+import {readFileSync} from 'node:fs';
+import {fixture} from '../maintenance-pipeline/helpers.mjs';
+import {quality} from './helpers.mjs';
+import {packet} from '../wiki-bridge/helpers.mjs';
+import {hash} from '../../src/publishing/contracts.ts';
+import {maintenanceTarget} from '../../src/maintenance-quality/target.ts';
+import {runMaintenancePipeline} from '../../src/maintenance-pipeline/runner.ts';
+export async function generalizedFixture(label){
+ const f=await fixture('generic-'+label,{generalized:true});for(const name of ['0020_quality_admission.sql','0021_quality_pipeline_dispositions.sql'])for(const sql of readFileSync('migrations/'+name,'utf8').replace(/--[^\n]*/g,'').split(/;(?=\s*(?:CREATE|$))/).filter(s=>s.trim()))await f.db.prepare(sql).run();const q=quality();
+ const context=()=>{const c=f.context();return {...c,quality:q,policy:{...c.policy,dayRequests:8,monthRequests:16}};};
+ const selection=(articleId,suffix)=>{const target=maintenanceTarget(articleId),command=packet(),original=readFileSync(target.articlePath,'utf8'),publisher=f.bridge.publisher.current(),active=f.bridge.current();command.schemaVersion=2;command.eventId=command.revision.eventId='generic-'+label+'-'+suffix;command.originalMarkdownHash=hash(original);command.expectedSite=active?.reference??null;command.expectedPublisher=publisher?.reference??null;command.revision.baseRevision=publisher?.manifest.state.articles[articleId]??null;command.revision.article.id=articleId;command.revision.article.title=original.match(/^title: (.+)$/m)[1].replace(/^['"]|['"]$/g,'');command.revision.article.topic=original.match(/^topic: (.+)$/m)[1].replace(/^['"]|['"]$/g,'');command.revision.article.related=['ai-agent','tool-use','model-context-protocol'].filter(id=>id!==articleId).slice(0,2);for(const e of command.evidence)e.receiptKey=crypto.randomUUID();return {schemaVersion:2,kind:'quality-gated-maintenance-pipeline',expectedBaseCommit:f.remote.tip(),command};};
+ return Object.defineProperties({...f,context,selection,run:(articleId,suffix,overrides={})=>{const ctx=context(),send=ctx.source.send;return runMaintenancePipeline(selection(articleId,suffix),{...ctx,source:{...ctx.source,async send(url,options){const response=await send(url,options);await response.body?.cancel();return new Response('Controlled original evidence for '+suffix+' provides a distinct complete paragraph about tool boundaries, retained article history, and explicit post-publication human review.',{headers:{'Content-Type':'text/plain'}});}},...overrides});},q},{sourceCalls:{get:()=>f.sourceCalls},providerCalls:{get:()=>f.providerCalls},activations:{get:()=>f.activations}});
+}

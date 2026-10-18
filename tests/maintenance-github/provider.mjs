@@ -1,8 +1,9 @@
+import {maintenanceTarget} from '../../src/maintenance-quality/target.ts';
 // Controlled GitHub-shaped transport backed by real, owned local Git objects/ref CAS.
 import {execFileSync} from 'node:child_process';import {mkdirSync,rmSync,existsSync,readFileSync} from 'node:fs';import {join} from 'node:path';
 import {projectFiles} from '../../src/wiki-bridge/files.ts';import {repository,branch,commitMutation,articlePath,pointerPath,historyPath} from '../../src/maintenance-github/contracts.ts';
 import assert from 'node:assert/strict';import {git} from '../wiki-bridge/helpers.mjs';
-export function controlledGitHub(label){
+export function controlledGitHub(label,options={}){
  assert.match(label,/^[a-z0-9-]+$/);const root=join(git,'maintenance-github-provider-test-'+label);rmSync(root,{recursive:true,force:true});mkdirSync(root);execFileSync('git',['init','--bare','--object-format=sha1',root],{stdio:'ignore'});
  const env={...process.env,GIT_INDEX_FILE:join(root,'fixture-index'),GIT_AUTHOR_NAME:'Controlled fixture',GIT_AUTHOR_EMAIL:'fixture@example.invalid',GIT_COMMITTER_NAME:'Controlled fixture',GIT_COMMITTER_EMAIL:'fixture@example.invalid',GIT_AUTHOR_DATE:'2026-10-18T00:00:00Z',GIT_COMMITTER_DATE:'2026-10-18T00:00:00Z'};
  const run=(args,input)=>execFileSync('git',['-c','core.hooksPath=/dev/null','--git-dir='+root,...args],{env,input,maxBuffer:2*1024*1024,stdio:['pipe','pipe','pipe']});
@@ -20,7 +21,7 @@ export function controlledGitHub(label){
   if(state.hold){const held=state.hold;state.hold=null;held.enter();await held.wait;}
   if(request.method==='POST'){
    assert.equal(url.pathname,'/graphql');state.dispatches++;const body=await request.json();assert.equal(body.operationName,'CanonicalMaintenanceCommit');assert.equal(body.query,commitMutation);const input=body.variables.input;assert.deepEqual(input.branch,{repositoryNameWithOwner:repository,branchName:branch});assert.equal(input.fileChanges.deletions,undefined);assert.equal(input.fileChanges.additions.length,3);
-   const added=Object.fromEntries(input.fileChanges.additions.map(entry=>[entry.path,Buffer.from(entry.contents,'base64')]));assert.ok(added[articlePath]);assert.ok(added[pointerPath]);assert.equal(Object.keys(added).filter(path=>/^src\/content\/maintenance\/history\/[a-f0-9]{64}\.json$/.test(path)).length,1);
+   const added=Object.fromEntries(input.fileChanges.additions.map(entry=>[entry.path,Buffer.from(entry.contents,'base64')]));if(options.generalized){const paths=Object.keys(added).filter(path=>path.startsWith('src/content/articles/'));assert.equal(paths.length,1);const id=paths[0].slice('src/content/articles/'.length,-3),target=maintenanceTarget(id);assert.equal(paths[0],target.articlePath);assert.ok(added[target.pointerPath]);}else{assert.ok(added[articlePath]);assert.ok(added[pointerPath]);}assert.equal(Object.keys(added).filter(path=>/^src\/content\/maintenance\/history\/[a-f0-9]{64}\.json$/.test(path)).length,1);
    if(input.expectedHeadOid!==tip())return Response.json({errors:[{type:'STALE_DATA'}]});state.mutateFiles?.(added);const treeId=tree(input.expectedHeadOid,added),oid=text(['commit-tree',treeId,'-p',input.expectedHeadOid],Buffer.from(input.message.headline+'\n\n'+input.message.body));
    await state.beforeMutation?.();try{run(['update-ref','refs/heads/'+branch,oid,input.expectedHeadOid]);}catch{return Response.json({errors:[{type:'STALE_DATA'}]});}state.mutations++;await state.afterMutation?.();if(state.lost){state.lost=false;throw Error('controlled lost GraphQL response after real Git commit');}
    return Response.json({data:{createCommitOnBranch:{clientMutationId:input.clientMutationId,commit:{oid}}}});

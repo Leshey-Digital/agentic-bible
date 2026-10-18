@@ -1,0 +1,9 @@
+# Quality admission before automatic publication
+
+The existing controlled extractive producer proves bytes, accounting and replay, but cannot establish factual support, original-evidence independence or substantive editorial quality. Add a separately selected version 2 pipeline profile that requires a trusted bounded semantic/evidence adapter before the existing publisher and canonical writer run. Keep version 1 local synthetic demonstrations and historical records readable without relabeling them as fact checked.
+
+The adapter assesses the complete candidate (including title, description and headings), the mechanically complete paragraph manifest, and exact collected source bytes. Its identity/revision/policy and the three hashes bind the durable decision. Unknown support, incomplete claim coverage, unsafe content, spam, duplicate variants, inauthentic citations and unsubstantive content deny publication. Provenance requires original-evidence lineage, with overlapping/transitive original roots counted together regardless of domains. One authentic source can qualify under an explicit one-origin policy; no universal source-count quota is introduced.
+
+Migration 0020 adds a bounded terminally immutable quality audit. Dispatched or uncertain assessments cannot automatically redispatch. Denied proposals keep the existing charges and remain unpublished. No framework, network destination, route, scheduler, real model or live credential is added. A trusted adapter is an execution dependency, never a model self-attestation or user input. Controlled tests are synthetic semantic decisions, not live factual verification.
+
+Later checkpoints may generalize existing article targets through the same coordinator. They must preserve old pins and formats and require the quality profile. Production provider selection, credentials, a numeric allocation and source extraction profiles remain pending owner decisions; Jev is not assumed to expose a prose API.

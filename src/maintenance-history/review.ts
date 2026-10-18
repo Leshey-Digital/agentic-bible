@@ -1,3 +1,4 @@
+import {readingArticleIds} from '../lib/article-ids.ts';
 import {canonical,hash,digest,gitSha,uuid,type VerifiedAdmin} from '../hosted/contracts.ts';
 import {ownerHash} from '../hosted/approvals.ts';
 import type {SqlDatabase} from '../editorial/contracts.ts';
@@ -5,8 +6,8 @@ declare const __AGENTIC_MAINTENANCE_CATALOG_SHA256__:string|undefined;
 export class MaintenanceReviewError extends Error{code:string;status:number;constructor(code:string,status=409){super(code);this.code=code;this.status=status;}}
 function reject(code:string,status=409):never{throw new MaintenanceReviewError(code,status);}
 export const historyBindingConfigured=()=>typeof __AGENTIC_MAINTENANCE_CATALOG_SHA256__==='string'&&digest(__AGENTIC_MAINTENANCE_CATALOG_SHA256__);
-export type CatalogEntry={current:boolean;receipt:{schemaVersion:1;mode:'local-synthetic-only';state:'canonical-commit-verified';livePublished:false;eventId:string;authorityHash:string;baseCommit:string;commit:string;articleRevision:string;markdownSha256:string;historyPath:string;historySha256:string;flags:string[]}};
-export type Catalog={schemaVersion:1;mode:'controlled-static-preview';enabled:true;sourceCommit:string;noindex:true;history:CatalogEntry[]};
+export type CatalogEntry={articleId?:string;current:boolean;receipt:{schemaVersion:1;mode:'local-synthetic-only';state:'canonical-commit-verified';livePublished:false;eventId:string;authorityHash:string;baseCommit:string;commit:string;articleRevision:string;markdownSha256:string;historyPath:string;historySha256:string;flags:string[]}};
+export type Catalog={schemaVersion:1|2;mode:'controlled-static-preview';enabled:true;sourceCommit:string;noindex:true;history:CatalogEntry[]};
 export async function verifiedCatalog(assets:{fetch(request:Request):Promise<Response>}){
  if(!historyBindingConfigured())reject('maintenance_review_unconfigured',503);
  const response=await assets.fetch(new Request('https://staging.agenticbible.si/maintenance-history.json',{signal:AbortSignal.timeout(2000)}));
@@ -16,7 +17,7 @@ export async function verifiedCatalog(assets:{fetch(request:Request):Promise<Res
  const body=new Uint8Array(bytes);let at=0;for(const chunk of chunks){body.set(chunk,at);at+=chunk.length;}
  if(await hash(body)!==__AGENTIC_MAINTENANCE_CATALOG_SHA256__)reject('maintenance_catalog_binding_conflict',503);
  const v=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(body));
- if(!v||v.schemaVersion!==1||v.mode!=='controlled-static-preview'||v.enabled!==true||v.noindex!==true||!gitSha(v.sourceCommit)||!Array.isArray(v.history)||v.history.length>16||v.history.some((e:any,i:number)=>!e||e.current!==(i===0)||!e.receipt||e.receipt.schemaVersion!==1||e.receipt.mode!=='local-synthetic-only'||e.receipt.state!=='canonical-commit-verified'||e.receipt.livePublished!==false||!gitSha(e.receipt.commit)||!gitSha(e.receipt.baseCommit)||!digest(e.receipt.articleRevision)||!digest(e.receipt.markdownSha256)||!digest(e.receipt.historySha256)||!digest(e.receipt.authorityHash))||new Set(v.history.map((e:any)=>e.receipt.commit)).size!==v.history.length)reject('maintenance_review_unconfigured',503);
+ if(!v||![1,2].includes(v.schemaVersion)||v.mode!=='controlled-static-preview'||v.enabled!==true||v.noindex!==true||!gitSha(v.sourceCommit)||!Array.isArray(v.history)||v.history.length>16||v.history.some((e:any,i:number)=>!e||(v.schemaVersion===1?e.current!==(i===0):!readingArticleIds.includes(e.articleId)||e.current!==!v.history.slice(0,i).some((prior:any)=>prior.articleId===e.articleId))||!e.receipt||e.receipt.schemaVersion!==1||e.receipt.mode!=='local-synthetic-only'||e.receipt.state!=='canonical-commit-verified'||e.receipt.livePublished!==false||!gitSha(e.receipt.commit)||!gitSha(e.receipt.baseCommit)||!digest(e.receipt.articleRevision)||!digest(e.receipt.markdownSha256)||!digest(e.receipt.historySha256)||!digest(e.receipt.authorityHash))||new Set(v.history.map((e:any)=>e.receipt.commit)).size!==v.history.length)reject('maintenance_review_unconfigured',503);
  return {catalog:v as Catalog,catalogHash:__AGENTIC_MAINTENANCE_CATALOG_SHA256__!};
 }
 type ReviewInput={requestId:string;catalogHash:string;receiptCommit:string;expectedVersion:number;decision:'reviewed'|'follow-up'|'revert-requested';targetCommit:string|null;note:string;confirm:'reviewed-current-revision'};
@@ -33,10 +34,10 @@ export async function listMaintenanceReviews(db:SqlDatabase,admin:VerifiedAdmin,
 export async function saveMaintenanceReview(db:SqlDatabase,admin:VerifiedAdmin,value:unknown,view:Awaited<ReturnType<typeof verifiedCatalog>>,now=Date.now()){
  auth(admin);const v=input(value),owner=await ownerHash(admin),raw=canonical(v),fingerprint=await hash(canonical({owner,input:v,createdAt:now}));
  const get=()=>db.prepare('SELECT * FROM hosted_maintenance_reviews WHERE request_id=?').bind(v.requestId).first<Row>();
- const replay=async(row:Row)=>{await integrity(row);if(row.owner_hash!==owner||row.input_json!==raw)reject('maintenance_review_key_conflict');return {...result(row),replayed:true,current:row.receipt_commit===view.catalog.history[0]?.receipt.commit};};
+ const replay=async(row:Row)=>{await integrity(row);if(row.owner_hash!==owner||row.input_json!==raw)reject('maintenance_review_key_conflict');return {...result(row),replayed:true,current:view.catalog.history.some(e=>e.current&&e.receipt.commit===row.receipt_commit)};};
  const existing=await get();if(existing)return replay(existing);
- if(v.catalogHash!==view.catalogHash||view.catalog.history[0]?.receipt.commit!==v.receiptCommit)reject('maintenance_review_stale_revision');
- if(v.decision==='revert-requested'&&!view.catalog.history.slice(1).some(e=>e.receipt.commit===v.targetCommit))reject('maintenance_review_revert_target');
+ const selected=view.catalog.history.find(e=>e.current&&e.receipt.commit===v.receiptCommit);if(v.catalogHash!==view.catalogHash||!selected)reject('maintenance_review_stale_revision');
+ if(v.decision==='revert-requested'&&!view.catalog.history.some(e=>!e.current&&e.receipt.commit===v.targetCommit&&(e.articleId??'tool-use')===(selected.articleId??'tool-use')))reject('maintenance_review_revert_target');
  // D1 serializes this single immutable admission. Concurrent version losers cannot
  // write a follow-up audit. Replay uses the original exact payload and owner.
  await db.prepare(`INSERT INTO hosted_maintenance_reviews(request_id,owner_hash,input_json,fingerprint,receipt_commit,catalog_hash,version,decision,target_commit,note,created_at)
