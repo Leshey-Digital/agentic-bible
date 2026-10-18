@@ -38,13 +38,15 @@ if(['seed','seed-eight','seed-fourteen'].includes(mode)){phase='legacy-seed';con
   const {validateCatalog}=await from('src/monitoring/catalog.ts');await assert.rejects(validateCatalog(data.catalog),/future_catalog_schema/);
   assert.match(readFileSync('src/content.config.ts','utf8'),/futureRevisionPolicy/);
   let fetches=0;const local=await localObservations(data.observations,false,()=>{fetches++;throw Error('upgrade source fetch forbidden');});try{
+    phase='future-reader-legacy-replay';
     const bridge=new WikiBridge(data.name);assert.deepEqual(bridge.current(),data.current);assert.deepEqual(bridge.status(),data.status);await served(bridge,[data.first,data.second]);
     let sql=0;const forbidden={prepare(){sql++;throw Error('replay D1 SQL forbidden');},batch(){sql++;throw Error('replay D1 SQL forbidden');}};
     assert.deepEqual(await bridge.execute(data.firstCommand,forbidden,data.sourceDirectory),data.first);assert.deepEqual(await bridge.execute(data.secondCommand,forbidden,data.sourceDirectory),data.second);
-    const fresh=new WikiBridge(data.freshName);await served(fresh,[data.fresh]);assert.deepEqual(await fresh.execute(data.firstCommand,forbidden,data.sourceDirectory),data.fresh);
-    const next=structuredClone(data.secondCommand);next.eventId=next.revision.eventId='future-source-change';next.expectedSite=data.second.site;next.expectedPublisher=data.second.publisher;next.revision.baseRevision=data.second.articleRevision;
-    await assert.rejects(bridge.execute(next,forbidden,data.sourceDirectory),{code:'build_source_changed'});await assert.rejects(fresh.execute(data.pendingCommand,forbidden,data.sourceDirectory),{code:'build_source_changed'});
+    phase='future-reader-current-replay';const fresh=new WikiBridge(data.freshName);await served(fresh,[data.fresh]);assert.deepEqual(await fresh.execute(data.freshCommand,forbidden,data.sourceDirectory),data.fresh);
+    phase='future-reader-new-command';const next=data.sourceChangeCommand;
+    phase='future-reader-change-rejection';
+    await assert.rejects(bridge.execute(next,forbidden,data.sourceDirectory),{code:'stale_original_markdown'});await assert.rejects(fresh.execute(data.pendingCommand,forbidden,data.sourceDirectory),{code:'build_source_changed'});
     assert.deepEqual(await accounting(local.db),data.accounting);assert.equal(fetches,0);assert.equal(sql,0);assert.deepEqual(bridge.status(),data.status);
-    writeFileSync(recordPath+'.future',JSON.stringify({legacyServing:200,currentServing:200,legacyReplays:2,currentReplay:true,replayD1Sql:sql,changedSourceWrite:'build_source_changed',changedSourcePending:'build_source_changed',chargesPreserved:true,sourceFetches:fetches}));
+    writeFileSync(recordPath+'.future',JSON.stringify({legacyServing:200,currentServing:200,legacyReplays:2,currentReplay:true,replayD1Sql:sql,changedSourceWrite:'stale_original_markdown',changedSourcePending:'build_source_changed',chargesPreserved:true,sourceFetches:fetches}));
   }finally{await local.runtime.dispose();await close();}
 }else throw Error('unknown upgrade test mode');

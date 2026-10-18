@@ -12,7 +12,7 @@ import {canonical,hash} from '../../src/publishing/contracts.ts';
 import {validateCatalog} from '../../src/monitoring/catalog.ts';
 import {readingArticleIds} from '../../src/lib/article-ids.ts';
 import {BridgeError} from '../../src/wiki-bridge/limits.ts';
-import {git,clean,accounting} from './helpers.mjs';
+import {git,clean,accounting,packet} from './helpers.mjs';
 const legacyHead='c3d1d7a47e55862c53840d52ad4c71631bd9ad9e';
 async function worker(mode,repo,file){
   await new Promise((done,failed)=>{
@@ -43,14 +43,15 @@ test('populated PR21 stores preserve historical serving and accepted replay acro
     }
     let sql=0;const forbidden={prepare(){sql++;throw Error('replay D1 SQL forbidden');},batch(){sql++;throw Error('replay D1 SQL forbidden');}};
     assert.deepEqual(await bridge.execute(data.firstCommand,forbidden,'fixtures/wiki-bridge/sources'),data.first);assert.deepEqual(await bridge.execute(data.secondCommand,forbidden,'fixtures/wiki-bridge/sources'),data.second);assert.equal(sql,0);assert.deepEqual(inventory(join(bridge.root,'sites')),before);
-    const freshName='wiki-bridge-test-upgrade-current';clean(freshName);const freshBridge=new WikiBridge(freshName),fresh=await freshBridge.execute(data.firstCommand,local.db,'fixtures/wiki-bridge/sources'),newArticles=JSON.parse(readFileSync(join(freshBridge.root,'sites',fresh.site.id,'source-catalog.json'),'utf8')).articles.length;assert.equal(newArticles,readingArticleIds.length);
-    const pendingCommand=structuredClone(data.firstCommand);pendingCommand.eventId=pendingCommand.revision.eventId='upgrade-pending';pendingCommand.expectedSite=fresh.site;pendingCommand.expectedPublisher=fresh.publisher;pendingCommand.revision.baseRevision=fresh.articleRevision;
+    const freshName='wiki-bridge-test-upgrade-current';clean(freshName);const freshBridge=new WikiBridge(freshName),freshCommand=packet(),fresh=await freshBridge.execute(freshCommand,local.db,'fixtures/wiki-bridge/sources'),newArticles=JSON.parse(readFileSync(join(freshBridge.root,'sites',fresh.site.id,'source-catalog.json'),'utf8')).articles.length;assert.equal(newArticles,readingArticleIds.length);
+    const pendingCommand=structuredClone(freshCommand);pendingCommand.eventId=pendingCommand.revision.eventId='upgrade-pending';pendingCommand.expectedSite=fresh.site;pendingCommand.expectedPublisher=fresh.publisher;pendingCommand.revision.baseRevision=fresh.articleRevision;
     await assert.rejects(freshBridge.execute(pendingCommand,local.db,'fixtures/wiki-bridge/sources',{checkpoint(phase){if(phase==='after-validation')throw new BridgeError('upgrade_pending_pause');}}),{code:'upgrade_pending_pause'});const freshSites=inventory(join(freshBridge.root,'sites')),freshPublisher=inventory(freshBridge.publisher.root),freshJobs=inventory(join(freshBridge.root,'jobs'));
+    const sourceChangeCommand=packet();sourceChangeCommand.eventId=sourceChangeCommand.revision.eventId='future-source-change';sourceChangeCommand.expectedSite=data.second.site;sourceChangeCommand.expectedPublisher=data.second.publisher;sourceChangeCommand.revision.baseRevision=data.second.articleRevision;
     for(const [path,bytes]of Object.entries(projectFiles(process.cwd()).files))write(join(future,path),bytes);symlinkSync(git,join(future,'.git'),'dir');symlinkSync(resolve('node_modules'),join(future,'node_modules'),'dir');
     const ids=join(future,'src/lib/article-ids.ts');writeFileSync(ids,readFileSync(ids,'utf8').replace('] as const;',"  'future-content-entry',\n] as const;"));
     const schema=join(future,'src/content.config.ts');writeFileSync(schema,readFileSync(schema,'utf8').replace('title: z.string(),',"futureRevisionPolicy: z.literal('future-schema-test'),\n    title: z.string(),"));
     const catalog=join(future,'src/monitoring/catalog.ts');writeFileSync(catalog,readFileSync(catalog,'utf8').replace('const catalog = value as SourceCatalog;',"if((value as {futureCatalogPolicy?:string})?.futureCatalogPolicy!=='future-schema-test')throw Error('future_catalog_schema');\n  const catalog = value as SourceCatalog;"));
-    writeFileSync(record,JSON.stringify({...data,freshName,fresh,newArticles,pendingCommand,sourceDirectory:resolve('fixtures/wiki-bridge/sources')}));await local.runtime.dispose();disposed=true;await worker('future-reader',future,record);const futureProof=JSON.parse(readFileSync(record+'.future','utf8'));assert.equal(futureProof.legacyReplays,2);
+    writeFileSync(record,JSON.stringify({...data,freshName,fresh,freshCommand,newArticles,pendingCommand,sourceChangeCommand,sourceDirectory:resolve('fixtures/wiki-bridge/sources')}));await local.runtime.dispose();disposed=true;await worker('future-reader',future,record);const futureProof=JSON.parse(readFileSync(record+'.future','utf8'));assert.equal(futureProof.legacyReplays,2);
     // Full byte/inventory checks still reject tampering and never fall back to an older active site.
     const article=join(bridge.root,'sites',data.second.site.id,'articles/tool-use/index.html'),bytes=readFileSync(article);writeFileSync(article,'tampered');assert.throws(()=>bridge.current(),{code:'site_corrupt'});assert.equal((await fetch(origin+'/articles/tool-use/')).status,503);writeFileSync(article,bytes);assert.deepEqual(bridge.current().reference,data.second.site);
     const folder=join(bridge.root,'sites',data.second.site.id),manifestPath=join(folder,'manifest.json'),manifestBytes=readFileSync(manifestPath),missing=join(folder,'articles/ai-agent/index.html'),missingBytes=readFileSync(missing);
