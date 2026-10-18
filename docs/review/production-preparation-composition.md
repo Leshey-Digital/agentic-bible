@@ -15,7 +15,7 @@ This is a feature-branch preparation record. Complete exact-head qualification i
 | Source acquisition | `35d10d73012a94a78f7ccda8f023113fb55d16b8` | Bounded original HTML acquisition, native D1 charging, extraction and raw byte spans. BOM span drift was reproduced and fixed; original failing checkpoint remains preserved. |
 | Source-quality verification helpers | `8c09775509d037ba2e220014f5a70254e6d3b9c1` | Exact original-response/charge and extraction verification, conservative unknown lineage and historical replay boundaries. Documentation-only successor `b954b0fc7ac7952a51232376051f3729dc4ecacb` has identical runtime code. |
 
-Reader History generalization and the acquired-source pipeline consumer require their separate final reviews before inclusion. Source reviews are bounded acceptance of exact commits, not acceptance of the final composition or factual completeness.
+Reader History generalization is independently accepted at `c773a9df901d05f53f85c270e5741ac7ca81985d`; a broken legacy fragment and cross-article destination were reproduced and fixed, then real two-head links and unique anchors were verified. Its native render regression is included in central validation. The acquired-source pipeline consumer requires its separate final review before inclusion. Source reviews are bounded acceptance of exact commits, not acceptance of the final composition or factual completeness.
 
 ## Composition-only corrections
 
@@ -23,7 +23,7 @@ The first quality run passed seven cases and rejected two with `pipeline_origina
 
 New append-only trigger migrations exposed naive semicolon splitting in two old all-migrations test setups. The test-only correction retains whole trigger statements using SQLite's completeness parser. Whole-file and parsed-statement SQLite schemas match, and the actual native SEO outbox suite passed eight cases. Application SQL and immutable audit protections remain intact; combined-browser confirmation remains part of complete qualification.
 
-Central `validate` includes new content, metadata, social image, fixture, hosted, vault, source-adapter and quality regressions. The existing `test:hosted-admin:browser` qualification step also invokes the new ephemeral signed-inbox/write-only-settings browser journey. This keeps retained qualification step identities and their archived verification contract intact while requiring the new browser tests for this source edition. Python's existing jsonschema package and standard SQLite parser are saved-environment test tools, not application dependencies.
+Central `validate` includes new content, metadata, social image, fixture, hosted, vault, source-adapter, article-aware History and quality regressions. The existing `test:hosted-admin:browser` qualification step also invokes the new ephemeral signed-inbox/write-only-settings browser journey. This keeps retained qualification step identities and their archived verification contract intact while requiring the new browser tests for this source edition. Python's existing jsonschema package and standard SQLite parser are saved-environment test tools, not application dependencies.
 
 The exact earlier b41 qualification and candidate digests were reverified using the current verifier without rebuilding or changing the archive. Its preserved qualification is `5c027392517f1a6a278bf820a2f340b510d296388fefa88ed33f91a6717173ac` and candidate is `f0e549e75be4929e13704301c2a5590f0364a95dac4dde5980328af1e12933bf`. This is retained-artifact compatibility evidence, not qualification of this preparation.
 
