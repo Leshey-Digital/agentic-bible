@@ -29,10 +29,16 @@ test('article link and citation copy have keyboard, failure, and no-JavaScript f
 
 test('article and site previews use page-specific title and description metadata',async({page})=>{
   const pages=[['/articles/tool-use/','Tool use'],['/about/','About the library'],['/history/','Revision history']];
+  const descriptions:string[]=[];
   for(const [path,title] of pages){
     await page.goto(path);await expect(page).toHaveTitle(new RegExp(title));
-    await expect(page.locator('meta[name="description"]')).toHaveAttribute('content',/.{20,}/);
+    const description=await page.locator('meta[name="description"]').getAttribute('content');expect(description).toMatch(/.{20,}/);descriptions.push(description!);
     await expect(page.locator('meta[property="og:title"]')).toHaveAttribute('content',new RegExp(title));
+    await expect(page.locator('meta[property="og:description"]')).toHaveAttribute('content',description!);
+    await expect(page.locator('meta[name="twitter:title"]')).toHaveAttribute('content',new RegExp(title));
     await expect(page.locator('meta[name="twitter:description"]')).toHaveAttribute('content',/.{20,}/);
+    if(path==='/articles/tool-use/')await expect(page.locator('meta[property="og:type"]')).toHaveAttribute('content','article');
+    if(path==='/history/')await expect(page.locator('meta[property="og:url"]')).toHaveCount(0);
   }
+  expect(new Set(descriptions).size).toBe(3);
 });
