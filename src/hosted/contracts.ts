@@ -15,7 +15,9 @@ export const canonical=(v:unknown):string=>JSON.stringify(v,(_key,value)=>value&
 export async function hash(value:string|Uint8Array){const bytes=typeof value==='string'?new TextEncoder().encode(value):value;return [...new Uint8Array(await crypto.subtle.digest('SHA-256',bytes as BufferSource))].map(b=>b.toString(16).padStart(2,'0')).join('');}
 export type VerifiedAdmin={subject:string;role:'admin';expiresAt:number;csrfVerified:true};
 // These functions are supplied by trusted server code, never env flags/request fields.
-// The shipped runtime configures none. Local synthetic approvals are ineligible.
+// The default ASSETS-only entrypoint has no authority. Explicit server trust/D1/
+// token bindings configure existing ports; new adapters remain server composition.
+// Local fixture identities are always ineligible.
 export type ApprovedNoteV1={schemaVersion:1;mode:'verified-admin-github-proposal';approvalId:string;submissionId:string;submissionRevision:number;reviewerRef:string;approvedAt:number;baseCommit:string;baseMarkdownSha256:string;note:string;citationId:'openai'|'claude'|'mcp-tools'};
 export type ApprovedNoteV2=Omit<ApprovedNoteV1,'schemaVersion'|'citationId'> & {schemaVersion:2;articleId:HostedArticleId;contentPath:string;citationId:string};
 export type ApprovedNote=ApprovedNoteV1|ApprovedNoteV2;
