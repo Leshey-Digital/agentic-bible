@@ -12,6 +12,16 @@ export class MaintenanceBudget {
   currencyTime(p,row.created_at);const pin=currencyPin(p);if(!['reserved','settled','uncertain'].includes(row.currency_state??'')||row.currency_policy!==pin.json||row.currency_policy_hash!==pin.hash||row.currency_reserved!==currencyCost(p,{inputTokens:row.input_tokens,outputTokens:row.output_tokens}))stop('maintenance_currency_receipt');
   if(settled){if(!usage||row.currency_state!=='settled'||row.currency_usage!==canonical(usage)||row.currency_actual!==currencyCost(p,usage)||row.currency_actual!>row.currency_reserved!||!Number.isSafeInteger(row.currency_settled_at)||row.currency_settled_at!<row.created_at||row.currency_settled_at!<p.price.validFrom||row.currency_settled_at!>=p.price.validUntil||usage.inputTokens!==row.input_tokens||usage.outputTokens>row.output_tokens||Math.floor(row.currency_settled_at!/86400000)!==row.day)stop('maintenance_currency_receipt');}
  }
+ // Read durable authority first; call the returned synchronous guard after the last await and base check.
+ async dispatchEligibility(row:ProposalRow){
+  const p=this.currency;if(!p)return (_now:number)=>{};
+  let current;try{current=await this.db.prepare(`SELECT proposal.*, policy.policy_json AS active_policy_json, policy.policy_hash AS active_policy_hash, policy.last_seen AS high_water FROM maintenance_proposals proposal JOIN maintenance_currency_policy policy ON policy.id=1 WHERE proposal.event_id=?`).bind(row.event_id).first<ProposalRow&{active_policy_json:string;active_policy_hash:string;high_water:number}>();}catch{return stop('maintenance_accounting_unavailable');}
+  const pin=currencyPin(p);
+  if(!current||current.state!=='calling'||current.currency_state!=='reserved'||current.active_policy_json!==pin.json||current.active_policy_hash!==pin.hash||!Number.isSafeInteger(current.high_water)||current.high_water<current.created_at)stop('maintenance_currency_dispatch_authority');
+  for(const key of ['event_id','fingerprint','owner','created_at','day','month','input_tokens','output_tokens','reserved_cost','currency_policy','currency_policy_hash','currency_reserved'] as const)if(current[key]!==row[key])stop('maintenance_currency_dispatch_authority');
+  this.verifyCurrency(current);const created=current.created_at,day=current.day,month=current.month,highWater=current.high_water;
+  return (now:number)=>{currencyTime(p,now);if(now<created||now<highWater||Math.floor(now/86400000)!==day||new Date(now).toISOString().slice(0,7)!==month)stop('maintenance_currency_dispatch_time');};
+ }
  async reserve(event:string,fingerprint:string,policy:Readonly<Policy>,inputTokens:number,now:number){
   policy=policyInput(policy);if(!Number.isSafeInteger(now)||now<0||now>253402300799999)stop('maintenance_clock');if(!Number.isSafeInteger(inputTokens)||inputTokens<1||inputTokens>policy.maxInputTokens)stop('maintenance_input_tokens');
   const month=new Date(now).toISOString().slice(0,7);if(!/^\d{4}-\d{2}$/.test(month))stop('maintenance_clock');

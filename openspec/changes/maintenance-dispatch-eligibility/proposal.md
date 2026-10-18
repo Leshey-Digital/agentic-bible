@@ -1,0 +1,7 @@
+# Recheck currency eligibility immediately before dispatch
+
+Independent review of preserved PR45 head `25e95cfa015609c0fc204db7274e2387992890dd` reproduced provider invocation after a controlled clock changed while the committed D1 reservation response was in flight. Price expiry, UTC midnight and backward time were rejected only at settlement, after a call had occurred.
+
+Read the same durable reservation and pinned policy/high-water authority, then perform a synchronous fresh-clock guard after the last await and canonical-base check, immediately before invocation. Require price validity, monotonic time and the reservation's UTC day/month. Invalid eligibility sends zero provider calls and retains the full reservation conservatively across restart/replay. No refund, retry dispatch, price or budget reset is introduced.
+
+The three integrated regressions use actual shared workerd/D1 and change the controlled clock only after the reservation transaction commits and before its response returns. They failed on the original head with one call each and pass after correction with zero calls. Retain the prior ten currency cases, independently reported reserve/settlement SIGKILL guarantees, all bounds and the unresolved PR44 reviewer-build caveat. See [currency contracts](../../../docs/maintenance-currency-budget.md). Publish a corrected PR45 head with exact-head CI for separate independent re-review; no paid calls, credential, remote migration, article change, merge or deployment.

@@ -17,3 +17,16 @@ test('disabled currency, unknown provider price and missing usage basis stop pip
  const f=await fixture('currency-admission');try{const p=currentPolicy();for(const currency of [{enabled:false,policy:p},control({...p,price:{...p.price,provider:'unknown-provider'}}),control({...p,price:{...p.price,basis:'unknown'}})])await assert.rejects(runMaintenancePipeline(f.input,{...f.context(),currency}));assert.equal(f.sourceCalls,0);assert.equal(f.providerCalls,0);assert.equal((await f.db.prepare('SELECT COUNT(*) n FROM maintenance_pipeline_jobs').first()).n,0);assert.equal((await f.db.prepare('SELECT COUNT(*) n FROM maintenance_proposals').first()).n,0);
  }finally{await f.close();}
 });
+
+for(const kind of ['expiry','midnight','backward'])test('dispatch refuses '+kind+' after the actual D1 reservation commits, with zero provider calls and retained funds',async()=>{
+ const f=await fixture('currency-dispatch-'+kind);try{
+  const admission=kind==='midnight'?Date.UTC(2026,9,31,23,59,59,900):Date.now();let now=admission,held=false;const p=policy();p.price={...p.price,validFrom:admission-86400000,validUntil:admission+(kind==='expiry'?1000:86400000)};
+  const invalid=kind==='expiry'?p.price.validUntil:kind==='midnight'?(Math.floor(admission/86400000)+1)*86400000:admission-1;
+  const db={prepare:sql=>f.db.prepare(sql),async batch(statements){const result=await f.db.batch(statements);const row=await f.db.prepare('SELECT * FROM maintenance_proposals WHERE event_id=?').bind(f.input.command.eventId).first();if(!held&&row?.state==='calling'&&row.currency_state==='reserved'){held=true;assert.equal(row.created_at,admission);assert.ok(row.currency_reserved>0);now=invalid;}return result;}};
+  const context=()=>({...f.context(),db,currency:control(p),clock:()=>now});let error;try{await runMaintenancePipeline(f.input,context());}catch(e){error=e;}
+  assert.equal(held,true);assert.ok(error);assert.equal(f.providerCalls,0);assert.equal(error.code,kind==='expiry'?'maintenance_currency_price_expired':'maintenance_currency_dispatch_time');
+  const saved=await new MaintenanceBudget(f.db,control(p)).job(f.input.command.eventId);assert.equal(saved.currency_state,'uncertain');assert.equal(saved.state,'uncertain');assert.equal(saved.currency_actual,null);assert.ok(saved.currency_reserved>0);assert.equal(f.remote.state.mutations,0);assert.equal(f.activations,0);assert.equal(f.sourceCalls,2);
+  await f.app.restart();now=admission;await assert.rejects(runMaintenancePipeline(f.input,context()),{code:'maintenance_provider_unconfirmed_no_retry'});assert.equal(f.providerCalls,0);assert.equal((await f.db.prepare('SELECT COUNT(*) n FROM maintenance_proposals').first()).n,1);assert.equal((await new MaintenanceBudget(f.db,control(p)).job(f.input.command.eventId)).currency_reserved,saved.currency_reserved);
+  writeFileSync(join(git,'maintenance-currency-dispatch-'+kind+'-proof.json'),JSON.stringify({sourceCommit:execFileSync('git',['rev-parse','HEAD']).toString().trim(),case:kind,actualSharedWorkerdD1:true,reservationCommittedBeforeClockChange:held,admission,dispatchClock:invalid,error:error.code,providerCalls:f.providerCalls,retainedMicroUsd:saved.currency_reserved,settledMicroUsd:null,restartAdditionalProviderCalls:0,canonicalMutations:0,reviewActivations:0,paidCalls:0},null,2)+'\n');
+ }finally{await f.close();}
+});
