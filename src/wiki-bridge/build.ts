@@ -86,3 +86,6 @@ export async function buildWiki(options:{repo:string;captureRoot:string;capture:
     return files;
   }catch(error){diagnostic.stop??='parent-build';diagnostic.failure=safeFailure(error);persistDiagnostic();throw Object.assign(new BridgeError('full_wiki_build_failed'),{diagnostics:{stop:diagnostic.stop,lastPhase:diagnostic.lastPhase}});}finally{if(child?.exitCode===null&&child.signalCode===null)child.kill('SIGKILL');if(!child||child.exitCode===0)rmSync(scratch,{recursive:true,force:true});}
 }
+
+// Pure bounded serializer shared with the default-closed canonical maintenance writer.
+export {markdown as publicationMarkdown};

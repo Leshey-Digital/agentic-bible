@@ -1,0 +1,257 @@
+{
+  "checks": [
+    {
+      "command": "npm run validate",
+      "exitCode": 0,
+      "seconds": 177.12,
+      "log": "source-collection-validate.log",
+      "tests": 174
+    },
+    {
+      "command": "npm run test:browser",
+      "exitCode": 0,
+      "seconds": 87.26,
+      "log": "source-collection-test-browser.log",
+      "cases": 74
+    },
+    {
+      "command": "npm run test:editorial:browser",
+      "exitCode": 0,
+      "seconds": 36.5,
+      "log": "source-collection-test-editorial-browser.log",
+      "cases": 23
+    },
+    {
+      "command": "npm run test:integration:browser",
+      "exitCode": 0,
+      "seconds": 11.29,
+      "log": "source-collection-test-integration-browser.log",
+      "cases": 1
+    },
+    {
+      "command": "npm run test:monitoring:worker",
+      "exitCode": 0,
+      "seconds": 17.6,
+      "log": "source-collection-test-monitoring-worker.log"
+    },
+    {
+      "command": "npm run test:settings:worker",
+      "exitCode": 0,
+      "seconds": 22.77,
+      "log": "source-collection-test-settings-worker.log"
+    },
+    {
+      "command": "npm run test:publication:browser",
+      "exitCode": 0,
+      "seconds": 7.92,
+      "log": "source-collection-test-publication-browser.log",
+      "cases": 1
+    },
+    {
+      "command": "npm run test:combined:browser",
+      "exitCode": 0,
+      "seconds": 6.16,
+      "log": "source-collection-test-combined-browser.log",
+      "cases": 1
+    },
+    {
+      "command": "npm run test:wiki-bridge:browser",
+      "exitCode": 0,
+      "seconds": 26.68,
+      "log": "source-collection-test-wiki-bridge-browser.log",
+      "cases": 4
+    },
+    {
+      "command": "npm run test:wiki-seo:browser",
+      "exitCode": 0,
+      "seconds": 12.41,
+      "log": "source-collection-test-wiki-seo-browser.log",
+      "cases": 1
+    },
+    {
+      "command": "npm run test:corrections:browser",
+      "exitCode": 0,
+      "seconds": 39.06,
+      "log": "source-collection-test-corrections-browser.log",
+      "cases": 2
+    },
+    {
+      "command": "npm run test:hosted:browser",
+      "exitCode": 0,
+      "seconds": 9.36,
+      "log": "source-collection-test-hosted-browser.log",
+      "cases": 2
+    },
+    {
+      "command": "npm run test:hosted-admin:browser",
+      "exitCode": 0,
+      "seconds": 20.26,
+      "log": "source-collection-test-hosted-admin-browser.log",
+      "cases": 12
+    },
+    {
+      "command": "npm run test:maintenance:browser",
+      "exitCode": 0,
+      "seconds": 7.26,
+      "log": "source-collection-test-maintenance-browser.log",
+      "cases": 2
+    },
+    {
+      "command": "npx --no-install playwright test --config playwright.maintenance-collection.config.ts",
+      "exitCode": 0,
+      "seconds": 7.7,
+      "log": "source-collection-collection-browser.log",
+      "cases": 2
+    },
+    {
+      "command": "npm run staging:check",
+      "exitCode": 0,
+      "seconds": 1.04,
+      "log": "source-collection-staging-check.log"
+    },
+    {
+      "command": "npm run runtime:check",
+      "exitCode": 0,
+      "seconds": 1.17,
+      "log": "source-collection-runtime-check.log"
+    }
+  ],
+  "completed": true,
+  "allPassed": true,
+  "base": "e2116d2b8b33014d0299e59a6f1b075d342ac1d7",
+  "branch": "feat/maintenance-source-collection",
+  "validationTests": 174,
+  "browserCases": 125,
+  "collectorNativeCases": 13,
+  "collectorBrowserCases": 2,
+  "adminCases": 12,
+  "nativePersistenceChecks": 2,
+  "dryRuns": 2,
+  "astroFiles": 123,
+  "astroDiagnostics": 0,
+  "localBrowser": "Chromium 154.0.8037.57",
+  "ci": "Not run; collector branch remains local and unpublished.",
+  "independentAcceptance": false,
+  "remoteResourcesChanged": false,
+  "realSpend": 0,
+  "originalArticleHashes": [
+    {
+      "path": "src/content/articles/agent-budgets.md",
+      "sha256": "4d08ff128eb132755f7f0b8ef442b45129c43fa0abfcd777fd1ca7881ea199dd"
+    },
+    {
+      "path": "src/content/articles/agent-evaluation.md",
+      "sha256": "a02bfef9fc5fdcefe08e52d82a2563d155d0cc9ef9c68293ca1a1920546ac061"
+    },
+    {
+      "path": "src/content/articles/agent-identity.md",
+      "sha256": "7c91ffeff39be1efbe4460ae8ed2fb5520083b85e4474807a9c53f55984e2fb8"
+    },
+    {
+      "path": "src/content/articles/agent-memory.md",
+      "sha256": "b148a65bdc33304a533d50d4299d4225e1bc9ecc76f2148212d0808930022de0"
+    },
+    {
+      "path": "src/content/articles/agent-observability.md",
+      "sha256": "049b0dc639c785f012b4956e5c054e1940527cffe2254dfb0ba6db612e750c6d"
+    },
+    {
+      "path": "src/content/articles/agent-orchestration.md",
+      "sha256": "f2fe90af6be60a7722819d6e78a3d2a89bc72c8ac2a5b3dc8a87d4a49cbd3d6f"
+    },
+    {
+      "path": "src/content/articles/agent-planning.md",
+      "sha256": "c4c69bbe4318cb5a1776e65033314adf4d2926d39c471166240d546aba1aadc2"
+    },
+    {
+      "path": "src/content/articles/agent-sandboxing.md",
+      "sha256": "2941adb2262f3b6f089540b0b8fee45e52ed4641867cd84c589ac9c543b0068c"
+    },
+    {
+      "path": "src/content/articles/agent-to-agent-communication.md",
+      "sha256": "3dbf81152cbb8c971a323061af080de5fb464a3acd4453d690e905a96ccb65cb"
+    },
+    {
+      "path": "src/content/articles/ai-agent.md",
+      "sha256": "8b9991a3d7f13ca51c359b63442557beabfcb1714df04ce849491c4aedb1a3a6"
+    },
+    {
+      "path": "src/content/articles/computer-use-agents.md",
+      "sha256": "d7a7f169f547c84963f616ba8b8091eae9e35421bab513bb8d13ef1aea64c5aa"
+    },
+    {
+      "path": "src/content/articles/context-engineering.md",
+      "sha256": "690cdc7482ed85bbe542b154a63d44f57f654d6f8667161d8c5996de4e3c451d"
+    },
+    {
+      "path": "src/content/articles/durable-agent-execution.md",
+      "sha256": "637a4b2158524d5fd1ed74bbac4b8f0b0d9d44e22e0387081a4e7951c8723805"
+    },
+    {
+      "path": "src/content/articles/human-oversight.md",
+      "sha256": "05f95df8fbbb3c6c78dd992ad08ed8d9c7c86fec2b27dd370ab24435d5c5fe59"
+    },
+    {
+      "path": "src/content/articles/model-context-protocol.md",
+      "sha256": "1b038336e7ce0438e97a36eb2e536a9dd87dd5bf3a068eae394a978bb76a2abf"
+    },
+    {
+      "path": "src/content/articles/prompt-injection.md",
+      "sha256": "44db0f983ce79da5fbf32a22c66fefb6867d788cdd7c016a3334f7ca2d6be1e7"
+    },
+    {
+      "path": "src/content/articles/retrieval-augmented-generation.md",
+      "sha256": "455019da889922747a8b4e023ffb3f90859b5d080e85f97ab3d4b6d79a9d5216"
+    },
+    {
+      "path": "src/content/articles/structured-outputs.md",
+      "sha256": "845e9153c1f788913d1750e108a7948141feaee583cf41491ed44992ed6b5c41"
+    },
+    {
+      "path": "src/content/articles/tool-permissions.md",
+      "sha256": "274e5ae371484412776644847bb5494ac234cf1beac6398e1098678ea7e76756"
+    },
+    {
+      "path": "src/content/articles/tool-use.md",
+      "sha256": "cf1e3a2bbb77a85d472e2509fa8eefda9bccbae2a73f1931902354de50aa9681"
+    }
+  ],
+  "testedFiles": [
+    {
+      "path": "src/maintenance-sources/collector.ts",
+      "sha256": "7c9115a5ba3b673a9c6d1a6f0877cc24a3106f6ddf287605605e9f3555cec2d2"
+    },
+    {
+      "path": "src/maintenance-sources/files.ts",
+      "sha256": "7b402cbcefaf101ccf71202a7db7fa0b6c69cf8b37d7590fae009589e0abaf33"
+    },
+    {
+      "path": "src/wiki-bridge/contracts.ts",
+      "sha256": "dd1f3b2d86c0b3da307c6925b99deab0c4b5aadb28ed067c056ce237a0b37a44"
+    },
+    {
+      "path": "migrations/0012_maintenance_source_collections.sql",
+      "sha256": "f5dc116668fd4350cf7f52268ae02d1176516a400df1bdd06a86f6c8d5fa5533"
+    },
+    {
+      "path": "package.json",
+      "sha256": "f0069d301a83b9c7fe17f893bbeb17cdd64dc93261a8b00fbb20e5943cc5ee30"
+    },
+    {
+      "path": "scripts/maintenance-collection-demo.mjs",
+      "sha256": "bb67fc6885ca4e5ffab3983cd5b3c7a14bde950171edb58edd789afcafd2c508"
+    },
+    {
+      "path": "tests/maintenance-sources/collector.test.mjs",
+      "sha256": "866589506a839f11fc4d42cb584dc0b1293c069aebe22cf27cd6e31e7507c422"
+    },
+    {
+      "path": "tests/maintenance-collection-browser/reading.spec.mjs",
+      "sha256": "88332f91ef391a7486c612b4e7190c9775068d1e4a06644019975ed9fb3e2781"
+    },
+    {
+      "path": "playwright.maintenance-collection.config.ts",
+      "sha256": "e3658da0a01f82a9b11ee7b2051805a4b8445b9c84489bd851d17adebfdcb130"
+    }
+  ]
+}

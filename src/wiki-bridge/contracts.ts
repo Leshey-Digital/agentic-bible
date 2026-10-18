@@ -41,7 +41,7 @@ export function bridgeInput(value:unknown):BridgeCommand{
   return {schemaVersion:1,kind:'apply',mode:'local-synthetic-only',eventId,originalMarkdownHash:value.originalMarkdownHash,expectedSite,expectedPublisher,revision,evidence};
 }
 type Row={source_id:string;state:string;attempts:number;result:string;finished_token:string;token:string;outcome:string;attempt:number;day:number;actual_bytes:number;budget_day:number;used:number;day_count:number};
-export async function validateEvidence(command:Apply,db:SqlDatabase,sourceDirectory:string){
+export async function validateEvidence(command:Pick<Apply,'evidence'>,db:SqlDatabase,sourceDirectory:string){
   const bindings:Binding[]=[];const files:Record<string,Buffer>={};
   // Read every bounded file before issuing any publisher/build/journal operation.
   for(const evidence of command.evidence){

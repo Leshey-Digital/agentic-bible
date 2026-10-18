@@ -1,0 +1,7 @@
+# Budgeted maintenance proposal producer
+
+The [gap audit](../../../docs/automated-maintenance-gap.md) shows separate source monitoring, manually supplied local article revisions and admin-only GitHub correction drafts. Connect one missing stage: charged original source evidence to a strict provider-produced packet consumed automatically by the existing wiki bridge. Preserve frozen PR34 and all source heads.
+
+Use a deterministic extractive fake, a separate bounded proposal ledger in existing D1, atomic request/token/simulated-cost reservation before dispatch, and no provider auto-retries. Missing enablement/provider/policy, uncharged or stale evidence, unsupported prose, invalid/misreported output, uncertain timeouts and accounting failures stop safely. Valid sourced packets publish locally without human preapproval and retain post-publication review flags. Save a validated packet before calling the existing publisher, so same-event recovery never regenerates it.
+
+All output is explicitly synthetic; only complete exact source paragraphs are allowed. This supplies an auditable connection, not factual/source-authenticity proof, live discovery, an automated canonical GitHub writer or hosted publication. No real model adapter, secret input, scheduler, resource, dependency or service is introduced. Existing community-correction authority and manual release gates stay separate. Real currency/provider caps remain an owner decision and paid calls remain disabled.

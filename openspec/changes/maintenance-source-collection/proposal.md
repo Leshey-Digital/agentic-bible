@@ -1,0 +1,9 @@
+# Connect charged source receipts to immutable captured bodies
+
+The maintenance producer still reads supplied fixture files separately from the HTTP observations. Add a default-disabled local Node coordinator that captures bounded original response bytes through the existing fixed-URL HTTP validator and actual D1 request reservation, persists them before completing HTTP authority, then returns evidence accepted by the existing producer. Keep valid article publication automatic with review flags afterward.
+
+Use the current two/three-source plain UTF-8 profile, at most 2,048 bytes per source. No HTML normalization, new URL, recursive discovery, scheduler, real provider, canonical GitHub write or live transport is configured. Only explicitly supplied controlled transport ports are used by tests/demo. No runtime route imports the collector.
+
+An additive existing-D1 ledger retains at most sixteen collection keys; no eviction/refund/retry loop. Immutable bodies and a prepared journal precede HTTP completion. Recovery verifies real charged receipts and original bytes; missing/partial bodies, expired leases, unsupported 304-only evidence and ambiguous pre-journal crashes stop safely. Original 200 evidence is not manufactured from 304 metadata. Existing HTTP quotas, deadlines, lease/version fences and producer validation remain intact.
+
+Verify actual local D1, charged-before-dispatch, immutable captured files, full collector → deterministic fake → Astro/Pagefind/history/flags, restart/replay, concurrency/capacity, failure/unsafe bodies, tamper and completion loss. Preserve e2116d2 maintenance and corrected admin 80c6148 on separate branches. Costs are local test resources only, with zero real source/model/GitHub calls. Roll back code; retain/export ambiguous ledger/body state rather than resetting it. Independent review and live integration remain separate.
