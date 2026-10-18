@@ -1,0 +1,45 @@
+{
+  "scope": "test-orchestration-only",
+  "automaticBridge": false,
+  "sourceId": "s-90f2bf11e4fb71c8f42ae128",
+  "sourceUrl": "https://developers.openai.com/api/docs/guides/function-calling",
+  "baselineHash": "bb8799dd556039ae59f01a15eb5a55b2706fe26bb3909587484a3aa924e74352",
+  "changedHash": "4734a24b9990ffbc6cb9a1e11150fc8a86e80d83c6773a7a2aad46d8a07cf1ac",
+  "requests": 5,
+  "reservations": 5,
+  "suppliedEventReceipts": [
+    {
+      "eventId": "combined-supplied-first",
+      "fingerprint": "6c9ceab908c5fbd2927b9e9cbd238f9d4b564d29251da526c44a1f701f11c687",
+      "sequence": 1,
+      "action": "publish",
+      "articleId": "fixture-agent-loop",
+      "revisionId": "7a71550cb48f09d5ad39a8af5791b126d269c7e0b3ec0c105078d6cbb6405543",
+      "flags": [
+        "editorial-review"
+      ]
+    },
+    {
+      "eventId": "combined-supplied-second",
+      "fingerprint": "44c39437457d36f0d3be084bd17e37c281e8ff2c1a35a2d824a4f72c20ba5239",
+      "sequence": 2,
+      "action": "publish",
+      "articleId": "fixture-agent-loop",
+      "revisionId": "12695a7b786e36b7e50d6d899734f07af05cecd241b9f120cb34abc1a4f3feee",
+      "flags": [
+        "editorial-review"
+      ]
+    },
+    {
+      "eventId": "combined-rollback",
+      "fingerprint": "fe14b2a0bccdbfc051efcc067e32ee2bc6310eac1e2ff96e1d9935a2893e36b0",
+      "sequence": 3,
+      "action": "rollback",
+      "articleId": null,
+      "revisionId": null,
+      "flags": []
+    }
+  ],
+  "restoredRelease": "220d1324261d570614d2b7afd11e8e6b2c6e636a16fd27a9da3d57bde1ad87e8",
+  "collectorRollback": false
+}

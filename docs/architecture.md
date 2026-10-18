@@ -1,6 +1,10 @@
 # Proposed architecture and inventory
 
-Status: the foundation describes the design proposal. The first application feature branch implements local static Astro/TypeScript pages and a Pagefind index. No infrastructure is provisioned. Submissions, background discovery, analytics, ads, and autonomous publishing remain future work.
+Status: the foundation describes the design proposal. The first application feature branch implements local static Astro/TypeScript pages and a Pagefind index. No infrastructure is provisioned. Public submissions, background discovery, analytics, ads, and autonomous publishing remain future work.
+
+The next stacked branch implements submissions and the editorial inbox only in an explicit local synthetic Worker/D1 preview. [The editorial contract](editorial-contracts.md) defines the storage port, routes, local sessions, fail-closed production boundary and test commands. The reviewed static staging configuration is preserved; no cloud D1 resource, identity or route is created.
+
+The source-monitoring branch adds a metadata-derived catalog, bounded fixture HTTP jobs, conditional/hash observations, persisted change candidates and an automatic local metadata-revision ledger with post-publication review flags. [Its contract](source-monitoring-contracts.md) distinguishes this working local foundation from future live fetching, model-generated article changes and public release. No live schedule or provider integration is enabled.
 
 ## Read path
 Markdown content with validated front matter → static Astro build → Cloudflare Workers Static Assets → reader. Generate a Pagefind index during the build. Prefer static assets and CDN caching; reading/search must not invoke an LLM. Validate compatibility and current provider constraints before selecting final tooling.
@@ -37,3 +41,7 @@ Propose workers_dev=false and preview_urls=false to avoid extra public endpoints
 ## Authorized next admin work (not implemented)
 
 Build an in-app editorial inbox/review queue, linked to editorial@agenticbible.si once delivery and identity are specifically configured. Admins must be able to independently insert and edit tags. Analytics settings accept validated provider IDs, not arbitrary scripts. API integration setup must use authenticated server-side write-only secret storage: return only masked status/connection metadata, never raw keys; avoid logging request bodies, use scoped connection tests and preserve audit history. Provide budget controls and automatic stop behavior. Selecting/provisioning admin identity or persistent credentials requires the specific setup decision; no secrets belong in Astro public environment variables or static builds.
+
+## Inspected hosted boundary (2026-10-17)
+
+The [hosted-runtime gap report](hosted-runtime-gap.md) records current file-level evidence and remote main's three-article state. The tested canonical correction publisher remains Node/filesystem-only. The separate [Workers/GitHub proposal adapter](github-content-proposals.md) prepares a bounded draft source change while keeping GitHub authoritative; its staging assets entrypoint has all production write/auth/credential ports closed. No mutable D1 article overlay or new service is selected, and no cloud resource is provisioned. A real identity/approval producer, authorized GitHub transport, reviewed release integration/build/deployment and rollback remain required before hosted corrections can update canonical reading.

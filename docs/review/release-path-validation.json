@@ -1,0 +1,163 @@
+{
+  "checkout": "/workspace/agentic-bible-release-path",
+  "branch": "feat/commit-pinned-release-path",
+  "frozenPR32": "c8b485f205c55cbbf71cb4770e34de65a9942a18",
+  "priorityP2Checkpoint": "2450e7f11ae5f53ced1adf08541166818d0d8999",
+  "sourceStatus": "Final source/package working tree tested and committed unchanged afterward; published head/terminal CI recorded in draft PR.",
+  "validationTests": 151,
+  "browserCases": 107,
+  "nativePersistenceChecks": 2,
+  "astroFiles": 115,
+  "astroDiagnostics": 0,
+  "ordinaryDryRunAssets": 108,
+  "staticBindings": [],
+  "runtimeBindings": [
+    "ASSETS"
+  ],
+  "localChromium": "154.0.8037.57",
+  "ciPinnedChromium": "156.0.8078.4",
+  "commands": [
+    {
+      "command": "npm run validate",
+      "exitCode": 0,
+      "seconds": 126.55,
+      "log": "/tmp/agentic-release-validate.log",
+      "nodeTests": 151,
+      "browserCases": 0
+    },
+    {
+      "command": "npm run test:wiki-seo:browser",
+      "exitCode": 0,
+      "seconds": 12.39,
+      "log": "/tmp/agentic-release-test-wiki-seo-browser.log",
+      "nodeTests": 0,
+      "browserCases": 1
+    },
+    {
+      "command": "npm run test:browser",
+      "exitCode": 0,
+      "seconds": 83.27,
+      "log": "/tmp/agentic-release-test-browser.log",
+      "nodeTests": 0,
+      "browserCases": 68
+    },
+    {
+      "command": "npm run test:editorial:browser",
+      "exitCode": 0,
+      "seconds": 37.16,
+      "log": "/tmp/agentic-release-test-editorial-browser.log",
+      "nodeTests": 0,
+      "browserCases": 23
+    },
+    {
+      "command": "npm run test:integration:browser",
+      "exitCode": 0,
+      "seconds": 11.54,
+      "log": "/tmp/agentic-release-test-integration-browser.log",
+      "nodeTests": 0,
+      "browserCases": 1
+    },
+    {
+      "command": "npm run test:monitoring:worker",
+      "exitCode": 0,
+      "seconds": 17.21,
+      "log": "/tmp/agentic-release-test-monitoring-worker.log",
+      "nodeTests": 1,
+      "browserCases": 0
+    },
+    {
+      "command": "npm run test:settings:worker",
+      "exitCode": 0,
+      "seconds": 23.28,
+      "log": "/tmp/agentic-release-test-settings-worker.log",
+      "nodeTests": 1,
+      "browserCases": 0
+    },
+    {
+      "command": "npm run test:publication:browser",
+      "exitCode": 0,
+      "seconds": 7.74,
+      "log": "/tmp/agentic-release-test-publication-browser.log",
+      "nodeTests": 0,
+      "browserCases": 1
+    },
+    {
+      "command": "npm run test:combined:browser",
+      "exitCode": 0,
+      "seconds": 5.43,
+      "log": "/tmp/agentic-release-test-combined-browser.log",
+      "nodeTests": 0,
+      "browserCases": 1
+    },
+    {
+      "command": "npm run test:wiki-bridge:browser",
+      "exitCode": 0,
+      "seconds": 27.03,
+      "log": "/tmp/agentic-release-test-wiki-bridge-browser.log",
+      "nodeTests": 0,
+      "browserCases": 4
+    },
+    {
+      "command": "npm run test:corrections:browser",
+      "exitCode": 0,
+      "seconds": 36.73,
+      "log": "/tmp/agentic-release-test-corrections-browser.log",
+      "nodeTests": 0,
+      "browserCases": 2
+    },
+    {
+      "command": "npm run test:hosted:browser",
+      "exitCode": 0,
+      "seconds": 8.85,
+      "log": "/tmp/agentic-release-test-hosted-browser.log",
+      "nodeTests": 0,
+      "browserCases": 2
+    },
+    {
+      "command": "npm run test:hosted-admin:browser",
+      "exitCode": 0,
+      "seconds": 9.19,
+      "log": "/tmp/agentic-release-test-hosted-admin-browser.log",
+      "nodeTests": 0,
+      "browserCases": 4
+    },
+    {
+      "command": "npm run staging:check",
+      "exitCode": 0,
+      "seconds": 1.17,
+      "log": "/tmp/agentic-release-staging-check.log",
+      "nodeTests": 0,
+      "browserCases": 0
+    },
+    {
+      "command": "npm run runtime:check",
+      "exitCode": 0,
+      "seconds": 1.1,
+      "log": "/tmp/agentic-release-runtime-check.log",
+      "nodeTests": 0,
+      "browserCases": 0
+    }
+  ],
+  "controlledEvidence": [
+    "Actual two-commit local Git/ASTRO/Pagefind/Wrangler source and asset verification.",
+    "Provider deployment/rollback, GitHub main CI metadata and authorization use controlled transports.",
+    "Real release-candidate dry run is non-uploading; no release workflow dispatch.",
+    "P2 desktop/mobile red reproduction against exact PR32 admin source; four green admin cases through real D1/signed assertions, no GitHub proposal in regression."
+  ],
+  "resolvedFailures": [
+    "Astro integration callback originally returned config instead of void; fixed before full validation.",
+    "Fixture copied dependency symlink; excluded only test dependency path and kept regular-file checks.",
+    "Wrangler created sidecar .wrangler data in artifact; all dry-run/local/live execution now uses disposable copies, retaining strict byte inventory.",
+    "Arbitrary file-count assertion replaced with exact complete public-inventory count.",
+    "First delayed-response harness held an unbuffered body and failed; corrected before valid red reproduction on both projects."
+  ],
+  "interruption": "Release run was deliberately stopped after passing initial 151 validation when priority P2 arrived. After checkpoint/four browser passes, all 15 commands reran and passed.",
+  "remainingOwnerHandoff": "docs/commit-pinned-releases.md exact input/scope table; no credential values in chat.",
+  "notRun": [
+    "Actual main/PR merge",
+    "Live Worker bootstrap/version upload/deployment/rollback or provider API compatibility probe",
+    "Protected environment/enablement/secret creation/configuration",
+    "DNS/routes/service purchase",
+    "Paid/model call, live indexing or license choice"
+  ]
+}

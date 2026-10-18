@@ -2,7 +2,7 @@ name: Validate library
 on:
   pull_request:
   push:
-    branches: [main, feat/reference-library-slice]
+    branches: [main, feat/reference-library-slice, feat/editorial-inbox, feat/source-monitoring, feat/admin-measurement-settings, feat/local-integration-candidate]
 permissions:
   contents: read
 concurrency:
@@ -11,14 +11,17 @@ concurrency:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     env:
       ASTRO_TELEMETRY_DISABLED: '1'
       WRANGLER_SEND_METRICS: 'false'
+      CLOUDFLARE_CF_FETCH_ENABLED: 'false'
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
+          # The upgrade regression executes the exact pre-expansion PR21 code from this repository.
+          fetch-depth: 0
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version-file: .nvmrc
@@ -26,13 +29,76 @@ jobs:
       - run: npm ci
       - run: npm run validate
       - run: npm run staging:check
+      - run: npm run runtime:check
       - run: PLAYWRIGHT_BROWSERS_PATH=.git/playwright npx --no-install playwright install --with-deps chromium
+      - name: Select and verify package-pinned Chromium
+        env:
+          PLAYWRIGHT_BROWSERS_PATH: .git/playwright
+        run: |
+          node --input-type=module <<'NODE'
+          import { chromium } from '@playwright/test';
+          import { appendFileSync, readFileSync } from 'node:fs';
+          import { createRequire } from 'node:module';
+          import { dirname, join } from 'node:path';
+          const require = createRequire(import.meta.url);
+          const fromTest = createRequire(require.resolve('@playwright/test/package.json'));
+          const playwrightPackage = fromTest.resolve('playwright/package.json');
+          const fromPlaywright = createRequire(playwrightPackage);
+          const corePackage = fromPlaywright.resolve('playwright-core/package.json');
+          const manifest = JSON.parse(readFileSync(join(dirname(corePackage), 'browsers.json'), 'utf8'));
+          const pinned = manifest.browsers.find(item => item.name === 'chromium');
+          const executable = chromium.executablePath();
+          const browser = await chromium.launch({ executablePath: executable });
+          let actual;
+          try { actual = browser.version(); } finally { await browser.close(); }
+          if (actual !== pinned.browserVersion) throw new Error('Installed Chromium differs from package manifest');
+          appendFileSync(process.env.GITHUB_ENV, 'CHROMIUM_PATH=' + executable + '\n');
+          console.log('Pinned browser selection: ' + JSON.stringify({ playwright: JSON.parse(readFileSync(playwrightPackage, 'utf8')).version, revision: pinned.revision, expected: pinned.browserVersion, actual }));
+          NODE
       - run: npm run test:browser
+      - run: npm run test:editorial:browser
+      - run: npm run test:integration:browser
+      - run: npm run test:monitoring:worker
+      - run: npm run test:settings:worker
+      - run: npm run test:publication:browser
+      - run: npm run test:combined:browser
+      - run: npm run test:wiki-bridge:browser
+      - run: npm run test:wiki-seo:browser
+      - run: npm run test:corrections:browser
+      - run: npm run test:hosted:browser
+      - run: npm run test:hosted-admin:browser
+      - run: npm run release:prepare
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: release-candidate
+          include-hidden-files: true
+          path: .git/release-candidate/
+          retention-days: 30
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:
           name: browser-evidence
+          include-hidden-files: true
           path: |
             playwright-report/
             test-results/
+            .git/wiki-bridge-parallel-diagnostics.json
+            .git/wiki-upgrade-*-diagnostics.json
+            .git/wiki-runtime-network-isolation.json
+            .git/seo-cli-network-isolation.json
+            .git/hosted-github-proposal-proof.json
+            .git/hosted-connected-native-proof.json
+            .git/release-native-serving-proof.json
+            .git/release-controller-proof.json
+            .git/hosted-connected-build-proof.json
+            .git/hosted-admin-browser-*.json
+            .git/hosted-draft-response-*.json
+            .git/usability-widths-*.json
+            .git/hosted-projection-build-proof.json
+            .git/hosted-runtime-browser-*.json
+            .git/reviewed-corrections-network-isolation.json
+            .git/correction-collision-*.json
+            .git/reviewed-corrections-native-evidence.json
+            .git/reviewed-corrections-sigkill-evidence.json
+            .git/reviewed-corrections-browser-*.json
           retention-days: 7

@@ -1,0 +1,5 @@
+# Integrate preserved bridge fixes and canonical discovery
+
+Merge exact PR19 `6066255556e1c7b6ec6fbf3f17915048e5eff6bf` and PR20 `76d32e80714b5ba8040e73150cab914e4a3f8bb8` on a new branch, preserving all existing heads. Both exact-head CI runs passed; independent source reviews are in progress, and composition acceptance is separate. The user explicitly authorized this bounded draft composition while reviews proceed; reviewer findings take priority. No main merge or deployment.
+
+Use `https://agenticbible.si` only through explicit production build mode; default staging and all private/synthetic artifacts remain nonindexable. Keep evidence-to-supplied-article/history/search and SEO sitemap/metadata coherent, with disabled indexing/no submissions. Verify actual native D1 charges, retained URL-shaped history and crash-capture accounting, real full wiki/browser search, canonical/staging/synthetic artifacts and local Static Assets headers, migrations/restarts, all retained suites and exact ancestry. No credential, provider/model call, live indexing, paid job, license selection or infrastructure change.

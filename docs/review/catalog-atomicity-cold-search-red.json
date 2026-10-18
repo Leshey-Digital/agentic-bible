@@ -1,0 +1,40 @@
+{
+  "articles": 14,
+  "elapsedMs": 5659,
+  "workerAttempts": 1,
+  "warnings": [
+    "Failed to initialize Pagefind in the web worker, falling back to main thread: Error: Worker initialization timeout\n    at http://127.0.0.1:44403/wiki-snapshots/cdd04eb2bb0db82e0c8d3edbcb9e907c5e9c0465739465fae28ab8858bdf1e44/pagefind/pagefind.js:6:14522"
+  ],
+  "resources": [
+    {
+      "path": "/wiki-snapshots/cdd04eb2bb0db82e0c8d3edbcb9e907c5e9c0465739465fae28ab8858bdf1e44/pagefind/pagefind.js",
+      "duration": 107.60000000149012,
+      "responseEnd": 710.6000000014901
+    },
+    {
+      "path": "/wiki-snapshots/cdd04eb2bb0db82e0c8d3edbcb9e907c5e9c0465739465fae28ab8858bdf1e44/pagefind/pagefind-entry.json",
+      "duration": 81.90000000596046,
+      "responseEnd": 5806.80000000447
+    },
+    {
+      "path": "/wiki-snapshots/cdd04eb2bb0db82e0c8d3edbcb9e907c5e9c0465739465fae28ab8858bdf1e44/pagefind/pagefind.en_b9bd77dc3a.pf_meta",
+      "duration": 60.100000001490116,
+      "responseEnd": 5879.30000000447
+    },
+    {
+      "path": "/wiki-snapshots/cdd04eb2bb0db82e0c8d3edbcb9e907c5e9c0465739465fae28ab8858bdf1e44/pagefind/wasm.en.pagefind",
+      "duration": 139.70000000298023,
+      "responseEnd": 5959.20000000298
+    },
+    {
+      "path": "/wiki-snapshots/cdd04eb2bb0db82e0c8d3edbcb9e907c5e9c0465739465fae28ab8858bdf1e44/pagefind/index/en_584a507.pf_index",
+      "duration": 53.20000000298023,
+      "responseEnd": 6045.30000000447
+    },
+    {
+      "path": "/wiki-snapshots/cdd04eb2bb0db82e0c8d3edbcb9e907c5e9c0465739465fae28ab8858bdf1e44/pagefind/fragment/en_ea23caf.pf_fragment",
+      "duration": 88.29999999701977,
+      "responseEnd": 6149.5
+    }
+  ]
+}

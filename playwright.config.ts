@@ -7,6 +7,8 @@ export default defineConfig({
   workers: 2,
   retries: 0,
   reporter: [['list'], ['html', { open: 'never' }]],
+  // Playwright 1.64.1 pins CI Chromium revision 1248 (156.0.8078.4).
+  // Existing local Chromium 154 remains deliberate extra coverage; page audits record the actual version.
   use: {
     baseURL: 'http://127.0.0.1:8787',
     trace: 'retain-on-failure',

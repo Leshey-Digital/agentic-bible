@@ -1,0 +1,1 @@
+Original synthetic local evidence fixture. Cedarharbor identifies a supplied demonstration revision. These bytes are not a retrieved or authenticated OpenAI document. Integrity matching alone does not establish factual truth.

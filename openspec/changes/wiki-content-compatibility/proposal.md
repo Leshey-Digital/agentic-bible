@@ -1,0 +1,9 @@
+# Compose historical snapshot compatibility with fourteen current articles
+
+Combine preserved PR23 `54b9d0793af36c00c9feca7a8933d3c1a9fa9d95` with PR24 `f3d03eda69a82abc7f527f5f14e062f56a40a1b0` in a separate qualified candidate. PR24 is applied with cherry-pick provenance on top of PR23; neither source branch advances. Independent source and composition reviews remain separate and active, with reviewer defects taking priority.
+
+The current encyclopedia has fourteen working drafts, while actual PR21 sealed snapshots contain three. A single reader must preserve historical status, bytes, search, history and accepted receipts without treating old artifacts as incomplete current builds. Fresh builds and canonical discovery must still include all fourteen entries. Preserve source pinning and fail closed on tampering or incomplete declared output.
+
+Use PR24's unchanged runtime and PR23's unchanged articles/catalog controls. Add composition-only regressions for six new topics in fresh versus historical search, three-versus-fourteen inventories, missing new-topic output and explicit fourteen-article discovery. Preserve the source review evidence as historical records; write new composition evidence separately. No new article, dependency, migration, transport, resource or spending limit. This local validation costs no funded model/provider credit.
+
+Keeping the branches separate would leave PR23's known compatibility defect unresolved; advancing either review head would invalidate ongoing exact-head review. This candidate provides a concrete isolated review target. Acceptance and integration remain review gates; no main/PR merge or deployment. Rollback is discarding/reverting the candidate to PR23 without touching historical artifact bytes or remote resources. Stop after bounded composition and six topic opportunities; do not start another article branch until source review catches up.

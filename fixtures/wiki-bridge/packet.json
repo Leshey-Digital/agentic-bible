@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "kind": "apply",
+  "mode": "local-synthetic-only",
+  "eventId": "wiki-tool-use-original-demo",
+  "originalMarkdownHash": "cf1e3a2bbb77a85d472e2509fa8eefda9bccbae2a73f1931902354de50aa9681",
+  "expectedSite": null,
+  "expectedPublisher": null,
+  "revision": {
+    "schemaVersion": 1,
+    "kind": "publish",
+    "eventId": "wiki-tool-use-original-demo",
+    "baseRevision": null,
+    "article": {
+      "id": "tool-use",
+      "title": "Tool use",
+      "description": "An original local synthetic revision demonstrating charged-evidence integrity and coherent wiki publication; factual and source-authenticity approval is not claimed.",
+      "topic": "Capabilities",
+      "verified": "2026-10-16",
+      "provenance": "supplied-local-fixture",
+      "sources": [
+        {
+          "id": "openai",
+          "title": "Original supplied fixture for openai URL",
+          "url": "https://developers.openai.com/api/docs/guides/function-calling",
+          "publisher": "Supplied synthetic fixture",
+          "context": "Locally supplied original bytes and a controlled receipt bind this URL and hash. They are not an official-source retrieval or factual/authenticity approval."
+        },
+        {
+          "id": "mcp-tools",
+          "title": "Original supplied fixture for mcp-tools URL",
+          "url": "https://modelcontextprotocol.io/specification/2025-11-25/server/tools",
+          "publisher": "Supplied synthetic fixture",
+          "context": "Locally supplied original bytes and a controlled receipt bind this URL and hash. They are not an official-source retrieval or factual/authenticity approval."
+        }
+      ],
+      "related": [
+        "ai-agent",
+        "model-context-protocol"
+      ],
+      "blocks": [
+        {
+          "type": "heading",
+          "id": "local-evidence",
+          "text": "Supplied local evidence"
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "Cedarharbor identifies this complete original synthetic tool-use revision. Its cited local fixtures demonstrate byte integrity; they do not establish factual truth or official-source authenticity."
+            },
+            {
+              "type": "citation",
+              "sourceId": "openai"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "id": "connected-reading",
+          "text": "Connected local reading"
+        },
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "This supplied demonstration replaces the local tool-use text while retaining the other wiki entries, search, citations and review history in one snapshot."
+            },
+            {
+              "type": "article",
+              "articleId": "ai-agent",
+              "label": "Read the existing AI agent entry"
+            },
+            {
+              "type": "citation",
+              "sourceId": "mcp-tools"
+            }
+          ]
+        }
+      ],
+      "concerns": [
+        "editorial-review"
+      ]
+    }
+  },
+  "evidence": [
+    {
+      "citationId": "openai",
+      "sourceId": "s-90f2bf11e4fb71c8f42ae128",
+      "url": "https://developers.openai.com/api/docs/guides/function-calling",
+      "receiptKey": "00000000-0000-4000-8000-000000000001",
+      "bodyHash": "c2578dd04092ab8a527f506e794f9304e53582f4fc7c715326ca7a709a10ab98",
+      "file": "original-openai.txt"
+    },
+    {
+      "citationId": "mcp-tools",
+      "sourceId": "s-bfba858067cc3eb54024f532",
+      "url": "https://modelcontextprotocol.io/specification/2025-11-25/server/tools",
+      "receiptKey": "00000000-0000-4000-8000-000000000002",
+      "bodyHash": "45923cf779f0ad7be48fe659b691e5c0c08ab96a2df2be3f6e44e544c97fb786",
+      "file": "original-mcp.txt"
+    }
+  ]
+}

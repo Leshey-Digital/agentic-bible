@@ -1,0 +1,6 @@
+import {build} from 'astro';import {createIndex,close} from 'pagefind';import {readFileSync,mkdirSync,writeFileSync} from 'node:fs';import {join,dirname} from 'node:path';import {readingArticleIds} from '../../src/lib/article-ids.ts';
+const [root,output]=process.argv.slice(2);let index;
+try{await build({root,outDir:output,cacheDir:join(root,'.astro'),vite:{cacheDir:join(root,'.vite')},logLevel:'silent'});const made=await createIndex({forceLanguage:'en'});if(made.errors.length||!made.index)throw Error('controlled projected index failed');index=made.index;
+for(const id of readingArticleIds){const added=await index.addHTMLFile({url:'/articles/'+id+'/',content:readFileSync(join(output,'articles',id,'index.html'),'utf8')});if(added.errors.length)throw Error('controlled projected index failed');}
+const built=await index.getFiles();if(built.errors.length||built.files.length>512||built.files.reduce((n,f)=>n+f.content.length,0)>16777216)throw Error('controlled projected index capacity');for(const file of built.files){if(!/^[a-zA-Z0-9_./-]+$/.test(file.path)||file.path.split('/').some(p=>p==='..'||p===''))throw Error('controlled projected path');const path=join(output,'pagefind',file.path);mkdirSync(dirname(path),{recursive:true});writeFileSync(path,file.content);}
+}finally{await index?.deleteIndex();await close();}

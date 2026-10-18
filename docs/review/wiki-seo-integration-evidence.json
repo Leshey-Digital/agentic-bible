@@ -1,0 +1,77 @@
+{
+  "sourceHeads": {
+    "bridge": "6066255556e1c7b6ec6fbf3f17915048e5eff6bf",
+    "seo": "76d32e80714b5ba8040e73150cab914e4a3f8bb8"
+  },
+  "productionOrigin": "https://agenticbible.si",
+  "productionArticles": [
+    "ai-agent",
+    "model-context-protocol",
+    "tool-use"
+  ],
+  "first": {
+    "eventId": "wiki-tool-use-original-demo",
+    "fingerprint": "5ddedb6a61594a4fd5311077209c5ac8aa9376dfe6d9f9f41371e23502763aba",
+    "sequence": 1,
+    "kind": "apply",
+    "publisher": {
+      "id": "39c1ce6f0bad0d7efd53926cd047b82bde8a9c08f0138c2afaeaf2571df20944",
+      "manifestHash": "73139f2ec2f4b87efe6b6da9a04c565915cbeda780a53b958252ca166dbb81ee"
+    },
+    "articleRevision": "8949ae864d618c6a73c883aa5ef67d680ec0b411990249c39d62eafc4a172369",
+    "evidenceHash": "cc12097679fd5aa7ff524821e77096e6810bc445c3bad884f6fd1f27b1b3b11e",
+    "outcome": "site-activated",
+    "site": {
+      "id": "134815576f65aa8627b521d3f4ec499a87f5955be83db10d5b752eb2ea74d151",
+      "manifestHash": "5e60d778d31c7739a16cc1a6ccc6401372e37635a90215b0cad21f424ef0ab70"
+    },
+    "parent": null
+  },
+  "second": {
+    "eventId": "seo-composition-second",
+    "fingerprint": "6744f022143fa8d8dc2c5e0715658908b00f397b8f6e612978e765e0bc5d4829",
+    "sequence": 2,
+    "kind": "apply",
+    "publisher": {
+      "id": "d42e59036dc77579907c3bce76781197fcbf94e0961eb3e9fff179144d94d8ed",
+      "manifestHash": "b87e74fb418d71f169998ab619de6ab00ab4d1798961fb560fd1e7e3a48a2507"
+    },
+    "articleRevision": "f856bd331d75370fbac2399f4b6f8b2744e207ec94c7fd7754449e8e3c31b2f4",
+    "evidenceHash": "cc12097679fd5aa7ff524821e77096e6810bc445c3bad884f6fd1f27b1b3b11e",
+    "outcome": "site-activated",
+    "site": {
+      "id": "9bd438d4c62e57985b3dac3cdebd1f4dc0a2f63e0d32b80454a68dc89a0109b9",
+      "manifestHash": "e349241f39cc04fdb43e24b70d727fcf045fb7aa9254a07906033ff5585e2b60"
+    },
+    "parent": {
+      "id": "134815576f65aa8627b521d3f4ec499a87f5955be83db10d5b752eb2ea74d151",
+      "manifestHash": "5e60d778d31c7739a16cc1a6ccc6401372e37635a90215b0cad21f424ef0ab70"
+    }
+  },
+  "restored": {
+    "eventId": "seo-composition-rollback",
+    "fingerprint": "3aaf081956c3eaa68cc5147354656d97acfd41dfafdd4319822f247e5a452d29",
+    "sequence": 3,
+    "kind": "rollback",
+    "publisher": {
+      "id": "9a3fa8a70efcc77050cb93e980256e4ac950481dbdcf734c422703f773abf4ad",
+      "manifestHash": "8d93bb7751bc52daae2fce8a048b6f5c05f5af622378076235492c247bd963a4"
+    },
+    "articleRevision": "8949ae864d618c6a73c883aa5ef67d680ec0b411990249c39d62eafc4a172369",
+    "evidenceHash": "cc12097679fd5aa7ff524821e77096e6810bc445c3bad884f6fd1f27b1b3b11e",
+    "outcome": "site-activated",
+    "site": {
+      "id": "3927ea0fbef6ba7335a0f3681ea7c55fb7400dafa773941db63e069a53c4ec0e",
+      "manifestHash": "e350244e80498a9a8b51e791afcba1c4f47210ef7f1f290d6ee446c6268c6900"
+    },
+    "parent": {
+      "id": "9bd438d4c62e57985b3dac3cdebd1f4dc0a2f63e0d32b80454a68dc89a0109b9",
+      "manifestHash": "e349241f39cc04fdb43e24b70d727fcf045fb7aa9254a07906033ff5585e2b60"
+    }
+  },
+  "bridgeSourceFetches": 0,
+  "indexingSubmissions": 0,
+  "syntheticSitemap": false,
+  "chargesPreserved": true,
+  "originalMarkdownAndDistPreserved": true
+}

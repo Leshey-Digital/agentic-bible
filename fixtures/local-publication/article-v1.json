@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "publish",
+  "eventId": "local-demo-revision-one",
+  "baseRevision": null,
+  "article": {
+    "id": "fixture-agent-loop",
+    "title": "Agent loop & tools",
+    "description": "An original supplied fixture for testing cited article publication, readable history and coherent local search.",
+    "topic": "Foundations",
+    "verified": "2026-10-16",
+    "provenance": "supplied-local-fixture",
+    "sources": [
+      {"id":"guide","title":"Building effective agents","url":"https://www.anthropic.com/engineering/building-effective-agents","publisher":"Anthropic","context":"A public source reference supplied for this synthetic fixture; the publisher performs no live verification."},
+      {"id":"tools","title":"Function calling","url":"https://developers.openai.com/api/docs/guides/function-calling","publisher":"OpenAI","context":"A second supplied public source reference. This short test text is original fixture content, not a copied source corpus."}
+    ],
+    "related": ["ai-agent", "tool-use"],
+    "blocks": [
+      {"type":"heading","id":"observe","text":"Observe, then act"},
+      {"type":"paragraph","content":[{"type":"text","text":"Amberorchard is the distinctive token in this original synthetic fixture. This supplied example demonstrates a cited local article publication, without fetching or generating source material."},{"type":"citation","sourceId":"guide"}]},
+      {"type":"heading","id":"authority","text":"Keep authority explicit"},
+      {"type":"paragraph","content":[{"type":"text","text":"This fixture connects a model request with an application boundary. Quotes, ampersands & a comparison such as 5 < 7 remain plain text in the generated document."},{"type":"article","articleId":"tool-use","label":"Read the existing tool-use draft"},{"type":"citation","sourceId":"tools"}]}
+    ],
+    "concerns": ["editorial-review"]
+  }
+}

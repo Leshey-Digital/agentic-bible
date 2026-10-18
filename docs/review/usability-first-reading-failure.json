@@ -1,0 +1,17 @@
+{
+  "command": "npm run test:browser",
+  "passed": 73,
+  "failed": 1,
+  "project": "mobile",
+  "path": "/articles/tool-use/",
+  "rule": "scrollable-region-focusable",
+  "impact": "serious",
+  "element": ".prose pre",
+  "cause": "The new 15px code font and corrected reading-column containment made the original JSON line horizontally scroll inside a non-focusable pre element.",
+  "fix": "Preserve code bytes and larger type while soft-wrapping preformatted lines within the reading column. Original spaces/newlines remain; no new Markdown transform or dependency.",
+  "focusedVerification": "Four unchanged desktop/mobile tool-use accessibility and no-JavaScript cases passed after the fix. The retained reading journey also asserts that code has no hidden horizontal content.",
+  "assertionsOrTimeoutsWeakened": false,
+  "fullValidationBeforeReadingFailure": {"tests": 151, "failed": 0},
+  "localBrowser": "154.0.8037.57",
+  "traceRetainedLocally": "actual Git directory/usability-first-failure/trace.zip"
+}
