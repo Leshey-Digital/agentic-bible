@@ -5,7 +5,7 @@ import {join} from 'node:path';
 import {execFileSync} from 'node:child_process';
 
 test('an edition with no maintenance receipts renders an explicit empty History and review state',()=>{
-  execFileSync('npm',['run','build'],{stdio:'pipe',env:{...process.env,ASTRO_TELEMETRY_DISABLED:'1',CLOUDFLARE_CF_FETCH_ENABLED:'false'}});
+  execFileSync('npm',['run','build'],{stdio:'pipe',env:{...process.env,ASTRO_TELEMETRY_DISABLED:'1',CLOUDFLARE_CF_FETCH_ENABLED:'false',AGENTIC_BIBLE_DISCOVERY_MODE:'staging',AGENTIC_BIBLE_LOCAL_WIKI_BUILD:'0',AGENTIC_BIBLE_MAINTENANCE_HISTORY_MODE:'disabled'}});
   const history=readFileSync(join('dist','history','index.html'),'utf8');
   const review=readFileSync(join('dist','review','index.html'),'utf8');
   assert.match(history,/<h2>No maintenance revisions in this edition<\/h2>/);
