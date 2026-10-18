@@ -39,11 +39,12 @@ export function validateReply(value:unknown,request:ProviderRequest,policy:Reado
 export function deterministicProvider(observe?:(request:ProviderRequest)=>void):Provider{return {kind:'deterministic-extractive-fake',id:'fake-extractive-v1',tokenizer:'synthetic-utf8-bytes',async invoke(request,signal){
  if(signal.aborted)stop('maintenance_provider_timeout');observe?.(structuredClone(request));
  const output:Output={kind:'complete-source-paragraphs',extracts:request.sources.map(source=>{const line=source.text.split('\n').find(s=>s.trim().length>=20)?.trim()??'';const start=source.text.indexOf(line);return {citationId:source.citationId,bodyHash:source.bodyHash,start,end:start+line.length,quote:line};})};
+ if(tokens(output)>request.maxOutputTokens)return Response.json({error:'fake_output_limit'},{status:422});
  return Response.json({schemaVersion:1,provider:'fake-extractive-v1',tokenizer:'synthetic-utf8-bytes',output,usage:{inputTokens:tokens(request),outputTokens:tokens(output)}});
  }};}
 export async function invokeBounded(provider:Provider,request:ProviderRequest){
  const controller=new AbortController();let reader:ReadableStreamDefaultReader<Uint8Array>|undefined;let timer:ReturnType<typeof setTimeout>|undefined;
- try{return await Promise.race([(async()=>{const response=await provider.invoke(structuredClone(request),controller.signal);if(controller.signal.aborted)stop('maintenance_provider_timeout');if(response.status!==200||response.redirected||response.headers.get('Content-Type')?.split(';')[0]!=='application/json')stop('maintenance_provider_response');
+ try{return await Promise.race([(async()=>{const response=await provider.invoke(structuredClone(request),controller.signal);if(controller.signal.aborted){void response.body?.cancel().catch(()=>{});stop('maintenance_provider_timeout');}if(response.status!==200||response.redirected||response.headers.get('Content-Type')?.split(';')[0]!=='application/json'){void response.body?.cancel().catch(()=>{});stop('maintenance_provider_response');}
   reader=response.body?.getReader();if(!reader)stop('maintenance_provider_response');const chunks:Uint8Array[]=[];let length=0;
   while(true){const {value,done}=await reader.read();if(controller.signal.aborted)stop('maintenance_provider_timeout');if(done)break;length+=value.byteLength;if(length>producerLimits.responseBytes)stop('maintenance_provider_response_limit');chunks.push(value);}
   const bytes=Buffer.concat(chunks);try{return JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes));}catch{return stop('maintenance_provider_response');}

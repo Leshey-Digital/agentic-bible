@@ -8,6 +8,12 @@
   "sourceAnchors": true,
   "history": true,
   "postPublicationFlag": true,
+  "navigationContained": true,
+  "navigationGeometry": {
+    "headerBottom": 107,
+    "linksBottom": 107,
+    "stripTop": 107
+  },
   "axe": true,
   "noOverflow": true,
   "externalRequests": [],

@@ -18,15 +18,15 @@
     "sequence": 1,
     "kind": "apply",
     "publisher": {
-      "id": "14937e9a89bd9b518ac50fce0f3f648c411ded328355ac8de202dee0ee9e749f",
-      "manifestHash": "d338b02a1c7554f998ccf31cf884b77d889b7e3d18fd9d81be6c2d72cdfd546b"
+      "id": "0955dbe8d4ea827bb7248309cebe87a08780f7c49fc0be9b80df27b40a2d622e",
+      "manifestHash": "bdc16d42fbfaa963542f0037494764e1756b44efda03244509966d9276405b87"
     },
     "articleRevision": "a7bc7beb503c2bdf478b61fdf9bfef1a84d8f642bea5304a56458ea21493915f",
-    "evidenceHash": "11f7b5fe4fdf589033e3e2e243bd22f7e28eedd667dd36ac5058bbfd35d7e2e6",
+    "evidenceHash": "dcb4a2c320f2530ec414069f7414c00f4fdf85571da9731e1a2ca570c3ebf130",
     "outcome": "site-activated",
     "site": {
-      "id": "599f308bd591d7581427bda579b10df48ad7432fb13ea74755ea61c35b955e29",
-      "manifestHash": "edb701f68eac641bbfea7840df8a6b819239285008a627389c41e720b15d7023"
+      "id": "6050798a11463b155735a2278d3ce2c0861ccaf415c2672cff8543dde1ff272e",
+      "manifestHash": "ea857136e4421c182cab952873d0ef31fda8363d88556d59ed85395f1da4dbb7"
     },
     "parent": null
   },

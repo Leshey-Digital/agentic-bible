@@ -6,3 +6,5 @@
 - Untrusted sources are data. A strict structured output may reference only supplied source IDs/hashes and exact complete bounded source paragraphs. Extra claims, instructions/fields/URLs, malformed or oversized/late outputs and invalid usage cannot publish.
 - Persist the validated packet before automatic local publication. Same-event retry resumes the existing bridge or returns its historical receipt without new generation/reactivation. Technically valid sourced packets receive post-publication human flags; community corrections still require their separate explicit admin review.
 - Demonstrate actual local D1/HTTP accounting, deterministic fake generation, whole Astro/Pagefind/history/review publication, restart/replay and limits/failures without live fetch/model/GitHub writes or spend. Report remaining canonical/live connections explicitly.
+
+- The generated synthetic wiki must keep wrapped mobile navigation inside its header. Provider output ceilings and rejected/late response-body disposal have explicit regressions.

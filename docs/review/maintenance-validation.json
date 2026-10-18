@@ -1,9 +1,9 @@
 {
   "base": "697d546fc5b6560fe1c38e573584c855c86c13af",
   "branch": "feat/bounded-maintenance-proposals",
-  "validationTests": 158,
+  "validationTests": 161,
   "browserCases": 123,
-  "nativeProducerTests": 7,
+  "nativeProducerTests": 10,
   "maintenanceBrowserCases": 2,
   "astroFiles": 120,
   "diagnostics": 0,
@@ -11,108 +11,109 @@
     {
       "command": "npm run validate",
       "exitCode": 0,
-      "log": "maintenance-full-validation.log"
+      "seconds": 152.42,
+      "log": "maintenance-final-validate.log"
     },
     {
       "command": "npm run test:browser",
       "exitCode": 0,
-      "seconds": 86.57,
-      "log": "maintenance-retained-test-browser.log",
+      "seconds": 88.38,
+      "log": "maintenance-final-test-browser.log",
       "browserCases": 74
     },
     {
       "command": "npm run test:editorial:browser",
       "exitCode": 0,
-      "seconds": 38.32,
-      "log": "maintenance-retained-test-editorial-browser.log",
+      "seconds": 37.03,
+      "log": "maintenance-final-test-editorial-browser.log",
       "browserCases": 23
     },
     {
       "command": "npm run test:integration:browser",
       "exitCode": 0,
-      "seconds": 11.8,
-      "log": "maintenance-retained-test-integration-browser.log",
+      "seconds": 11.29,
+      "log": "maintenance-final-test-integration-browser.log",
       "browserCases": 1
     },
     {
       "command": "npm run test:monitoring:worker",
       "exitCode": 0,
-      "seconds": 18.13,
-      "log": "maintenance-retained-test-monitoring-worker.log"
+      "seconds": 17.82,
+      "log": "maintenance-final-test-monitoring-worker.log"
     },
     {
       "command": "npm run test:settings:worker",
       "exitCode": 0,
-      "seconds": 22.98,
-      "log": "maintenance-retained-test-settings-worker.log"
+      "seconds": 23.16,
+      "log": "maintenance-final-test-settings-worker.log"
     },
     {
       "command": "npm run test:publication:browser",
       "exitCode": 0,
-      "seconds": 7.28,
-      "log": "maintenance-retained-test-publication-browser.log",
+      "seconds": 7.68,
+      "log": "maintenance-final-test-publication-browser.log",
       "browserCases": 1
     },
     {
       "command": "npm run test:combined:browser",
       "exitCode": 0,
-      "seconds": 5.63,
-      "log": "maintenance-retained-test-combined-browser.log",
+      "seconds": 5.62,
+      "log": "maintenance-final-test-combined-browser.log",
       "browserCases": 1
     },
     {
       "command": "npm run test:wiki-bridge:browser",
       "exitCode": 0,
-      "seconds": 25.61,
-      "log": "maintenance-retained-test-wiki-bridge-browser.log",
+      "seconds": 26.76,
+      "log": "maintenance-final-test-wiki-bridge-browser.log",
       "browserCases": 4
     },
     {
       "command": "npm run test:wiki-seo:browser",
       "exitCode": 0,
-      "seconds": 11.96,
-      "log": "maintenance-retained-test-wiki-seo-browser.log",
+      "seconds": 12.81,
+      "log": "maintenance-final-test-wiki-seo-browser.log",
       "browserCases": 1
     },
     {
       "command": "npm run test:corrections:browser",
       "exitCode": 0,
-      "seconds": 35.86,
-      "log": "maintenance-retained-test-corrections-browser.log",
+      "seconds": 37.1,
+      "log": "maintenance-final-test-corrections-browser.log",
       "browserCases": 2
     },
     {
       "command": "npm run test:hosted:browser",
       "exitCode": 0,
-      "seconds": 9.05,
-      "log": "maintenance-retained-test-hosted-browser.log",
+      "seconds": 8.75,
+      "log": "maintenance-final-test-hosted-browser.log",
       "browserCases": 2
     },
     {
       "command": "npm run test:hosted-admin:browser",
       "exitCode": 0,
-      "seconds": 19.94,
-      "log": "maintenance-retained-test-hosted-admin-browser.log",
+      "seconds": 20.42,
+      "log": "maintenance-final-test-hosted-admin-browser.log",
       "browserCases": 12
     },
     {
       "command": "npm run test:maintenance:browser",
       "exitCode": 0,
-      "seconds": 6.64,
-      "log": "maintenance-retained-test-maintenance-browser.log",
+      "seconds": 7.15,
+      "log": "maintenance-final-test-maintenance-browser.log",
       "browserCases": 2
     },
     {
       "command": "npm run staging:check",
       "exitCode": 0,
-      "seconds": 1.01,
-      "log": "maintenance-retained-staging-check.log"
+      "seconds": 1.1,
+      "log": "maintenance-final-staging-check.log"
     },
     {
       "command": "npm run runtime:check",
       "exitCode": 0,
-      "seconds": 1.03,
-      "log": "maintenance-retained-runtime-check.log"
+      "seconds": 1.11,
+      "log": "maintenance-final-runtime-check.log"
     }
   ],
   "nativePersistenceChecks": 2,
@@ -207,5 +208,6 @@
   "canonicalGitHubWriterConnected": false,
   "liveReleaseEnabled": false,
   "independentAcceptance": false,
-  "externalPublication": "Not attempted; prepared checkpoint remains local."
+  "externalPublication": "Not attempted; prepared checkpoint remains local.",
+  "finalBoundaryAndNavigationRegressions": true
 }

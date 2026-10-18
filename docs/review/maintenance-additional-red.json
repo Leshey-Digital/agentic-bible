@@ -1,0 +1,119 @@
+{
+  "checkpoint": "2a5aa028031784170f240298db6efe48dd2dfb92",
+  "applicationSourceUnchangedDuringRed": true,
+  "mobile": {
+    "header": {
+      "x": 0,
+      "y": 0,
+      "width": 390,
+      "height": 190,
+      "top": 0,
+      "right": 390,
+      "bottom": 190,
+      "left": 0
+    },
+    "nav": {
+      "x": 23,
+      "y": 70,
+      "width": 344,
+      "height": 112,
+      "top": 70,
+      "right": 367,
+      "bottom": 182,
+      "left": 23
+    },
+    "links": [
+      {
+        "label": "Library",
+        "rect": {
+          "x": 23,
+          "y": 70,
+          "width": 42.796875,
+          "height": 112,
+          "top": 70,
+          "right": 65.796875,
+          "bottom": 182,
+          "left": 23
+        },
+        "height": "112px"
+      },
+      {
+        "label": "Topics",
+        "rect": {
+          "x": 89.796875,
+          "y": 70,
+          "width": 39.6875,
+          "height": 112,
+          "top": 70,
+          "right": 129.484375,
+          "bottom": 182,
+          "left": 89.796875
+        },
+        "height": "112px"
+      },
+      {
+        "label": "About",
+        "rect": {
+          "x": 153.484375,
+          "y": 70,
+          "width": 36.59375,
+          "height": 112,
+          "top": 70,
+          "right": 190.078125,
+          "bottom": 182,
+          "left": 153.484375
+        },
+        "height": "112px"
+      },
+      {
+        "label": "Revision history",
+        "rect": {
+          "x": 214.078125,
+          "y": 70,
+          "width": 98.828125,
+          "height": 112,
+          "top": 70,
+          "right": 312.90625,
+          "bottom": 182,
+          "left": 214.078125
+        },
+        "height": "112px"
+      },
+      {
+        "label": "Review flags",
+        "rect": {
+          "x": 23,
+          "y": 206,
+          "width": 79.375,
+          "height": 112,
+          "top": 206,
+          "right": 102.375,
+          "bottom": 318,
+          "left": 23
+        },
+        "height": "112px"
+      }
+    ],
+    "strip": {
+      "x": 0,
+      "y": 190,
+      "width": 390,
+      "height": 41.59375,
+      "top": 190,
+      "right": 390,
+      "bottom": 231.59375,
+      "left": 0
+    }
+  },
+  "mobileBrowserFailures": 1,
+  "providerBoundaryFailures": 3,
+  "providerCases": [
+    "fake returned 200 despite requested output ceiling",
+    "rejected response body was not canceled",
+    "late response body was not canceled"
+  ],
+  "focusedGreenNativeCases": 4,
+  "focusedGreenBrowserCases": 2,
+  "assertionsOrTimeoutsWeakened": false,
+  "trace": "actual Git directory/maintenance-nav-browser-red"
+}
