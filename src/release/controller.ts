@@ -1,5 +1,6 @@
-import {readFileSync,writeFileSync,mkdirSync,renameSync,openSync,closeSync,fsyncSync,fstatSync,constants} from 'node:fs';import {dirname} from 'node:path';import {randomUUID} from 'node:crypto';
+import {writeFileSync,mkdirSync,renameSync,openSync,closeSync,fsyncSync,constants} from 'node:fs';import {dirname} from 'node:path';import {randomUUID} from 'node:crypto';
 import {responseJson} from './network.ts';
+import {readReleaseFile} from './files.ts';
 import {canonical,digest,verifyCandidate,type Candidate} from './artifact.ts';import {releaseTarget} from './public.ts';
 const uuid=(s:unknown):s is string=>typeof s==='string'&&/^[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}$/.test(s);
 export type Active={versionId:string;operation:string}|null;
@@ -25,7 +26,7 @@ export async function verifyServing(root:string,ports:Pick<Ports,'read'>){
 }
 export async function executeRelease(root:string,p:Permit,ports:Ports,journalPath:string):Promise<Receipt>{
  const {candidate,id}=verifyCandidate(root,p.candidateDigest);permit(candidate,id,p);const operation='ab-release:'+p.requestId+':'+id,scope=digest(canonical(p));let journal:any;
- try{const fd=openSync(journalPath,constants.O_RDONLY|constants.O_NOFOLLOW);try{const stat=fstatSync(fd);if(!stat.isFile()||stat.size>65536)throw Error('release_journal_rejected');journal=JSON.parse(readFileSync(fd,'utf8'));}finally{closeSync(fd);}if(journal.scope!==scope)throw Error('release_journal_conflict');}catch(error:any){if(error.code!=='ENOENT')throw error;journal={schemaVersion:1,scope,requestId:p.requestId,state:'planned',versionId:null,uploadAttempts:0};}
+ try{journal=JSON.parse(readReleaseFile(journalPath,65536).toString('utf8'));if(journal.scope!==scope)throw Error('release_journal_conflict');}catch(error:any){if(error.code!=='ENOENT')throw error;journal={schemaVersion:1,scope,requestId:p.requestId,state:'planned',versionId:null,uploadAttempts:0};}
  if(journal.state==='verified'){const r=journal.receipt;if(!r||r.candidateDigest!==id||r.qualificationDigest!==p.qualificationDigest||r.requestId!==p.requestId||r.action!==p.action||r.sourceCommit!==candidate.sourceCommit||r.buildId!==candidate.buildId||r.previousVersion!==p.expectedActive||!uuid(r.versionId)||!Number.isSafeInteger(r.verifiedAt)||canonical(r.target)!==canonical(releaseTarget))throw Error('release_journal_receipt_corrupt');return r;}
  function save(){mkdirSync(dirname(journalPath),{recursive:true});const temp=journalPath+'.'+randomUUID()+'.tmp',fd=openSync(temp,constants.O_WRONLY|constants.O_CREAT|constants.O_EXCL|constants.O_NOFOLLOW,0o600);try{writeFileSync(fd,canonical(journal));fsyncSync(fd);}finally{closeSync(fd);}renameSync(temp,journalPath);const parent=openSync(dirname(journalPath),constants.O_RDONLY|constants.O_DIRECTORY|constants.O_NOFOLLOW);try{fsyncSync(parent);}finally{closeSync(parent);}}save();
  const active=await ports.active();if(active?.versionId!==p.expectedActive&&!(active===null&&p.expectedActive===null)&&active?.operation!==operation)throw Error('release_active_changed');

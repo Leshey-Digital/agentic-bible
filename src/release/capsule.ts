@@ -27,7 +27,7 @@ async function uploadCapsule(payload:any){
  const session=await api('POST',script+'/assets-upload-session',{manifest:payload.manifest});
  const jwt=(s:unknown):s is string=>typeof s==='string'&&s.length>0&&s.length<=8192&&!/\s/.test(s);
  if(!jwt(session.jwt)||!Array.isArray(session.buckets)||session.buckets.length>8)throw Error('release_assets_session_invalid');
- const hashes=session.buckets.flat();if(session.buckets.some((b:any)=>!Array.isArray(b)||!b.length)||hashes.some((h:any)=>typeof h!=='string'||!payload.files[h])||new Set(hashes).size!==hashes.length)throw Error('release_assets_bucket_conflict');
+ const hashes=session.buckets.flat();if(session.buckets.some((b:any)=>!Array.isArray(b)||!b.length)||hashes.some((h:any)=>typeof h!=='string'||!/^[a-f0-9]{32}$/.test(h)||!Object.hasOwn(payload.files,h))||new Set(hashes).size!==hashes.length)throw Error('release_assets_bucket_conflict');
  let completion:string|null=session.buckets.length?null:session.jwt;
  for(const bucket of session.buckets){const form=new FormData();for(const h of bucket){const f=payload.files[h];form.append(h,new Blob([f.content],{type:f.contentType}),h);}
   // Tokens never leave this execution, including failures. No account credential
@@ -49,7 +49,7 @@ export function uploadConnectorCode(root:string,id:string,requestId:string,expec
  const payload={...compressedPlan,inventory,candidateRaw:readFileSync(join(root,'candidate.json'),'utf8'),configRaw:readFileSync(join(root,'wrangler.json'),'utf8'),target:releaseTarget,candidateDigest:id,requestId,expectedActive};
  const source=uploadCapsule.toString().replace(/^async function uploadCapsule/,'async function');
  const code='async()=>{try{const p='+canonical(payload).trim()+';for(const f of Object.values(p.files))f.content=p.inventory[f.path].content;for(const m of p.version.modules)if(m.name!=="worker.js")m.content_base64=p.inventory[m.name].content;return await ('+source+')(p);}catch(e){throw Error(/^release_[a-z_]+$/.test(String(e?.message))?e.message:"release_connector_upload_unconfirmed");}}';
- if(Buffer.byteLength(code)>2*1024*1024)throw Error('release_connector_capsule_capacity');return code;
+ if(Buffer.byteLength(code)>2*1024*1024-4096)throw Error('release_connector_capsule_capacity');return code;
 }
 async function controlCapsule(req:any,expectedActive:string|null|undefined){
  try{
@@ -65,7 +65,7 @@ async function controlCapsule(req:any,expectedActive:string|null|undefined){
    if(!v.success||v.status!==200||bindings?.length!==1||bindings[0].name!=='ASSETS'||bindings[0].type!=='assets'||!String(message??'').startsWith('ab-candidate:'+operation.split(':')[2]+':'))throw Error('release_version_binding');
   }
   const r=await cloudflare.request(req);
-  const strip=(v:any)=>{const message=(v.annotations??v.metadata?.annotations??{})['workers/message']??'';return {id:v.id,strategy:v.strategy,versions:v.versions,annotations:{'workers/message':/^(ab-candidate:[a-f0-9]{64}:[a-f0-9-]{36}|ab-release:[a-f0-9-]{36}:[a-f0-9]{64})$/.test(message)?message:''},resources:{bindings:(v.resources?.bindings??v.bindings??[]).map((b:any)=>({name:b.name,type:b.type}))}};};
+  const strip=(v:any)=>{const message=(v.annotations??v.metadata?.annotations??{})['workers/message']??'';return {id:v.id,strategy:v.strategy,versions:v.versions,annotations:{'workers/message':/^(ab-candidate:[a-f0-9]{64}:[a-f0-9-]{36}|ab-release:[a-f0-9-]{36}:[a-f0-9]{64})$/.test(message)?message:''},resources:{bindings:(v.resources?.bindings??v.bindings??[]).map((b:any)=>({name:b.name==='ASSETS'&&b.type==='assets'?'ASSETS':'UNREVIEWED',type:b.type==='assets'?'assets':'unreviewed'}))}};};
   const x=r.result;return {status:r.status,success:r.success,result:Array.isArray(x)?x.map(strip):x?.items?{items:x.items.map(strip)}:x?.deployments?{deployments:x.deployments.map(strip)}:strip(x??{})};
  }catch(e){throw Error(/^release_[a-z_]+$/.test(String((e as Error)?.message))?(e as Error).message:'release_connector_control_unconfirmed');}
 }

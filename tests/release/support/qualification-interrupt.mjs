@@ -1,0 +1,1 @@
+import {runQualification} from '../../../src/release/qualification.ts';try{await runQualification(process.argv[2],process.argv[3],{path:'/usr/bin/chromium',version:'154.0.8037.57'});}catch{process.exitCode=1;}
