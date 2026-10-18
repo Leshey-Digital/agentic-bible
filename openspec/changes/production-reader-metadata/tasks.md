@@ -2,6 +2,7 @@
 
 - [x] Read repository workflow, affected specs, existing history contracts, and frontend standard.
 - [x] Derive actual article source-change commits from the pinned Git lineage; expose unknown when unavailable.
+- [x] Treat shallow/incomplete history and an explicit null source pin as unknown; reproduce a README-only depth-one clone.
 - [x] Distinguish source consultation, sampled claim verification, publication/correction receipts, and human editorial certification.
 - [x] Add safe share/citation affordances with rendered manual-copy fallback.
 - [x] Add truthful unique metadata previews and production-only History discovery.

@@ -32,3 +32,23 @@ test('revision metadata falls back to unknown when the pin or lineage is unavail
   assert.equal(articleRevision('tool-use',{repo:process.cwd(),sourceCommit:'not-a-commit'}),null);
   assert.equal(articleRevision('../unsafe',{repo:process.cwd()}),null);
 });
+
+test('shallow Git history and an explicit missing source pin never claim a latest source change',t=>{
+  const repo=mkdtempSync(join(tmpdir(),'reader-metadata-shallow-source-'));
+  const shallow=mkdtempSync(join(tmpdir(),'reader-metadata-shallow-clone-'));
+  t.after(()=>{rmSync(repo,{recursive:true,force:true});rmSync(shallow,{recursive:true,force:true});});
+  git(repo,['init','-q']);git(repo,['config','user.name','Metadata Test']);git(repo,['config','user.email','metadata@example.invalid']);
+  mkdirSync(join(repo,'src/content/articles'),{recursive:true});
+  writeFileSync(join(repo,'src/content/articles/tool-use.md'),'actual source text\n');git(repo,['add','src/content/articles/tool-use.md']);
+  git(repo,['commit','-q','-m','Actual source edit'],{GIT_AUTHOR_DATE:'2020-01-02T03:04:05Z',GIT_COMMITTER_DATE:'2020-01-02T03:04:05Z'});
+  const actualSourceCommit=git(repo,['rev-parse','HEAD']);
+  writeFileSync(join(repo,'README.md'),'later documentation-only commit\n');git(repo,['add','README.md']);
+  git(repo,['commit','-q','-m','Unrelated documentation only'],{GIT_AUTHOR_DATE:'2025-06-07T08:09:10Z',GIT_COMMITTER_DATE:'2025-06-07T08:09:10Z'});
+
+  git(repo,['clone','--quiet','--depth','1',`file://${repo}`,shallow]);
+  assert.equal(git(shallow,['rev-parse','--is-shallow-repository']),'true');
+  assert.deepEqual(articleRevision('tool-use',{repo}),{date:'2020-01-02',commit:actualSourceCommit,subject:'Actual source edit'});
+  assert.equal(articleRevision('tool-use',{repo:shallow}),null,'a README-only shallow HEAD cannot prove the earlier Markdown edit is latest');
+  assert.equal(articleRevision('tool-use',{repo,sourceCommit:null}),null,'an explicit null source pin must not fall back to HEAD');
+  assert.deepEqual(articleRevision('tool-use',{repo,sourceCommit:actualSourceCommit}),{date:'2020-01-02',commit:actualSourceCommit,subject:'Actual source edit'});
+});

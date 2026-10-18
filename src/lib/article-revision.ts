@@ -12,9 +12,21 @@ const sourcePath = (id: string) => `src/content/articles/${id}.md`;
 export function articleRevision(id: string, options: {repo?: string; sourceCommit?: string | null} = {}): ArticleRevision {
   if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(id)) return null;
   const repo = options.repo ?? process.cwd();
-  const pin = options.sourceCommit ?? 'HEAD';
+  // An explicit null is used by synthetic/isolated builds to say there is no source pin.
+  const requestedPin = options.sourceCommit;
+  if (requestedPin === null) return null;
+  const pin: string = requestedPin === undefined ? 'HEAD' : requestedPin;
   if (pin !== 'HEAD' && !/^[a-f0-9]{40}(?:[a-f0-9]{24})?$/.test(pin)) return null;
   try {
+    const shallow = execFileSync('git', ['rev-parse', '--is-shallow-repository'], {
+      cwd: repo,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+      timeout: 1500,
+      maxBuffer: 4096,
+    }).trim();
+    // A shallow boundary may omit an earlier edit. No returned commit can prove it is latest.
+    if (shallow !== 'false') return null;
     const output = execFileSync('git', ['log', '-1', '--format=%cI%x00%H%x00%s', pin, '--', sourcePath(id)], {
       cwd: repo,
       encoding: 'utf8',
