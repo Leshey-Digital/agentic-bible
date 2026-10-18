@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {policyPath} from '../../src/hosted/policy.ts';
 import {contributionJson,intakeConfigured} from '../../src/hosted/contributions.ts';
 const origin='https://staging.agenticbible.si';
 test('streamed body deadline, actual byte and UTF-8 bounds are independent of declared length',async()=>{
@@ -13,3 +14,5 @@ test('only complete server policy shapes can nominate intake readiness',()=>{
   assert.equal(intakeConfigured({trust:'unused',policy,clientKey}),true);
   for(const value of [undefined,{trust:'unused'},{trust:'unused',policy},{trust:'unused',policy:{...policy,moderationReady:false},clientKey},{trust:'unused',policy:{...policy,termsPath:'https://attacker.invalid/'},clientKey}])assert.equal(intakeConfigured(value),false);
 });
+
+test('shared server/browser policy path guard rejects protocol-relative and normalization aliases',()=>{for(const path of ['//foreign/','/terms//','/../terms/','/%74erms/','https://foreign/','/terms/?x=1','/terms/#anchor'])assert.equal(policyPath(path),false,path);for(const path of ['/terms/','/contribution-terms/','/policies/contributions/'])assert.equal(policyPath(path),true,path);});

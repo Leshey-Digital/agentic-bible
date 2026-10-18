@@ -1,3 +1,4 @@
+import {policyPath} from './policy.ts';
 import {articleIds,dispositions,type SqlDatabase,type Disposition} from '../editorial/contracts.ts';
 import {D1EditorialStore} from '../editorial/store.ts';
 import {InputError,RateLimitError,ReplayConflictError,CapacityError,submissionInput,changeInput} from '../editorial/validation.ts';
@@ -13,7 +14,7 @@ const headers={'Cache-Control':'no-store','X-Robots-Tag':'noindex, nofollow','X-
 const json=(value:unknown,status=200)=>Response.json(value,{status,headers});
 export class ContributionError extends Error{readonly code:string;readonly status:number;constructor(code:string,status=400){super(code);this.code=code;this.status=status;}}
 function fail(code:string,status=400):never{throw new ContributionError(code,status);}
-export function intakeConfigured(adapters?:ContributionAdapters){const p=adapters?.policy;return !!p&&p.moderationReady===true&&/^\/[a-z0-9/-]+\/$/.test(p.termsPath)&&/^\/[a-z0-9/-]+\/$/.test(p.privacyPath)&&/^[a-zA-Z0-9._-]{1,64}$/.test(p.policyRevision)&&typeof adapters?.clientKey==='function';}
+export function intakeConfigured(adapters?:ContributionAdapters){const p=adapters?.policy;return !!p&&p.moderationReady===true&&policyPath(p.termsPath)&&policyPath(p.privacyPath)&&/^[a-zA-Z0-9._-]{1,64}$/.test(p.policyRevision)&&typeof adapters?.clientKey==='function';}
 export async function contributionJson(request:Request):Promise<any>{
   if(request.headers.get('content-type')?.split(';')[0].trim().toLowerCase()!=='application/json')fail('json_required',415);
   if(!request.body)fail('invalid_request');const reader=request.body.getReader(),parts:Uint8Array[]=[];let bytes=0,timer:ReturnType<typeof setTimeout>|undefined;

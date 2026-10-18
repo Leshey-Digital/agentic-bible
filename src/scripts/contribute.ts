@@ -1,4 +1,4 @@
-export {};
+import {policyPath} from '../hosted/policy.ts';
 const form = document.querySelector<HTMLFormElement>('#contribution-form')!;
 const fields = document.querySelector<HTMLFieldSetElement>('#contribution-fields')!;
 const message = document.querySelector<HTMLElement>('#intake-status')!;
@@ -51,7 +51,7 @@ async function init() {
     const response = await fetch('/api/editorial/status', { credentials: 'same-origin' });
     const state = await response.json();
     if (!response.ok) return;
-    if (state.mode === 'hosted-contributions' && state.publicIntake === true && state.policy && /^\/[a-z0-9/-]+\/$/.test(state.policy.termsPath) && /^\/[a-z0-9/-]+\/$/.test(state.policy.privacyPath)) {
+    if (state.mode === 'hosted-contributions' && state.publicIntake === true && state.policy && policyPath(state.policy.termsPath) && policyPath(state.policy.privacyPath)) {
       fields.disabled = false; sendLabel = 'Send suggestion'; send.textContent = sendLabel; inboxDescription = 'It is available for editorial review.';
       message.textContent = 'Suggestions enter editorial review and do not directly change an article. No email delivery is configured.';
       for (const item of document.querySelectorAll<HTMLElement>('[data-local-intake]')) item.hidden = true;
