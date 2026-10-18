@@ -11,21 +11,22 @@ import {CollectionFiles,collectionLimits,stop,uuid} from './files.ts';
 export {CollectionError,CollectionFiles,collectionLimits} from './files.ts';
 type Selection={sourceId:string;citationId:string;requestKey:string};
 type Row={request_key:string;source_id:string;citation_id:string;fingerprint:string;owner:string;state:'capturing'|'prepared'|'ready'|'stopped';created_at:number;body_hash:string|null;body_bytes:number|null;journal:string|null;journal_hash:string|null};
-type Context={enabled?:boolean;transport?:{kind:'controlled-source-fixture'|'bounded-official-http-source-v2';send:WebFetch};db:SqlDatabase;collectionName:string;clock?:()=>number;checkpoint?:(phase:'charged'|'body-written'|'prepared'|'http-complete'|'ready')=>void|Promise<void>};
+type Context={metadataProfile?:'quality-gated-v1';enabled?:boolean;transport?:{kind:'controlled-source-fixture'|'bounded-official-http-source-v2';send:WebFetch};db:SqlDatabase;collectionName:string;clock?:()=>number;checkpoint?:(phase:'charged'|'body-written'|'prepared'|'http-complete'|'ready')=>void|Promise<void>};
 function input(value:unknown):Selection{
  if(!value||typeof value!=='object'||Array.isArray(value)||Object.keys(value).sort().join(',')!=='citationId,requestKey,sourceId')stop('collection_invalid_selection');
  const v=value as Selection;if(!officialSource(v.sourceId)||typeof v.citationId!=='string'||!/^[a-z][a-z0-9-]{0,47}$/.test(v.citationId)||!uuid(v.requestKey))stop('collection_invalid_selection');return {...v};
 }
 // Local trusted-code coordinator only. No route, schedule, credentials or default fetch.
 export async function collectMaintenanceSource(value:unknown,context:Context){
+ if(context.metadataProfile!==undefined&&context.metadataProfile!=='quality-gated-v1')stop('collection_invalid_profile');
  if(context.transport?.kind==='bounded-official-http-source-v2')return collectAcquiredSource(input(value),{...context,transport:{kind:'bounded-official-http-source-v2',send:context.transport.send}});
  if(context.enabled!==true||context.transport?.kind!=='controlled-source-fixture'||typeof context.transport.send!=='function')stop('collection_disabled');
  const selection=input(value),clock=context.clock??Date.now,now=clock();if(!Number.isSafeInteger(now)||now<0||now>253402300799999)stop('collection_invalid_clock');
- const files=new CollectionFiles(context.collectionName),fingerprint=hash(canonical({selection,root:files.root,profile:'original-plain-utf8-2048-v1'})),owner=crypto.randomUUID(),store=new HttpObservationStore(context.db);
+ if(context.metadataProfile!==undefined&&context.metadataProfile!=='quality-gated-v1')stop('collection_invalid_profile');const files=new CollectionFiles(context.collectionName),fingerprint=hash(canonical({selection,root:files.root,...(context.metadataProfile?{metadataProfile:context.metadataProfile}:{}),profile:'original-plain-utf8-2048-v1'})),owner=crypto.randomUUID(),store=new HttpObservationStore(context.db);
  const get=async()=>context.db.prepare('SELECT * FROM maintenance_source_collections WHERE request_key=?').bind(selection.requestKey).first<Row>();
  let row:Row|null,inserted:number;
  try{const result=await context.db.prepare(`INSERT INTO maintenance_source_collections(request_key,source_id,citation_id,fingerprint,owner,state,created_at)
-  SELECT ?,?,?,?,?,'capturing',? WHERE (SELECT COUNT(*) FROM maintenance_source_collections)<16
+  SELECT ?,?,?,?,?,'capturing',? WHERE (SELECT COUNT(*) FROM maintenance_source_collections)<${context.metadataProfile?64:16}
   AND NOT EXISTS(SELECT 1 FROM maintenance_source_collections WHERE created_at>?) ON CONFLICT DO NOTHING`).bind(selection.requestKey,selection.sourceId,selection.citationId,fingerprint,owner,now,now).run();inserted=result.meta.changes;row=await get();}catch{return stop('collection_accounting_unavailable');}
  if(!row)stop('collection_capacity_or_clock');if(row.fingerprint!==fingerprint||row.source_id!==selection.sourceId||row.citation_id!==selection.citationId)stop('collection_key_conflict');
  const evidence=(record:Row):Evidence=>({citationId:selection.citationId,sourceId:selection.sourceId,url:officialSource(selection.sourceId)!.url,receiptKey:selection.requestKey,bodyHash:record.body_hash!,file:files.file(selection.requestKey)});

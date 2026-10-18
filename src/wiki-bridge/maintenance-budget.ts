@@ -4,8 +4,8 @@ import {stop,policyInput,type Policy} from './maintenance-provider.ts';
 import {currencyInput,currencyCost,currencyPin,currencyTime,type CurrencyControl,type Usage} from './maintenance-currency.ts';
 export type ProposalRow={event_id:string;fingerprint:string;owner:string;state:'calling'|'uncertain'|'failed'|'ready'|'complete';created_at:number;day:number;month:string;input_tokens:number;output_tokens:number;reserved_cost:number;actual_cost:number|null;response:string|null;packet:string|null;packet_hash:string|null;receipt:string|null;error:string|null;currency_policy?:string|null;currency_policy_hash?:string|null;currency_reserved?:number|null;currency_actual?:number|null;currency_state?:'reserved'|'settled'|'uncertain'|null;currency_usage?:string|null;currency_settled_at?:number|null};
 export class MaintenanceBudget {
- readonly db:SqlDatabase;readonly currency:ReturnType<typeof currencyInput>;
- constructor(db:SqlDatabase,currency?:CurrencyControl){this.db=db;this.currency=currencyInput(currency);}
+ readonly db:SqlDatabase;readonly capacity:number;readonly currency:ReturnType<typeof currencyInput>;
+ constructor(db:SqlDatabase,currency?:CurrencyControl,profile?:'quality-gated-v1'){if(profile!==undefined&&profile!=='quality-gated-v1')stop('maintenance_storage_profile');this.capacity=profile?64:16;this.db=db;this.currency=currencyInput(currency);}
  async job(event:string){try{return await this.db.prepare('SELECT * FROM maintenance_proposals WHERE event_id=?').bind(event).first<ProposalRow>();}catch{return stop('maintenance_accounting_unavailable');}}
  verifyCurrency(row:ProposalRow,usage?:Usage,settled=false){
   const p=this.currency;if(!p){if([row.currency_policy,row.currency_policy_hash,row.currency_reserved,row.currency_actual,row.currency_state,row.currency_usage,row.currency_settled_at].some(v=>v!=null))stop('maintenance_currency_required');return;}
@@ -39,7 +39,7 @@ export class MaintenanceBudget {
   const args:(string|number|null)[]=[event,fingerprint,owner,now,day,month,inputTokens,policy.maxOutputTokens,cost,...(p?[pin!.json,pin!.hash,usd]:[]),now,day,policy.dayRequests,month,policy.monthRequests,day,cost,policy.dayCost,month,cost,policy.monthCost,...(p?[pin!.hash,pin!.json,now,day,usd,p.dayBaseline,p.dayLimit,month,usd,p.monthBaseline,p.monthLimit]:[])];
   let statement;try{statement=this.db.prepare(`INSERT INTO maintenance_proposals(event_id,fingerprint,owner,state,created_at,day,month,input_tokens,output_tokens,reserved_cost${columns})
    SELECT ?,?,?,'calling',?,?,?,?,?,?${values} WHERE
-   (SELECT COUNT(*) FROM maintenance_proposals)<16
+   (SELECT COUNT(*) FROM maintenance_proposals)<${this.capacity}
    AND NOT EXISTS(SELECT 1 FROM maintenance_proposals WHERE state IN ('calling','uncertain') OR created_at>?)
    AND (SELECT COUNT(*) FROM maintenance_proposals WHERE day=?)<?
    AND (SELECT COUNT(*) FROM maintenance_proposals WHERE month=?)<?
