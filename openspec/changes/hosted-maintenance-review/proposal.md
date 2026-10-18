@@ -1,0 +1,11 @@
+# Hosted revision history and post-publication review
+
+Continue local preparation 9d5b82ad2817fa710bfa101f267c4d2ca603ffd6 on its separate branch. Frozen PR38 c35dd1e2a170205c2e5766ebf0983bd8d6a3a412 remains unchanged while independently reviewed. The owner authorizes useful static revision/history pages and authenticated receipt-bound review, readable diffs, bot attribution, flags and safe revert semantics where supported.
+
+Build history and current flags from the existing pinned regular Git records. Astro emits no-JavaScript history, per-revision body changes/full Markdown and a static review view. Explicit controlled-static-preview mode requires the same source commit as the build's Git HEAD. Ordinary builds show an honest empty view and existing GitHub history. The canonical writer remains the sole article/history writer.
+
+Use existing signed admin assertions and D1 for append-only post-publication decisions. A Worker-compiled SHA-256 binds the static catalog to the runtime; neither request fields nor mutable environment JSON can nominate receipt authority. Existing release candidate packaging compiles that hash from the artifact inventory. Review operates on this published build, not a live repository lookup. Bound total audit rows to 64 and versions per receipt to 16. Preserve exact request/owner replay, optimistic version admission and original publication flags. Private admin notes are never copied into static public pages or search.
+
+The current writer has no canonical revert operation. “Request a revert” records an earlier retained writer commit and reason against the current receipt; it does not mutate content or claim completion. A true revert must later create new guarded canonical history and retain the original records. No fake undo, branch reset or mutable D1 article override is introduced.
+
+Use the existing Astro/TypeScript/Workers stack and cream/green reference design. No new dependency, framework, live credential, model/source/GitHub call, deployment, public intake, indexing or license choice. Only local migrations/test stores are used. Production record/identity/provider/release setup and notifications remain separate. Stop at a clean local reviewed-ready checkpoint; source acceptance and this new composition's review remain distinct.

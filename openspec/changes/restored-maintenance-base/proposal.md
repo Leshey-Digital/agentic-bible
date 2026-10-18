@@ -1,0 +1,7 @@
+# Maintenance after canonical restoration
+
+Preserve frozen PR41 `7aa5bfa26aee99a39e15dc3dee502565fde1c719`. Inspection confirms its pinned canonical reader and Astro/Pagefind restoration build already work. Do not duplicate the release/build pipeline. The remaining producer/writer gap is the private publisher base being used as canonical authority after an explicit restoration creates a different canonical revision ID.
+
+Add an opt-in controlled canonical-base binding to the existing fake producer and writer. Read the exact current receipt and Markdown from owned Git, verify application blobs and the fixed branch/source pin, include the untrusted baseline in accounted provider input, and bind proposal authority to that base. Preserve append-only private publisher receipts; their local technical parent stays distinct from the canonical previous receipt. A fresh candidate must not reuse or silently rebase an old event when the canonical base changes. Keep historical completed replay and one-dispatch recovery.
+
+Use the existing atomic writer and history format extension to retain the canonical base receipt. Test actual signed restoration, one shared workerd/D1 ledger, subsequent bounded generation/writer, strict public-history build and release preparation. No live provider, credential, remote write, deployment or new service. Return a clean local checkpoint; publication and independent review are separate.

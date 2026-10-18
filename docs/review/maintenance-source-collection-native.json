@@ -1,0 +1,41 @@
+{
+  "mode": "local-synthetic-only",
+  "actualWorkerdD1": true,
+  "nodeCoordinator": true,
+  "controlledSourceRequests": 2,
+  "reservationBeforeDispatch": true,
+  "bodyDirectory": "/workspace/agentic-bible/.git/worktrees/agentic-bible-source-collection/maintenance-source-collection-test-native/bodies",
+  "capturedOriginalHashes": [
+    "5fdca691a46a91a658f88bac261aac9825aa50dcf53a67fd784cac3ef69e1819",
+    "a0029a5eb686f80947bac96ec34ac0270e2a1b120f800ca1beafd532ab2d41a1"
+  ],
+  "fixtureBodyHashesReplaced": true,
+  "provider": "deterministic-extractive-fake",
+  "providerCalls": 1,
+  "restartAdditionalSourceRequests": 0,
+  "restartAdditionalProviderCalls": 0,
+  "automaticWikiPublication": true,
+  "twentyEntryBuild": true,
+  "postPublicationFlags": true,
+  "canonicalMarkdownUnchanged": true,
+  "realSpend": 0,
+  "livePublished": false,
+  "receipt": {
+    "eventId": "maintenance-captured-original-native",
+    "fingerprint": "2bdf84644ca3d71f6d2fd4cbe211d5c1a3efe480d24f073c199816fdd069b3da",
+    "sequence": 1,
+    "kind": "apply",
+    "publisher": {
+      "id": "25a8b582a249a2f2b51e2838390bdb06ce41c88d7c5a8da851ad7d579115308f",
+      "manifestHash": "c71341760a55ed723b73b89cf6410d2b162dbfbbd1c3a2cf10792d056dfd173f"
+    },
+    "articleRevision": "fcb734ac7b6f21a5f8b0cc8e2449d6a68c96ee6653bfa0bf98f369849b827bc5",
+    "evidenceHash": "3cbcfc2717f9aaa5c49cf360d3a4723596d1a8ca95f3d8f411c01dc25925faa5",
+    "outcome": "site-activated",
+    "site": {
+      "id": "80da5225b513adf960a5fd279c64b028c803f3e4f73fab295ef3413339056898",
+      "manifestHash": "1c29f2d9a84943891716948ed60a6fe26ab594939908ca0273c489847533818e"
+    },
+    "parent": null
+  }
+}

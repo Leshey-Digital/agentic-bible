@@ -1,0 +1,24 @@
+{
+  "project": "desktop",
+  "mode": "local-synthetic-only",
+  "capturedOriginalBodies": true,
+  "deterministicFakeProvider": true,
+  "actualNativeProofRequired": true,
+  "automaticLocalPublication": true,
+  "twentyEntrySearch": true,
+  "sourceAnchors": true,
+  "history": true,
+  "postPublicationFlag": true,
+  "navigationContained": true,
+  "navigationGeometry": {
+    "headerBottom": 107,
+    "linksBottom": 107,
+    "stripTop": 107
+  },
+  "axe": true,
+  "noOverflow": true,
+  "externalRequests": [],
+  "runtimeErrors": [],
+  "livePublished": false,
+  "realSpend": 0
+}

@@ -1,0 +1,7 @@
+# Maintenance-only review on the merged MVP base
+
+PR37 merged the reviewed integration stack into main at d9ea6386b92c499fc70b9c81b8cb557b8cf96717. Publish the separate producer, source collector and canonical writer implementation for independent review against that main. Preserve complete ancestry of 95d6d1764caed1018c2c5d89c0c5ed0b0acf3298 and source collector 0a24129e34369e887273851b7e4241ec48260548; never rewrite or fold future hosted review work into this review head.
+
+The ordinary merge had one additive README conflict, resolved by retaining the integration status and maintenance sections. Runtime/tests/config composed automatically; accepted hosted-admin and release code/tests, all twenty original article bytes and lockfile remain identical to the main base. The maintenance mobile navigation fix stays part of its inherited scope. Add no live transport, credentials, resource, model call, remote article publication, deployment, indexing or license choice.
+
+Run exact-head validation and the critical admin/release/maintenance regressions before publication. Existing validation-only CI must run its complete retained command set with package-pinned Chromium and artifact preparation/upload. Record every failed, omitted or blocked check and distinguish previous source evidence from this composition's results. Independent review remains required; no main merge or deployment is authorized by this draft publication. Rollback is to retain main and the preserved source branches; no remote migration has been applied.
