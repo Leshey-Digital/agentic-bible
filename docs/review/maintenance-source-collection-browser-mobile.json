@@ -1,0 +1,24 @@
+{
+  "project": "mobile",
+  "mode": "local-synthetic-only",
+  "capturedOriginalBodies": true,
+  "deterministicFakeProvider": true,
+  "actualNativeProofRequired": true,
+  "automaticLocalPublication": true,
+  "twentyEntrySearch": true,
+  "sourceAnchors": true,
+  "history": true,
+  "postPublicationFlag": true,
+  "navigationContained": true,
+  "navigationGeometry": {
+    "headerBottom": 170,
+    "linksBottom": 162,
+    "stripTop": 170
+  },
+  "axe": true,
+  "noOverflow": true,
+  "externalRequests": [],
+  "runtimeErrors": [],
+  "livePublished": false,
+  "realSpend": 0
+}

@@ -16,7 +16,7 @@
     "test:docs": "node scripts/validate-docs.mjs",
     "test": "node --test tests/static.test.mjs",
     "test:browser": "PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright test",
-    "validate": "npm run test:docs && npm run check && npm run build && npm test && npm run test:editorial && npm run test:monitoring && npm run test:settings && npm run test:integration && npm run test:http-sources && npm run test:http-worker && npm run test:publication && npm run test:seo && npm run test:seo:build && npm run test:wiki-bridge && npm run test:corrections && npm run test:hosted && npm run test:release && npm run test:maintenance",
+    "validate": "npm run test:docs && npm run check && npm run build && npm test && npm run test:editorial && npm run test:monitoring && npm run test:settings && npm run test:integration && npm run test:http-sources && npm run test:http-worker && npm run test:publication && npm run test:seo && npm run test:seo:build && npm run test:wiki-bridge && npm run test:corrections && npm run test:hosted && npm run test:release && npm run test:maintenance-sources && npm run test:maintenance",
     "staging:check": "node scripts/assert-staging-discovery.mjs && XDG_CONFIG_HOME=.git/runtime-config XDG_CACHE_HOME=.git/runtime-cache WRANGLER_SEND_METRICS=false wrangler deploy --dry-run --config wrangler.staging.jsonc",
     "staging:local": "node scripts/assert-staging-discovery.mjs && CLOUDFLARE_CF_FETCH_ENABLED=false XDG_CONFIG_HOME=.git/runtime-config XDG_CACHE_HOME=.git/runtime-cache WRANGLER_SEND_METRICS=false wrangler dev --local --config wrangler.staging.jsonc --ip 127.0.0.1 --port 8787",
     "browser:install": "PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright install chromium",
@@ -62,7 +62,11 @@
     "test:maintenance:browser": "PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright test --config playwright.maintenance.config.ts",
     "maintenance:demo": "node scripts/maintenance-demo.mjs demo",
     "maintenance:status": "node scripts/maintenance-demo.mjs status",
-    "maintenance:local": "node scripts/maintenance-demo.mjs preview"
+    "maintenance:local": "node scripts/maintenance-demo.mjs preview",
+    "test:maintenance-sources": "node --test tests/maintenance-sources/*.test.mjs",
+    "maintenance:collect:demo": "node scripts/maintenance-collection-demo.mjs demo",
+    "maintenance:collect:status": "node scripts/maintenance-collection-demo.mjs status",
+    "maintenance:collect:local": "node scripts/maintenance-collection-demo.mjs preview"
   },
   "dependencies": {
     "astro": "7.4.0"

@@ -16,3 +16,7 @@ Selected bounded successor: charged source files/receipts → one budget-reserve
 Only exact, complete bounded source paragraphs with citation/hash/offset proof are admitted; model-created summaries, new URLs, instructions, approval metadata or unsupported claims fail closed. This deliberately narrow producer is not a general factual validator. Real source normalization/authenticity, a reviewed generative claim policy, real model/tokenizer/rates/currency caps, a default-closed automated GitHub authority/commit adapter and actual release integration remain software/setup gaps. No universal human prepublication gate is added. Community corrections retain explicit admin review.
 
 No live source/model/GitHub write, paid call, secret, deployment, merge, indexing or license action is authorized by this audit. The approved roughly $5 baseline/$10 operating target is not a concrete provider allocation.
+
+## Controlled body collection successor
+
+The separate [source collection connection](maintenance-source-collection.md) now captures original bounded plain-text responses through the existing charged HTTP/D1 validator, persists immutable body/journal evidence and feeds it directly into the fake producer. This replaces the separation of manually supplied fixture paths for the explicit controlled demo/native journey. Live discovery, scheduling, HTML normalization/authenticity, real provider/currency allocation, canonical GitHub writer and hosted release/review connections remain absent. No new human article preapproval is introduced.
