@@ -177,3 +177,9 @@ A separate successor adds explicit signed restoration approval and a default-dis
 `npm run test:maintenance-base` covers separate signed restoration followed by a canonical-base-bound fake generation, atomic writer, strict public history build and source-matching release candidate on owned Git/shared local D1. It is included in `validate`. The port is opt-in fixture-only; no route, schedule, provider, credential or deployment is enabled. [Contract, stale-base recovery and production gaps](docs/restored-maintenance-base.md).
 
 The separate [reviewed maintenance integration candidate](docs/review/reviewed-maintenance-composition.md) composes the accepted PR42 ancestry onto fresh main, preserving all twenty article bytes and the lockfile. The separate hosted pipeline is excluded. Composition acceptance and live release remain separate; direct downgrade to PR41/older readers is unsupported after new canonical-base records exist.
+
+## Controlled hosted operating pipeline
+
+`npm run test:maintenance-pipeline` exercises one explicit default-disabled source → provider/receipt ledger → canonical writer → exact review-artifact ingestion coordinator. Tests use actual shared local D1, owned Git and the shipped signed-review Worker; live activation remains unavailable. [Stage, recovery and residual-gap contract](docs/controlled-maintenance-pipeline.md). Twenty unchanged article drafts retain their prior PR22/23/27 source-review acceptance.
+
+The [accepted pipeline local composition](docs/review/accepted-pipeline-composition.md) preserves main and accepted PR44 ancestry while excluding the separately reviewed currency-budget checkpoint. Its checks and local checkpoint do not authorize publication, merge or deployment.
