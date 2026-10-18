@@ -1,5 +1,7 @@
 # Commit-pinned release handoff
 
+Historical PR33 preparation/review evidence follows unchanged. Its missing-resource and pending-acceptance statements describe that checkpoint, not current account/main state. For dated observations and present setup instructions, use the [current release handoff](../commit-pinned-releases.md#observed-status-and-owner-preparation-2026-10-18). Later duplicate-version recovery evidence remains in its [separate handoff](staging-upload-recovery.md).
+
 Separate branch `feat/commit-pinned-release-path` starts at frozen PR32 `c8b485f205c55cbbf71cb4770e34de65a9942a18`. [Contract, exact inputs/minimum scopes and owner handoff](../commit-pinned-releases.md); [change proposal](../../openspec/changes/commit-pinned-release-path/proposal.md). All earlier frozen heads remain preserved.
 
 Public article history now verifies/pins the source Git commit instead of following the content feature branch. The existing validation workflow produces a bounded candidate from its tested build; one manual, default-disabled staging workflow handles source/CI/artifact/current-version admission, version upload, activation, public byte verification and rollback using an earlier verified version/artifact. No canonical D1 content overlay, new build service, autonomous deployment or live configuration is introduced.
