@@ -41,3 +41,13 @@ Schema-2 approved notes and proposal receipts record `articleId` and `contentPat
 Pinned source previews require a regular non-symlink Git blob from the exact verified main commit/tree. Schema-2 projection validates the bounded source-declaration subset from that exact Markdown and only permits its source IDs; absent citations fail before any remote write. New notes append an escaped plain-text correction and source anchor, preserving every unrelated tree entry. Review source hashes are rechecked at proposal time; an approval is not proof the admin’s supplied source pins were current. Source-preview request budgets and existing final main/source checks remain conservative.
 
 Legacy schema-1 standalone notes/receipts retain exact target/title/validation and retry semantics. Existing schema-1 actual-submission bindings from the initial checkpoint also remain readable/replayable without rewriting records. New schema-2 fields do not migrate or reinterpret earlier authority. Older implementations reject schema 2; once such records exist, use a compatible reader and do not downgrade to an older authority implementation. Production-origin trust stays an explicit launch dependency: this checkpoint retains exact staging origin/RS256 audience/subject pins, without configuring live identity.
+
+## Focused verification at final implementation checkpoint
+
+- New hosted native suites: **35 passed**, including all twenty targets and the persistent catalog/capacity/held-reservation cases.
+- Encrypted adapter native suite: **6 passed**, including interrupted workerd and actual slow-response abort/no-retry proof.
+- Dedicated desktop/mobile browser journey: **2 passed**, with keyboard, overflow and zero reported axe violations. It holds the actual completed D1 review response, returns a synthetic failure, retries the same approval without another note/audit, creates a controlled schema-2 draft through the UI, and verifies write-only setup/reload/check. Synthetic screenshots stay in the local Git directory; no Library publication.
+- Retained hosted configuration/connected: **4 passed**; editorial: **13 passed**; existing integration contract: **18 passed**; hosted integration boundary: **6 passed**.
+- Astro check: zero errors/warnings; static build/Pagefind: twenty indexed pages; documentation and whitespace checks passed.
+
+Logs/status are retained in `.git/production-hosted-evidence/`. Earlier independent red evidence remains separate under `/tmp/production-systems-review/hosted-core/`; initial fixture/assertion failures are not claimed as application defects. Parent composition qualification, complete retained browser suites, live identity/provider/policy setup and deployment remain separate and unperformed by this lane.
