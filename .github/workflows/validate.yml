@@ -102,6 +102,7 @@ jobs:
             .git/hosted-maintenance-history-native-proof.json
             .git/hosted-maintenance-review-native.json
             .git/hosted-maintenance-review-browser-*.json
+            .git/maintenance-review-reload-*.json
             .git/quoted-source-url-proof.json
             .git/maintenance-native-proof.json
             .git/maintenance-source-collection-native.json
