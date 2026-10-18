@@ -23,7 +23,7 @@ const articles = defineCollection({
     sources: z.array(z.object({
       id: z.string(), title: z.string(), url: z.url(),
       publisher: z.string(), context: z.string(),
-    })).min(2),
+    })).min(1),
   }),
 });
 
