@@ -3,14 +3,14 @@ import {readingArticleIds} from '../lib/article-ids.ts';
 export class QualityError extends Error {code:string;constructor(code:string){super(code);this.code=code;}}
 export function stop(code:string):never{throw new QualityError(code);}
 export const qualityLimits=Object.freeze({rows:64,sourceBytes:32768,totalSourceBytes:131072,requestBytes:196608,responseBytes:16384,timeoutMs:2000});
-export type QualitySource={citationId:string;sourceId:string;url:string;bodyHash:string;bytes:Buffer};
+export type QualitySource={citationId:string;sourceId:string;url:string;bodyHash:string;bytes:Buffer;extraction?:{profileId:string;rawHash:string;extractedHash:string;text:string;spans:{startByte:number;endByte:number;text:string}[]};lineage?:{originIds:string[];provenance:'unknown'}};
 export type Claim={id:string;block:number;text:string;citationIds:string[]};
-export type QualityRequest={schemaVersion:1;kind:'complete-candidate-quality';candidateHash:string;manifestHash:string;sourceHash:string;bindingHash:string;article:Article;claims:Claim[];sources:{citationId:string;sourceId:string;url:string;bodyHash:string;untrusted:true;text:string}[]};
+export type QualityRequest={schemaVersion:1;kind:'complete-candidate-quality';candidateHash:string;manifestHash:string;sourceHash:string;bindingHash:string;article:Article;claims:Claim[];sources:{citationId:string;sourceId:string;url:string;bodyHash:string;untrusted:true;text:string;extraction?:QualitySource['extraction'];lineage?:QualitySource['lineage']}[]};
 export type Lineage={citationId:string;bodyHash:string;originIds:string[];provenance:'original'|'syndicated'|'derived'|'unknown'};
 export type QualityReport={schemaVersion:1;bindingHash:string;claims:{id:string;support:'supported'|'unsupported'|'unknown';citationIds:string[]}[];lineage:Lineage[];checks:{completeClaimCoverage:'pass'|'fail'|'unknown';substantive:'pass'|'fail'|'unknown';citationsAuthentic:'pass'|'fail'|'unknown';safe:'pass'|'fail'|'unknown';nonSpam:'pass'|'fail'|'unknown';distinctCanonicalUpdate:'pass'|'fail'|'unknown'}};
 // Trusted runner wiring only. An LLM response or a caller-supplied identity is not this authority.
 export type QualityVerifier={kind:'trusted-semantic-quality-adapter-v1';id:string;revision:string;environment:'controlled-test'|'production';verify:(request:QualityRequest,signal:AbortSignal)=>Promise<Response>};
-export type QualityControl={profile:'quality-gated-v1';verifier?:QualityVerifier;minimumIndependentOrigins:number};
+export type QualityControl={profile:'quality-gated-v1';verifier?:QualityVerifier;minimumIndependentOrigins:number;previousCandidateHash?:string|null};
 export type QualityReceipt={schemaVersion:1;profile:'quality-gated-v1';eventId:string;candidateHash:string;manifestHash:string;sourceHash:string;bindingHash:string;verifierId:string;verifierRevision:string;environment:'controlled-test'|'production';decision:'allow'|'deny';reasons:string[];reportHash:string;independentOrigins:number;factualVerification:'trusted-adapter-assessment';livePublished:false};
 export function exact(value:unknown,keys:string[]):asserts value is Record<string,any>{if(!value||typeof value!=='object'||Array.isArray(value)||Object.keys(value).sort().join(',')!==[...keys].sort().join(','))stop('quality_schema');}
 export const digest=(v:unknown):v is string=>typeof v==='string'&&/^[a-f0-9]{64}$/.test(v);
@@ -18,13 +18,14 @@ export const identity=(v:unknown):v is string=>typeof v==='string'&&/^[a-z0-9][a
 export function qualityIdentity(control:QualityControl){
  if(!control||control.profile!=='quality-gated-v1'||!Number.isSafeInteger(control.minimumIndependentOrigins)||control.minimumIndependentOrigins<1||control.minimumIndependentOrigins>8)stop('quality_policy');
  const v=control.verifier;if(!v||v.kind!=='trusted-semantic-quality-adapter-v1'||!identity(v.id)||!identity(v.revision)||!['controlled-test','production'].includes(v.environment)||typeof v.verify!=='function')stop('quality_verifier_unconfigured');
- return {profile:control.profile,minimumIndependentOrigins:control.minimumIndependentOrigins,verifierId:v.id,verifierRevision:v.revision,environment:v.environment};
+ if(control.previousCandidateHash!==undefined&&control.previousCandidateHash!==null&&!digest(control.previousCandidateHash))stop('quality_policy');
+ return { ...(control.previousCandidateHash!==undefined?{previousCandidateHash:control.previousCandidateHash}:{}),profile:control.profile,minimumIndependentOrigins:control.minimumIndependentOrigins,verifierId:v.id,verifierRevision:v.revision,environment:v.environment};
 }
 export function qualityRequest(value:unknown,input:QualitySource[]):QualityRequest{
  const article=articleInput(value);if(!(readingArticleIds as readonly string[]).includes(article.id))stop('quality_existing_article_required');
  const claims:Claim[]=article.blocks.flatMap((block,index)=>block.type==='paragraph'?[{id:'paragraph-'+index,block:index,text:block.content.map(p=>p.type==='text'?p.text:p.type==='article'?p.label:'').join(' '),citationIds:[...new Set(block.content.flatMap(p=>p.type==='citation'?[p.sourceId]:[]))]}]:[]);
  if(!claims.length||input.length!==article.sources.length)stop('quality_manifest');
- let bytes=0;const sources=input.map(s=>{const citation=article.sources.find(c=>c.id===s.citationId);if(!citation||citation.url!==s.url||!identity(s.sourceId)||!digest(s.bodyHash)||!Buffer.isBuffer(s.bytes)||!s.bytes.length||s.bytes.length>qualityLimits.sourceBytes||hash(s.bytes)!==s.bodyHash)stop('quality_source_binding');bytes+=s.bytes.length;let text:string;try{text=new TextDecoder('utf-8',{fatal:true}).decode(s.bytes);}catch{return stop('quality_source_binding');}return {citationId:s.citationId,sourceId:s.sourceId,url:s.url,bodyHash:s.bodyHash,untrusted:true as const,text};});
+ let bytes=0;const sources=input.map(s=>{const citation=article.sources.find(c=>c.id===s.citationId);if(!citation||citation.url!==s.url||!identity(s.sourceId)||!digest(s.bodyHash)||!Buffer.isBuffer(s.bytes)||!s.bytes.length||s.bytes.length>qualityLimits.sourceBytes||hash(s.bytes)!==s.bodyHash)stop('quality_source_binding');bytes+=s.bytes.length;let text:string;try{text=new TextDecoder('utf-8',{fatal:true}).decode(s.bytes);}catch{return stop('quality_source_binding');}return {citationId:s.citationId,sourceId:s.sourceId,url:s.url,bodyHash:s.bodyHash,untrusted:true as const,text,...(s.extraction?{extraction:structuredClone(s.extraction),lineage:structuredClone(s.lineage)}:{})};});
  if(bytes>qualityLimits.totalSourceBytes||new Set(sources.map(s=>s.citationId)).size!==sources.length||new Set(sources.map(s=>s.sourceId)).size!==sources.length)stop('quality_source_binding');
  const candidateHash=hash(canonical(article)),manifestHash=hash(canonical(claims)),sourceHash=hash(canonical(sources));const request:QualityRequest={schemaVersion:1,kind:'complete-candidate-quality',candidateHash,manifestHash,sourceHash,bindingHash:hash(canonical({candidateHash,manifestHash,sourceHash})),article,claims,sources};
  if(Buffer.byteLength(canonical(request))>qualityLimits.requestBytes)stop('quality_request_limit');return request;
@@ -36,7 +37,7 @@ export function reportInput(value:unknown,request:QualityRequest):QualityReport{
  exact(value.checks,['completeClaimCoverage','substantive','citationsAuthentic','safe','nonSpam','distinctCanonicalUpdate']);if(Object.values(value.checks).some(v=>!['pass','fail','unknown'].includes(v as string)))stop('quality_checks');return structuredClone(value) as QualityReport;
 }
 export function decision(report:QualityReport,request:QualityRequest,control:QualityControl){
- const reasons:string[]=[];for(const [check,result]of Object.entries(report.checks))if(result!=='pass')reasons.push('check:'+check+':'+result);
+ const reasons:string[]=[];if(control.previousCandidateHash===request.candidateHash)reasons.push('duplicate-canonical-revision');for(const [check,result]of Object.entries(report.checks))if(result!=='pass')reasons.push('check:'+check+':'+result);
  for(const claim of report.claims)if(claim.support!=='supported')reasons.push('claim:'+claim.id+':'+claim.support);
  for(const source of report.lineage)if(source.provenance==='unknown'||!source.originIds.length)reasons.push('lineage:'+source.citationId+':unknown');
  // Count disjoint original lineages, not URLs/domains. Derived reports that share
@@ -49,3 +50,5 @@ export function decision(report:QualityReport,request:QualityRequest,control:Qua
  if(request.claims.every(c=>c.text.trim().split(/\s+/).length<12))reasons.push('headline-only-filler');
  return {decision:reasons.length?'deny' as const:'allow' as const,reasons:reasons.sort(),independentOrigins};
 }
+
+export function snapshotQuality(control:QualityControl):QualityControl{qualityIdentity(control);const v=control.verifier!;return {...(control.previousCandidateHash!==undefined?{previousCandidateHash:control.previousCandidateHash}:{}),profile:'quality-gated-v1',minimumIndependentOrigins:control.minimumIndependentOrigins,verifier:{kind:'trusted-semantic-quality-adapter-v1',id:v.id,revision:v.revision,environment:v.environment,verify:v.verify.bind(v)}};}

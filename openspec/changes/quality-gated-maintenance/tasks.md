@@ -12,6 +12,9 @@
 - [x] Actual two-article/three-revision signed restoration, cross-article target rejection, lost-write D1 restart/replay and rebuilt signed review qualification.
 - [x] Actual owned process-group SIGKILL after durable quality dispatch; restart retains no-retry authority.
 - [ ] Reader composition and retained final-head qualification.
-- [ ] Production source/provider profile implementation after concrete format/endpoint/model/price selection.
+- [x] Integrate compiled acquired HTML Evidence2 into existing collection/producer/quality/writer with separate raw/extracted bindings, unknown-lineage denial and controlled canonical allow/replay tests.
+- [x] Reject fixture/Evidence2 downgrade in both directions and bind source profile to pipeline admission.
+- [x] Exact current candidate duplication denies independently of semantic test-adapter pass.
+- [ ] Live source compatibility, trusted semantic/provider/endpoint/model/price/credential selection remain unconfigured.
 
 Live execution, paid calls, deployment, credentials and remote migrations remain unperformed and unauthorized by this checkpoint.

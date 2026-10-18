@@ -1,7 +1,14 @@
+import {validateQualitySourceExtraction} from '../maintenance-adapters/quality-source.ts';
 import type {SqlDatabase} from '../editorial/contracts.ts';
 import {canonical,hash} from '../publishing/contracts.ts';
-import {qualityIdentity,qualityRequest,reportInput,decision,qualityLimits,stop,type QualityControl,type QualityRequest,type QualityReceipt,type QualitySource,type QualityReport} from './contracts.ts';
+import {qualityIdentity,snapshotQuality,qualityRequest,reportInput,decision,qualityLimits,stop,type QualityControl,type QualityRequest,type QualityReceipt,type QualitySource,type QualityReport} from './contracts.ts';
 export {QualityError} from './contracts.ts';
+
+async function boundRequest(article:unknown,sources:QualitySource[]){
+ const candidate=structuredClone(article);const copied=sources.map(s=>{if(!Buffer.isBuffer(s.bytes))stop('quality_source_binding');return {...s,bytes:Buffer.from(s.bytes),...(s.extraction?{extraction:structuredClone(s.extraction),lineage:structuredClone(s.lineage)}:{})};});
+ for(const s of copied)if(s.extraction){const verified=await validateQualitySourceExtraction({citationId:s.citationId,sourceId:s.sourceId,url:s.url,bodyHash:s.bodyHash,bytes:s.bytes,extraction:s.extraction,lineage:s.lineage});s.extraction=verified.extraction;s.lineage=verified.lineage;}
+ return qualityRequest(candidate,copied);
+}
 type Row={event_id:string;fingerprint:string;binding_hash:string;owner:string;state:'evaluating'|'complete'|'uncertain';identity_json:string;created_at:number;report_json:string|null;receipt_json:string|null;receipt_hash:string|null};
 function event(id:string){if(typeof id!=='string'||!/^[a-z0-9][a-z0-9-]{2,79}$/.test(id))stop('quality_event');}
 async function boundedReport(request:QualityRequest,control:QualityControl){
@@ -17,12 +24,12 @@ function saved(row:Row,id:string,fingerprint:string,request:QualityRequest,contr
  try{if(!row.report_json||!row.receipt_json||hash(row.receipt_json)!==row.receipt_hash)stop('quality_audit_corrupt');const report=reportInput(JSON.parse(row.report_json),request),result=receipt(id,request,control,report);if(row.report_json!==canonical(report)||row.receipt_json!==canonical(result))stop('quality_audit_corrupt');return result;}catch{return stop('quality_audit_corrupt');}
 }
 export async function readQualityAdmission(id:string,article:unknown,sources:QualitySource[],context:{db:SqlDatabase;quality:QualityControl}){
- event(id);const authority=qualityIdentity(context.quality),request=qualityRequest(article,sources),fingerprint=hash(canonical({bindingHash:request.bindingHash,authority}));let row:Row|null;try{row=await context.db.prepare('SELECT * FROM maintenance_quality_admissions WHERE event_id=?').bind(id).first<Row>();}catch{return stop('quality_accounting_unavailable');}if(!row)stop('quality_admission_required');return saved(row,id,fingerprint,request,context.quality);
+ context={...context,quality:snapshotQuality(context.quality)};event(id);const authority=qualityIdentity(context.quality),request=await boundRequest(article,sources),fingerprint=hash(canonical({bindingHash:request.bindingHash,authority}));let row:Row|null;try{row=await context.db.prepare('SELECT * FROM maintenance_quality_admissions WHERE event_id=?').bind(id).first<Row>();}catch{return stop('quality_accounting_unavailable');}if(!row)stop('quality_admission_required');return saved(row,id,fingerprint,request,context.quality);
 }
 // This function cannot publish. Callers must require an allow receipt before any
 // publisher effect; denial is durable and retains the already charged proposal.
 export async function assessQuality(id:string,article:unknown,sources:QualitySource[],context:{db:SqlDatabase;quality:QualityControl;clock?:()=>number;checkpoint?:(phase:'quality-dispatched'|'quality-complete')=>void|Promise<void>}):Promise<QualityReceipt>{
- event(id);const authority=qualityIdentity(context.quality),request=qualityRequest(article,sources),fingerprint=hash(canonical({bindingHash:request.bindingHash,authority})),identity=canonical(authority),owner=crypto.randomUUID(),now=(context.clock??Date.now)();if(!Number.isSafeInteger(now)||now<0||now>253402300799999)stop('quality_clock');
+ context={...context,quality:snapshotQuality(context.quality)};event(id);const authority=qualityIdentity(context.quality),request=await boundRequest(article,sources),fingerprint=hash(canonical({bindingHash:request.bindingHash,authority})),identity=canonical(authority),owner=crypto.randomUUID(),now=(context.clock??Date.now)();if(!Number.isSafeInteger(now)||now<0||now>253402300799999)stop('quality_clock');
  const get=()=>context.db.prepare('SELECT * FROM maintenance_quality_admissions WHERE event_id=?').bind(id).first<Row>();let row:Row|null,changed:number;
  try{const result=await context.db.prepare(`INSERT INTO maintenance_quality_admissions(event_id,fingerprint,binding_hash,owner,state,identity_json,created_at) SELECT ?,?,?,?,'evaluating',?,? WHERE (SELECT COUNT(*) FROM maintenance_quality_admissions)<? AND NOT EXISTS(SELECT 1 FROM maintenance_quality_admissions WHERE created_at>?) ON CONFLICT DO NOTHING`).bind(id,fingerprint,request.bindingHash,owner,identity,now,qualityLimits.rows,now).run();changed=result.meta.changes;row=await get();}catch{return stop('quality_accounting_unavailable');}
  if(!row)stop('quality_capacity_or_clock');if(row.fingerprint!==fingerprint||row.binding_hash!==request.bindingHash||row.identity_json!==identity)stop('quality_event_conflict');if(row.created_at>now)stop('quality_clock');if(row.state==='complete')return saved(row,id,fingerprint,request,context.quality);if(changed!==1||row.owner!==owner)stop('quality_verifier_outcome_unconfirmed_no_retry');

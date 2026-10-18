@@ -5,8 +5,8 @@ export const producerLimits=Object.freeze({rows:16,sourceBytes:2048,responseByte
 export type Policy={unit:'SIMULATED_MICRO_USD';maxInputTokens:number;maxOutputTokens:number;inputRate:number;outputRate:number;runCost:number;dayCost:number;monthCost:number;dayRequests:number;monthRequests:number;maxSourceAgeMs:number};
 // Explicit fake-only demonstration values, not an approved real provider allocation/rate card.
 export const demonstrationPolicy:Readonly<Policy>=Object.freeze({unit:'SIMULATED_MICRO_USD',maxInputTokens:8192,maxOutputTokens:2048,inputRate:1,outputRate:1,runCost:10000,dayCost:20000,monthCost:60000,dayRequests:2,monthRequests:6,maxSourceAgeMs:86400000});
-export type SourceData={citationId:string;bodyHash:string;untrusted:true;text:string};
-export type ProviderRequest={schemaVersion:1;kind:'extractive-source-data';sources:SourceData[];maxOutputTokens:number;canonicalBase?:{untrusted:true;sourceCommit:string;receiptHash:string;articleRevision:string;markdownSha256:string;markdown:string}};
+export type SourceData={citationId:string;bodyHash:string;untrusted:true;text:string;profileId?:string;extractedHash?:string};
+export type ProviderRequest={schemaVersion:1;kind:'extractive-source-data';sourceProfile?:'bounded-extracted-html-v2';sources:SourceData[];maxOutputTokens:number;canonicalBase?:{untrusted:true;sourceCommit:string;receiptHash:string;articleRevision:string;markdownSha256:string;markdown:string}};
 export type Extract={citationId:string;bodyHash:string;start:number;end:number;quote:string};
 export type Output={kind:'complete-source-paragraphs';extracts:Extract[]};
 export type Provider={kind:'deterministic-extractive-fake';id:'fake-extractive-v1';tokenizer:'synthetic-utf8-bytes';invoke:(request:ProviderRequest,signal:AbortSignal)=>Promise<Response>};
@@ -24,6 +24,12 @@ export function sourceData(citationId:string,bodyHash:string,bytes:Buffer):Sourc
  if(/<\s*[a-z!/?]|[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f\u202a-\u202e\u2066-\u2069]/i.test(text))stop('maintenance_source_profile');
  return {citationId,bodyHash,untrusted:true,text};
 }
+
+// Raw identity and bounded extraction remain distinct in the versioned request.
+// The caller must have re-extracted and verified actual HTTP receipt authority.
+export function extractedSourceData(citationId:string,rawHash:string,profileId:string,extractedHash:string,text:string):SourceData{
+ const bytes=Buffer.from(text);if(bytes.length<1||bytes.length>8192||hash(bytes)!==extractedHash||!/^strict-canonical-main-html-v1$/.test(profileId)||! /^[a-f0-9]{64}$/.test(rawHash)||/<\s*[a-z!/?]|[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f\u202a-\u202e\u2066-\u2069]/i.test(text))stop('maintenance_source_profile');return {citationId,bodyHash:rawHash,profileId,extractedHash,untrusted:true,text};
+}
 export function validateReply(value:unknown,request:ProviderRequest,policy:Readonly<Policy>){
  shape(value,['schemaVersion','provider','tokenizer','output','usage']);if(value.schemaVersion!==1||value.provider!=='fake-extractive-v1'||value.tokenizer!=='synthetic-utf8-bytes')stop('maintenance_provider_identity');
  shape(value.output,['kind','extracts']);const output=value.output as Output;
@@ -38,7 +44,7 @@ export function validateReply(value:unknown,request:ProviderRequest,policy:Reado
 }
 export function deterministicProvider(observe?:(request:ProviderRequest)=>void):Provider{return {kind:'deterministic-extractive-fake',id:'fake-extractive-v1',tokenizer:'synthetic-utf8-bytes',async invoke(request,signal){
  if(signal.aborted)stop('maintenance_provider_timeout');observe?.(structuredClone(request));
- const output:Output={kind:'complete-source-paragraphs',extracts:request.sources.map(source=>{const line=source.text.split('\n').find(s=>s.trim().length>=20)?.trim()??'';const start=source.text.indexOf(line);return {citationId:source.citationId,bodyHash:source.bodyHash,start,end:start+line.length,quote:line};})};
+ const output:Output={kind:'complete-source-paragraphs',extracts:request.sources.map(source=>{const line=source.text.split('\n').find(s=>s.trim().length>=20&&(request.sourceProfile!=='bounded-extracted-html-v2'||s.trim().split(/\s+/).length>=12))?.trim()??'';const start=source.text.indexOf(line);return {citationId:source.citationId,bodyHash:source.bodyHash,start,end:start+line.length,quote:line};})};
  if(tokens(output)>request.maxOutputTokens)return Response.json({error:'fake_output_limit'},{status:422});
  return Response.json({schemaVersion:1,provider:'fake-extractive-v1',tokenizer:'synthetic-utf8-bytes',output,usage:{inputTokens:tokens(request),outputTokens:tokens(output)}});
  }};}

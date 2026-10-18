@@ -1,3 +1,4 @@
+import {collectAcquiredSource} from './acquired.ts';
 import type {SqlDatabase} from '../editorial/contracts.ts';
 import {canonical,hash} from '../publishing/contracts.ts';
 import {HttpObservationStore,type HttpLease} from '../monitoring/http-store.ts';
@@ -10,13 +11,14 @@ import {CollectionFiles,collectionLimits,stop,uuid} from './files.ts';
 export {CollectionError,CollectionFiles,collectionLimits} from './files.ts';
 type Selection={sourceId:string;citationId:string;requestKey:string};
 type Row={request_key:string;source_id:string;citation_id:string;fingerprint:string;owner:string;state:'capturing'|'prepared'|'ready'|'stopped';created_at:number;body_hash:string|null;body_bytes:number|null;journal:string|null;journal_hash:string|null};
-type Context={enabled?:boolean;transport?:{kind:'controlled-source-fixture';send:WebFetch};db:SqlDatabase;collectionName:string;clock?:()=>number;checkpoint?:(phase:'charged'|'body-written'|'prepared'|'http-complete'|'ready')=>void|Promise<void>};
+type Context={enabled?:boolean;transport?:{kind:'controlled-source-fixture'|'bounded-official-http-source-v2';send:WebFetch};db:SqlDatabase;collectionName:string;clock?:()=>number;checkpoint?:(phase:'charged'|'body-written'|'prepared'|'http-complete'|'ready')=>void|Promise<void>};
 function input(value:unknown):Selection{
  if(!value||typeof value!=='object'||Array.isArray(value)||Object.keys(value).sort().join(',')!=='citationId,requestKey,sourceId')stop('collection_invalid_selection');
  const v=value as Selection;if(!officialSource(v.sourceId)||typeof v.citationId!=='string'||!/^[a-z][a-z0-9-]{0,47}$/.test(v.citationId)||!uuid(v.requestKey))stop('collection_invalid_selection');return {...v};
 }
 // Local trusted-code coordinator only. No route, schedule, credentials or default fetch.
 export async function collectMaintenanceSource(value:unknown,context:Context){
+ if(context.transport?.kind==='bounded-official-http-source-v2')return collectAcquiredSource(input(value),{...context,transport:{kind:'bounded-official-http-source-v2',send:context.transport.send}});
  if(context.enabled!==true||context.transport?.kind!=='controlled-source-fixture'||typeof context.transport.send!=='function')stop('collection_disabled');
  const selection=input(value),clock=context.clock??Date.now,now=clock();if(!Number.isSafeInteger(now)||now<0||now>253402300799999)stop('collection_invalid_clock');
  const files=new CollectionFiles(context.collectionName),fingerprint=hash(canonical({selection,root:files.root,profile:'original-plain-utf8-2048-v1'})),owner=crypto.randomUUID(),store=new HttpObservationStore(context.db);
