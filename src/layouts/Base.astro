@@ -54,7 +54,7 @@ const localBridge=process.env.AGENTIC_BIBLE_LOCAL_WIKI_BUILD==='1';
         if (event.key !== '/' || event.ctrlKey || event.metaKey || event.altKey || target.isContentEditable || /INPUT|TEXTAREA|SELECT/.test(target.tagName)) return;
         event.preventDefault();
         const field = document.querySelector<HTMLInputElement>('#search-input');
-        if (field) field.focus(); else window.location.assign((document.body.dataset.wikiSnapshotBase??'/')+'search/');
+        if (field) field.focus(); else window.location.assign((document.body.dataset.wikiSnapshotBase??'/')+'search/#focus');
       });
     </script>
   </body>
