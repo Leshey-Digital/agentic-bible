@@ -10,6 +10,7 @@ type Selection={sourceId:string;requestKey:string};
 export type AcquisitionReceipt={requestKey:string;observedAt:number;reservationToken:string;day:number;attempt:number};
 export type AcquiredSource={source:ExtractedSource;receipt:AcquisitionReceipt};
 type Context={enabled?:boolean;db:SqlDatabase;send?:WebFetch;clock?:()=>number};
+export type SourceVerificationContext={db:SqlDatabase;clock?:()=>number;historicalReplay?:boolean};
 const uuid=(value:unknown):value is string=>typeof value==='string'&&/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(value);
 function selection(value:unknown):Selection{
   exact(value,['sourceId','requestKey']);const profile=extractionProfile(value.sourceId);
@@ -18,7 +19,7 @@ function selection(value:unknown):Selection{
 }
 function timestamp(clock:()=>number){const now=clock();if(!Number.isSafeInteger(now)||now<0||now>253402300799999)reject('adapter_invalid_clock');return now;}
 type ReceiptRow={source_id:string;state:string;attempts:number;result:string;finished_token:string;token:string;outcome:string;attempt:number;day:number;actual_bytes:number;budget_day:number;used:number;day_count:number};
-async function receiptFor(source:ExtractedSource,key:string,db:SqlDatabase,now:number):Promise<AcquisitionReceipt>{
+async function receiptFor(source:ExtractedSource,key:string,db:SqlDatabase,now:number,historicalReplay=false):Promise<AcquisitionReceipt>{
   let row:ReceiptRow|null;
   try{row=await db.prepare(`SELECT j.source_id,j.state,j.attempts,j.result,j.finished_token,r.token,r.outcome,r.attempt,r.day,r.actual_bytes,b.day AS budget_day,b.used,
     (SELECT COUNT(*) FROM http_request_reservations charged WHERE charged.day=r.day) AS day_count
@@ -29,20 +30,29 @@ async function receiptFor(source:ExtractedSource,key:string,db:SqlDatabase,now:n
   try{result=JSON.parse(row.result);}catch{return reject('adapter_invalid_http_receipt');}
   if(result?.status!=='succeeded'||result.ok!==true||result.state?.mode!=='http'||result.state.sourceId!==source.sourceId||result.state.hash!==source.raw.hash||result.observation?.hash!==source.raw.hash||!['baseline','changed','unchanged'].includes(result.observation.kind)||result.observation.bytes!==source.raw.bytes.byteLength||row.actual_bytes!==source.raw.bytes.byteLength)reject('adapter_http_receipt_mismatch');
   const observedAt=result.state.checkedAt;
-  if(!Number.isSafeInteger(observedAt)||observedAt<0||observedAt>now||now-observedAt>86400000)reject('adapter_stale_observation');
+  if(!Number.isSafeInteger(observedAt)||observedAt<0||observedAt>253402300799999)reject('adapter_stale_observation');
+  if(!historicalReplay&&(observedAt>now||now-observedAt>86400000))reject('adapter_stale_observation');
   return {requestKey:key,observedAt,reservationToken:row.token,day:row.day,attempt:row.attempt};
 }
 
 // New receipt boundary: re-extract actual raw bytes and verify actual HTTP D1 authority.
 // Does not issue legacy Evidence1, infer original lineage or call a semantic verifier.
-export async function verifyAcquiredSource(value:unknown,context:Pick<Context,'db'|'clock'>):Promise<AcquiredSource>{
+export async function verifyAcquiredSource(value:unknown,context:SourceVerificationContext):Promise<AcquiredSource>{
   exact(value,['source','receipt']);exact(value.receipt,['requestKey','observedAt','reservationToken','day','attempt']);
   if(!uuid(value.receipt.requestKey))reject('adapter_invalid_key');
   if(!uuid(value.receipt.reservationToken)||!Number.isSafeInteger(value.receipt.observedAt)||!Number.isSafeInteger(value.receipt.day)||!Number.isSafeInteger(value.receipt.attempt))reject('adapter_invalid_shape');
   const source=await validateExtractedSource(value.source);
-  const receipt=await receiptFor(source,value.receipt.requestKey,context.db,timestamp(context.clock??Date.now));
+  const receipt=await receiptFor(source,value.receipt.requestKey,context.db,timestamp(context.clock??Date.now),context.historicalReplay===true);
   if(canonical(receipt)!==canonical(value.receipt))reject('adapter_receipt_binding_mismatch');
   return {source,receipt};
+}
+
+// Reconstruct receipt metadata from trusted D1 rather than a candidate reference.
+// Useful when an owned raw file and its exact extraction identity are retained.
+export async function verifyAcquiredSourceReference(value:unknown,context:SourceVerificationContext):Promise<AcquiredSource>{
+  exact(value,['source','requestKey']);if(!uuid(value.requestKey))reject('adapter_invalid_key');
+  const source=await validateExtractedSource(value.source);
+  return {source,receipt:await receiptFor(source,value.requestKey,context.db,timestamp(context.clock??Date.now),context.historicalReplay===true)};
 }
 
 // Trusted-code callable only. No app import, route, schedule or provider dispatch.
