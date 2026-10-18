@@ -11,6 +11,6 @@
 - [x] Independent review of `9d38eea50b8da486b43895ee8fc12cc6f33462cd` reproduced an expiry microtask between final freshness check and adapter dispatch. Add two real-signed deterministic regressions, reproduce the expired invocation (17 passed/1 failed), and remove the intervening promise hop while retaining pending budgets and safe synchronous-error handling.
 - [x] Document the separate delayed-reservation/rotation limitation and trusted adapter's serialized revision-validation responsibility.
 - [x] Successor checks passed: focused 18/18, retained settings 19/19, docs (300 Markdown files/365 links), Astro (155 files, zero errors/warnings/hints), and clean diff whitespace. Broader full validation/browser/native hosted/build suites were not repeated for this narrow unmounted correction; prior initial build/static evidence remains distinct above.
-- [ ] Obtain independent exact-successor re-review before integration.
+- [x] Independent exact-successor re-review of `3a71c2b55698cc252a93f693788b0e9f534c9d68` reports bounded acceptance, the expiry P2 closed, and no new actionable findings. Independent checks: five targeted probes, 18/18 contract tests, 19/19 retained settings tests, docs and diff whitespace. Persistent/live adapters and hosted integration remain unverified and separate.
 
 No route or persistent/live provider adapter is implemented. Tests using memory survive handler replacement only; they do not demonstrate process persistence or vault operation.
