@@ -1,3 +1,7 @@
+import {maintenanceTarget} from '../maintenance-quality/target.ts';
+import {readQualityAdmission,requireQualityAllow} from '../maintenance-quality/admission.ts';
+import type {QualityControl} from '../maintenance-quality/contracts.ts';
+import {readingArticleIds} from '../lib/article-ids.ts';
 import {reviewedCommand,verifyApproval,type ReviewedCommand} from '../corrections/approval.ts';
 import {DatabaseSync} from 'node:sqlite';
 import {execFileSync} from 'node:child_process';
@@ -13,12 +17,12 @@ import {buildWiki} from './build.ts';
 import {snapshotV1ArticlePages,snapshotV1CatalogBytes} from './snapshot-v1.ts';
 
 type Event={eventId:string;fingerprint:string;sequence:number;kind:'apply'|'rollback';publisher:Reference;articleRevision:string|null;evidenceHash:string};
-export type SiteState={schemaVersion:1;mode:'local-synthetic-only';sequence:number;originalMarkdownHash:string;sourceTreeHash:string;publisher:Reference;articleRevision:string|null;bindings:Binding[];proofs:{eventId:string;revisionId:string;bindings:Binding[]}[];parent:Reference|null;ancestors:Reference[];events:Event[]};
+export type SiteState={schemaVersion:1|2;targetArticleId?:string;mode:'local-synthetic-only';sequence:number;originalMarkdownHash:string;sourceTreeHash:string;publisher:Reference;articleRevision:string|null;bindings:Binding[];proofs:{eventId:string;revisionId:string;bindings:Binding[]}[];parent:Reference|null;ancestors:Reference[];events:Event[]};
 export type SiteManifest={schemaVersion:1;siteId:string;state:SiteState;files:Record<string,{sha256:string;bytes:number}>};
 export type SiteReceipt=Event&{outcome:'site-activated';site:Reference;parent:Reference|null};
 type Job={schemaVersion:1;command:BridgeCommand;fingerprint:string;sourceTreeHash:string;phase:'validated'|'article-accepted/site-pending'|'building'|'complete';bindings:Binding[];buildAttempts:number;publisher?:Reference;articleReceipt?:ArticleReceipt;receipt?:SiteReceipt};
 export type BridgePhase='after-validation'|'after-publication'|'after-article-journal'|'build-started'|'after-build'|'after-seal'|'after-activate';
-type Options={checkpoint?:(phase:BridgePhase)=>void|Promise<void>};
+type Options={quality?:QualityControl;checkpoint?:(phase:BridgePhase)=>void|Promise<void>};
 
 export class WikiBridge {
   root:string;repo:string;publisher:PublicationStore;
@@ -36,6 +40,7 @@ export class WikiBridge {
       if(!reference(ref))reject('site_corrupt');const folder=this.path(`sites/${ref.id}`);const raw=bounded(join(folder,'manifest.json'),1024*1024);if(hash(raw)!==ref.manifestHash)reject('site_corrupt');
       const manifest=JSON.parse(raw.toString()) as SiteManifest;const s=manifest.state;
       if(manifest.schemaVersion!==1||manifest.siteId!==ref.id||!object(s)||s.mode!=='local-synthetic-only'||hash(canonical(s))!==ref.id||!Number.isInteger(s.sequence)||s.sequence<1||s.sequence>8||!digest(s.originalMarkdownHash)||!digest(s.sourceTreeHash)||!reference(s.publisher)||!Array.isArray(s.ancestors)||s.ancestors.length!==s.sequence-1||!Array.isArray(s.events)||s.events.length!==s.sequence||canonical(s.parent)!==canonical(s.ancestors.at(-1)??null))reject('site_corrupt');
+      if(s.schemaVersion===2){try{maintenanceTarget(s.targetArticleId);}catch{reject('site_corrupt');}}else if(s.schemaVersion!==1||s.targetArticleId!==undefined)reject('site_corrupt');
       for(const ancestor of s.ancestors)if(!reference(ancestor))reject('site_corrupt');
       if(new Set(s.events.map(e=>e.eventId)).size!==s.events.length||s.events.some((e,i)=>!digest(e.fingerprint)||e.sequence!==i+1||!reference(e.publisher)))reject('site_corrupt');
       const actual=inventoryExceptManifest(folder);if(canonical(actual)!==canonical(manifest.files))reject('site_corrupt');
@@ -65,7 +70,7 @@ export class WikiBridge {
     return {mode:'local-synthetic-only',active:active?{...active.reference,sequence:active.manifest.state.sequence,articleRevision:active.manifest.state.articleRevision,publisher:active.manifest.state.publisher}:null,pending,storage:this.storageUsage()};
   }
   async execute(value:unknown,db:SqlDatabase,sourceDirectory:string,options:Options={}):Promise<SiteReceipt>{
-    const command=bridgeInput(value);if(command.kind==='apply'&&command.revision.article.reviewedCorrections)reject('reviewed_approval_required');
+    const command=bridgeInput(value);if(command.kind==='apply'&&command.schemaVersion===2&&!options.quality)reject('quality_verifier_unconfigured');if(command.kind==='apply'&&command.revision.article.reviewedCorrections)reject('reviewed_approval_required');
     return this.executeCommand(command,db,sourceDirectory,options);
   }
   async executeReviewed(approvalId:string,db:SqlDatabase,options:Options={}):Promise<SiteReceipt>{
@@ -73,7 +78,7 @@ export class WikiBridge {
     return this.executeCommand(command,db,'',options,()=>verifyApproval(command,db));
   }
   private async executeCommand(command:BridgeCommand|ReviewedCommand,db:SqlDatabase,sourceDirectory:string,options:Options,reviewed?:()=>Promise<{bindings:Binding[];files:Record<string,Buffer>;evidenceHash:string}>):Promise<SiteReceipt>{
-    const fingerprint=hash(canonical(command));const jobId=hash(command.eventId);const jobDir=this.path(`jobs/${jobId}`);const jobPath=join(jobDir,'operation.json');let mutex:DatabaseSync|undefined;
+    const targetId=command.kind==='apply'?command.revision.article.id:(this.current()?.manifest.state.targetArticleId??'tool-use'),articleTarget=maintenanceTarget(targetId);const fingerprint=hash(canonical(command));const jobId=hash(command.eventId);const jobDir=this.path(`jobs/${jobId}`);const jobPath=join(jobDir,'operation.json');let mutex:DatabaseSync|undefined;
     try{mutex=new DatabaseSync(this.path('mutex.sqlite'));mutex.exec('PRAGMA busy_timeout=0;CREATE TABLE IF NOT EXISTS bridge_mutex(id INTEGER PRIMARY KEY);BEGIN IMMEDIATE;');}catch(error){mutex?.close();return reject(/locked|busy/i.test(String(error))?'bridge_busy':'bridge_storage_unavailable');}
     let stage:string|undefined;
     try{
@@ -84,13 +89,13 @@ export class WikiBridge {
       if(job?.receipt)return job.receipt;
       const jobs=this.path('jobs');if(existsSync(jobs))for(const id of readdirSync(jobs)){if(id===jobId)continue;const other=json(this.path(`jobs/${id}/operation.json`)) as Job;if(other.phase!=='complete'&&!current?.manifest.state.events.some(e=>e.eventId===other.command.eventId))reject('bridge_pending_operation');}
       if(canonical(current?.reference??null)!==canonical(command.expectedSite))reject('stale_site_parent');
-      const original=bounded(join(this.repo,'src/content/articles/tool-use.md'),128*1024);if(hash(original)!==command.originalMarkdownHash||current&&current.manifest.state.originalMarkdownHash!==command.originalMarkdownHash)reject('stale_original_markdown');
+      const original=bounded(join(this.repo,articleTarget.articlePath),128*1024);if(hash(original)!==command.originalMarkdownHash||current&&(current.manifest.state.targetArticleId??'tool-use')===targetId&&current.manifest.state.originalMarkdownHash!==command.originalMarkdownHash)reject('stale_original_markdown');
       const project=projectFiles(this.repo);if('authority' in command&&command.authority.sourceTreeHash!==project.hash)reject('build_source_changed');if(job&&job.sourceTreeHash!==project.hash||current&&current.manifest.state.sourceTreeHash!==project.hash)reject('build_source_changed');
       const sequence=(current?.manifest.state.sequence??0)+1;if(sequence>8||command.kind==='apply'&&sequence===8)reject('bridge_capacity');
       let validated:{bindings:Binding[];files:Record<string,Buffer>;evidenceHash:string};let target:SiteManifest|null=null;
       if(command.kind==='apply'){
-        if(command.revision.baseRevision!==null&&!digest(command.revision.baseRevision))reject('invalid_publisher_base');validateCrosslinks(command.revision.article,new Set(baselineArticles));
-        validated=reviewed?await reviewed():await validateEvidence(command,db,sourceDirectory);
+        if(command.revision.baseRevision!==null&&!digest(command.revision.baseRevision))reject('invalid_publisher_base');validateCrosslinks(command.revision.article,new Set(command.schemaVersion===2?readingArticleIds:baselineArticles));
+        validated=reviewed?await reviewed():await validateEvidence(command,db,sourceDirectory);if(options.quality){const admission=await readQualityAdmission(command.eventId,command.revision.article,command.evidence.map(e=>({...e,bytes:validated.files[e.bodyHash]})),{db,quality:options.quality});requireQualityAllow(admission);}
       }else{
         if(command.targetSite){if(!current!.manifest.state.ancestors.some(ref=>canonical(ref)===canonical(command.targetSite)))reject('rollback_site_not_ancestor');target=this.load(command.targetSite);}
         validated=reviewed?await reviewed():await this.revalidateBindings(target?.state.bindings??[],target?.state.articleRevision??null,db);
@@ -99,8 +104,8 @@ export class WikiBridge {
       const pubFingerprint=hash(canonical(publisherCommand));const ownAccepted=pub?.manifest.state.receipts.find(r=>r.eventId===command.eventId);
       if(canonical(pub?.reference??null)!==canonical(command.expectedPublisher)){
         if(!job||!ownAccepted||ownAccepted.fingerprint!==pubFingerprint||pub!.manifest.state.receipts.at(-1)?.eventId!==command.eventId)reject('stale_publisher_parent');
-      }else if(command.kind==='apply'&&(pub?.manifest.state.articles['tool-use']??null)!==command.revision.baseRevision)reject('stale_publisher_base');
-      if(pub&&Object.keys(pub.manifest.state.articles).some(id=>id!=='tool-use'))reject('unsupported_publisher_snapshot');
+      }else if(command.kind==='apply'&&(pub?.manifest.state.articles[targetId]??null)!==command.revision.baseRevision)reject('stale_publisher_base');
+      if(pub&&Object.keys(pub.manifest.state.articles).some(id=>!readingArticleIds.includes(id as any)))reject('unsupported_publisher_snapshot');
       if(!job){
         if(this.storageUsage().accountedBytes+bridgeLimits.captureBytes+bridgeLimits.siteBytes>bridgeLimits.storeBytes-(command.kind==='apply'?bridgeLimits.siteBytes:0))reject('bridge_storage_capacity');
         if(existsSync(jobs)&&readdirSync(jobs).length>=8)reject('bridge_capacity');
@@ -112,8 +117,8 @@ export class WikiBridge {
       const pinned=this.publisher.current()!;if(pinned.manifest.state.receipts.at(-1)?.eventId!==command.eventId)reject('publisher_changed_pending');
       if(job.publisher&&canonical(job.publisher)!==canonical(pinned.reference))reject('publisher_changed_pending');
       job.publisher=pinned.reference;job.articleReceipt=articleReceipt;job.phase='article-accepted/site-pending';atomic(jobPath,job);await options.checkpoint?.('after-article-journal');
-      const event:Event={eventId:command.eventId,fingerprint,sequence,kind:command.kind,publisher:pinned.reference,articleRevision:pinned.manifest.state.articles['tool-use']??null,evidenceHash:reviewed?validated.evidenceHash:hash(canonical(job.bindings))};
-      const state:SiteState={schemaVersion:1,mode:'local-synthetic-only',sequence,originalMarkdownHash:command.originalMarkdownHash,sourceTreeHash:job.sourceTreeHash,publisher:pinned.reference,articleRevision:event.articleRevision,bindings:job.bindings,proofs:[...(current?.manifest.state.proofs??[]),...(command.kind==='apply'?[{eventId:command.eventId,revisionId:event.articleRevision!,bindings:job.bindings}]:[])],parent:current?.reference??null,ancestors:[...(current?.manifest.state.ancestors??[]),...(current?[current.reference]:[])],events:[...(current?.manifest.state.events??[]),event]};
+      const event:Event={eventId:command.eventId,fingerprint,sequence,kind:command.kind,publisher:pinned.reference,articleRevision:pinned.manifest.state.articles[targetId]??null,evidenceHash:reviewed?validated.evidenceHash:hash(canonical(job.bindings))};
+      const generic=command.kind==='apply'&&command.schemaVersion===2||current?.manifest.state.schemaVersion===2;const state:SiteState={schemaVersion:generic?2:1,...(generic?{targetArticleId:targetId}:{}),mode:'local-synthetic-only',sequence,originalMarkdownHash:command.originalMarkdownHash,sourceTreeHash:job.sourceTreeHash,publisher:pinned.reference,articleRevision:event.articleRevision,bindings:job.bindings,proofs:[...(current?.manifest.state.proofs??[]),...(command.kind==='apply'?[{eventId:command.eventId,revisionId:event.articleRevision!,bindings:job.bindings}]:[])],parent:current?.reference??null,ancestors:[...(current?.manifest.state.ancestors??[]),...(current?[current.reference]:[])],events:[...(current?.manifest.state.events??[]),event]};
       const siteId=hash(canonical(state));const destination=this.path(`sites/${siteId}`);let ref:Reference;
       if(existsSync(destination)){
         ref={id:siteId,manifestHash:hash(bounded(join(destination,'manifest.json'),1024*1024))};if(canonical(this.load(ref).state)!==canonical(state))reject('site_corrupt');

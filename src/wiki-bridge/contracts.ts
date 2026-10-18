@@ -1,3 +1,4 @@
+import {maintenanceTarget} from '../maintenance-quality/target.ts';
 import {lstatSync} from 'node:fs';
 import {bounded} from './files.ts';
 import {join} from 'node:path';
@@ -13,22 +14,23 @@ export function exact(value:unknown,keys:string[]):asserts value is Record<strin
 export function reference(value:unknown):Reference|null{if(value===null)return null;exact(value,['id','manifestHash']);if(!digest(value.id)||!digest(value.manifestHash))reject('invalid_bridge_reference');return {id:value.id,manifestHash:value.manifestHash};}
 const event=(value:unknown):string=>{if(typeof value!=='string'||value.length>80||value!==value.trim()||!/^[a-z0-9][a-z0-9-]{2,79}$/.test(value))reject('invalid_bridge_event');return value;};
 export type Evidence={citationId:string;sourceId:string;url:string;receiptKey:string;bodyHash:string;file:string};
-export type Apply={schemaVersion:1;kind:'apply';mode:'local-synthetic-only';eventId:string;originalMarkdownHash:string;expectedSite:Reference|null;expectedPublisher:Reference|null;revision:Publish;evidence:Evidence[]};
+export type Apply={schemaVersion:1|2;kind:'apply';mode:'local-synthetic-only';eventId:string;originalMarkdownHash:string;expectedSite:Reference|null;expectedPublisher:Reference|null;revision:Publish;evidence:Evidence[]};
 export type Rollback={schemaVersion:1;kind:'rollback';mode:'local-synthetic-only';eventId:string;originalMarkdownHash:string;expectedSite:Reference;expectedPublisher:Reference;targetSite:Reference|null};
 export type BridgeCommand=Apply|Rollback;
 export type Binding=Omit<Evidence,'file'>&{bytes:number;observedAt:number;reservationToken:string;day:number;attempt:number};
 export function bridgeInput(value:unknown):BridgeCommand{
   let bytes;try{bytes=Buffer.byteLength(JSON.stringify(value));}catch{return reject('invalid_bridge_schema');}if(bytes>bridgeLimits.inputBytes)reject('bridge_input_too_large');
-  if(!object(value)||value.schemaVersion!==1||value.mode!=='local-synthetic-only')reject('invalid_bridge_schema');
+  if(!object(value)||![1,2].includes(value.schemaVersion as number)||value.mode!=='local-synthetic-only')reject('invalid_bridge_schema');
   const eventId=event(value.eventId);if(!digest(value.originalMarkdownHash))reject('invalid_original_hash');
   const expectedSite=reference(value.expectedSite);const expectedPublisher=reference(value.expectedPublisher);
-  if(value.kind==='rollback'){
+  if(value.kind==='rollback'){if(value.schemaVersion!==1)reject('unsupported_bridge_command');
     exact(value,['schemaVersion','kind','mode','eventId','originalMarkdownHash','expectedSite','expectedPublisher','targetSite']);if(!expectedSite||!expectedPublisher)reject('invalid_rollback_base');
     return {schemaVersion:1,kind:'rollback',mode:'local-synthetic-only',eventId,originalMarkdownHash:value.originalMarkdownHash,expectedSite,expectedPublisher,targetSite:reference(value.targetSite)};
   }
   if(value.kind!=='apply')reject('unsupported_bridge_command');
   exact(value,['schemaVersion','kind','mode','eventId','originalMarkdownHash','expectedSite','expectedPublisher','revision','evidence']);
-  const revision=commandInput(value.revision);if(revision.kind!=='publish'||revision.eventId!==eventId||revision.article.id!=='tool-use'||revision.article.topic!=='Capabilities'||revision.article.sources.length<2||revision.article.sources.length>3)reject('unsupported_bridge_revision');
+  const revision=commandInput(value.revision);if(revision.kind!=='publish'||revision.eventId!==eventId||(value.schemaVersion===1&&(revision.article.id!=='tool-use'||revision.article.topic!=='Capabilities'||revision.article.sources.length<2))||revision.article.sources.length>3)reject('unsupported_bridge_revision');
+  if(value.schemaVersion===2){try{maintenanceTarget(revision.article.id);}catch{reject('unsupported_bridge_revision');}}
   if(!Array.isArray(value.evidence)||value.evidence.length!==revision.article.sources.length)reject('invalid_bridge_evidence');
   const evidence=value.evidence.map((entry):Evidence=>{
     exact(entry,['citationId','sourceId','url','receiptKey','bodyHash','file']);
@@ -38,7 +40,7 @@ export function bridgeInput(value:unknown):BridgeCommand{
     return {citationId:entry.citationId,sourceId:entry.sourceId,url:entry.url,receiptKey:entry.receiptKey,bodyHash:entry.bodyHash,file:entry.file};
   });
   if(new Set(evidence.map(x=>x.citationId)).size!==evidence.length||new Set(evidence.map(x=>x.sourceId)).size!==evidence.length||new Set(evidence.map(x=>x.receiptKey)).size!==evidence.length)reject('duplicate_bridge_evidence');
-  return {schemaVersion:1,kind:'apply',mode:'local-synthetic-only',eventId,originalMarkdownHash:value.originalMarkdownHash,expectedSite,expectedPublisher,revision,evidence};
+  return {schemaVersion:value.schemaVersion as 1|2,kind:'apply',mode:'local-synthetic-only',eventId,originalMarkdownHash:value.originalMarkdownHash,expectedSite,expectedPublisher,revision,evidence};
 }
 type Row={source_id:string;state:string;attempts:number;result:string;finished_token:string;token:string;outcome:string;attempt:number;day:number;actual_bytes:number;budget_day:number;used:number;day_count:number};
 export async function validateEvidence(command:Pick<Apply,'evidence'>,db:SqlDatabase,sourceDirectory:string){

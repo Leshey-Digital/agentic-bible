@@ -8,7 +8,8 @@
 - [x] Actual D1 focused quality/restart/race/tamper tests.
 - [x] Controlled end-to-end quality allow/deny qualification; retained affected suites run separately with evidence.
 - [x] Terminalize exact known denials through append-only migration 0021 while retaining charges/journals.
-- [ ] Generalize the existing article target across producer/publisher/canonical history where complete.
+- [x] Generalize existing article targets and per-article heads across producer/publisher/build/writer/base/history; controlled two-head Git/D1 journey passed.
+- [ ] Complete generalized restoration/replay/race and reader composition qualification.
 - [ ] Production source/provider profile implementation after concrete format/endpoint/model/price selection.
 
 Live execution, paid calls, deployment, credentials and remote migrations remain unperformed and unauthorized by this checkpoint.

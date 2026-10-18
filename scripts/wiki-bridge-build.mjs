@@ -38,7 +38,7 @@ try{
         html=html.replace(/<section class="sources"[^>]*>[^]*?<\/section>/,()=>baselineSources);
       }
       if(plan.correctionBaseline&&path==='history/index.html')html=html.replace('<h2>Publication actions</h2>',`<p><a href="/${baselineFile}">Original full article before community corrections</a></p><h2>Publication actions</h2>`);
-      const revision=/^history\/tool-use\/([a-f0-9]{64})\.html$/.exec(path)?.[1];
+      const revision=/^history\/[a-z][a-z0-9-]*\/([a-f0-9]{64})\.html$/.exec(path)?.[1];
       if(revision&&!plan.correctionBaseline){const proofs=plan.proofs.filter(p=>p.revisionId===revision);html=html.replace('</article>',`<section class="revision"><h2>Bound original local evidence</h2><p>Integrity binding is not factual or source-authenticity proof.</p>${proofs.map(p=>`<p>Event: ${escape(p.eventId)}</p><ul>${p.bindings.map(b=>`<li>${escape(b.citationId)} · ${escape(b.sourceId)} · <code>${escape(b.bodyHash)}</code> · ${escape(b.receiptKey)}</li>`).join('')}</ul>`).join('')}</section></article>`);}
       value=Buffer.from(html);
     }
