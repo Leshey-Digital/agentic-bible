@@ -161,3 +161,9 @@ The default-disabled [source collector](docs/maintenance-source-collection.md) c
 ## Controlled canonical maintenance writer
 
 The default-disabled [canonical writer](docs/canonical-maintenance-writer.md) consumes completed sourced maintenance output and atomically updates article Markdown, immutable history and the review pointer through an expected-head protected controlled GitHub mutation. `npm run test:maintenance-github` exercises actual D1 and an owned real Git repository, including replay, concurrent writers, lost responses and conflicts. It is included in validate. No real GitHub transport, credential, article publication or release is configured; [checkpoint evidence](docs/review/canonical-maintenance-writer.md).
+
+## Canonical history and post-publication review successor
+
+The separate local hosted-history successor adds static history/diff/flag pages and signed-admin, receipt-bound append-only review. See [the contract and live gaps](docs/hosted-maintenance-review.md). Ordinary builds show an honest empty maintenance history; controlled history requires explicit staging mode and the exact Git source pin. Review never gates valid automatic publication or removes original flags. The current writer supports a retained-target revert request, not canonical restoration.
+
+`npm run test:maintenance-history` checks actual Git receipt reconstruction. `npm run test:maintenance-review` checks shipped workerd/D1 authentication, admission, restart/stale/replay/capacity and quoted-source URL rendering; both commands are included in `validate`. `npm run test:maintenance-history:browser` covers desktop/mobile history and private review flows. No live identity, migration, provider, deployment or remote article write is configured by these tests.

@@ -1,5 +1,6 @@
 import {repository,type Ports,type RuntimeEnv} from './contracts.ts';
 import {adminTrust,verifySignedAdmin} from './identity.ts';
+import {historyBindingConfigured} from '../maintenance-history/review.ts';
 import {lookupApproval} from './approvals.ts';
 export function credentialTransport(token:unknown,send:typeof fetch=fetch):Ports['sendGitHub']|undefined{
   if(typeof token!=='string'||token.length<16||token.length>512||/\s|[\u0000-\u001f\u007f]/.test(token))return undefined;
@@ -12,6 +13,8 @@ export function credentialTransport(token:unknown,send:typeof fetch=fetch):Ports
   };
 }
 export function configuredPorts(env:RuntimeEnv):Ports{
-  const trust=adminTrust(env.HOSTED_ADMIN_TRUST),send=credentialTransport(env.GITHUB_CONTENT_TOKEN);if(!trust||!env.EDITORIAL_DB||!send)return {};
-  return {verifyAdmin:request=>verifySignedAdmin(request,trust),approvedNote:(id,admin)=>lookupApproval(env.EDITORIAL_DB!,id,admin),sendGitHub:send,hostedApprovals:true};
+  const trust=adminTrust(env.HOSTED_ADMIN_TRUST),send=credentialTransport(env.GITHUB_CONTENT_TOKEN);if(!trust||!env.EDITORIAL_DB)return {};
+  const review=historyBindingConfigured()?{maintenanceReview:true as const}:{};
+  if(!send)return review.maintenanceReview?{verifyAdmin:request=>verifySignedAdmin(request,trust),...review}:{};
+  return {...review,verifyAdmin:request=>verifySignedAdmin(request,trust),approvedNote:(id,admin)=>lookupApproval(env.EDITORIAL_DB!,id,admin),sendGitHub:send,hostedApprovals:true};
 }

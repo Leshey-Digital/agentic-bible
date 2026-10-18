@@ -1,0 +1,16 @@
+// Local test gateway only. Signing keys are generated in memory; no credential is persisted.
+import {createServer} from 'node:http';import {close} from 'pagefind';import {buildHistorySite,hostedHistoryFixture,origin} from '../tests/maintenance-history/hosted-fixture.mjs';
+const site=await buildHistorySite('browser');let app=await hostedHistoryFixture(site),lose=false,hold=false,release=null;const local='http://127.0.0.1:8798';
+const server=createServer(async(req,res)=>{try{
+ if(req.url==='/__controlled/ready'){res.writeHead(200);res.end('ready');return;}
+ if(req.url==='/__controlled/reset'){release?.();hold=false;lose=false;await app.close();app=await hostedHistoryFixture(site);res.writeHead(200);res.end('reset');return;}
+ if(req.url==='/__controlled/lose-review'){lose=true;res.writeHead(200);res.end('armed');return;}
+ if(req.url==='/__controlled/hold-review'){hold=true;res.writeHead(200);res.end('armed');return;}
+ if(req.url==='/__controlled/release'){release?.();res.writeHead(200);res.end('released');return;}
+ if(req.url==='/__controlled/compete'){const rows=await(await app.request()).json(),version=Math.max(0,...rows.reviews.filter(r=>r.receiptCommit===site.catalog.history[0].receipt.commit).map(r=>r.version));const result=await app.request(app.input({expectedVersion:version,note:'Competingreview has been recorded before the open browser form was submitted.'}));res.writeHead(result.status);res.end(await result.text());return;}
+ if(req.url==='/__controlled/state'){const rows=(await app.db.prepare('SELECT request_id,version,decision,target_commit FROM hosted_maintenance_reviews ORDER BY version').all()).results;res.writeHead(200,{'Content-Type':'application/json'});res.end(JSON.stringify({rows,held:!!release,canonicalTipUnchanged:site.remote.tip()===site.writerReceipts[0].commit,publicationFlags:site.catalog.history[0].receipt.flags,outbound:app.counters.outbound,siteSource:site.catalog.sourceCommit}));return;}
+ const headers=new Headers();for(const [name,value]of Object.entries(req.headers))if(value!==undefined)headers.set(name,Array.isArray(value)?value.join(','):value);headers.delete('host');headers.delete('cf-access-jwt-assertion');if(headers.get('x-controlled-signed-session')==='authorized')headers.set('cf-access-jwt-assertion',await app.token());headers.delete('x-controlled-signed-session');if(headers.get('origin')===local)headers.set('origin',origin);const chunks=[];for await(const chunk of req)chunks.push(chunk);const response=await app.dispatch(req.url,{method:req.method,headers,body:chunks.length?Buffer.concat(chunks):undefined}),body=Buffer.from(await response.arrayBuffer());
+ if(req.method==='POST'&&req.url==='/api/admin/maintenance/review'&&response.status===200){if(hold){hold=false;await new Promise(resolve=>release=resolve);release=null;}if(lose){lose=false;res.writeHead(503,{'Content-Type':'application/json'});res.end('{"error":"controlled_response_loss"}');return;}}
+ res.writeHead(response.status,Object.fromEntries(response.headers));res.end(body);
+ }catch{if(!res.headersSent)res.writeHead(503);res.end('controlled test server error');}});
+server.listen(8798,'127.0.0.1');let closing=false;for(const signal of ['SIGINT','SIGTERM'])process.on(signal,async()=>{if(closing)return;closing=true;release?.();server.close();await app.close();await close();process.exit(0);});

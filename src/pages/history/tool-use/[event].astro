@@ -1,0 +1,15 @@
+---
+import Base from '../../../layouts/Base.astro';
+import '../../../styles/history.css';
+import {maintenanceBuild} from '../../../maintenance-history/build.ts';
+export function getStaticPaths(){return maintenanceBuild().history.map(entry=>({params:{event:entry.eventId},props:{entry}}));}
+const {entry}=Astro.props;
+---
+<Base title="Tool use revision"><div class="article-breadcrumb"><a href="/history/">Revision history</a><span>/</span> Tool use</div><article class="history-reading"><header><p class="eyebrow">{entry.current?'Current revision':'Retained revision'} · Controlled preview</p><h1>Tool use: what changed.</h1><p>Published automatically by the <strong>Automatic maintenance bot</strong> after technical validation. Human review follows publication.</p><p>Git integrity is verified for this record. Factual accuracy and source authenticity remain unverified.</p></header>
+<dl class="receipt-details"><div><dt>Writer commit</dt><dd><a href={`https://github.com/Leshey-Digital/agentic-bible/commit/${entry.receipt.commit}`}><code>{entry.receipt.commit}</code></a></dd></div><div><dt>Article revision</dt><dd><code>{entry.receipt.articleRevision}</code></dd></div><div><dt>Review flags at publication</dt><dd>{entry.flags.join(', ')}</dd></div></dl>
+<nav class="history-nav" aria-label="Revision actions"><a href="/articles/tool-use/">Read current article</a><a href="/review/">Post-publication flags</a></nav>
+<section id="changes"><h2>Text changes from the preceding commit</h2><p>Removed text is labelled “Removed”; added text is labelled “Added”. Front matter is omitted from this comparison. Unchanged opening and closing lines provide context.</p>{entry.changes.length?<div class="text-diff" aria-label="Text changes">{entry.changes.map(line=><div class={`diff-line ${line.kind}`}><span class="diff-label">{line.kind==='removed'?'Removed':line.kind==='added'?'Added':'Context'}</span>{line.kind==='removed'?<del>{line.text||' '}</del>:line.kind==='added'?<ins>{line.text||' '}</ins>:<span>{line.text||' '}</span>}</div>)}</div>:<p>No article body changes. Inspect the complete revision and evidence below for metadata changes.</p>}</section>
+<section><h2>Evidence retained with this revision</h2><ul>{entry.sources.map(source=><li><a href={source.url}>{source.sourceId}</a><p>Observed <time datetime={new Date(source.observedAt).toISOString()}>{new Date(source.observedAt).toISOString()}</time> · {source.bytes} original bytes</p><code>{source.bodyHash}</code></li>)}</ul></section>
+<details><summary>Complete revision Markdown</summary><pre class="revision-markdown" tabindex="0" aria-label="Complete revision Markdown">{entry.markdown}</pre></details>
+<p>Reverts require an authenticated, revision-pinned request. They never erase this record. <a href="/admin/">Open the editorial workspace</a>.</p>
+</article></Base>

@@ -1,0 +1,10 @@
+---
+import Base from '../../layouts/Base.astro';
+import '../../styles/history.css';
+import {maintenanceBuild} from '../../maintenance-history/build.ts';
+const view=maintenanceBuild();
+---
+<Base title="Revision history"><header class="page-intro"><p class="eyebrow">The record behind the reference</p><h1>Revision history.</h1><p>Read what changed, follow the evidence, and see which revisions need human follow-up.</p></header>
+<nav class="history-nav" aria-label="Revision navigation"><a href="/review/">Post-publication flags</a><a href="/articles/tool-use/">Read tool use</a></nav>
+{view.history.length?<section id="article-tool-use" class="history-reading"><h2>Tool use</h2><p class="history-notice">Controlled preview · Automatic maintenance bot. Valid revisions publish before human review. Git integrity does not establish factual accuracy or source authenticity.</p><ol class="revision-list">{view.history.map((entry,index)=><li><div class="revision-label"><span class="eyebrow">{entry.current?'Current revision':'Earlier revision'} · {view.history.length-index}</span><span>Automatic maintenance bot</span></div><h3><a href={`/history/tool-use/${entry.eventId}/`}>{entry.current?'Latest changes':'Retained changes'} · {entry.receipt.commit.slice(0,8)}</a></h3><p>{entry.flags.length} post-publication review flag{entry.flags.length===1?'':'s'} · <a href={`/history/tool-use/${entry.eventId}/#changes`}>Compare text</a></p><code>{entry.receipt.articleRevision}</code></li>)}</ol></section>:<section class="history-reading"><h2>No maintenance revisions in this edition</h2><p>Original working drafts retain their <a href="https://github.com/Leshey-Digital/agentic-bible/commits/main/src/content/articles/">GitHub file history</a>. A controlled maintenance build adds verified revision records here. No generated revision is implied by this empty view.</p></section>}
+</Base>
