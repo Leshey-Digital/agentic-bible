@@ -7,6 +7,7 @@
 - [x] Bind quality receipt to candidate and preserve it in a version 2 canonical descriptor.
 - [x] Actual D1 focused quality/restart/race/tamper tests.
 - [x] Controlled end-to-end quality allow/deny qualification; retained affected suites run separately with evidence.
+- [x] Terminalize exact known denials through append-only migration 0021 while retaining charges/journals.
 - [ ] Generalize the existing article target across producer/publisher/canonical history where complete.
 - [ ] Production source/provider profile implementation after concrete format/endpoint/model/price selection.
 
