@@ -6,3 +6,5 @@
 - Production quality admission rejects unsupported/fake/filler/unsafe/duplicate content, binds original source lineage and cannot infer factual support from execution or hashes.
 - Automatic qualifying publication and post-publication flags remain policy; missing quality or budget authority stops work without filler.
 - Controlled native/build/browser checks and independent exact-head review precede composition qualification. No fixture result is represented as a live integration.
+
+- Fresh controlled demonstrations bind the current original source edition without rewriting frozen templates, captured inputs, receipts or historical stores. A changed source must still fail an existing operation’s pin.

@@ -1,5 +1,6 @@
 // Explicit deterministic local demonstration only. No real provider adapter/configuration exists.
 import {readFileSync} from 'node:fs';
+import {controlledWikiPacket} from './controlled-wiki-packet.mjs';
 import {close} from 'pagefind';
 import {prepareWikiEvidence} from './wiki-bridge-demo.mjs';
 import {localObservations} from '../src/wiki-bridge/local-d1.ts';
@@ -14,7 +15,7 @@ try{
  else if(action==='demo'){
   const collector=await prepareWikiEvidence(observations);local=await localObservations(observations);
   if(!await local.db.prepare("SELECT name FROM sqlite_master WHERE name='maintenance_proposals'").first())for(const sql of readFileSync('migrations/0010_maintenance_proposals.sql','utf8').replace(/--[^\n]*/g,'').split(';').filter(s=>s.trim()))await local.db.prepare(sql).run();
-  const command=JSON.parse(readFileSync('fixtures/wiki-bridge/packet.json','utf8'));command.eventId=command.revision.eventId='maintenance-extractive-demo';let calls=0;
+  const command=controlledWikiPacket();command.eventId=command.revision.eventId='maintenance-extractive-demo';let calls=0;
   const result=await runMaintenance(command,{enabled:true,provider:deterministicProvider(()=>calls++),policy:demonstrationPolicy,db:local.db,bridge:new WikiBridge(name),sourceDirectory:'fixtures/wiki-bridge/sources'});
   const row=await new MaintenanceBudget(local.db).job(command.eventId);console.log(JSON.stringify({mode:'local-synthetic-only',deterministicFakeProvider:true,providerCalls:calls,controlledSourceFetches:collector.fetches,budgetUnit:demonstrationPolicy.unit,reservedCost:row.reserved_cost,actualSimulatedCost:row.actual_cost,realSpend:0,...result}));
  }else if(action==='status'){console.log(JSON.stringify({mode:'local-synthetic-only',realProviderConfigured:false,deterministicFakeProviderAvailable:true,liveWritesEnabled:false,bridge:new WikiBridge(name).status()}));}
