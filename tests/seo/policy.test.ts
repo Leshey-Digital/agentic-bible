@@ -12,7 +12,10 @@ test('canonical origin is explicit, project-scoped and fail-closed; local synthe
 });
 test('private/query/snapshot/fixture paths never gain a canonical or indexing permission',()=>{
   const policy={mode:'canonical' as const,origin:'https://agenticbible.si'};
-  for(const path of ['/admin/','/api/admin/settings','/search/','/contribute/','/404.html','/history/','/review/','/wiki-snapshots/abc/articles/tool-use/','/fixtures/tool-use/','/articles/fixture-agent-loop/','/articles/tool-use/?secret=1','/articles/tool-use/#local'])assert.deepEqual(pageDiscovery(policy,path),{canonical:null,indexable:false});
+  for(const path of ['/admin/','/api/admin/settings','/search/','/contribute/','/404.html','/review/','/history/tool-use/event-id/','/wiki-snapshots/abc/articles/tool-use/','/fixtures/tool-use/','/articles/fixture-agent-loop/','/articles/tool-use/?secret=1','/articles/tool-use/#local'])assert.deepEqual(pageDiscovery(policy,path),{canonical:null,indexable:false});
+  assert.deepEqual(pageDiscovery(policy,'/history/'),{canonical:'https://agenticbible.si/history/',indexable:true});
+  assert.deepEqual(pageDiscovery(discoveryPolicy({}),'/history/'),{canonical:null,indexable:false});
+  assert.deepEqual(pageDiscovery({...policy,mode:'synthetic'},'/history/'),{canonical:null,indexable:false});
   assert.deepEqual(pageDiscovery(policy,'/articles/tool-use/'),{canonical:'https://agenticbible.si/articles/tool-use/',indexable:true});
   assert.equal(pageDiscovery(policy,'/articles/tool-use/',true).canonical,null);
   assert.doesNotMatch(robots(discoveryPolicy({})),/Disallow:|Sitemap:/);assert.match(robots(policy),/Sitemap: https:\/\/agenticbible.si\/sitemap.xml/);
