@@ -146,4 +146,34 @@ The [hosted corrections integration](docs/hosted-corrections-integration.md) com
 
 The [commit-pinned release path](docs/commit-pinned-releases.md) verifies article bytes against a full Git commit and uses that SHA for public history. `npm run test:release` covers local Git/build/native serving and controlled deployment/rollback faults. After the existing CI checks, `npm run release:prepare` packages the tested default-closed Worker/assets without deploying. The separate manual staging workflow remains disabled until owner setup; [handoff and limits](docs/review/commit-pinned-release-path.md). No live deployment or secret setup is performed.
 
-The separate [reviewed MVP integration candidate](docs/review/reviewed-mvp-integration.md) composes the owner-reported independently accepted PR35/PR36 heads onto current main while preserving the complete inherited stack and all twenty article bytes. It includes actual-CLI duplicate upload recovery and admin revocation ownership across row replacement. Maintenance remains separate. Full composition checks and exact-head CI are required before independent acceptance; the draft neither merges main nor deploys or enables live ports.
+[PR37](https://github.com/Leshey-Digital/agentic-bible/pull/37) merged the reviewed twenty-entry MVP and accepted release/admin recovery fixes into main at `d9ea6386b92c499fc70b9c81b8cb557b8cf96717`. The [integration evidence](docs/review/reviewed-mvp-integration.md) preserves its source history and article hashes. This separate maintenance successor preserves that stack and keeps every live provider/write/release port closed.
+
+## Bounded automatic-maintenance demonstration
+
+The [maintenance audit](docs/automated-maintenance-gap.md) identifies separate monitoring, supplied article revisions, community-correction GitHub drafts and release. The [proposal producer](docs/bounded-maintenance-proposals.md) connects charged source bytes through a strict deterministic extractive fake to automatic local wiki publication with post-publication human flags. It does not enable a real provider or canonical GitHub update.
+
+`npm run validate` includes actual-D1 maintenance checks; `npm run test:maintenance:browser` checks generated twenty-entry reading/search/history/flags. `npm run maintenance:demo` explicitly prepares controlled receipts and activates a synthetic snapshot; `npm run maintenance:local` previews it at loopback port 8798. Simulated costs/tokens are not real provider pricing, billing enforcement or an approved allocation. Source/package changes never silently rebase existing demo state. Public contributions and live release remain closed.
+
+## Captured source-body maintenance connection
+
+The default-disabled [source collector](docs/maintenance-source-collection.md) connects original controlled response bodies and charged D1 receipts to the existing fake producer, automatic local wiki publication and later human flags. Run `npm run test:maintenance-sources` (also in validate), `npm run maintenance:collect:demo`, then `npm run maintenance:collect:local` for the separate read-only loopback preview on port 8799. Successful restart/replay makes no additional source or provider request. No live discovery, HTML normalization, real provider, canonical GitHub write or release is enabled; [checkpoint evidence](docs/review/maintenance-source-collection.md).
+
+## Controlled canonical maintenance writer
+
+The default-disabled [canonical writer](docs/canonical-maintenance-writer.md) consumes completed sourced maintenance output and atomically updates article Markdown, immutable history and the review pointer through an expected-head protected controlled GitHub mutation. `npm run test:maintenance-github` exercises actual D1 and an owned real Git repository, including replay, concurrent writers, lost responses and conflicts. It is included in validate. No real GitHub transport, credential, article publication or release is configured; [checkpoint evidence](docs/review/canonical-maintenance-writer.md).
+
+## Canonical history and post-publication review successor
+
+The separate local hosted-history successor adds static history/diff/flag pages and signed-admin, receipt-bound append-only review. See [the contract and live gaps](docs/hosted-maintenance-review.md). Ordinary builds show an honest empty maintenance history; controlled history requires explicit staging mode and the exact Git source pin. Review never gates valid automatic publication or removes original flags. The current writer supports a retained-target revert request, not canonical restoration.
+
+`npm run test:maintenance-history` checks actual Git receipt reconstruction. `npm run test:maintenance-review` checks shipped workerd/D1 authentication, admission, restart/stale/replay/capacity and quoted-source URL rendering; both commands are included in `validate`. `npm run test:maintenance-history:browser` covers desktop/mobile history and private review flows. No live identity, migration, provider, deployment or remote article write is configured by these tests.
+
+## Controlled canonical restoration successor
+
+A separate successor adds explicit signed restoration approval and a default-disabled local coordinator that appends a new atomic article/history/review-pointer commit. Old requests remain request-only; ordinary valid automatic publication keeps its policy. [Restoration authority, recovery and live gaps](docs/canonical-maintenance-restoration.md) distinguish real owned-Git/local-D1 tests from missing production integration. `npm run test:maintenance-restore` is included in `validate`; `npm run test:maintenance-restore:browser` covers the rebuilt desktop/mobile artifact. No route, provider credential or live write is enabled.
+
+## Controlled maintenance after restoration
+
+`npm run test:maintenance-base` covers separate signed restoration followed by a canonical-base-bound fake generation, atomic writer, strict public history build and source-matching release candidate on owned Git/shared local D1. It is included in `validate`. The port is opt-in fixture-only; no route, schedule, provider, credential or deployment is enabled. [Contract, stale-base recovery and production gaps](docs/restored-maintenance-base.md).
+
+The separate [reviewed maintenance integration candidate](docs/review/reviewed-maintenance-composition.md) composes the accepted PR42 ancestry onto fresh main, preserving all twenty article bytes and the lockfile. The separate hosted pipeline is excluded. Composition acceptance and live release remain separate; direct downgrade to PR41/older readers is unsupported after new canonical-base records exist.

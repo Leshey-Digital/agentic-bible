@@ -1,0 +1,11 @@
+# Canonical restoration after explicit revert approval
+
+Preserve frozen history/review PR39 a255d81d4d08bdcd0a60a8916d514068e1373bec and PR38. This separately authorized local successor implements a controlled canonical restoration coordinator. An old revert request is not permission to mutate content: a separately authenticated, explicit restoration approval pins that request, current catalog/receipt/head and retained target.
+
+Append a new immutable restoration event, unique revision ID and review pointer in one expected-head protected three-file commit. Restore the target body and original source metadata, retaining old/new/target lineage and post-publication flags; never reset Git or rewrite old records. A new record distinguishes human-approved restoration from model generation and must not invent generation usage or private source observations.
+
+Reuse the existing bounded canonical outbox/transport and its one-dispatch policy. D1 approvals are append-only, owner-bound and revocable/superseded before dispatch. Missing ports/default mode remain closed. The coordinator is local-only with controlled GitHub-shaped transport and owned actual Git objects, not a live provider adapter. No HTTP route executes a canonical write. No model/source request, credential or production resource is introduced.
+
+Read-side Git verification must understand both old automatic records and new restoration records, reconstruct exact receipts, validate target lineage/body/current pointer and render honest attribution. New actions on stale heads/approvals fail before mutation. Known pre-dispatch interruption can resume; dispatched ambiguity only reconciles history, never blindly dispatches again. Completed historical replay must not restore old text over a later revision.
+
+Tests exercise actual signed approval, local D1 and owned real Git for success, stale/foreign authority, revoked/superseded approval, concurrent ownership, atomic/unrelated byte preservation, loss/restart/replay, corrupt authority and read/build consistency. Restore capability is separate from live release/build ingestion; future generation must reconcile its technical canonical base after a restore. This does not introduce a manual gate on valid automatic publication.

@@ -1,0 +1,43 @@
+{
+  "mode": "local-synthetic-only",
+  "actualWorkerdD1": true,
+  "realOwnedBareGit": true,
+  "controlledGitHub": true,
+  "controlledSourceRequests": 2,
+  "fakeProviderCalls": 1,
+  "canonicalCommit": "3e83a9dcd7b10879ecdf4f029ca28f324c3a8898",
+  "base": "71237046f993bd0f3b87a19aa0527e5904681f8e",
+  "atomicChangedPaths": [
+    "src/content/articles/tool-use.md",
+    "src/content/maintenance/history/4cebb8f9bf4e969fa117d49a6a4e8f5a2ab369cad6323f935dd59d4e28d9c57b.json",
+    "src/content/maintenance/tool-use.json"
+  ],
+  "unrelatedBytesPreserved": true,
+  "immutableSourceReceiptBinding": true,
+  "reviewFlags": [
+    "editorial-review"
+  ],
+  "restartAdditionalGitHubRequests": 0,
+  "restartAdditionalSourceRequests": 0,
+  "restartAdditionalProviderCalls": 0,
+  "originalRepositoryMarkdownUnchanged": true,
+  "livePublished": false,
+  "realSpend": 0,
+  "receipt": {
+    "schemaVersion": 1,
+    "mode": "local-synthetic-only",
+    "state": "canonical-commit-verified",
+    "livePublished": false,
+    "eventId": "writer-native",
+    "authorityHash": "49e575fadd0aa4011a36feedbb685e665e908c2394a0120b9c8bfcd48e5aa10e",
+    "baseCommit": "71237046f993bd0f3b87a19aa0527e5904681f8e",
+    "commit": "3e83a9dcd7b10879ecdf4f029ca28f324c3a8898",
+    "articleRevision": "880a53791647102cc8d33e3faab7354e066c2ae7c53aa840bf0de5eae7c1e7fd",
+    "markdownSha256": "f94b17f24194bc303593ca1822d511e8b0d5c42ef94e7afdc143daedf469a40f",
+    "historyPath": "src/content/maintenance/history/4cebb8f9bf4e969fa117d49a6a4e8f5a2ab369cad6323f935dd59d4e28d9c57b.json",
+    "historySha256": "a1ea233fee883c2eb6ca61b01d962a0b97269e399f9a0044ee5576c2447b2b18",
+    "flags": [
+      "editorial-review"
+    ]
+  }
+}

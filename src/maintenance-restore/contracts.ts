@@ -1,0 +1,35 @@
+import {canonical,hash,sha,digest,event,historyPath,type WriterReceipt} from '../maintenance-github/contracts.ts';
+import type {RestorationApproval,RestoreReference} from '../maintenance-history/restoration-approvals.ts';
+export class RestorationError extends Error{code:string;constructor(code:string){super(code);this.code=code;}}
+export function stop(code:string):never{throw new RestorationError(code);}
+export type RestorationRecord={schemaVersion:1;kind:'controlled-reviewed-maintenance-restoration';eventId:string;articleId:'tool-use';articleRevision:string;expectedBaseCommit:string;markdownSha256:string;authorityHash:string;previous:{eventId:string;revisionId:string;path:string;sha256:string};restoredFrom:RestoreReference;review:{approvalId:string;requestId:string;reviewerRef:string;approvedAt:number;reviewFingerprint:string;reviewVersion:number;catalogHash:string};flags:string[]};
+export type RestorationReceipt=WriterReceipt&{operation:'reviewed-restoration';approvalId:string;requestId:string;restoredFromCommit:string;restoredFromRevision:string};
+export const restoreEvent=(id:string)=>'restore-'+id;
+export const restoreRevision=(authorityHash:string,previousRevision:string,target:RestoreReference)=>hash(canonical({kind:'reviewed-canonical-restoration-v1',authorityHash,previousRevision,restoredFrom:target}));
+export const restoreMessage=(id:string,authorityHash:string)=>'Reviewed restoration: tool-use\n\nEvent: '+id+'\nAuthority: '+authorityHash+'\n';
+const uuid=(v:unknown):v is string=>typeof v==='string'&&/^[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}$/.test(v);
+function exact(value:any,keys:string[]){if(!value||typeof value!=='object'||Array.isArray(value)||Object.keys(value).sort().join(',')!==keys.sort().join(','))stop('restore_record_schema');}
+export function restorationRecord(value:any):RestorationRecord{
+ exact(value,['schemaVersion','kind','eventId','articleId','articleRevision','expectedBaseCommit','markdownSha256','authorityHash','previous','restoredFrom','review','flags']);
+ if(value.schemaVersion!==1||value.kind!=='controlled-reviewed-maintenance-restoration'||!event(value.eventId)||value.articleId!=='tool-use'||!sha(value.expectedBaseCommit)||![value.articleRevision,value.markdownSha256,value.authorityHash].every(digest))stop('restore_record_schema');
+ const previous=value.previous;exact(previous,['eventId','revisionId','path','sha256']);if(!event(previous.eventId)||!digest(previous.revisionId)||!digest(previous.sha256)||previous.path!==historyPath(previous.eventId))stop('restore_previous_schema');
+ const target=value.restoredFrom;exact(target,['eventId','commit','articleRevision','markdownSha256','historyPath','historySha256','receiptHash']);if(!event(target.eventId)||!sha(target.commit)||![target.articleRevision,target.markdownSha256,target.historySha256,target.receiptHash].every(digest)||target.historyPath!==historyPath(target.eventId))stop('restore_target_schema');
+ const r=value.review;exact(r,['approvalId','requestId','reviewerRef','approvedAt','reviewFingerprint','reviewVersion','catalogHash']);if(!uuid(r.approvalId)||!uuid(r.requestId)||value.eventId!==restoreEvent(r.approvalId)||!/^admin-[a-f0-9]{24}$/.test(r.reviewerRef)||!Number.isSafeInteger(r.approvedAt)||r.approvedAt<0||!digest(r.reviewFingerprint)||!digest(r.catalogHash)||!Number.isSafeInteger(r.reviewVersion)||r.reviewVersion<1||r.reviewVersion>16)stop('restore_review_schema');
+ if(!Array.isArray(value.flags)||value.flags.length>4||new Set(value.flags).size!==value.flags.length||!value.flags.includes('editorial-review')||!value.flags.includes('source-recency')||value.flags.some((f:any)=>!['editorial-review','source-recency','coverage-gap','limited-source-coverage'].includes(f))||value.articleRevision!==restoreRevision(value.authorityHash,previous.revisionId,target))stop('restore_record_schema');return value;
+}
+export function restorationMarkdown(targetMarkdown:string,record:RestorationRecord){
+ const matches=[...targetMarkdown.matchAll(/^publication: ([^\n]+)$/gm)];if(matches.length!==1)stop('restore_target_markdown');let publication;try{publication=JSON.parse(matches[0][1]);}catch{return stop('restore_target_markdown');}
+ if(publication?.revisionId!==record.restoredFrom.articleRevision||!Array.isArray(publication.flags)||!Array.isArray(publication.evidence))stop('restore_target_markdown');
+ const next={...publication,revisionId:record.articleRevision,flags:record.flags,restoration:{approvalId:record.review.approvalId,requestId:record.review.requestId,restoredFromRevision:record.restoredFrom.articleRevision,previousRevision:record.previous.revisionId}};
+ return targetMarkdown.replace(/^publication: [^\n]+$/m,()=> 'publication: '+JSON.stringify(next));
+}
+export function makeRestorationRecord(a:RestorationApproval,authorityHash:string,targetMarkdown:string,targetFlags:string[]):RestorationRecord{
+ const record:RestorationRecord={schemaVersion:1,kind:'controlled-reviewed-maintenance-restoration',eventId:restoreEvent(a.approvalId),articleId:'tool-use',articleRevision:restoreRevision(authorityHash,a.current.articleRevision,a.target),expectedBaseCommit:a.sourceCommit,markdownSha256:'0'.repeat(64),authorityHash,previous:{eventId:a.current.eventId,revisionId:a.current.articleRevision,path:a.current.historyPath,sha256:a.current.historySha256},restoredFrom:a.target,review:{approvalId:a.approvalId,requestId:a.requestId,reviewerRef:a.reviewerRef,approvedAt:a.approvedAt,reviewFingerprint:a.reviewFingerprint,reviewVersion:a.reviewVersion,catalogHash:a.catalogHash},flags:[...new Set([...targetFlags,'editorial-review','source-recency'])]};
+ record.markdownSha256=hash(restorationMarkdown(targetMarkdown,record));return restorationRecord(record);
+}
+export function restorationPointer(record:RestorationRecord){return {schemaVersion:1,kind:'controlled-reviewed-maintenance-head',eventId:record.eventId,articleRevision:record.articleRevision,markdownSha256:record.markdownSha256,recordPath:historyPath(record.eventId),recordSha256:hash(canonical(record)),flags:record.flags};}
+export function restorationReceipt(record:RestorationRecord,commit:string):RestorationReceipt{
+ if(!sha(commit))stop('restore_commit_schema');return {schemaVersion:1,mode:'local-synthetic-only',state:'canonical-commit-verified',livePublished:false,eventId:record.eventId,authorityHash:record.authorityHash,baseCommit:record.expectedBaseCommit,commit,articleRevision:record.articleRevision,markdownSha256:record.markdownSha256,historyPath:historyPath(record.eventId),historySha256:hash(canonical(record)),flags:record.flags,operation:'reviewed-restoration',approvalId:record.review.approvalId,requestId:record.review.requestId,restoredFromCommit:record.restoredFrom.commit,restoredFromRevision:record.restoredFrom.articleRevision};
+}
+
+export function restoreReceiptReference(receipt:WriterReceipt):RestoreReference{return {eventId:receipt.eventId,commit:receipt.commit,articleRevision:receipt.articleRevision,markdownSha256:receipt.markdownSha256,historyPath:receipt.historyPath,historySha256:receipt.historySha256,receiptHash:hash(canonical(receipt))};}

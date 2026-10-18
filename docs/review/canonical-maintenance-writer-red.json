@@ -1,0 +1,12 @@
+{
+  "tests": 9,
+  "failed": 8,
+  "passed": 1,
+  "reason": "Existing Astro bracket route names were rejected by an overly strict full-tree filename profile.",
+  "offendingPaths": [
+    "src/pages/articles/[id].astro",
+    "src/pages/topics/[topic].astro"
+  ],
+  "canonicalWritesBeforeRejection": 0,
+  "log": "maintenance-writer-native-first.log"
+}

@@ -21,4 +21,4 @@ export function pageDiscovery(policy:DiscoveryPolicy,path:string,synthetic=false
 }
 export const robots=(policy:DiscoveryPolicy)=>`User-agent: *\nAllow: /\n${policy.mode==='canonical'?`Sitemap: ${policy.origin}/sitemap.xml\n`:''}`;
 // Crawlers must be able to read noindex; robots.txt is never an authentication boundary.
-export const privateHeaderPaths=['/admin*','/api*','/contribute*','/search*','/404*','/history*','/review*','/local-publications*','/wiki-snapshots*','/fixtures*','/indexing-manifest.json','/source-catalog.json','/release-source.json','/release.json'];
+export const privateHeaderPaths=['/admin*','/api*','/contribute*','/search*','/404*','/history*','/review*','/local-publications*','/wiki-snapshots*','/fixtures*','/indexing-manifest.json','/source-catalog.json','/release-source.json','/release.json','/maintenance-history.json'];

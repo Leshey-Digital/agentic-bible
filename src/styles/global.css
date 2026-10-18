@@ -870,10 +870,13 @@ h1 em {
   .site-header nav {
     grid-column:1 / -1;
     grid-row:2;
-    gap:24px;
+    gap:4px 24px;
     flex-wrap:wrap;
     font-size:14px;
     margin:0
+  }
+  .site-header nav a {
+    height:auto
   }
   .site-header nav a[aria-current=page]::after {
     bottom:2px

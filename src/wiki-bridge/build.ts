@@ -4,7 +4,6 @@ import {spawn} from 'node:child_process';
 import {join,resolve,dirname} from 'node:path';
 import {canonical,qualityFlags,hash as hashOriginal} from '../publishing/contracts.ts';
 import {readingArticleIds} from '../lib/article-ids.ts';
-import {escape} from '../publishing/render.ts';
 import type {PublicationStore} from '../publishing/store.ts';
 import type {Reference,Article} from '../publishing/contracts.ts';
 import type {Binding} from './contracts.ts';
@@ -13,7 +12,10 @@ import {reject,bridgeLimits,BridgeError} from './limits.ts';
 import {pinWikiLinks} from './html.ts';
 
 function markdown(article:Article,publisher:Reference,bindings:Binding[],citationOrder=article.sources.map(s=>s.id)){
-  const text=(value:string)=>escape(value.replace(/[\\`*_[\]{}()#+.!|>~-]/g,'\\$&'));
+  // Entity-encode plain-text punctuation before Markdown parsing. Backslash
+  // escapes can leak into GFM URL recognition; entities preserve literal text
+  // while the explicit citation and internal-link syntax below stays functional.
+  const text=(value:string)=>value.replace(/[!-/:-@\[-`{-~]/g,char=>'&#'+char.charCodeAt(0)+';');
   const front={title:article.title,description:article.description,topic:article.topic,order:2,status:'Published local demonstration',verified:article.verified,author:'Supplied local demonstration',related:article.related,sources:article.sources,publication:{revisionId:'',publisherSnapshot:publisher.id,flags:article.concerns,evidence:bindings.map(b=>({citationId:b.citationId,sourceId:b.sourceId,url:b.url,hash:b.bodyHash,receiptKey:b.receiptKey}))}};
   const body=article.blocks.map(block=>block.type==='heading'?`## ${text(block.text)}`:block.content.map(part=>part.type==='text'?text(part.text):part.type==='citation'?` [${citationOrder.indexOf(part.sourceId)+1}](#source-${part.sourceId}) `:` [${text(part.label)}](/articles/${part.articleId}/) `).join('')).join('\n\n');
   return {front,body};
@@ -86,3 +88,6 @@ export async function buildWiki(options:{repo:string;captureRoot:string;capture:
     return files;
   }catch(error){diagnostic.stop??='parent-build';diagnostic.failure=safeFailure(error);persistDiagnostic();throw Object.assign(new BridgeError('full_wiki_build_failed'),{diagnostics:{stop:diagnostic.stop,lastPhase:diagnostic.lastPhase}});}finally{if(child?.exitCode===null&&child.signalCode===null)child.kill('SIGKILL');if(!child||child.exitCode===0)rmSync(scratch,{recursive:true,force:true});}
 }
+
+// Pure bounded serializer shared with the default-closed canonical maintenance writer.
+export {markdown as publicationMarkdown};

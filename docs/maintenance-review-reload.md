@@ -1,0 +1,13 @@
+# Maintenance review reload recovery
+
+This focused successor starts from frozen PR39 `a255d81d4d08bdcd0a60a8916d514068e1373bec`. The larger canonical-restoration work remains separate at `8353a65eacee0c061978b8dcfa6c037c4091b4a2`; no restoration code is included here.
+
+The old audit read used the view freshness sequence both to decide whether its response could paint and whether its finally block could enable Reload. Saving advances that sequence to protect newer UI state. An old GET returning while a save response is held therefore skipped both painting and lock cleanup. When the save's own follow-up GET failed, its recovery message pointed to a permanently disabled button.
+
+`reloadSequence` now tracks only reload ownership. `sequence` continues to protect response freshness and newer save/draft state. A completed old read can release its own lock after a save supersedes its view data, while a truly newer reload still owns cleanup.
+
+The regression holds an actual successful audit read before save and an actual successful save response after D1 commit. It edits a newer draft/decision, releases the old read, verifies that read cannot replace the in-flight save status, fails the save follow-up GET and releases its response. Reload must be enabled. A second save gets a real stale-version 409 with only one durable decision; the note remains, Save is disabled and Reload remains enabled. A deliberate successful reload and reconfirmation then records the second intended decision. Both desktop and mobile retain axe/width checks and unchanged canonical article/flags.
+
+Before-fix logs and both traces are preserved in this worktree's actual Git metadata directory (`review-reload-before-fix.log`, `review-reload-before-fix-desktop.zip`, `review-reload-before-fix-mobile.zip`). Final exact-head local/CI evidence and `maintenance-review-reload-desktop.json`/`maintenance-review-reload-mobile.json` are recorded separately. The local command is `npm run test:maintenance-history:browser`; the same expanded suite runs in the full pinned-browser CI workflow. No assertion or timeout is weakened.
+
+Only the maintenance admin JavaScript, owned test harness/regression, CI proof paths and change documentation are affected. Backend authorization, D1 schema/admission/replay, writer/source/serializer/release code, twenty article bytes and dependency lockfile are preserved. Reverts remain request-only in this successor. No merge, live call, deployment, credential, remote migration, article write or license choice is made. Rollback returns application code to PR39; there is no remote resource change to undo.

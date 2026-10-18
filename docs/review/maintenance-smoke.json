@@ -1,0 +1,74 @@
+{
+  "nativeNodeImportPassed": true,
+  "typecheck": {
+    "files": 119,
+    "errors": 0,
+    "warnings": 0,
+    "hints": 0
+  },
+  "first": {
+    "mode": "local-synthetic-only",
+    "deterministicFakeProvider": true,
+    "providerCalls": 1,
+    "controlledSourceFetches": 2,
+    "budgetUnit": "SIMULATED_MICRO_USD",
+    "reservedCost": 2842,
+    "actualSimulatedCost": 1556,
+    "realSpend": 0,
+    "provider": "deterministic-extractive-fake",
+    "livePublished": false,
+    "generated": true,
+    "receipt": {
+      "eventId": "maintenance-extractive-demo",
+      "fingerprint": "797fe894304e334be7af83680f15ef2672757da57c59fb517bca4e75b74797a4",
+      "sequence": 1,
+      "kind": "apply",
+      "publisher": {
+        "id": "714a0743a0ca323c6d825b4fe2f9e58dff6ae777dc861601a7cb22bb121b3718",
+        "manifestHash": "192064ebfd9fa9c4ebdf6a2c68be33904963ef79cdc7be1ef913264d6162706b"
+      },
+      "articleRevision": "a7bc7beb503c2bdf478b61fdf9bfef1a84d8f642bea5304a56458ea21493915f",
+      "evidenceHash": "11932ac0beec3fc773733eb82e6634eebbd5a080de9d49f3288082d0fca64f61",
+      "outcome": "site-activated",
+      "site": {
+        "id": "e152f82bfaad7d17a74ae238a2518a8baeb88e9be8d96f5c7425cc6fd15ec189",
+        "manifestHash": "78e75eb092a2b71c14c532a42a9fa7a96eac73270c010f5ca92dd499a346b680"
+      },
+      "parent": null
+    }
+  },
+  "restartReplay": {
+    "mode": "local-synthetic-only",
+    "deterministicFakeProvider": true,
+    "providerCalls": 0,
+    "controlledSourceFetches": 0,
+    "budgetUnit": "SIMULATED_MICRO_USD",
+    "reservedCost": 2842,
+    "actualSimulatedCost": 1556,
+    "realSpend": 0,
+    "provider": "deterministic-extractive-fake",
+    "livePublished": false,
+    "generated": false,
+    "receipt": {
+      "articleRevision": "a7bc7beb503c2bdf478b61fdf9bfef1a84d8f642bea5304a56458ea21493915f",
+      "eventId": "maintenance-extractive-demo",
+      "evidenceHash": "11932ac0beec3fc773733eb82e6634eebbd5a080de9d49f3288082d0fca64f61",
+      "fingerprint": "797fe894304e334be7af83680f15ef2672757da57c59fb517bca4e75b74797a4",
+      "kind": "apply",
+      "publisher": {
+        "id": "714a0743a0ca323c6d825b4fe2f9e58dff6ae777dc861601a7cb22bb121b3718",
+        "manifestHash": "192064ebfd9fa9c4ebdf6a2c68be33904963ef79cdc7be1ef913264d6162706b"
+      },
+      "sequence": 1,
+      "outcome": "site-activated",
+      "site": {
+        "id": "e152f82bfaad7d17a74ae238a2518a8baeb88e9be8d96f5c7425cc6fd15ec189",
+        "manifestHash": "78e75eb092a2b71c14c532a42a9fa7a96eac73270c010f5ca92dd499a346b680"
+      },
+      "parent": null
+    }
+  },
+  "limitsConcurrencyAndFailureTests": "pending",
+  "liveProviderAdapterConfigured": false,
+  "canonicalGitHubWriterConnected": false
+}

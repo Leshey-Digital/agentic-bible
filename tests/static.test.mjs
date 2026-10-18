@@ -72,7 +72,7 @@ test('staging pages are non-indexable, use staging canonicals, and contain no in
   for (const page of pages) {
     const source = html(page);
     assert.match(source, /name="robots" content="noindex, nofollow"/);
-    if(/(?:search|contribute|404)(?:\/|\.html)/.test(page))assert.doesNotMatch(source,/rel="canonical"/);
+    if(/(?:search|contribute|404|history|review)(?:\/|\.html)/.test(page))assert.doesNotMatch(source,/rel="canonical"/);
     else assert.match(source, /rel="canonical" href="https:\/\/staging\.agenticbible\.si\//);
     assert.equal(attrs(source, 'id').length, new Set(attrs(source, 'id')).size, `${page}: duplicate ids`);
     for (const script of source.matchAll(/<script([^>]*)>([\s\S]*?)<\/script>/g)) {
