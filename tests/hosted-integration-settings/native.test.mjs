@@ -30,7 +30,7 @@ async function fixture(shipped=false){
     assert.equal(response.headers.get('cache-control'),'no-store');assert.equal(response.headers.get('x-robots-tag'),'noindex, nofollow');assert.equal(response.headers.get('x-content-type-options'),'nosniff');assert.equal(response.headers.get('referrer-policy'),'same-origin');
     return {status:response.status,headers:response.headers,value:text?JSON.parse(text):null};
   }
-  return {request,close:async()=>{await runtime.dispose();assert.equal(assets,0);assert.equal(outbound,0);}};
+  return {request,dispatch:(suffix)=>runtime.dispatchFetch(origin+suffix),close:async(expectedAssets=0)=>{await runtime.dispose();assert.equal(assets,expectedAssets);assert.equal(outbound,0);}};
 }
 
 test('actual shipped entrypoint stays closed with valid existing trust/D1/token and lookalike env/request flags',{timeout:20000},async()=>{
@@ -46,12 +46,21 @@ test('actual shipped entrypoint stays closed with valid existing trust/D1/token 
 
 test('exact route enforces path/origin/method boundaries without assets or adapter fallback',{timeout:20000},async()=>{
   const app=await fixture();try{
-    for(const variant of [path+'/',path+'/extra',path.replace('github-content','other'),path.replace('github-content','github%2dcontent'),path.replace('github-content','%67ithub-content'),path.replace('github-content','github-content%2F'),'/api/admin/settings','/api/admin/settings/integrations'])assert.equal((await app.request(command(),{path:variant})).status,503);
+    for(const variant of [path+'/',path+'/extra',path.replace('github-content','other'),path.replace('github-content','github%2dcontent'),path.replace('github-content','%67ithub-content'),path.replace('github-content','github-content%2F'),path.replace('/api/','/%61pi/'),path.replace('/api/admin/','/api%2fadmin/'),path.replace('/settings/','%2fsettings/'),'/api/admin/settings','/api/admin/settings/integrations'])assert.equal((await app.request(command(),{path:variant})).status,503);
     assert.equal((await app.request(command(),{path:path+'?operation=configure'})).status,400);
     assert.equal((await app.request(command(),{url:'https://attacker.invalid'+path})).status,403);
     for(const method of ['PUT','PATCH','DELETE','OPTIONS','HEAD']){const response=await app.request(undefined,{method});assert.equal(response.status,405);assert.equal(response.headers.get('allow'),'GET, POST');}
     const state=await app.request();assert.equal(state.status,200);assert.equal(state.value.configured,false);assert.equal(state.value.revision,0);
   }finally{await app.close();}
+});
+
+test('once-decoded namespace rejection leaves ordinary encoded assets and malformed encodings unchanged',{timeout:20000},async()=>{
+  const app=await fixture();try{
+    for(const suffix of ['/images/%61sset.svg','/images/%ZZ.svg']){
+      const response=await app.dispatch(suffix);assert.equal(response.status,200);assert.equal(await response.text(),'assets must not receive admin settings');
+    }
+    assert.equal((await app.request(undefined,{path:'/api/admin/settings/%ZZ'})).status,503);
+  }finally{await app.close(2);}
 });
 
 test('real workerd route rejects unsigned authority and forged legacy verifier/local identity',{timeout:20000},async()=>{

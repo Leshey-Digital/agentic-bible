@@ -21,6 +21,10 @@ const integrationSettings=ports.integrationSettings?createIntegrationSettingsCon
 return {async fetch(request:Request,env:RuntimeEnv):Promise<Response>{
   const url=new URL(request.url),path=url.pathname;
   try{
+    // Decode once only to reject aliases of the private settings namespace. Never
+    // dispatch a decoded alias; malformed encodings retain existing route behavior.
+    let decodedPath=path;try{decodedPath=decodeURIComponent(path);}catch{}
+    if(decodedPath!==path&&(decodedPath==='/api/admin/settings'||decodedPath.startsWith('/api/admin/settings/')))return json({error:'hosted_admin_and_public_intake_not_configured'},503);
     if(path==='/api/admin/settings/integrations/github-content'){
       if(url.origin!==origin)return json({error:'hosted_origin_required'},403);
       if(url.search)return json({error:'invalid_request'},400);
