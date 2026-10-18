@@ -6,8 +6,11 @@
 - [x] Enforce owner/current-revision/replay bounds and stale test-completion protection; build mask/status/audit projections explicitly.
 - [x] Exercise disposable fake storage and actual generated RS256 identity, unknown fields, body bounds, mask independence, rotation/races/rollback, replay/ownership, redaction and connection deadlines/quotas.
 - [x] Retain and run existing local measurement tests.
-- [ ] Complete final focused tests, docs validation and Astro/TypeScript check after final edits; record actual results in handoff.
-- [ ] Coordinate broader validation with parent and record passed/failed/not-run separately.
-- [ ] Obtain separate independent exact-commit review before integration.
+- [x] Complete initial focused tests (16/16), docs validation, Astro check (zero errors/warnings, one style hint), 31-page/20-indexed-article build, retained settings (19/19) and static tests (8/8) at frozen implementation `9d38eea50b8da486b43895ee8fc12cc6f33462cd`.
+- [x] Coordinate broader scope with parent: full validate/browser/native hosted suites are not run on this unmounted contract branch; parent owns broader integration checks.
+- [x] Independent review of `9d38eea50b8da486b43895ee8fc12cc6f33462cd` reproduced an expiry microtask between final freshness check and adapter dispatch. Add two real-signed deterministic regressions, reproduce the expired invocation (17 passed/1 failed), and remove the intervening promise hop while retaining pending budgets and safe synchronous-error handling.
+- [x] Document the separate delayed-reservation/rotation limitation and trusted adapter's serialized revision-validation responsibility.
+- [x] Successor checks passed: focused 18/18, retained settings 19/19, docs (300 Markdown files/365 links), Astro (155 files, zero errors/warnings/hints), and clean diff whitespace. Broader full validation/browser/native hosted/build suites were not repeated for this narrow unmounted correction; prior initial build/static evidence remains distinct above.
+- [ ] Obtain independent exact-successor re-review before integration.
 
 No route or persistent/live provider adapter is implemented. Tests using memory survive handler replacement only; they do not demonstrate process persistence or vault operation.

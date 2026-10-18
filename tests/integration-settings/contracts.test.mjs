@@ -137,6 +137,32 @@ test('test reservation survives handler replacement; replay never dispatches twi
   release('connected');assert.equal((await pending).value.connection,'connected');assert.equal(calls,1);
 });
 
+test('expiry queued before reservation response prevents dispatch and retains pending budget',async()=>{
+  const storage=new MemoryStorage();let calls=0;const {handle}=setup(async()=>{calls++;return 'connected';},storage);
+  await invoke(handle,command());const input=command('test',1),req=await request(input);
+  const expiry=JSON.parse(Buffer.from(req.headers.get('cf-access-jwt-assertion').split('.')[1],'base64url')).exp*1000;
+  const realNow=Date.now;let clock=realNow();Date.now=()=>clock;
+  const original=storage.transaction.bind(storage);
+  storage.transaction=async(id,work)=>{const value=await original(id,work);if(storage.metadata.pendingTest)queueMicrotask(()=>{clock=expiry;});return value;};
+  try{
+    const response=await handle(req);assert.equal(response.status,403);assert.equal(calls,0);
+    assert.equal(storage.metadata.lastTest,'pending');assert.equal(storage.metadata.testsUsed,1);assert.equal(storage.metadata.audit.length,2);assert.equal(storage.metadata.requestKeys.includes(input.requestKey),true);
+  }finally{Date.now=realNow;}
+});
+
+test('an expiry microtask cannot run between dispatch freshness check and adapter invocation',async()=>{
+  const storage=new MemoryStorage();let calls=0,expiredCalls=0,expiry;
+  const {handle}=setup(async()=>{calls++;if(Date.now()>=expiry)expiredCalls++;return 'connected';},storage);
+  await invoke(handle,command());const req=await request(command('test',1));
+  expiry=JSON.parse(Buffer.from(req.headers.get('cf-access-jwt-assertion').split('.')[1],'base64url')).exp*1000;
+  const realNow=Date.now;let clock=realNow(),scheduled=false;
+  Date.now=()=>{if(storage.metadata.pendingTest&&!scheduled){scheduled=true;queueMicrotask(()=>{clock=expiry;});}return clock;};
+  try{
+    const response=await handle(req);assert.equal(scheduled,true);assert.equal(calls,1);assert.equal(expiredCalls,0);assert.equal(response.status,403);
+    assert.equal(storage.metadata.lastTest,'pending');assert.equal(storage.metadata.testsUsed,1);assert.equal(storage.metadata.audit.length,2);
+  }finally{Date.now=realNow;}
+});
+
 test('failed completion retains its reservation and cannot repeat provider work',async()=>{
   let calls=0;const storage=new MemoryStorage();
   const {handle}=setup(async()=>{calls++;storage.failWrite=true;return 'connected';},storage);

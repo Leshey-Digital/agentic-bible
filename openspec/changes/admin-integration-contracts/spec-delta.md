@@ -21,6 +21,8 @@
 - Given an adapter exception, unknown value or excessive wait, return a bounded unavailable/timeout enum with no raw error/result data; abort on the fixed deadline.
 - Given rotation while a test is pending, reject its stale completion without changing new-revision status.
 - Given interruption or failed completion, preserve pending reservation/budget and reject redispatch through replay.
+- Given assertion expiry before dispatch, deny invocation while preserving its pending reservation/budget. Keep the final freshness check and direct adapter invocation in one synchronous callback, without a queued promise hop; redact synchronous adapter errors.
+- Given a reservation response delayed across rotation, require the trusted adapter to serialize current-revision validation with credential resolution and operation start. The core's stale-completion protection alone is not an external dispatch guarantee.
 - Given a saved credential, configuration status/mask remains independent of its bytes and connection success.
 
 # Unchanged requirements

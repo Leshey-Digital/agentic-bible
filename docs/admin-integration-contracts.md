@@ -30,7 +30,11 @@ A test command first reserves its reference, revision, lifetime test count and a
 
 The handler waits at most one second for the adapter result, aborts, and returns only `connected`, `rejected`, `unavailable` or `timeout`. Only exact `connected`/`rejected` adapter strings are accepted; objects, unknown strings and all exceptions become `unavailable`. Raw provider responses and errors are never forwarded or audited. The handler's deadline cannot terminate synchronous work or force an adapter that ignores abort to cease external activity; transport enforcement remains a trusted-adapter requirement.
 
+Immediately after the reservation await, the handler checks assertion freshness and calls the adapter in the same synchronous callback, before its first await. No queued promise hop separates that check from invocation. If the assertion has expired, dispatch is denied while its pending reservation, audit and budget remain retained. Adapter invocation that starts before expiry is permitted; expiry before completion denies the response without replaying work. Both synchronous throws and asynchronous adapter errors remain redacted.
+
 Rotation invalidates a prior pending completion. Its late result returns stale revision and cannot overwrite the new credential's `never` status. Interrupted or failed completion stays pending, with the reservation and budget retained; replay never redispatches. No automatic retry, refund or reconciliation is implemented. Rotation can supersede a pending test with a new revision. Software request counts are not monetary caps or GitHub rate-limit proof.
+
+The core reservation/completion checks do not prevent every stale external operation. If storage delays its reservation response while a rotation commits, the handler can still call the adapter with the older requested revision. The trusted adapter must serialize its revision validation with credential resolution and the start of its operation, refuse a changed revision, and avoid using retained old credentials. No production adapter or claim that the core alone prevents such dispatch is supplied.
 
 ## Verification and rollback
 

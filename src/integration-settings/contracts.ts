@@ -98,9 +98,18 @@ export function createIntegrationSettingsContract(adapters:IntegrationAdapters):
       });
       const controller=new AbortController();let timer:ReturnType<typeof setTimeout>|undefined;
       const timeout=new Promise<ConnectionResult>(resolve=>{timer=setTimeout(()=>{controller.abort();resolve('timeout');},integrationLimits.testMs);});
+      const connection=async():Promise<ConnectionResult>=>{
+        // Keep the final authority check and adapter invocation synchronous. An
+        // intervening promise hop could dispatch work after the assertion expires.
+        fresh();
+        try{
+          const value=await adapters.testConnection({integration:input.integration,revision:input.revision,signal:controller.signal});
+          return value==='connected'||value==='rejected'?value:'unavailable';
+        }catch{return 'unavailable';}
+      };
       let outcome:ConnectionResult;
       try{
-        outcome=await Promise.race([Promise.resolve().then(()=>{fresh();return Promise.resolve().then(()=>adapters.testConnection({integration:input.integration,revision:input.revision,signal:controller.signal})).then(value=>value==='connected'||value==='rejected'?value:'unavailable').catch(()=>'unavailable' as const);}),timeout]);
+        outcome=await Promise.race([connection(),timeout]);
       }finally{clearTimeout(timer);controller.abort();}
       return json(await adapters.storage.transaction(input.integration,async tx=>{
         const current=record(await tx.read());fresh();owned(current,admin.subject);
