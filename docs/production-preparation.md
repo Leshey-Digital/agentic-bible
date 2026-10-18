@@ -16,7 +16,7 @@ The shared social metadata hook adds page-specific titles/descriptions and optio
 - Content: the confirmed citation/grammar corrections and substantive inert Tool Use/Structured Outputs examples.
 - Reader metadata: actual Git revision lineage, honest review/source-check distinctions, sharing, explicit production discovery and History, with staging noindex.
 - Hosted workflows: twenty-article contribution intake and signed admin review, then secure write-only adapter persistence. Migrations `0018` and `0019` are reserved here.
-- Publishing quality: hard admission failures and original-evidence lineage, then compatible article-target generalization and bounded source/provider adapters. Migration `0020` is reserved here.
+- Publishing quality: hard admission failures and original-evidence lineage, then compatible article-target generalization and bounded source/provider adapters. Migrations `0020` and `0021` are reserved here.
 
 Independent reviewers accept exact checkpoints before composition. Fixed browser ports are serialized. New sources and held accounting/recovery records are preserved rather than reset. The final composition receives complete saved-environment qualification; per-lane focused checks are not represented as that qualification.
 
@@ -29,3 +29,9 @@ Qualifying articles publish automatically with post-publication review flags. Un
 The intended admin account, editorial mailbox activation, actual identity membership/trust, Jev credentials and numeric spend allocation, analytics/search properties and consent details remain owner setup. Jev is not assumed to be a prose generator or a known API. New persistent adapters are tested with disposable generated values and controlled transports; they do not provision a live vault or authority. Public contributions remain closed until their legal/privacy/moderation and server configuration gates are satisfied. No credential values belong in artifacts or ordinary settings responses.
 
 The next handoff must name exact integrated commits, passed/failed/not-run checks, review findings, recoverable artifacts and remaining setup. A tested adapter is not a live integration. A production candidate is not permission to deploy it.
+
+## Accepted reader/content composition
+
+The preparation branch includes content head `6a771fc680d829092b71b5e745ed2090561060b3` and metadata head `5ad224d410dfd95136572c1fcb4be84bd2290693` through ancestry-preserving merges. Independent content review accepted the tau-bench v1 section correction and inert JSON examples; only sampled source passages were checked. Independent metadata review reproduced shallow-history and explicit-null false dates at the earlier checkpoint and accepted their correction at `5ad224d`. The original failing probes remain in the review evidence.
+
+Central `validate` now runs the actual revision provenance, social image namespace and literal article example suites. The saved environment supplies Python's existing jsonschema validator for the latter; this adds no runtime dependency or API call. All nine focused cases passed after composition. Hosted/vault/quality/adapter suites will be added as their reviewed source checkpoints are composed; no complete qualification is claimed yet.

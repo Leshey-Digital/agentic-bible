@@ -16,7 +16,7 @@
     "test:docs": "node scripts/validate-docs.mjs",
     "test": "node --test tests/static.test.mjs",
     "test:browser": "PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright test",
-    "validate": "npm run test:docs && npm run check && npm run build && npm test && npm run test:editorial && npm run test:monitoring && npm run test:settings && npm run test:integration-settings && npm run test:hosted-integration-settings && npm run test:integration && npm run test:http-sources && npm run test:http-worker && npm run test:publication && npm run test:seo && npm run test:seo:build && npm run test:wiki-bridge && npm run test:corrections && npm run test:hosted && npm run test:release && npm run test:maintenance-sources && npm run test:maintenance && npm run test:maintenance-github && npm run test:maintenance-history && npm run test:maintenance-review && npm run test:maintenance-restore && npm run test:maintenance-base && npm run test:maintenance-pipeline && npm run test:maintenance-currency && npm run test:maintenance-review-monitor",
+    "validate": "npm run test:docs && npm run check && npm run build && npm test && npm run test:editorial && npm run test:monitoring && npm run test:settings && npm run test:integration-settings && npm run test:hosted-integration-settings && npm run test:integration && npm run test:http-sources && npm run test:http-worker && npm run test:publication && npm run test:seo && npm run test:seo:build && npm run test:wiki-bridge && npm run test:corrections && npm run test:hosted && npm run test:release && npm run test:maintenance-sources && npm run test:maintenance && npm run test:maintenance-github && npm run test:maintenance-history && npm run test:maintenance-review && npm run test:maintenance-restore && npm run test:maintenance-base && npm run test:maintenance-pipeline && npm run test:maintenance-currency && npm run test:maintenance-review-monitor && npm run test:reader-metadata && npm run test:social-metadata && npm run test:content-readiness",
     "staging:check": "node scripts/assert-staging-discovery.mjs && XDG_CONFIG_HOME=.git/runtime-config XDG_CACHE_HOME=.git/runtime-cache WRANGLER_SEND_METRICS=false wrangler deploy --dry-run --config wrangler.staging.jsonc",
     "staging:local": "node scripts/assert-staging-discovery.mjs && CLOUDFLARE_CF_FETCH_ENABLED=false XDG_CONFIG_HOME=.git/runtime-config XDG_CACHE_HOME=.git/runtime-cache WRANGLER_SEND_METRICS=false wrangler dev --local --config wrangler.staging.jsonc --ip 127.0.0.1 --port 8787",
     "browser:install": "PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright install chromium",
@@ -85,7 +85,10 @@
     "release:execute": "node scripts/release-local.mjs",
     "release:bridge:request": "node scripts/release-bridge-request.mjs",
     "release:bridge:respond": "node scripts/release-bridge-respond.mjs",
-    "release:bridge:code-chunk": "node scripts/release-bridge-code-chunk.mjs"
+    "release:bridge:code-chunk": "node scripts/release-bridge-code-chunk.mjs",
+    "test:reader-metadata": "node --test tests/reader-metadata/*.test.mjs",
+    "test:social-metadata": "node --test tests/social-metadata/*.test.mjs",
+    "test:content-readiness": "python3 tests/content-readiness/examples_test.py"
   },
   "dependencies": {
     "astro": "7.4.0"
