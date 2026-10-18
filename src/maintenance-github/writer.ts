@@ -1,4 +1,5 @@
 import {maintenanceTarget} from '../maintenance-quality/target.ts';
+import {legacyPredecessor} from '../maintenance-quality/predecessors.ts';
 import {readingArticleIds} from '../lib/article-ids.ts';
 import type {QualityControl} from '../maintenance-quality/contracts.ts';
 import type {CurrencyControl} from '../wiki-bridge/maintenance-currency.ts';
@@ -37,6 +38,7 @@ function cachedReceipt(row:WriterRow,authorityHash:string,intent:Intent,authorit
 }
 async function projection(authority:Authority,v:Selection,outbox:WriterOutbox,previousEvent:string|null):Promise<Intent>{
  const {articlePath,pointerPath}=maintenanceTarget(authority.command.revision.article.id);let previous:null|{eventId:string;revisionId:string;path:string;sha256:string}=null;
+ if(previousEvent!==null&&v.previousRevision!==null&&!authority.quality)await legacyPredecessor(outbox,previousEvent,v.previousRevision,authority.command.revision.article.id);
  if(v.previousRevision!==null){if(!event(previousEvent))stop('writer_previous_authority_required');const row=await outbox.get(previousEvent);if(!row||row.state!=='complete'||!row.receipt||hash(row.receipt)!==row.receipt_hash)stop('writer_previous_authority_required');const intent=outbox.intent(row),record=JSON.parse(intent.files[historyPath(previousEvent)]);if(record.articleRevision!==v.previousRevision)stop('writer_previous_revision_conflict');previous={eventId:previousEvent,revisionId:v.previousRevision,path:historyPath(previousEvent),sha256:hash(intent.files[historyPath(previousEvent)])};}
  else if(previousEvent!==null)stop('writer_previous_revision_conflict');
  const {front,body}=publicationMarkdown(authority.command.revision.article,authority.receipt.publisher,authority.bindings);front.publication.revisionId=authority.articleRevision;front.publication.flags=qualityFlags(authority.command.revision.article);
@@ -81,7 +83,9 @@ export async function writeMaintenanceRevision(value:unknown,context:Context):Pr
   if(row.state==='dispatched'){
    const tip=(await api.request('/git/ref/heads/'+branch))?.object?.sha;if(!sha(tip))stop('writer_ref_rejected');const found=await api.request('/commits?sha='+tip+'&path='+encodeURIComponent(historyPath(id))+'&per_page=2');if(!Array.isArray(found)||found.length!==1||!sha(found[0]?.sha))stop('writer_head_conflict_or_unconfirmed');oid=found[0].sha;
   }else{
-   if(hash(canonical(await completedMaintenance(v.command,context)))!==authorityHash)stop('writer_authority_changed');assertCurrent();baseTree??=(await treeAt(v.expectedBaseCommit)).leaves;assertCanonicalHistoryCapacity(baseTree.keys(),authority.quality?64:16);await outbox.dispatch(id,owner,clock());await context.checkpoint?.('dispatched');assertCurrent();
+   if(hash(canonical(await completedMaintenance(v.command,context)))!==authorityHash)stop('writer_authority_changed');assertCurrent();baseTree??=(await treeAt(v.expectedBaseCommit)).leaves;assertCanonicalHistoryCapacity(baseTree.keys(),authority.quality?64:16);
+   if(!authority.quality&&intent.previousEvent!==null&&v.previousRevision!==null){const prior=await legacyPredecessor(outbox,intent.previousEvent,v.previousRevision,articleId);for(const path of [articlePath,pointerPath,historyPath(intent.previousEvent)])if(regular(baseTree,path).sha!==blobSha(prior.files[path]))stop('writer_canonical_base_conflict');}
+   await outbox.dispatch(id,owner,clock());await context.checkpoint?.('dispatched');assertCurrent();
    const response=await api.request('',{operationName:'CanonicalMaintenanceCommit',query:commitMutation,variables:{input:{branch:{repositoryNameWithOwner:repository,branchName:branch},expectedHeadOid:v.expectedBaseCommit,clientMutationId:fingerprint,message:{headline:'Automatic maintenance: '+articleId,body:'Event: '+id+'\nAuthority: '+authorityHash+'\n'},fileChanges:{additions:Object.entries(intent.files).map(([path,contents])=>({path,contents:Buffer.from(contents).toString('base64')}))}}}});
    if(response?.errors||response?.data?.createCommitOnBranch?.clientMutationId!==fingerprint||!sha(response?.data?.createCommitOnBranch?.commit?.oid))stop('writer_commit_unconfirmed');oid=response.data.createCommitOnBranch.commit.oid;await context.checkpoint?.('remote-committed');
   }
