@@ -22,9 +22,7 @@ function relatedKeywordQuery(query: string): string | undefined {
   const agentContext = /\b(agent|agents|ai|model|assistant)\b/.test(words);
   const injectionContext = /\bprompt injection\b/.test(words)
     || (/\b(?:malicious|untrusted) instructions?\b/.test(words)
-      && /\b(?:retrieved|content|document|text|page|source|tool output)\b/.test(words))
-    || /\buntrusted (?:retrieved )?(?:content|document|text)\b/.test(words)
-    || /\bretrieved (?:content|document|text)\b/.test(words);
+      && /\b(?:retrieved|content|document|text|page|source|tool output)\b/.test(words));
   if (protectiveIntent && agentContext && injectionContext) return 'prompt injection';
 
   const repeatIntent = /\b(duplicate|repeat|again|twice|replay|retry|retries)\w*\b/.test(words);

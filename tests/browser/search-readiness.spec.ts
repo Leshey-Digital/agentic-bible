@@ -38,6 +38,9 @@ test('SQL injection and ordinary after phrasing do not trigger inferred expansio
   const input = page.locator('#search-input');
   for (const query of [
     'protect an AI assistant from SQL injection',
+    'protect an AI assistant from copyright violations in retrieved content',
+    'protect an AI assistant from personal data in retrieved content',
+    'protect an AI agent from misleading statistics in retrieved content',
     'repeat a workflow after eating lunch outdoors',
     'avoid duplicate actions after lunch in the cafeteria',
   ]) {
