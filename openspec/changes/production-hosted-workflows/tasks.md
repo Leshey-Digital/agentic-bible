@@ -5,4 +5,4 @@
 - [x] Add accessible inbox controls and preserve drafts on errors.
 - [x] Verify actual local workerd/D1 signature, policy, rate/capacity, replay, restart and stale-review controls.
 - [ ] Run focused regression/type/build/docs checks and record exact outcome.
-- [ ] Evaluate bounded encrypted integration persistence after the core workflow.
+- [x] Add optional encrypted integration persistence, bounded fixed read checks and private write-only interface; live key/recovery/setup remain unconfigured.

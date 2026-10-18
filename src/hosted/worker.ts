@@ -11,6 +11,7 @@ import {adminHtml,adminCss,adminJs} from './admin.ts';
 import {createContributionHandler,intakeConfigured} from './contributions.ts';
 import {adminTrust,verifySignedAdmin} from './identity.ts';
 import {contributionAdminHtml,contributionAdminCss,contributionAdminJs} from './contribution-admin.ts';
+import {integrationAdminHtml,integrationAdminCss,integrationAdminJs} from '../integration-settings/admin.ts';
 import {createIntegrationSettingsContract} from '../integration-settings/contracts.ts';
 const origin='https://staging.agenticbible.si';
 const headers={'Cache-Control':'no-store','X-Robots-Tag':'noindex, nofollow','X-Content-Type-Options':'nosniff','Referrer-Policy':'same-origin','Content-Security-Policy':"default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; img-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'"};
@@ -28,7 +29,15 @@ return {async fetch(request:Request,env:RuntimeEnv):Promise<Response>{
     // Decode once only to reject aliases of the private settings namespace. Never
     // dispatch a decoded alias; malformed encodings retain existing route behavior.
     let decodedPath=path;try{decodedPath=decodeURIComponent(path);}catch{}
-    if(decodedPath!==path&&(decodedPath==='/api/submissions'||decodedPath==='/api/admin/submissions'||decodedPath.startsWith('/api/admin/submissions/')||decodedPath.startsWith('/admin/contributions/')||decodedPath==='/api/admin/settings'||decodedPath.startsWith('/api/admin/settings/')))return json({error:'hosted_admin_and_public_intake_not_configured'},503);
+    if(decodedPath!==path&&(decodedPath==='/api/submissions'||decodedPath==='/api/admin/submissions'||decodedPath.startsWith('/api/admin/submissions/')||decodedPath.startsWith('/admin/contributions/')||decodedPath.startsWith('/admin/integrations/')||decodedPath==='/api/admin/settings'||decodedPath.startsWith('/api/admin/settings/')))return json({error:'hosted_admin_and_public_intake_not_configured'},503);
+    if(path.startsWith('/admin/integrations/')){
+      if(url.origin!==origin)return json({error:'hosted_origin_required'},403);
+      if(!integrationSettings)return json({error:'integration_settings_unconfigured'},503);
+      const trust=adminTrust(ports.integrationSettings?.trust),admin=trust?await verifySignedAdmin(request,trust):null;
+      if(!admin||request.headers.get('sec-fetch-site')==='cross-site')return json({error:'verified_admin_required'},403);
+      if(request.method!=='GET'||url.search)return json({error:'invalid_request'},400);
+      const asset=path==='/admin/integrations/'?[integrationAdminHtml,'text/html; charset=utf-8']:path==='/admin/integrations/style.css'?[integrationAdminCss,'text/css; charset=utf-8']:path==='/admin/integrations/app.js'?[integrationAdminJs,'text/javascript; charset=utf-8']:null;return asset?new Response(asset[0],{headers:{...headers,'Content-Type':asset[1]}}):json({error:'not_found'},404);
+    }
     if(path==='/api/admin/settings/integrations/github-content'){
       if(url.origin!==origin)return json({error:'hosted_origin_required'},403);
       if(url.search)return json({error:'invalid_request'},400);
