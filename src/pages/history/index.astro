@@ -1,10 +1,54 @@
 ---
 import Base from '../../layouts/Base.astro';
 import '../../styles/history.css';
+import {library} from '../../lib/library';
 import {maintenanceBuild} from '../../maintenance-history/build.ts';
+
+const articles=await library();
+const byId=new Map(articles.map(article=>[article.id,article]));
 const view=maintenanceBuild();
+const resolveEntry=(entry:typeof view.history[number])=>{
+  const article=byId.get(entry.articleId);
+  if(!article)throw new Error(`history_article_unknown:${entry.articleId}`);
+  return {entry,article};
+};
+const history=view.history.map(resolveEntry);
+const reviewQueue=view.reviewQueue.map(resolveEntry);
 ---
-<Base title="Revision history" description="Maintenance revision receipts and review flags for Agentic Bible. Article source changes remain linked to their pinned Git history."><header class="page-intro"><p class="eyebrow">The record behind the reference</p><h1>Revision history.</h1><p>Read recorded maintenance changes and follow their evidence. Article source history is linked from each article’s revision record.</p></header>
-<nav class="history-nav" aria-label="Revision navigation"><a href="/review/">Post-publication flags</a><a href="/articles/tool-use/">Read tool use</a></nav>
-{view.history.length?<section id="article-tool-use" class="history-reading"><h2>Tool use</h2><p class="history-notice">Controlled preview · Automatic maintenance bot. Valid revisions publish before human review. Git integrity does not establish factual accuracy or source authenticity.</p><ol class="revision-list">{view.history.map((entry,index)=><li><div class="revision-label"><span class="eyebrow">{entry.current?'Current revision':'Earlier revision'} · {view.history.length-index}</span><span>{entry.operation==='restoration'?'Admin-approved restoration':'Automatic maintenance bot'}</span></div><h3><a href={`/history/tool-use/${entry.eventId}/`}>{entry.current?'Latest changes':'Retained changes'} · {entry.receipt.commit.slice(0,8)}</a></h3><p>{entry.flags.length} post-publication review flag{entry.flags.length===1?'':'s'} · <a href={`/history/tool-use/${entry.eventId}/#changes`}>Compare text</a></p><code>{entry.receipt.articleRevision}</code></li>)}</ol></section>:<section class="history-reading"><h2>No maintenance revisions in this edition</h2><p>This section is empty because no controlled maintenance revision is included in this edition. Each article retains its own source history link on GitHub. An empty maintenance history does not mean the articles have never changed, and no generated revision is implied.</p></section>}
+<Base title="Revision history" description="Recorded article revisions and current review flags for Agentic Bible. Each history entry links to its article and Git record.">
+  <header class="page-intro">
+    <p class="eyebrow">The record behind the reference</p>
+    <h1>Revision history.</h1>
+    <p>Follow recorded article changes and see which current revisions carry post-publication review flags. The stream is ordered globally; each current marker belongs to its own article.</p>
+  </header>
+  <nav class="history-nav" aria-label="Revision navigation">
+    <a href="/review/">Current review flags</a>
+    <a href="/">Browse the collection</a>
+  </nav>
+  {reviewQueue.length>0&&<section class="history-reading" aria-labelledby="flagged-title">
+    <h2 id="flagged-title">Current revisions needing follow-up</h2>
+    <p>These flags request human follow-up after publication. They are not editorial approval or factual certification.</p>
+    <ul class="revision-list">{reviewQueue.map(({entry,article})=><li>
+      <div class="revision-label"><span class="eyebrow">Current for this article</span><span>{entry.operation==='restoration'?'Reviewed restoration record':'Automatic maintenance record'} · Controlled preview</span></div>
+      <h3><a href={`/articles/${article.id}/`}>{article.data.title}</a></h3>
+      <ul>{entry.flags.map(flag=><li>{flag==='editorial-review'?'Editorial review requested':flag.replaceAll('-',' ')}</li>)}</ul>
+      <p><a href={`/history/${entry.articleId}/${entry.eventId}/`}>Read this revision record and compare text</a></p>
+    </li>)}</ul>
+  </section>}
+  {history.length>0?<section class="history-reading" aria-labelledby="all-history-title">
+    <h2 id="all-history-title">Article revision stream</h2>
+    <p class="history-notice">Git record integrity shows that bytes match recorded commits. It does not establish source authenticity, factual accuracy, or human editorial certification.</p>
+    <ol class="revision-list">{history.map(({entry,article},index)=><li id={entry.current?`article-${entry.articleId}`:undefined}>
+      <div class="revision-label">
+        <span class="eyebrow">{entry.current?'Current for this article':'Earlier for this article'} · {index+1} in global history</span>
+        <span>{entry.operation==='restoration'?'Reviewed restoration record':'Automatic maintenance record'} · Controlled preview</span>
+      </div>
+      <h3><a href={`/history/${entry.articleId}/${entry.eventId}/`}>{article.data.title} · {entry.current?'Current revision':'Earlier revision'} · {entry.receipt.commit.slice(0,8)}</a></h3>
+      <p><a href={`/articles/${article.id}/`}>Read {article.data.title}</a> · {entry.flags.length} post-publication review flag{entry.flags.length===1?'':'s'} · <a href={`/history/${entry.articleId}/${entry.eventId}/#changes`}>Compare text</a></p>
+      <code>{entry.receipt.articleRevision}</code>
+    </li>)}</ol>
+  </section>:<section class="history-reading">
+    <h2>No maintenance revisions in this edition</h2>
+    <p>No controlled maintenance revisions are included here. Each article has its own source-history link on its revision record. An empty maintenance history does not mean the articles have never changed, and no generated revision is implied.</p>
+  </section>}
 </Base>
