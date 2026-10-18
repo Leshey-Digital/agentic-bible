@@ -1,0 +1,116 @@
+{
+  "base": "697d546fc5b6560fe1c38e573584c855c86c13af",
+  "branch": "fix/admin-revocation-response",
+  "checks": [
+    {
+      "command": "npm run validate",
+      "exitCode": 0,
+      "log": "revocation-validation.log"
+    },
+    {
+      "command": "npm run test:browser",
+      "exitCode": 0,
+      "seconds": 86.06,
+      "log": "revocation-test-browser.log",
+      "cases": 74
+    },
+    {
+      "command": "npm run test:editorial:browser",
+      "exitCode": 0,
+      "seconds": 40.49,
+      "log": "revocation-test-editorial-browser.log",
+      "cases": 23
+    },
+    {
+      "command": "npm run test:integration:browser",
+      "exitCode": 0,
+      "seconds": 11.57,
+      "log": "revocation-test-integration-browser.log",
+      "cases": 1
+    },
+    {
+      "command": "npm run test:monitoring:worker",
+      "exitCode": 0,
+      "seconds": 19.18,
+      "log": "revocation-test-monitoring-worker.log"
+    },
+    {
+      "command": "npm run test:settings:worker",
+      "exitCode": 0,
+      "seconds": 27.26,
+      "log": "revocation-test-settings-worker.log"
+    },
+    {
+      "command": "npm run test:publication:browser",
+      "exitCode": 0,
+      "seconds": 7.8,
+      "log": "revocation-test-publication-browser.log",
+      "cases": 1
+    },
+    {
+      "command": "npm run test:combined:browser",
+      "exitCode": 0,
+      "seconds": 5.45,
+      "log": "revocation-test-combined-browser.log",
+      "cases": 1
+    },
+    {
+      "command": "npm run test:wiki-bridge:browser",
+      "exitCode": 0,
+      "seconds": 27.82,
+      "log": "revocation-test-wiki-bridge-browser.log",
+      "cases": 4
+    },
+    {
+      "command": "npm run test:wiki-seo:browser",
+      "exitCode": 0,
+      "seconds": 13.89,
+      "log": "revocation-test-wiki-seo-browser.log",
+      "cases": 1
+    },
+    {
+      "command": "npm run test:corrections:browser",
+      "exitCode": 0,
+      "seconds": 42.07,
+      "log": "revocation-test-corrections-browser.log",
+      "cases": 2
+    },
+    {
+      "command": "npm run test:hosted:browser",
+      "exitCode": 0,
+      "seconds": 8.73,
+      "log": "revocation-test-hosted-browser.log",
+      "cases": 2
+    },
+    {
+      "command": "npm run test:hosted-admin:browser",
+      "exitCode": 0,
+      "seconds": 27.89,
+      "log": "revocation-test-hosted-admin-browser.log",
+      "cases": 14
+    },
+    {
+      "command": "npm run staging:check",
+      "exitCode": 0,
+      "seconds": 1.02,
+      "log": "revocation-staging-check.log"
+    },
+    {
+      "command": "npm run runtime:check",
+      "exitCode": 0,
+      "seconds": 1.02,
+      "log": "revocation-runtime-check.log"
+    }
+  ],
+  "validationTests": 151,
+  "browserCases": 123,
+  "nativePersistenceChecks": 2,
+  "dryRuns": 2,
+  "redCases": 2,
+  "adminCases": 14,
+  "originalArticlesUnchanged": 20,
+  "releaseFilesChanged": false,
+  "backendAuthorityChanged": false,
+  "independentAcceptance": false,
+  "ci": "Exact-head terminal result belongs in the draft handoff."
+}

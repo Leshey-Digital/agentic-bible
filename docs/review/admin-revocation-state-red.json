@@ -1,0 +1,17 @@
+{
+  "base": "99b565a8bb0a1666ccd210398f927d3f20cbae8f",
+  "cases": 2,
+  "projects": ["desktop", "mobile"],
+  "sourceUnchangedDuringRedRun": true,
+  "actualWorkerD1": true,
+  "controlledGitHubDrafts": 1,
+  "revocationCommittedBeforeResponseReleased": true,
+  "olderApprovedListActuallyReplacedRow": true,
+  "followupListReadFailed": true,
+  "oldProposalResponseReleasedLast": true,
+  "expected": "Revoked. No new proposal can be requested.",
+  "received": "Approved. Ready for a draft proposal.",
+  "log": "Actual Git directory: revocation-state-red.log",
+  "traces": "Actual Git directory: revocation-state-red-traces/",
+  "testHarnessSetupSyntaxErrorCorrectedBeforeReproduction": true
+}
