@@ -70,7 +70,7 @@ export class WikiBridge {
     return {mode:'local-synthetic-only',active:active?{...active.reference,sequence:active.manifest.state.sequence,articleRevision:active.manifest.state.articleRevision,publisher:active.manifest.state.publisher}:null,pending,storage:this.storageUsage()};
   }
   async execute(value:unknown,db:SqlDatabase,sourceDirectory:string,options:Options={}):Promise<SiteReceipt>{
-    const command=bridgeInput(value);if(command.kind==='apply'&&command.schemaVersion===2&&!options.quality)reject('quality_verifier_unconfigured');if(command.kind==='apply'&&command.revision.article.reviewedCorrections)reject('reviewed_approval_required');
+    const command=bridgeInput(value);if(command.kind==='apply'&&command.schemaVersion===2){if(!options.quality)reject('quality_verifier_unconfigured');options={...options,quality:{...options.quality,previousCandidateHash:command.revision.baseRevision}};}if(command.kind==='apply'&&command.revision.article.reviewedCorrections)reject('reviewed_approval_required');
     return this.executeCommand(command,db,sourceDirectory,options);
   }
   async executeReviewed(approvalId:string,db:SqlDatabase,options:Options={}):Promise<SiteReceipt>{
@@ -78,7 +78,7 @@ export class WikiBridge {
     return this.executeCommand(command,db,'',options,()=>verifyApproval(command,db));
   }
   private async executeCommand(command:BridgeCommand|ReviewedCommand,db:SqlDatabase,sourceDirectory:string,options:Options,reviewed?:()=>Promise<{bindings:Binding[];files:Record<string,Buffer>;evidenceHash:string}>):Promise<SiteReceipt>{
-    const targetId=command.kind==='apply'?command.revision.article.id:(this.current()?.manifest.state.targetArticleId??'tool-use'),articleTarget=maintenanceTarget(targetId);const fingerprint=hash(canonical(command));const jobId=hash(command.eventId);const jobDir=this.path(`jobs/${jobId}`);const jobPath=join(jobDir,'operation.json');let mutex:DatabaseSync|undefined;
+    if(command.kind==='rollback'&&this.current()?.manifest.state.schemaVersion===2)reject('unsupported_bridge_rollback_profile');const targetId=command.kind==='apply'?command.revision.article.id:(this.current()?.manifest.state.targetArticleId??'tool-use'),articleTarget=maintenanceTarget(targetId);const fingerprint=hash(canonical(command));const jobId=hash(command.eventId);const jobDir=this.path(`jobs/${jobId}`);const jobPath=join(jobDir,'operation.json');let mutex:DatabaseSync|undefined;
     try{mutex=new DatabaseSync(this.path('mutex.sqlite'));mutex.exec('PRAGMA busy_timeout=0;CREATE TABLE IF NOT EXISTS bridge_mutex(id INTEGER PRIMARY KEY);BEGIN IMMEDIATE;');}catch(error){mutex?.close();return reject(/locked|busy/i.test(String(error))?'bridge_busy':'bridge_storage_unavailable');}
     let stage:string|undefined;
     try{
@@ -95,7 +95,7 @@ export class WikiBridge {
       let validated:{bindings:Binding[];files:Record<string,Buffer>;evidenceHash:string};let target:SiteManifest|null=null;
       if(command.kind==='apply'){
         if(command.revision.baseRevision!==null&&!digest(command.revision.baseRevision))reject('invalid_publisher_base');validateCrosslinks(command.revision.article,new Set(command.schemaVersion===2?readingArticleIds:baselineArticles));
-        validated=reviewed?await reviewed():await validateEvidence(command,db,sourceDirectory);if(options.quality){const admission=await readQualityAdmission(command.eventId,command.revision.article,command.evidence.map(e=>({...e,bytes:validated.files[e.bodyHash]})),{db,quality:options.quality});requireQualityAllow(admission);}
+        validated=reviewed?await reviewed():await validateEvidence(command,db,sourceDirectory);if(options.quality){const admission=await readQualityAdmission(command.eventId,command.revision.article,command.evidence.map(e=>{const x='extractions' in validated?(validated.extractions as any)?.[e.bodyHash]:undefined;return {...e,bytes:validated.files[e.bodyHash],...(x?{extraction:{profileId:x.profileId,rawHash:x.raw.hash,extractedHash:x.evidence.hash,text:x.evidence.text,spans:x.evidence.spans},lineage:{originIds:[],provenance:'unknown' as const}}:{})};}),{db,quality:options.quality});requireQualityAllow(admission);}
       }else{
         if(command.targetSite){if(!current!.manifest.state.ancestors.some(ref=>canonical(ref)===canonical(command.targetSite)))reject('rollback_site_not_ancestor');target=this.load(command.targetSite);}
         validated=reviewed?await reviewed():await this.revalidateBindings(target?.state.bindings??[],target?.state.articleRevision??null,db);

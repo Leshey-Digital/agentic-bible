@@ -11,3 +11,7 @@
 # Acceptance scenarios
 
 Actual local workerd/D1 must exercise allow/deny, restart/replay, races, source/lineage/manifest binding and retained uncertainty. A controlled end-to-end run must collect sources, charge a proposal, deny unsupported content without publishing, and publish qualifying content through the existing owned Git/history/review path. No test may mutate repository article Markdown.
+
+- Version 2 acquired evidence MUST retain raw/extracted identities and actual original-200 charge authority. It MUST NOT be coerced into legacy fixture evidence. Unknown original lineage denies absent an independently trusted byte/profile-bound assessment.
+- Known exact current-candidate duplication MUST deny before any new publication, regardless of a passing semantic test response.
+- Prepared source replay and retained outcome replay MUST preserve original observations/charges and MUST NOT create a fresh fetch or semantic/provider invocation.

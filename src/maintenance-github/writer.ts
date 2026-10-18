@@ -11,7 +11,7 @@ import {projectFiles} from '../wiki-bridge/files.ts';
 import {qualityFlags} from '../publishing/contracts.ts';
 import {WriterOutbox,type WriterRow} from './outbox.ts';
 import {session,type ControlledGitHub} from './transport.ts';
-import {repository,branch,writerLimits,commitMutation,canonical,hash,sha,digest,event,historyPath,blobSha,intentInput,stop,type Intent,type WriterReceipt} from './contracts.ts';
+import {repository,branch,writerLimits,commitMutation,canonical,hash,sha,digest,event,historyPath,blobSha,intentInput,assertCanonicalHistoryCapacity,stop,type Intent,type WriterReceipt} from './contracts.ts';
 export {WriterError,writerLimits} from './contracts.ts';
 type Authority=Awaited<ReturnType<typeof completedMaintenance>>;
 type Selection={schemaVersion:1;mode:'local-synthetic-only';expectedBaseCommit:string;previousRevision:string|null;command:unknown};
@@ -56,7 +56,7 @@ export async function writeMaintenanceRevision(value:unknown,context:Context):Pr
   if(row.state!=='dispatched')assertCurrent();
   const project=projectFiles(context.bridge.repo);if(project.hash!==authority.sourceTreeHash)stop('writer_authority_changed');
   const maintained=context.canonicalBase?readMaintenanceSource(context.canonicalBase,context.bridge.repo,false,articleId).view.history.filter(e=>e.current):[];const maintainedPaths=new Set(maintained.map(e=>maintenanceTarget(e.articleId).articlePath)),maintainedPointers=new Set(maintained.map(e=>maintenanceTarget(e.articleId).pointerPath));
-  const checkBaseCode=(tree:Map<string,Entry>)=>{for(const [path,bytes]of Object.entries(project.files)){if(path===articlePath||maintainedPaths.has(path))continue;const entry=tree.get(path);if(!entry||entry.type!=='blob'||entry.mode!=='100644'||entry.sha!==blobSha(bytes))stop('writer_canonical_code_conflict');}for(const path of tree.keys())if((path.startsWith('src/')||path.startsWith('public/'))&&!(path in project.files)&&path!==pointerPath&&!maintainedPointers.has(path)&&!/^src\/content\/maintenance\/history\/[a-f0-9]{64}\.json$/.test(path))stop('writer_canonical_code_conflict');};
+  const checkBaseCode=(tree:Map<string,Entry>)=>{assertCanonicalHistoryCapacity(tree.keys());for(const [path,bytes]of Object.entries(project.files)){if(path===articlePath||maintainedPaths.has(path))continue;const entry=tree.get(path);if(!entry||entry.type!=='blob'||entry.mode!=='100644'||entry.sha!==blobSha(bytes))stop('writer_canonical_code_conflict');}for(const path of tree.keys())if((path.startsWith('src/')||path.startsWith('public/'))&&!(path in project.files)&&path!==pointerPath&&!maintainedPointers.has(path)&&!/^src\/content\/maintenance\/history\/[a-f0-9]{64}\.json$/.test(path))stop('writer_canonical_code_conflict');};
   const api=session(outbox,id,owner,context.transport,clock);let baseTree:Map<string,Entry>|undefined;
   async function treeAt(oid:string){const c=commit(await api.request('/git/commits/'+oid),oid);return {commit:c,leaves:leaves(await api.request('/git/trees/'+c.tree.sha+'?recursive=1'),c.tree.sha)};}
   async function verify(oid:string,intent:Intent,tip?:string){
@@ -81,7 +81,7 @@ export async function writeMaintenanceRevision(value:unknown,context:Context):Pr
   if(row.state==='dispatched'){
    const tip=(await api.request('/git/ref/heads/'+branch))?.object?.sha;if(!sha(tip))stop('writer_ref_rejected');const found=await api.request('/commits?sha='+tip+'&path='+encodeURIComponent(historyPath(id))+'&per_page=2');if(!Array.isArray(found)||found.length!==1||!sha(found[0]?.sha))stop('writer_head_conflict_or_unconfirmed');oid=found[0].sha;
   }else{
-   if(hash(canonical(await completedMaintenance(v.command,context)))!==authorityHash)stop('writer_authority_changed');assertCurrent();await outbox.dispatch(id,owner,clock());await context.checkpoint?.('dispatched');assertCurrent();
+   if(hash(canonical(await completedMaintenance(v.command,context)))!==authorityHash)stop('writer_authority_changed');assertCurrent();baseTree??=(await treeAt(v.expectedBaseCommit)).leaves;assertCanonicalHistoryCapacity(baseTree.keys());await outbox.dispatch(id,owner,clock());await context.checkpoint?.('dispatched');assertCurrent();
    const response=await api.request('',{operationName:'CanonicalMaintenanceCommit',query:commitMutation,variables:{input:{branch:{repositoryNameWithOwner:repository,branchName:branch},expectedHeadOid:v.expectedBaseCommit,clientMutationId:fingerprint,message:{headline:'Automatic maintenance: '+articleId,body:'Event: '+id+'\nAuthority: '+authorityHash+'\n'},fileChanges:{additions:Object.entries(intent.files).map(([path,contents])=>({path,contents:Buffer.from(contents).toString('base64')}))}}}});
    if(response?.errors||response?.data?.createCommitOnBranch?.clientMutationId!==fingerprint||!sha(response?.data?.createCommitOnBranch?.commit?.oid))stop('writer_commit_unconfirmed');oid=response.data.createCommitOnBranch.commit.oid;await context.checkpoint?.('remote-committed');
   }

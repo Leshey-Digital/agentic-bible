@@ -1,0 +1,29 @@
+import type {SqlDatabase} from '../editorial/contracts.ts';
+import {canonical,hash} from '../publishing/contracts.ts';
+import {extractMaintenanceSource} from '../maintenance-adapters/extraction.ts';
+import {acquireMaintenanceSource,verifyAcquiredSource} from '../maintenance-adapters/acquisition.ts';
+import {extractionProfile} from '../maintenance-adapters/profiles.ts';
+import type {WebFetch} from '../monitoring/http-core.ts';
+import type {Evidence} from '../wiki-bridge/contracts.ts';
+import {CollectionFiles,stop,uuid} from './files.ts';
+type Selection={sourceId:string;citationId:string;requestKey:string};
+type Row={request_key:string;source_id:string;citation_id:string;fingerprint:string;owner:string;state:'capturing'|'prepared'|'ready';created_at:number;body_hash:string|null;body_bytes:number|null;journal:string|null;journal_hash:string|null};
+// Versioned original-HTML collection. It cannot mint legacy fixture evidence.
+export async function collectAcquiredSource(selection:Selection,context:{enabled?:boolean;db:SqlDatabase;collectionName:string;transport:{kind:'bounded-official-http-source-v2';send:WebFetch};clock?:()=>number;checkpoint?:(phase:'charged'|'body-written'|'prepared'|'http-complete'|'ready')=>void|Promise<void>}){
+ if(context.enabled!==true||context.transport?.kind!=='bounded-official-http-source-v2'||typeof context.transport.send!=='function')stop('collection_disabled');
+ const profile=extractionProfile(selection.sourceId);if(!profile||!uuid(selection.requestKey)||typeof selection.citationId!=='string'||!/^[a-z][a-z0-9-]{0,47}$/.test(selection.citationId))stop('collection_invalid_selection');
+ const files=new CollectionFiles(context.collectionName,'acquired-html-v2'),clock=context.clock??Date.now,now=clock();if(!Number.isSafeInteger(now)||now<0||now>253402300799999)stop('collection_invalid_clock');
+ const fingerprint=hash(canonical({selection,root:files.root,profileId:profile.id,sourceProfile:'acquired-html-v2'})),owner=crypto.randomUUID(),get=()=>context.db.prepare('SELECT * FROM maintenance_acquired_source_collections WHERE request_key=?').bind(selection.requestKey).first<Row>();
+ let row:Row|null,inserted:number;try{const r=await context.db.prepare(`INSERT INTO maintenance_acquired_source_collections(request_key,source_id,citation_id,fingerprint,owner,state,created_at) SELECT ?,?,?,?,?,'capturing',? WHERE (SELECT COUNT(*) FROM maintenance_acquired_source_collections)<16 AND NOT EXISTS(SELECT 1 FROM maintenance_acquired_source_collections WHERE created_at>?) ON CONFLICT DO NOTHING`).bind(selection.requestKey,selection.sourceId,selection.citationId,fingerprint,owner,now,now).run();inserted=r.meta.changes;row=await get();}catch{return stop('collection_accounting_unavailable');}
+ if(!row)stop('collection_capacity_or_clock');if(row.fingerprint!==fingerprint||row.source_id!==selection.sourceId||row.citation_id!==selection.citationId)stop('collection_key_conflict');
+ async function resume(record:Row){
+  if(!record.journal||!record.journal_hash||hash(record.journal)!==record.journal_hash||!record.body_hash||!record.body_bytes)stop('collection_journal_corrupt');let journal:any;try{journal=JSON.parse(record.journal);}catch{return stop('collection_journal_corrupt');}
+  const raw=files.read(selection.requestKey,record.body_hash,record.body_bytes),source=await extractMaintenanceSource(selection.sourceId,raw,'text/html');if(journal.profileId!==source.profileId||journal.rawHash!==source.raw.hash||journal.extractedHash!==source.evidence.hash||journal.receipt?.requestKey!==selection.requestKey)stop('collection_journal_corrupt');
+  const verified=await verifyAcquiredSource({source,receipt:journal.receipt},{db:context.db,clock,historicalReplay:true});
+  if(record.state!=='ready'){const r=await context.db.prepare(`UPDATE maintenance_acquired_source_collections SET state='ready' WHERE request_key=? AND owner=? AND fingerprint=? AND state='prepared' AND journal_hash=?`).bind(selection.requestKey,record.owner,fingerprint,record.journal_hash).run();if(r.meta.changes!==1&&(await get())?.state!=='ready')stop('collection_completion_unconfirmed');}
+  const evidence:Evidence={schemaVersion:2,citationId:selection.citationId,sourceId:source.sourceId,url:source.url,receiptKey:selection.requestKey,bodyHash:source.raw.hash,file:files.file(selection.requestKey),profileId:source.profileId,extractedHash:source.evidence.hash,contentType:source.raw.contentType};await context.checkpoint?.('ready');return {mode:'bounded-acquired-http-v2' as const,evidence,sourceDirectory:files.bodies,bytes:source.raw.bytes.byteLength,observedAt:verified.receipt.observedAt};
+ }
+ if(row.state==='prepared'||row.state==='ready')return resume(row);if(inserted!==1||row.owner!==owner)stop('collection_capture_unconfirmed_no_retry');files.begin(selection.requestKey);
+ const captured=await acquireMaintenanceSource({sourceId:selection.sourceId,requestKey:selection.requestKey},{enabled:true,db:context.db,send:context.transport.send,clock});await context.checkpoint?.('charged');await context.checkpoint?.('http-complete');files.put(selection.requestKey,Buffer.from(captured.source.raw.bytes));await context.checkpoint?.('body-written');
+ const journal=canonical({profileId:captured.source.profileId,rawHash:captured.source.raw.hash,extractedHash:captured.source.evidence.hash,receipt:captured.receipt});const updated=await context.db.prepare(`UPDATE maintenance_acquired_source_collections SET state='prepared',body_hash=?,body_bytes=?,journal=?,journal_hash=? WHERE request_key=? AND fingerprint=? AND owner=? AND state='capturing'`).bind(captured.source.raw.hash,captured.source.raw.bytes.byteLength,journal,hash(journal),selection.requestKey,fingerprint,owner).run();if(updated.meta.changes!==1)stop('collection_prepare_unconfirmed');await context.checkpoint?.('prepared');row=await get();if(!row||row.state!=='prepared')stop('collection_prepare_unconfirmed');return resume(row);
+}

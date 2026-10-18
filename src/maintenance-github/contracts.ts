@@ -19,3 +19,7 @@ export function intentInput(value:unknown,id:string):Intent{
  if(Object.keys(v).sort().join(',')!==(v.schemaVersion===2?'articleId,expectedBase,files,previousEvent,schemaVersion':'expectedBase,files,previousEvent,schemaVersion')||![1,2].includes(v.schemaVersion)||!sha(v.expectedBase)||(v.previousEvent!==null&&!event(v.previousEvent))||!v.files||typeof v.files!=='object'||Array.isArray(v.files)||Object.keys(v.files).sort().join(',')!==[target.articlePath,target.pointerPath,historyPath(id)].sort().join(','))stop('writer_intent_corrupt');
  for(const [path,text]of Object.entries(v.files))if(typeof text!=='string'||Buffer.byteLength(text)>(path===target.articlePath?writerLimits.markdownBytes:32768))stop('writer_intent_corrupt');if(Buffer.byteLength(canonical(v))>writerLimits.intentBytes)stop('writer_intent_corrupt');return v;
 }
+
+// Count both automatic and restoration records from the actual pinned base tree.
+// This is storage admission, never a publication target or a request/paid budget.
+export function assertCanonicalHistoryCapacity(paths:Iterable<string>,capacity:16|64=16){let records=0;for(const path of paths)if(/^src\/content\/maintenance\/history\/[a-f0-9]{64}\.json$/.test(path))records++;if(records>=capacity)stop('writer_canonical_history_capacity');return records;}

@@ -1,3 +1,6 @@
+import {extractMaintenanceSource} from '../maintenance-adapters/extraction.ts';
+import {verifyAcquiredSource} from '../maintenance-adapters/acquisition.ts';
+import {extractionProfile} from '../maintenance-adapters/profiles.ts';
 import {maintenanceTarget} from '../maintenance-quality/target.ts';
 import {lstatSync} from 'node:fs';
 import {bounded} from './files.ts';
@@ -13,7 +16,7 @@ export const object=(value:unknown):value is Record<string,unknown>=>value!==nul
 export function exact(value:unknown,keys:string[]):asserts value is Record<string,unknown>{if(!object(value)||Object.keys(value).sort().join(',')!==[...keys].sort().join(','))reject('invalid_bridge_schema');}
 export function reference(value:unknown):Reference|null{if(value===null)return null;exact(value,['id','manifestHash']);if(!digest(value.id)||!digest(value.manifestHash))reject('invalid_bridge_reference');return {id:value.id,manifestHash:value.manifestHash};}
 const event=(value:unknown):string=>{if(typeof value!=='string'||value.length>80||value!==value.trim()||!/^[a-z0-9][a-z0-9-]{2,79}$/.test(value))reject('invalid_bridge_event');return value;};
-export type Evidence={citationId:string;sourceId:string;url:string;receiptKey:string;bodyHash:string;file:string};
+export type Evidence={schemaVersion?:2;profileId?:string;extractedHash?:string;contentType?:'text/html';citationId:string;sourceId:string;url:string;receiptKey:string;bodyHash:string;file:string};
 export type Apply={schemaVersion:1|2;kind:'apply';mode:'local-synthetic-only';eventId:string;originalMarkdownHash:string;expectedSite:Reference|null;expectedPublisher:Reference|null;revision:Publish;evidence:Evidence[]};
 export type Rollback={schemaVersion:1;kind:'rollback';mode:'local-synthetic-only';eventId:string;originalMarkdownHash:string;expectedSite:Reference;expectedPublisher:Reference;targetSite:Reference|null};
 export type BridgeCommand=Apply|Rollback;
@@ -33,23 +36,24 @@ export function bridgeInput(value:unknown):BridgeCommand{
   if(value.schemaVersion===2){try{maintenanceTarget(revision.article.id);}catch{reject('unsupported_bridge_revision');}}
   if(!Array.isArray(value.evidence)||value.evidence.length!==revision.article.sources.length)reject('invalid_bridge_evidence');
   const evidence=value.evidence.map((entry):Evidence=>{
-    exact(entry,['citationId','sourceId','url','receiptKey','bodyHash','file']);
+    const acquired=entry!==null&&typeof entry==='object'&&(entry as any).schemaVersion===2;exact(entry,['citationId','sourceId','url','receiptKey','bodyHash','file',...(acquired?['schemaVersion','profileId','extractedHash','contentType']:[])]);if(acquired&&(value.schemaVersion!==2||!digest(entry.extractedHash)||entry.contentType!=='text/html'||extractionProfile(entry.sourceId)?.id!==entry.profileId))reject('invalid_bridge_evidence');
     if(typeof entry.citationId!=='string'||typeof entry.sourceId!=='string'||typeof entry.url!=='string'||typeof entry.receiptKey!=='string'||!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(entry.receiptKey)||!digest(entry.bodyHash)||typeof entry.file!=='string'||!/^[a-z0-9][a-z0-9.-]{0,70}$/.test(entry.file)||entry.file.includes('..'))reject('invalid_bridge_evidence');
     const source=officialSource(entry.sourceId);const citation=revision.article.sources.find(source=>source.id===entry.citationId);
     if(!source||source.url!==entry.url||!citation||citation.url!==entry.url)reject('citation_evidence_mismatch');
-    return {citationId:entry.citationId,sourceId:entry.sourceId,url:entry.url,receiptKey:entry.receiptKey,bodyHash:entry.bodyHash,file:entry.file};
+    return {...(acquired?{schemaVersion:2 as const,profileId:entry.profileId as string,extractedHash:entry.extractedHash as string,contentType:'text/html' as const}:{}),citationId:entry.citationId,sourceId:entry.sourceId,url:entry.url,receiptKey:entry.receiptKey,bodyHash:entry.bodyHash,file:entry.file};
   });
+  if(evidence.some(e=>e.schemaVersion===2)&&evidence.some(e=>e.schemaVersion!==2))reject('mixed_bridge_source_profiles');
   if(new Set(evidence.map(x=>x.citationId)).size!==evidence.length||new Set(evidence.map(x=>x.sourceId)).size!==evidence.length||new Set(evidence.map(x=>x.receiptKey)).size!==evidence.length)reject('duplicate_bridge_evidence');
   return {schemaVersion:value.schemaVersion as 1|2,kind:'apply',mode:'local-synthetic-only',eventId,originalMarkdownHash:value.originalMarkdownHash,expectedSite,expectedPublisher,revision,evidence};
 }
 type Row={source_id:string;state:string;attempts:number;result:string;finished_token:string;token:string;outcome:string;attempt:number;day:number;actual_bytes:number;budget_day:number;used:number;day_count:number};
 export async function validateEvidence(command:Pick<Apply,'evidence'>,db:SqlDatabase,sourceDirectory:string){
-  const bindings:Binding[]=[];const files:Record<string,Buffer>={};
+  const bindings:Binding[]=[];const files:Record<string,Buffer>={};const extractions:Record<string,Awaited<ReturnType<typeof extractMaintenanceSource>>>={};
   // Read every bounded file before issuing any publisher/build/journal operation.
   for(const evidence of command.evidence){
     const path=join(sourceDirectory,evidence.file);const stat=lstatSync(path);if(!stat.isFile()||stat.isSymbolicLink())reject('unsafe_evidence_file');if(!stat.size||stat.size>bridgeLimits.sourceBytes)reject('source_file_too_large');
     const bytes=bounded(path,bridgeLimits.sourceBytes);if(bytes.length!==stat.size||bytes.length>bridgeLimits.sourceBytes||hash(bytes)!==evidence.bodyHash)reject('source_hash_mismatch');
-    try{new TextDecoder('utf-8',{fatal:true}).decode(bytes);}catch{reject('invalid_source_encoding');}files[evidence.bodyHash]=bytes;
+    try{new TextDecoder('utf-8',{fatal:true}).decode(bytes);}catch{reject('invalid_source_encoding');}files[evidence.bodyHash]=bytes;if(evidence.schemaVersion===2){const extracted=await extractMaintenanceSource(evidence.sourceId,bytes,evidence.contentType);if(extracted.raw.hash!==evidence.bodyHash||extracted.profileId!==evidence.profileId||extracted.evidence.hash!==evidence.extractedHash)reject('source_extraction_mismatch');extractions[evidence.bodyHash]=extracted;}
   }
   for(const evidence of command.evidence){
     let row:Row|null;try{row=await db.prepare(`SELECT j.source_id,j.state,j.attempts,j.result,j.finished_token,r.token,r.outcome,r.attempt,r.day,r.actual_bytes,b.day AS budget_day,b.used,
@@ -60,7 +64,8 @@ export async function validateEvidence(command:Pick<Apply,'evidence'>,db:SqlData
     if(receipt?.status!=='succeeded'||receipt.ok!==true||receipt.state?.mode!=='http'||receipt.state.sourceId!==evidence.sourceId||receipt.state.hash!==evidence.bodyHash||receipt.observation?.hash!==evidence.bodyHash||!Number.isSafeInteger(receipt.state.checkedAt)||receipt.state.checkedAt<0)reject('observation_hash_mismatch');
     if(!['baseline','changed','unchanged'].includes(receipt.observation.kind))reject('unsupported_304_evidence');
     const bytes=files[evidence.bodyHash].length;if(row.actual_bytes!==bytes||receipt.observation.bytes!==bytes)reject('observation_length_mismatch');
+    if(evidence.schemaVersion===2)await verifyAcquiredSource({source:extractions[evidence.bodyHash],receipt:{requestKey:evidence.receiptKey,observedAt:receipt.state.checkedAt,reservationToken:row.token,day:row.day,attempt:row.attempt}},{db,historicalReplay:true});
     bindings.push({...evidence,bytes,observedAt:receipt.state.checkedAt,reservationToken:row.token,day:row.day,attempt:row.attempt});delete (bindings.at(-1) as Binding&{file?:string}).file;
   }
-  return {bindings,files,evidenceHash:hash(canonical(bindings))};
+  return {bindings,files,extractions,evidenceHash:hash(canonical(bindings))};
 }
