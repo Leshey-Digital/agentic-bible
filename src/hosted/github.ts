@@ -18,7 +18,12 @@ export async function proposeGitHubCorrection(id:string,principal:VerifiedAdmin,
   const recheckApproval=async()=>{const current=approved(await ports.approvedNote!(id,principal),id,Date.now());if(await hash(canonical(current))!==fingerprint)reject('github_approval_conflict');};
   let calls=0;const started=Date.now();
   async function request(path:string,body?:unknown,notFound=false):Promise<any>{
-    if(++calls>limits.invocationRequests||Date.now()-started>=limits.invocationMs)reject('github_invocation_budget');await reserve(db,id,owned.token,Date.now());if(Date.now()-started>=limits.invocationMs)reject('github_invocation_budget');
+    if(++calls>limits.invocationRequests||Date.now()-started>=limits.invocationMs)reject('github_invocation_budget');await reserve(db,id,owned.token,Date.now());
+    // A durable reservation response can be delayed across revocation, inbox
+    // revision changes or assertion expiry. Re-read authority after that await.
+    if(body!==undefined)await recheckApproval();
+    if(principal.expiresAt<=Date.now())reject('verified_admin_required');
+    if(Date.now()-started>=limits.invocationMs)reject('github_invocation_budget');
     const controller=new AbortController();let timer:ReturnType<typeof setTimeout>|undefined;
     try{return await Promise.race([(async()=>{
       const response=await ports.sendGitHub!(new Request('https://api.github.com'+base+path,{method:body===undefined?'GET':'POST',headers:{Accept:'application/vnd.github+json','Content-Type':'application/json','User-Agent':'Agentic-Bible-Content-Proposals','X-GitHub-Api-Version':'2026-03-10'},body:body===undefined?undefined:canonical(body),redirect:'manual',credentials:'omit',signal:controller.signal}));
