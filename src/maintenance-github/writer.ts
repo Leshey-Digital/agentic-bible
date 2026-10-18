@@ -1,3 +1,4 @@
+import type {CurrencyControl} from '../wiki-bridge/maintenance-currency.ts';
 import {readMaintenanceBase,type CanonicalBasePort} from '../maintenance-base/read.ts';
 import type {SqlDatabase} from '../editorial/contracts.ts';
 import type {WikiBridge} from '../wiki-bridge/store.ts';
@@ -11,7 +12,7 @@ import {repository,branch,articlePath,pointerPath,writerLimits,commitMutation,ca
 export {WriterError,writerLimits} from './contracts.ts';
 type Authority=Awaited<ReturnType<typeof completedMaintenance>>;
 type Selection={schemaVersion:1;mode:'local-synthetic-only';expectedBaseCommit:string;previousRevision:string|null;command:unknown};
-type Context={canonicalBase?:CanonicalBasePort;enabled?:boolean;transport?:ControlledGitHub;db:SqlDatabase;bridge:WikiBridge;sourceDirectory:string;policy:unknown;clock?:()=>number;checkpoint?:(phase:'intent'|'dispatched'|'remote-committed'|'verified')=>void|Promise<void>};
+type Context={currency?:CurrencyControl;canonicalBase?:CanonicalBasePort;enabled?:boolean;transport?:ControlledGitHub;db:SqlDatabase;bridge:WikiBridge;sourceDirectory:string;policy:unknown;clock?:()=>number;checkpoint?:(phase:'intent'|'dispatched'|'remote-committed'|'verified')=>void|Promise<void>};
 type Entry={path:string;type:string;mode:string;sha:string};
 function selection(value:unknown):Selection{
  if(!value||typeof value!=='object'||Array.isArray(value)||Object.keys(value).sort().join(',')!=='command,expectedBaseCommit,mode,previousRevision,schemaVersion')stop('writer_invalid_selection');const v=value as Selection;
