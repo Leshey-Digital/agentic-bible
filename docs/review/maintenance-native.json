@@ -1,0 +1,35 @@
+{
+  "mode": "local-synthetic-only",
+  "deterministicFakeProvider": true,
+  "actualWorkerdD1": true,
+  "controlledSourceFetches": 2,
+  "providerCalls": 1,
+  "restartAdditionalCalls": 0,
+  "automaticLocalPublication": true,
+  "postPublicationFlag": true,
+  "twentyEntryFullBuild": true,
+  "originalMarkdownUnchanged": true,
+  "canonicalGitHubChanged": false,
+  "livePublished": false,
+  "realSpend": 0,
+  "receipt": {
+    "eventId": "maintenance-native",
+    "fingerprint": "e2d630a06b008bb1b99efb25de3ee72119c4109740fc70a7b3279f04efec1d7e",
+    "sequence": 1,
+    "kind": "apply",
+    "publisher": {
+      "id": "14937e9a89bd9b518ac50fce0f3f648c411ded328355ac8de202dee0ee9e749f",
+      "manifestHash": "d338b02a1c7554f998ccf31cf884b77d889b7e3d18fd9d81be6c2d72cdfd546b"
+    },
+    "articleRevision": "a7bc7beb503c2bdf478b61fdf9bfef1a84d8f642bea5304a56458ea21493915f",
+    "evidenceHash": "b2cacc9e308324faa6f28268e8dc84ceebe0c04c741aa162fd89d85f0c87dfe0",
+    "outcome": "site-activated",
+    "site": {
+      "id": "3fb494b9960dab694e6da9f2dac9c6d36ffcbaa026f67f98089b0a92f91f8adb",
+      "manifestHash": "d960b6f83d14a906c0ffd15bd09c584c4629decc45fe34087a2f83d2edbccdc7"
+    },
+    "parent": null
+  },
+  "reservedSimulatedCost": 2842,
+  "actualSimulatedCost": 1556
+}
