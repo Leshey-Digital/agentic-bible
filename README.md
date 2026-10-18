@@ -2,9 +2,11 @@
 
 A planned living encyclopedia of AI agents and the technology around them: sourced, interconnected articles with transparent revision history.
 
-**Status on the encyclopedia content branch:** accepted local reading/search, synthetic editorial/source workflows and inert settings, plus isolated supplied-article HTML/search/history snapshots. Twenty sourced working drafts cover foundations, capabilities and protocols, including context engineering, structured outputs, identity/delegation, inter-agent communication, budgets/termination and computer use; independent editorial/content review remains pending. The original tool-use Markdown bytes are preserved. Foundation/reading PRs #1/#2 are merged upstream, observed at main `2ad330e06fcc4dd46a8fc95291ccc3cd1c597327`; this branch does not merge main or deploy. No live analytics, ads, public submissions, provider calls or public article release is enabled. Accepted PR10 remains pinned at `d0bfca47cd221b970b01ace838afb3f3bb9a5d32`.
+**Observed main status, 2026-10-18:** main `6987bf2c53d8ddc9ffb34d9b89d453caf0adf213` contains the reviewed twenty-article MVP and accepted admin/release recovery fixes through PR37, plus the controlled maintenance/history/restoration stack through PR43. All twenty accepted article files retain the hashes recorded in the [integration evidence](docs/review/reviewed-mvp-integration-source.json). Content/source review acceptance does not establish factual completeness or live publication.
 
-The source PR branches stay immutable. The feature sections below describe the separately reviewed slices; the integration candidate adds their combined validation without changing production gates. Public intake and production admin authentication remain disabled.
+Reading/search and maintenance have local or controlled test evidence. Hosted identity, public intake, real provider calls, analytics, ads and indexing remain closed by default. Validation CI produces a release candidate; a separate manual staging workflow exists behind explicit owner enablement and environment approval. Live settings are not established by code or green CI. See the [dated observations, owner setup checklist and release hold](docs/commit-pinned-releases.md#observed-status-and-owner-preparation-2026-10-18). Static reading/search requires no Jev key.
+
+The source PR branches stay immutable. The feature sections and linked review/change records below preserve their preparation-time checkpoints, test results and earlier main states. References there to unmerged branches, three articles or pending acceptance are historical unless explicitly updated; they do not override the observed main status above. The separate hosted pipeline in PR44/PR46 is not part of this main snapshot.
 
 ## Start here
 - [Decisions and open questions](docs/decisions.md)
@@ -43,7 +45,7 @@ npm run test:browser
 
 An existing `/usr/bin/chromium` is used automatically, or set `CHROMIUM_PATH` to a local executable. Otherwise `browser:install` downloads the pinned Playwright Chromium into `.git/playwright`. The saved environment blocks that download but includes system Chromium. Tests use desktop and mobile sizes, real Pagefind queries, keyboard navigation, failure states, external-request checks and axe accessibility audits. Automated accessibility checks are partial evidence, not a complete accessibility certification.
 
-`npm run preview` offers an Astro-only built preview on port 4321; Cloudflare `_headers` are exercised only by `staging:local`. npm and runtime caches use the writable project `.git` directory. Astro/Wrangler telemetry is disabled in the commands. The CI workflow validates and tests; it has no deployment step or cloud credentials.
+`npm run preview` offers an Astro-only built preview on port 4321; Cloudflare `_headers` are exercised only by `staging:local`. npm and runtime caches use the writable project `.git` directory. Astro/Wrangler telemetry is disabled in the commands. The validation workflow validates, tests and packages the release candidate without deploying. The separate [Explicit staging release workflow](.github/workflows/release-staging.yml) can consume an exact successful main-push candidate only after its owner gates pass; no release is authorized by these development commands.
 
 See [the slice change record](openspec/changes/reference-library-slice/proposal.md) for scope and [verification evidence](docs/review/first-slice.md) for the saved-environment handoff.
 

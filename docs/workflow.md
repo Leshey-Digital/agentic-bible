@@ -35,4 +35,4 @@ Never include credentials, private chat transcripts, customer data, or unsupport
 - [ ] Post-deploy smoke checks cover reading/search/proposals and confirm exact deployed version.
 - [ ] Report actual results and remaining gaps.
 
-The foundation has no automation. The first application feature branch adds validation-only CI; no release or deployment automation is configured.
+Historical foundation status: the foundation had no automation, and the first application slice added validation-only CI. Observed main `6987bf2c53d8ddc9ffb34d9b89d453caf0adf213` now includes validation/artifact packaging and the separate manual [staging release workflow](../.github/workflows/release-staging.yml). Its enablement/protected-environment gates are separate from code acceptance. Follow the [current owner handoff and release hold](commit-pinned-releases.md#observed-status-and-owner-preparation-2026-10-18); this checklist does not authorize dispatch or establish live configuration.
