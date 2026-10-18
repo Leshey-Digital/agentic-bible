@@ -25,4 +25,5 @@ Live execution, paid calls, deployment, credentials and remote migrations remain
 - [x] Explicit quality/generalized metadata/history/catalog capacity 64; legacy default 16 and private publication formats/limits preserved.
 - [x] Actual D1 legacy/quality metadata boundary and sixty-fifth-record negative controls.
 - [x] Preserve quality-required target profile through history/restoration; reject legacy downgrade.
-- [ ] Qualify twenty actual producer/writer contexts sharing one Git/D1 and a final complete signed-review build.
+- [x] Qualify twenty actual producer/writer contexts sharing one native Git/D1 and a final complete signed-review build; exactly twenty captures/proposals/writes/heads, unchanged request/cost caps.
+- [x] Independently enforce inherited quality through bounded, hash-linked predecessor journals even without the optional canonical-base port; fixed-source fresh/restarted-intent tests make zero canonical writes and preserve charges.
