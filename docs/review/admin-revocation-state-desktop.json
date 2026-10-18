@@ -1,0 +1,16 @@
+{
+  "project": "desktop",
+  "shippedWorker": true,
+  "actualWorkerdD1": true,
+  "controlledSignedAssertions": true,
+  "heldAfterGitHubProposalCompleted": true,
+  "olderApprovedListReplacedRow": true,
+  "revocationHeldAfterD1Commit": true,
+  "confirmedRevocations": 1,
+  "failedFollowupRead": true,
+  "keyedRevocationStatePreserved": true,
+  "draftControlsStayDisabled": true,
+  "controlledDrafts": 1,
+  "canonicalMainUnchanged": true,
+  "axe": true
+}
