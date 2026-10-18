@@ -1,4 +1,5 @@
 import type {SqlDatabase} from '../editorial/contracts.ts';
+import type {IntegrationAdapters} from '../integration-settings/contracts.ts';
 export const repository='Leshey-Digital/agentic-bible';
 export const contentPath='src/content/articles/tool-use.md';
 export const baseRef='main';
@@ -14,7 +15,7 @@ export type VerifiedAdmin={subject:string;role:'admin';expiresAt:number;csrfVeri
 // These functions are supplied by trusted server code, never env flags/request fields.
 // The shipped runtime configures none. Local synthetic approvals are ineligible.
 export type ApprovedNote={schemaVersion:1;mode:'verified-admin-github-proposal';approvalId:string;submissionId:string;submissionRevision:number;reviewerRef:string;approvedAt:number;baseCommit:string;baseMarkdownSha256:string;note:string;citationId:'openai'|'claude'|'mcp-tools'};
-export type Ports={verifyAdmin?:(request:Request)=>Promise<VerifiedAdmin|null>;approvedNote?:(id:string,admin:VerifiedAdmin)=>Promise<ApprovedNote|null>;sendGitHub?:(request:Request)=>Promise<Response>;hostedApprovals?:true;maintenanceReview?:true};
+export type Ports={verifyAdmin?:(request:Request)=>Promise<VerifiedAdmin|null>;approvedNote?:(id:string,admin:VerifiedAdmin)=>Promise<ApprovedNote|null>;sendGitHub?:(request:Request)=>Promise<Response>;hostedApprovals?:true;maintenanceReview?:true;integrationSettings?:IntegrationAdapters};
 export type RuntimeEnv={ASSETS:{fetch(request:Request):Promise<Response>};EDITORIAL_DB?:SqlDatabase;HOSTED_ADMIN_TRUST?:string;GITHUB_CONTENT_TOKEN?:string};
 export type ProposalReceipt={schemaVersion:1;state:'draft-proposed';published:false;approvalId:string;baseCommit:string;headCommit:string;branch:string;pullRequest:number;url:string;markdownSha256:string};
 export function approved(value:unknown,id:string,now:number):ApprovedNote{

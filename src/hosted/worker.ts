@@ -8,14 +8,28 @@ import {createRestorationApproval,revokeRestorationApproval} from '../maintenanc
 import {MaintenanceReviewError,verifiedCatalog,listMaintenanceReviews,saveMaintenanceReview} from '../maintenance-history/review.ts';
 import {maintenanceAdminHtml,maintenanceAdminCss,maintenanceAdminJs} from '../maintenance-history/admin.ts';
 import {adminHtml,adminCss,adminJs} from './admin.ts';
+import {createIntegrationSettingsContract} from '../integration-settings/contracts.ts';
 const origin='https://staging.agenticbible.si';
 const headers={'Cache-Control':'no-store','X-Robots-Tag':'noindex, nofollow','X-Content-Type-Options':'nosniff','Referrer-Policy':'same-origin','Content-Security-Policy':"default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; img-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'"};
 const json=(body:unknown,status=200)=>Response.json(body,{status,headers});
 // Ports are trusted server code, not environment flags, cookies or request fields.
-// The shipped entrypoint configures ports only from explicit server trust, D1 and secret bindings.
-export function createHostedRuntime(ports:Ports={}){return {async fetch(request:Request,env:RuntimeEnv):Promise<Response>{
+// Existing hosted correction ports use explicit server trust, D1 and secret bindings.
+// Integration settings require separate trusted server-code adapters; configuredPorts
+// never constructs them from bindings, request fields or local fixture identities.
+export function createHostedRuntime(ports:Ports={}){
+const integrationSettings=ports.integrationSettings?createIntegrationSettingsContract(ports.integrationSettings):undefined;
+return {async fetch(request:Request,env:RuntimeEnv):Promise<Response>{
   const url=new URL(request.url),path=url.pathname;
   try{
+    if(path==='/api/admin/settings/integrations/github-content'){
+      if(url.origin!==origin)return json({error:'hosted_origin_required'},403);
+      if(url.search)return json({error:'invalid_request'},400);
+      if(!['GET','POST'].includes(request.method))return new Response(JSON.stringify({error:'method_not_allowed'}),{status:405,headers:{...headers,'Content-Type':'application/json','Allow':'GET, POST'}});
+      if(!integrationSettings)return json({error:'integration_settings_unconfigured'},503);
+      const response=await integrationSettings(request),secured=new Headers(response.headers);
+      for(const [key,value] of Object.entries(headers))secured.set(key,value);
+      return new Response(response.body,{status:response.status,headers:secured});
+    }
     if(path==='/api/runtime/status'&&request.method==='GET')return json({schemaVersion:1,contentAuthority:'github-build',...await runtimeRelease(env.ASSETS),publicIntake:false,adminVerifierConfigured:!!ports.verifyAdmin,adminApprovalsConfigured:!!ports.hostedApprovals,gitHubProposalsConfigured:!!ports.verifyAdmin&&!!ports.approvedNote&&!!ports.sendGitHub&&!!env.EDITORIAL_DB,hostedCanonicalWrites:false,localFixtureIdentity:false});
     if(path==='/api/editorial/status'&&request.method==='GET')return json({enabled:!!ports.hostedApprovals,mode:ports.hostedApprovals?'hosted-admin-notes':'hosted-unconfigured',publicIntake:false});
     const maintenancePath=path==='/admin/'||path.startsWith('/admin/maintenance/')||path.startsWith('/api/admin/maintenance/');
