@@ -18,16 +18,25 @@ import {hash} from '../../src/publishing/contracts.ts';
 import {clean,git} from '../wiki-bridge/helpers.mjs';
 after(async()=>close());
 
+// The canonical Git port is deliberately synchronous. Long integrity reads can
+// hold Node past workerd's loopback idle timeout; give the socket close event a
+// turn before each D1 RPC. This never retries SQL or a provider/write operation.
+function schedulingDatabase(actual){
+ const native=new WeakMap(),turn=()=>new Promise(resolve=>setImmediate(resolve));
+ const wrap=statement=>{const value={bind(...args){return wrap(statement.bind(...args));}};for(const method of ['first','all','run','raw'])value[method]=async(...args)=>{await turn();return statement[method](...args);};native.set(value,statement);return value;};
+ return {prepare:sql=>wrap(actual.prepare(sql)),async batch(rows){await turn();return actual.batch(rows.map(row=>native.get(row)??row));}};
+}
+
 test('twenty actual quality-admitted producers and guarded writers share canonical Git/D1 across bounded batches and one final signed review build', {timeout:600000}, async()=>{
- const f=await generalizedFixture('twenty'),originals=Object.fromEntries(readingArticleIds.map(id=>[id,readFileSync(maintenanceTarget(id).articlePath)])),receipts=[];let providerCalls=0,sourceCalls=0;
+ const f=await generalizedFixture('twenty'),db=schedulingDatabase(f.db),originals=Object.fromEntries(readingArticleIds.map(id=>[id,readFileSync(maintenanceTarget(id).articlePath)])),receipts=[];let providerCalls=0,sourceCalls=0;
  try{
   for(const [index,articleId]of readingArticleIds.entries()){
    // Unchanged default request/cost limits: one call per day, five per month.
    const at=Date.UTC(2026,10+Math.floor(index/5),1+index%5,12),clock=()=>at,bridgeName='wiki-bridge-test-quality-twenty-'+index,collectionName='maintenance-source-collection-test-quality-twenty-'+index;
    clean(bridgeName);rmSync(join(git,collectionName),{recursive:true,force:true});const bridge=new WikiBridge(bridgeName),selected=f.selection(articleId,'article-'+index),command=selected.command;
    command.evidence=command.evidence.slice(0,1);command.revision.article.sources=command.revision.article.sources.slice(0,1);const citationId=command.evidence[0].citationId;command.revision.article.blocks=[{type:'paragraph',content:[{type:'text',text:'This pending controlled revision is replaced by a separately charged proposal before trusted quality assessment.'},{type:'citation',sourceId:citationId}]}];
-   const source=await collectMaintenanceSource({sourceId:command.evidence[0].sourceId,citationId,requestKey:command.evidence[0].receiptKey},{enabled:true,metadataProfile:'quality-gated-v1',db:f.db,collectionName,clock,transport:{kind:'controlled-source-fixture',async send(){sourceCalls++;return new Response('Controlled original documentation for '+articleId+' explains the bounded action policy and preserves enough explicit context for a complete evidence-linked canonical revision and later human review.',{headers:{'Content-Type':'text/plain'}});}}});command.evidence=[source.evidence];
-   const base=f.remote.tip(),priorProvider=f.context().provider,context={...f.context(),bridge,clock,policy:demonstrationPolicy,sourceDirectory:source.sourceDirectory,canonicalBase:{kind:'controlled-canonical-base-fixture',repo:f.remote.state.root,sourceCommit:base},provider:{...priorProvider,invoke(request,signal){providerCalls++;return priorProvider.invoke(request,signal);}}};
+   const source=await collectMaintenanceSource({sourceId:command.evidence[0].sourceId,citationId,requestKey:command.evidence[0].receiptKey},{enabled:true,metadataProfile:'quality-gated-v1',db,collectionName,clock,transport:{kind:'controlled-source-fixture',async send(){sourceCalls++;return new Response('Controlled original documentation for '+articleId+' explains the bounded action policy and preserves enough explicit context for a complete evidence-linked canonical revision and later human review.',{headers:{'Content-Type':'text/plain'}});}}});command.evidence=[source.evidence];
+   const base=f.remote.tip(),priorProvider=f.context().provider,context={...f.context(),db,bridge,clock,policy:demonstrationPolicy,sourceDirectory:source.sourceDirectory,canonicalBase:{kind:'controlled-canonical-base-fixture',repo:f.remote.state.root,sourceCommit:base},provider:{...priorProvider,invoke(request,signal){providerCalls++;return priorProvider.invoke(request,signal);}}};
    const generated=await runMaintenance(command,context);assert.equal(generated.generated,true);const receipt=await writeMaintenanceRevision({schemaVersion:1,mode:'local-synthetic-only',expectedBaseCommit:base,previousRevision:null,command},context);receipts.push(receipt);
    writeFileSync(join(git,'production-quality-evidence/twenty-progress.json'),JSON.stringify({completed:receipts.length,total:readingArticleIds.length,lastArticleId:articleId,lastCommit:receipt.commit,providerCalls,sourceCalls,livePublished:false},null,2)+'\n');
   }
