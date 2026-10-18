@@ -1,0 +1,122 @@
+{
+  "main": "2ad330e06fcc4dd46a8fc95291ccc3cd1c597327",
+  "acceptedSourceHeads": {
+    "PR35": "3e25fcd64528010e6a1f061617f3cc8fc3533ed1",
+    "PR36": "80c6148c29a7a3013567296104653b175931662e"
+  },
+  "commonSourceBase": "697d546fc5b6560fe1c38e573584c855c86c13af",
+  "ownerReportedIndependentSourceAcceptance": true,
+  "compositionAccepted": false,
+  "sourceCompositionTree": "1a6f13d0d78e0a3fe7219a14e38d9f2592ff195d",
+  "mergeConflicts": [],
+  "allNamedHeadsAreAncestors": true,
+  "articleTree": "a02a09cc45f8944605a752043b97f2979422e17c",
+  "articleCount": 20,
+  "articles": {
+    "src/content/articles/agent-budgets.md": {
+      "blob": "62f4eb95d88fa07ac0fb2cb9d710cebd6f6a93f8",
+      "sha256": "4d08ff128eb132755f7f0b8ef442b45129c43fa0abfcd777fd1ca7881ea199dd",
+      "bytes": 5570
+    },
+    "src/content/articles/agent-evaluation.md": {
+      "blob": "9ff45ce450a224ab8e08dcb5961579738d9e9c3b",
+      "sha256": "a02bfef9fc5fdcefe08e52d82a2563d155d0cc9ef9c68293ca1a1920546ac061",
+      "bytes": 6415
+    },
+    "src/content/articles/agent-identity.md": {
+      "blob": "b0816881cd915c1baeb01b1b4dfda82034f2f104",
+      "sha256": "7c91ffeff39be1efbe4460ae8ed2fb5520083b85e4474807a9c53f55984e2fb8",
+      "bytes": 5668
+    },
+    "src/content/articles/agent-memory.md": {
+      "blob": "0468e46ea2cbd27b6ea7fdc84a84ec963ff62437",
+      "sha256": "b148a65bdc33304a533d50d4299d4225e1bc9ecc76f2148212d0808930022de0",
+      "bytes": 6295
+    },
+    "src/content/articles/agent-observability.md": {
+      "blob": "e70ee237812e1b3c1cc96fba4fe8a26a106b8832",
+      "sha256": "049b0dc639c785f012b4956e5c054e1940527cffe2254dfb0ba6db612e750c6d",
+      "bytes": 6285
+    },
+    "src/content/articles/agent-orchestration.md": {
+      "blob": "4297b2631da4489ab18c8a18354ef4f3999affb5",
+      "sha256": "f2fe90af6be60a7722819d6e78a3d2a89bc72c8ac2a5b3dc8a87d4a49cbd3d6f",
+      "bytes": 6028
+    },
+    "src/content/articles/agent-planning.md": {
+      "blob": "eb215ecb6e59901dd618e273b0118ecccc04e383",
+      "sha256": "c4c69bbe4318cb5a1776e65033314adf4d2926d39c471166240d546aba1aadc2",
+      "bytes": 6035
+    },
+    "src/content/articles/agent-sandboxing.md": {
+      "blob": "e42670d45ef625e44b1ea98d8ef459a5bf2e0438",
+      "sha256": "2941adb2262f3b6f089540b0b8fee45e52ed4641867cd84c589ac9c543b0068c",
+      "bytes": 6174
+    },
+    "src/content/articles/agent-to-agent-communication.md": {
+      "blob": "f89c0d2bf8a464b1897faa54bdcaa05a191e5c08",
+      "sha256": "3dbf81152cbb8c971a323061af080de5fb464a3acd4453d690e905a96ccb65cb",
+      "bytes": 5720
+    },
+    "src/content/articles/ai-agent.md": {
+      "blob": "eb7bd6cf50eaec6144e554711bf3e05e57f5d778",
+      "sha256": "8b9991a3d7f13ca51c359b63442557beabfcb1714df04ce849491c4aedb1a3a6",
+      "bytes": 4623
+    },
+    "src/content/articles/computer-use-agents.md": {
+      "blob": "df71db7b29d833e7429e2cfdf2ab601bf76b40b1",
+      "sha256": "d7a7f169f547c84963f616ba8b8091eae9e35421bab513bb8d13ef1aea64c5aa",
+      "bytes": 5765
+    },
+    "src/content/articles/context-engineering.md": {
+      "blob": "acb6d935ce15692963bc4358ed732f30016d94ea",
+      "sha256": "690cdc7482ed85bbe542b154a63d44f57f654d6f8667161d8c5996de4e3c451d",
+      "bytes": 5889
+    },
+    "src/content/articles/durable-agent-execution.md": {
+      "blob": "bfef33af7f140629edbe58bd01737cde6c03dd85",
+      "sha256": "637a4b2158524d5fd1ed74bbac4b8f0b0d9d44e22e0387081a4e7951c8723805",
+      "bytes": 6234
+    },
+    "src/content/articles/human-oversight.md": {
+      "blob": "b6591cd30491d92ee1164109e7891ad1468901ba",
+      "sha256": "05f95df8fbbb3c6c78dd992ad08ed8d9c7c86fec2b27dd370ab24435d5c5fe59",
+      "bytes": 6622
+    },
+    "src/content/articles/model-context-protocol.md": {
+      "blob": "6cbebedcfa4ed46397ecfa0d2d727df1889fd082",
+      "sha256": "1b038336e7ce0438e97a36eb2e536a9dd87dd5bf3a068eae394a978bb76a2abf",
+      "bytes": 4970
+    },
+    "src/content/articles/prompt-injection.md": {
+      "blob": "c626f21355043fd492d8482e6d46ad70544ca686",
+      "sha256": "44db0f983ce79da5fbf32a22c66fefb6867d788cdd7c016a3334f7ca2d6be1e7",
+      "bytes": 6768
+    },
+    "src/content/articles/retrieval-augmented-generation.md": {
+      "blob": "02b668e78e6d23767bb880f6a876c06108efee20",
+      "sha256": "455019da889922747a8b4e023ffb3f90859b5d080e85f97ab3d4b6d79a9d5216",
+      "bytes": 6146
+    },
+    "src/content/articles/structured-outputs.md": {
+      "blob": "ad61e7f8c51c4d5166cee198817b0ce22b7601c0",
+      "sha256": "845e9153c1f788913d1750e108a7948141feaee583cf41491ed44992ed6b5c41",
+      "bytes": 5547
+    },
+    "src/content/articles/tool-permissions.md": {
+      "blob": "da6d71815f9a0d7a391808064ed290ee96a87983",
+      "sha256": "274e5ae371484412776644847bb5494ac234cf1beac6398e1098678ea7e76756",
+      "bytes": 6297
+    },
+    "src/content/articles/tool-use.md": {
+      "blob": "e9508d4fda6deee3f5842fa8b246650546f8dce6",
+      "sha256": "cf1e3a2bbb77a85d472e2509fa8eefda9bccbae2a73f1931902354de50aa9681",
+      "bytes": 4351
+    }
+  },
+  "excludedMaintenanceCheckpoint": "1c55b8666422a6d3b9403e6fc67990c1779eb17c",
+  "maintenanceCheckpointIsAncestor": false,
+  "sourceBranchesChanged": false,
+  "mainMerged": false,
+  "deployed": false
+}
