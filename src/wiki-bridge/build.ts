@@ -16,13 +16,13 @@ function markdown(article:Article,publisher:Reference,bindings:Binding[],citatio
   // escapes can leak into GFM URL recognition; entities preserve literal text
   // while the explicit citation and internal-link syntax below stays functional.
   const text=(value:string)=>value.replace(/[!-/:-@\[-`{-~]/g,char=>'&#'+char.charCodeAt(0)+';');
-  const front={title:article.title,description:article.description,topic:article.topic,order:2,status:'Published local demonstration',verified:article.verified,author:'Supplied local demonstration',related:article.related,sources:article.sources,publication:{revisionId:'',publisherSnapshot:publisher.id,flags:article.concerns,evidence:bindings.map(b=>({citationId:b.citationId,sourceId:b.sourceId,url:b.url,hash:b.bodyHash,receiptKey:b.receiptKey}))}};
+  const front={title:article.title,description:article.description,topic:article.topic,order:readingArticleIds.indexOf(article.id as any)+1,status:'Published local demonstration',verified:article.verified,author:'Supplied local demonstration',related:article.related,sources:article.sources,publication:{revisionId:'',publisherSnapshot:publisher.id,flags:article.concerns,evidence:bindings.map(b=>({citationId:b.citationId,sourceId:b.sourceId,url:b.url,hash:b.bodyHash,receiptKey:b.receiptKey}))}};
   const body=article.blocks.map(block=>block.type==='heading'?`## ${text(block.text)}`:block.content.map(part=>part.type==='text'?text(part.text):part.type==='citation'?` [${citationOrder.indexOf(part.sourceId)+1}](#source-${part.sourceId}) `:` [${text(part.label)}](/articles/${part.articleId}/) `).join('')).join('\n\n');
   return {front,body};
 }
 export async function buildWiki(options:{repo:string;captureRoot:string;capture:{eventId:string;jobId:string;attempt:number};project:Record<string,Buffer>;output:string;siteId:string;publisher:PublicationStore;reference:Reference;bindings:Binding[];proofs:{eventId:string;revisionId:string;bindings:Binding[]}[];started?:()=>void|Promise<void>}){
   const pinned=options.publisher.load(options.reference);const revision=pinned.state.articles['tool-use'];
-  if(Object.keys(pinned.state.articles).some(id=>id!=='tool-use'))reject('unsupported_publisher_snapshot');
+  if(Object.keys(pinned.state.articles).some(id=>!readingArticleIds.includes(id as any)))reject('unsupported_publisher_snapshot');
   mkdirSync(options.captureRoot,{recursive:true});const scratch=mkdtempSync(join(options.captureRoot,`capture-${options.capture.jobId}-${options.capture.attempt}-`));write(join(scratch,'capture.json'),canonical({schemaVersion:1,...options.capture,siteId:options.siteId}));const project=join(scratch,'project');const built=join(project,'dist');mkdirSync(project);
   const captureSize=(dir:string):number=>{let names:string[];try{names=readdirSync(dir);}catch(error){if((error as NodeJS.ErrnoException).code==='ENOENT')return 0;throw error;}return names.reduce((total,name)=>{const path=join(dir,name),stat=lstatSync(path,{throwIfNoEntry:false});if(!stat)return total;if(path===join(project,'node_modules')&&stat.isSymbolicLink())return total;if(stat.isSymbolicLink()||!stat.isDirectory()&&!stat.isFile())reject('unsafe_capture');return total+(stat.isDirectory()?captureSize(path):stat.size);},0);};
   let child:ReturnType<typeof spawn>|undefined;
@@ -39,13 +39,13 @@ export async function buildWiki(options:{repo:string;captureRoot:string;capture:
 
   try{
     for(const [path,value]of Object.entries(options.project))write(join(project,path),value);
-    if(revision){const article=options.publisher.revision(revision);const path=join(project,'src/content/articles/tool-use.md');
+    for(const [articleId,articleRevision]of Object.entries(pinned.state.articles)){const article=options.publisher.revision(articleRevision);if(article.id!==articleId)reject('unsupported_publisher_snapshot');const path=join(project,'src/content/articles/'+articleId+'.md');const bindings=[...options.proofs].reverse().find(p=>p.revisionId===articleRevision)?.bindings;if(!bindings)reject('missing_article_build_proof');
       const baseline=readFileSync(path,'utf8'),parts=/^---\n([^]*?)\n---\n([^]*)$/.exec(baseline);
       const order=article.reviewedCorrections?[...parts![1].matchAll(/^  - id: (.+)$/gm)].map(m=>m[1]):undefined;
-      const {front,body}=markdown(article,options.reference,options.bindings);front.publication.revisionId=revision;front.publication.flags=qualityFlags(article);
+      const {front,body}=markdown(article,options.reference,bindings);front.publication.revisionId=articleRevision;front.publication.flags=qualityFlags(article);
       if(article.reviewedCorrections){
         if(!parts||order?.length!==3)reject('unsupported_correction_baseline');
-        const corrected=markdown(article,options.reference,options.bindings,order).body;
+        const corrected=markdown(article,options.reference,bindings,order).body;
         const publication={...front.publication,reviewedCorrections:article.reviewedCorrections};
         const meta=parts[1].replace(/^status: .+$/m,'status: Published local demonstration');
         writeFileSync(path,'---\n'+meta+'\npublication: '+JSON.stringify(publication)+'\n---\n'+parts[2]+'\n## Reviewed corrections\n\n'+corrected+'\n');

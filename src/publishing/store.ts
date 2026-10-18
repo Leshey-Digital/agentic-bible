@@ -1,3 +1,4 @@
+import {readingArticleIds} from '../lib/article-ids.ts';
 import {execFileSync} from 'node:child_process';
 import {DatabaseSync} from 'node:sqlite';
 import {randomUUID} from 'node:crypto';
@@ -103,7 +104,7 @@ export class PublicationStore{
       let articles={...prior?.articles};const history=structuredClone(prior?.history??{});let revisionId:string|null=null;let articleId:string|null=null;let flags:Receipt['flags']=[];
       if(command.kind==='publish'){
         const article=command.article;articleId=article.id;if((articles[article.id]??null)!==command.baseRevision)fail('stale_revision');
-        validateCrosslinks(article,new Set([...baselineArticles,...Object.keys(articles),article.id]));revisionId=hash(canonical(article));flags=qualityFlags(article);
+        validateCrosslinks(article,new Set([...baselineArticles,...readingArticleIds,...Object.keys(articles),article.id]));revisionId=hash(canonical(article));flags=qualityFlags(article);
         articles[article.id]=revisionId;history[article.id]??=[];if(!history[article.id].includes(revisionId))history[article.id].push(revisionId);
         if(Object.keys(articles).length>publicationLimits.articles||new Set(Object.values(history).flat()).size>publicationLimits.revisions)fail('publication_capacity');
         const revision=this.file(`revisions/${revisionId}.json`);if(existsSync(revision)){if(hash(readFileSync(revision))!==revisionId)fail('artifact_corrupt');}
