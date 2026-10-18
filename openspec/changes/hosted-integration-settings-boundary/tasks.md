@@ -5,6 +5,7 @@
 - [x] Add test-only disposable memory composition, actual workerd default-entrypoint and signed route coverage; initial native tests passed 5/5 with no assets/outbound dispatch.
 - [x] Document default closure, fixture/persistence limits, rotation adapter responsibility, scope and rollback.
 - [x] Independent review reproduced encoded API-prefix aliases falling through to static assets. Reproduce native failure, add one-pass rejection of the decoded settings namespace without delegation, and cover encoded prefixes/slashes plus unchanged ordinary assets/malformed encodings. Clarify the original contract document's historical unmounted status versus this optional/default-closed route.
-- [ ] Run focused contract/native/settings/hosted-identity checks and required full validate/dry runs, keeping check logs/status under the Git directory.
-- [ ] Verify protected blobs and clean source checkpoint; report exact results, remaining gaps and independent review status.
-- [ ] Obtain independent exact-head review; do not push/publish/PR/merge/deploy this checkpoint.
+- [x] At accepted runtime `b74ff7790b652f2fa4ab0ce820d1b31832197f7f`, combined focused checks passed 44/44; full validate passed (301 reported passes across 26 Node test commands, zero failures/cancellations); both local dry runs passed. Logs/status remain under the Git directory.
+- [x] Retained reading browsers passed 74/74 and hosted-admin browsers passed 16/16 sequentially on local Chromium 154.0.8037.57. No new UI or live setup is claimed.
+- [x] Protected blobs remain identical to reviewed base; source stayed clean during complete validation. Document exact reviewed/runtime checkpoint, passed checks, remaining gaps, rollback and deliberately interrupted original run. Final evidence update changes documentation only.
+- [x] Independent exact-runtime review accepted `b74ff7790b652f2fa4ab0ce820d1b31832197f7f`, closing the encoded-prefix finding with no new actionable findings. Preserve runtime/tests/scripts unchanged in the final documentation commit; do not push/publish/PR/merge/deploy this checkpoint.
