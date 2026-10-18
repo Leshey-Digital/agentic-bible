@@ -21,6 +21,7 @@ test('two native article heads build into article-aware history, review, and noi
     const toolTitle=titleOf('tool-use'),protocolTitle=titleOf('model-context-protocol');
     assert.ok(history.includes(protocolTitle));assert.ok(history.includes(toolTitle));
     assert.ok(history.indexOf(protocolTitle)<history.indexOf(toolTitle),'history remains globally newest first');
+    assert.equal(history.match(/Current for this article/g)?.length,4,'both current article heads appear in review and global history sections');
     assert.ok(history.includes(`/history/model-context-protocol/${protocol.canonical.eventId}/`));
     assert.ok(history.includes(`/history/tool-use/${toolUse.canonical.eventId}/`));
     assert.ok(history.includes(`/articles/model-context-protocol/`));assert.ok(history.includes(`/articles/tool-use/`));
