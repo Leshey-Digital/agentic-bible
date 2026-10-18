@@ -46,3 +46,5 @@ PR32 identity trust, real D1 binding and application GitHub proposal credentials
 ## Canonical maintenance history binding
 
 Candidate preparation reconstructs the pinned canonical history and compares the built `maintenance-history.json` catalog with its exact current/retained receipts and source commit. A canonical restoration or maintenance chain cannot be packaged with disabled, omitted or stale history. The existing explicit staging history build remains the build path; no new pipeline or live release permission is introduced. See [post-restoration maintenance integration](restored-maintenance-base.md).
+
+Older readers reject the new optional canonical-base record field. Once such a record exists, a code-only downgrade to PR41 or earlier is unsupported; retain a format-aware reader or obtain a separately reviewed migration plan. Never reset Git or erase records to regain compatibility.
