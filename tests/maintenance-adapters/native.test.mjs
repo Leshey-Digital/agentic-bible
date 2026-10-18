@@ -5,6 +5,8 @@ import {resolve} from 'node:path';
 import {build} from 'esbuild';
 import {Miniflare,convertV4MiniflareOptions} from 'miniflare';
 import {document,mcp,openai,urls} from './fixtures.mjs';
+import {createAcquiredQualitySourcePort} from '../../src/maintenance-adapters/quality-source.ts';
+import {verifyAcquiredSource,verifyAcquiredSourceReference} from '../../src/maintenance-adapters/acquisition.ts';
 
 test('native Worker acquisition preserves charged original bytes and receipt verification across D1 restart',{timeout:120000},async()=>{
  const path=resolve('.git/maintenance-adapters-native-state');rmSync(path,{recursive:true,force:true});mkdirSync(path,{recursive:true});
@@ -34,6 +36,26 @@ test('native Worker acquisition preserves charged original bytes and receipt ver
   assert.deepEqual((await action({action:'verify',packet:first.value})).value,first.value);
   const before=await count();await runtime.dispose();await start();
   assert.deepEqual((await action({action:'verify',packet:first.value})).value,first.value);assert.deepEqual(await count(),before);
+  const captured={...first.value.source,raw:{...first.value.source.raw,bytes:Uint8Array.from(first.value.source.raw.bytes)}};
+  const reference=await verifyAcquiredSourceReference({source:captured,requestKey:key},{db});
+  assert.equal(reference.receipt.reservationToken,first.value.receipt.reservationToken);
+  const sourcePort=createAcquiredQualitySourcePort({db}),qualitySource=await sourcePort({citationId:'mcp-tools',source:captured,requestKey:key});
+  assert.equal(qualitySource.bodyHash,first.value.source.raw.hash);assert.equal(qualitySource.extraction.extractedHash,first.value.source.evidence.hash);
+  assert.equal(new TextDecoder().decode(qualitySource.bytes),document());assert.deepEqual(qualitySource.lineage,{originIds:[],provenance:'unknown'});
+  assert.deepEqual(await count(),before);assert.equal(calls.length,1,'native capture to quality consumer does not refetch or recharge');
+  await assert.rejects(sourcePort({citationId:'mcp-tools',source:captured,requestKey:crypto.randomUUID()}),{code:'adapter_uncharged_body'});
+  const later=first.value.receipt.observedAt+86400001,clock=()=>later;
+  await assert.rejects(verifyAcquiredSourceReference({source:captured,requestKey:key},{db,clock}),{code:'adapter_stale_observation'});
+  const historical=await verifyAcquiredSourceReference({source:captured,requestKey:key},{db,clock,historicalReplay:true});
+  assert.deepEqual(historical.receipt,reference.receipt);
+  assert.deepEqual((await verifyAcquiredSource(historical,{db,clock,historicalReplay:true})).receipt,reference.receipt);
+  await assert.rejects(verifyAcquiredSourceReference({source:captured,requestKey:key},{db,clock:()=>reference.receipt.observedAt-1}),{code:'adapter_stale_observation'});
+  assert.deepEqual((await verifyAcquiredSourceReference({source:captured,requestKey:key},{db,clock:()=>reference.receipt.observedAt-1,historicalReplay:true})).receipt,reference.receipt);
+  assert.equal((await createAcquiredQualitySourcePort({db,clock,historicalReplay:true})({citationId:'mcp-tools',source:captured,requestKey:key})).bodyHash,qualitySource.bodyHash);
+  await assert.rejects(sourcePort({citationId:'mcp-tools',source:captured,requestKey:key,historicalReplay:true}),{code:'adapter_invalid_shape'});
+  const tampered=structuredClone(captured);tampered.raw.hash='0'.repeat(64);
+  await assert.rejects(verifyAcquiredSourceReference({source:tampered,requestKey:key},{db,clock,historicalReplay:true}));
+  assert.deepEqual(await count(),before);assert.equal(calls.length,1,'historical integrity reads retain raw authority without admission or network');
   assert.equal((await acquire(mcp,key)).value.error,'adapter_existing_attempt_no_refetch');assert.equal(calls.length,1);
   const forged=structuredClone(first.value);forged.source.lineage.provenance='original';forged.source.lineage.originIds=['caller-origin'];assert.equal((await action({action:'verify',packet:forged})).status,503);
   const wrongReceipt=structuredClone(first.value);wrongReceipt.receipt.requestKey=crypto.randomUUID();assert.equal((await action({action:'verify',packet:wrongReceipt})).value.error,'adapter_uncharged_body');
