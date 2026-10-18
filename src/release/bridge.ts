@@ -3,6 +3,9 @@ import {canonical,digest,verifyCandidate} from './artifact.ts';import {durableJs
 import {readReleaseFile} from './files.ts';
 const regular=(path:string,max:number)=>readReleaseFile(path,max).toString('utf8');
 const processStart=(pid:number)=>readFileSync('/proc/'+pid+'/stat','utf8').split(') ')[1].split(' ')[19];
+// Preserve this executor's existing network route without inheriting application
+// credentials or configuring persistent Git credentials/proxy settings.
+function sourceReadEnvironment(){const env:NodeJS.ProcessEnv={PATH:process.env.PATH,GIT_TERMINAL_PROMPT:'0'};for(const key of ['HTTP_PROXY','HTTPS_PROXY','ALL_PROXY','NO_PROXY','http_proxy','https_proxy','all_proxy','no_proxy'])if(process.env[key]!==undefined)env[key]=process.env[key];return env;}
 export function inspectBridgeRequest(path:string,expected:string,allowRecordedResponse=false){
  const raw=regular(path,8192);if(digest(raw)!==expected)throw Error('release_bridge_request_digest');const request=JSON.parse(raw),lease=JSON.parse(regular(join(dirname(path),'lease.json'),8192));
  if(request.schemaVersion!==1||request.expiresAt<Date.now()||lease.nonce!==request.nonce||lease.pid!==request.pid||lease.start!==request.start)throw Error('release_bridge_stale_request');
@@ -32,6 +35,6 @@ export function connectorBridge(repo:string,directory:string,sourceCommit:string
   while(Date.now()<request.expiresAt){inspectBridgeRequest(requestPath,requestDigest,true);if(existsSync(responsePath)){const reply=JSON.parse(regular(responsePath,262144));if(reply.requestDigest!==requestDigest||reply.nonce!==nonce)throw Error('release_bridge_response_mismatch');if(/^release_[a-z_]+$/.test(reply.result?.error??''))throw Error(reply.result.error);return reply.result;}await new Promise(done=>setTimeout(done,250));}
   throw Error('release_bridge_outcome_unconfirmed');
  }
- const assertSource=async()=>{const output=execFileSync('git',['-c','credential.helper=','ls-remote','https://github.com/Leshey-Digital/agentic-bible.git','refs/heads/main'],{encoding:'utf8',timeout:10000,maxBuffer:4096,env:{PATH:process.env.PATH,GIT_TERMINAL_PROMPT:'0'}}).trim();if(output!==sourceCommit+'\trefs/heads/main')throw Error('release_main_changed');};
+ const assertSource=async()=>{const output=execFileSync('git',['-c','credential.helper=','ls-remote','https://github.com/Leshey-Digital/agentic-bible.git','refs/heads/main'],{encoding:'utf8',timeout:10000,maxBuffer:4096,env:sourceReadEnvironment()}).trim();if(output!==sourceCommit+'\trefs/heads/main')throw Error('release_main_changed');};
  return cloudflarePorts(null,assertSource,{send:options.read,api:async(path,body)=>{const r=await exchange(controlConnectorCode(path,body,expectedActive),'control');if(r?.success!==true||r.status!==200)throw Error('release_connector_outcome_unconfirmed');return r.result;},upload:async(root,id,requestId)=>{if(verifyCandidate(root,id).candidate.sourceCommit!==sourceCommit)throw Error('release_bridge_source_mismatch');const r=await exchange(uploadConnectorCode(root,id,requestId,expectedActive),'upload',{candidateDigest:id,operationRequestId:requestId});if(r?.candidateDigest!==id||r.requestId!==requestId||!/^[a-f0-9-]{36}$/.test(r.versionId))throw Error('release_upload_unconfirmed');return r.versionId;}});
 }

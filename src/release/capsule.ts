@@ -2,11 +2,11 @@ import {readFileSync} from 'node:fs';import {join} from 'node:path';
 import {verifyCandidate,canonical} from './artifact.ts';import {directUploadPlan} from './direct.ts';import {releaseTarget} from './public.ts';
 // Serialized with no Node dependency. The tool's native fetch handles only the
 // short-lived asset JWT; account API authority stays in cloudflare.request().
-async function uploadCapsule(payload:any){
+async function uploadCapsule(payload:any,cloudflare:any){
  const account='/accounts/c370be29e4065365de03bc8652da2cdc',script=account+'/workers/scripts/agentic-bible-staging',worker=account+'/workers/workers/agentic-bible-staging';
  const sha=async(bytes:Uint8Array)=>Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes as BufferSource))).map(x=>x.toString(16).padStart(2,'0')).join('');
  const bytes=(s:string)=>Uint8Array.from(atob(s),x=>x.charCodeAt(0));let calls=0;
- const api=async(method:'GET'|'POST',path:string,body?:unknown,query?:Record<string,boolean>)=>{if(++calls>12)throw Error('release_connector_upload_budget');const r=await (globalThis as any).cloudflare.request({method,path,...(body?{body}:{}),...(query?{query}:{})});if(!r.success||![200,201].includes(r.status))throw Error('release_connector_upload_unconfirmed');return r.result;};
+ const api=async(method:'GET'|'POST',path:string,body?:unknown,query?:Record<string,boolean>)=>{if(++calls>12)throw Error('release_connector_upload_budget');const r=await cloudflare.request({method,path,...(body?{body}:{}),...(query?{query}:{})});if(!r.success||![200,201].includes(r.status))throw Error('release_connector_upload_unconfirmed');return r.result;};
  const active=async()=>{const r=await api('GET',script+'/deployments'),list=r.deployments??r;if(!Array.isArray(list)||list.length>100)throw Error('release_deployments_response');if(!list.length)return null;if(list[0].strategy!=='percentage'||list[0].versions?.length!==1||list[0].versions[0].percentage!==100)throw Error('release_split_traffic_unsupported');return list[0].versions[0].version_id;};
  if(payload.target.account!=='c370be29e4065365de03bc8652da2cdc'||payload.target.worker!=='agentic-bible-staging'||payload.target.origin!=='https://staging.agenticbible.si'||!/^ab-candidate:[a-f0-9]{64}:[a-f0-9-]{36}$/.test(payload.version.annotations['workers/message']))throw Error('release_capsule_target');
  if(await sha(new TextEncoder().encode(payload.candidateRaw))!==payload.candidateDigest)throw Error('release_capsule_candidate_digest');const candidate=JSON.parse(payload.candidateRaw);
@@ -33,7 +33,7 @@ async function uploadCapsule(payload:any){
   // Tokens never leave this execution, including failures. No account credential
   // is copied to native fetch, and neither upload nor completion JWT is returned.
   const r=await fetch('https://api.cloudflare.com/client/v4'+account+'/workers/assets/upload?base64=true',{method:'POST',headers:{Authorization:'Bearer '+session.jwt},body:form,redirect:'manual',signal:AbortSignal.timeout(10000)});
-  if(![200,201].includes(r.status))throw Error('release_assets_upload_unconfirmed');const text=await r.text();if(text.length>262144)throw Error('release_assets_response_capacity');const value=JSON.parse(text);if(value.success!==true)throw Error('release_assets_upload_unconfirmed');if(value.result?.jwt!==undefined){if(!jwt(value.result.jwt))throw Error('release_assets_completion_invalid');completion=value.result.jwt;}
+  if(r.status===401)throw Error('release_assets_upload_unauthorized');if(![200,201].includes(r.status))throw Error('release_assets_upload_unconfirmed');const text=await r.text();if(text.length>262144)throw Error('release_assets_response_capacity');const value=JSON.parse(text);if(value.success!==true)throw Error('release_assets_upload_unconfirmed');if(value.result?.jwt!==undefined){if(!jwt(value.result.jwt))throw Error('release_assets_completion_invalid');completion=value.result.jwt;}
  }
  if(!completion)throw Error('release_assets_completion_required');if(await active()!==payload.expectedActive)throw Error('release_active_changed');
  const version=await api('POST',worker+'/versions',{...payload.version,assets:{...payload.version.assets,jwt:completion}},{deploy:false});
@@ -48,12 +48,12 @@ export function uploadConnectorCode(root:string,id:string,requestId:string,expec
  const compressedPlan={...plan,files:Object.fromEntries(Object.entries(plan.files).map(([hash,file])=>[hash,{contentType:file.contentType,path:Object.keys(plan.manifest).find(p=>plan.manifest[p].hash===hash)!.slice(1)}])),version:{...plan.version,modules:plan.version.modules.map(m=>m.name==='worker.js'?m:{...m,content_base64:undefined})}};
  const payload={...compressedPlan,inventory,candidateRaw:readFileSync(join(root,'candidate.json'),'utf8'),configRaw:readFileSync(join(root,'wrangler.json'),'utf8'),target:releaseTarget,candidateDigest:id,requestId,expectedActive};
  const source=uploadCapsule.toString().replace(/^async function uploadCapsule/,'async function');
- const code='async()=>{try{const p='+canonical(payload).trim()+';for(const f of Object.values(p.files))f.content=p.inventory[f.path].content;for(const m of p.version.modules)if(m.name!=="worker.js")m.content_base64=p.inventory[m.name].content;return await ('+source+')(p);}catch(e){throw Error(/^release_[a-z_]+$/.test(String(e?.message))?e.message:"release_connector_upload_unconfirmed");}}';
+ const code='async()=>{try{const p='+canonical(payload).trim()+';for(const f of Object.values(p.files))f.content=p.inventory[f.path].content;for(const m of p.version.modules)if(m.name!=="worker.js")m.content_base64=p.inventory[m.name].content;return await ('+source+')(p,cloudflare);}catch(e){throw Error(/^release_[a-z_]+$/.test(String(e?.message))?e.message:"release_connector_upload_unconfirmed");}}';
  if(Buffer.byteLength(code)>2*1024*1024-4096)throw Error('release_connector_capsule_capacity');return code;
 }
-async function controlCapsule(req:any,expectedActive:string|null|undefined){
+async function controlCapsule(req:any,expectedActive:string|null|undefined,cloudflare:any){
  try{
-  const cloudflare=(globalThis as any).cloudflare,base='/accounts/c370be29e4065365de03bc8652da2cdc/workers/scripts/agentic-bible-staging';
+  const base='/accounts/c370be29e4065365de03bc8652da2cdc/workers/scripts/agentic-bible-staging';
   if(req.method==='POST'){
    if(expectedActive===undefined||req.path!==base+'/deployments'||req.body?.strategy!=='percentage'||req.body.versions?.length!==1||req.body.versions[0].percentage!==100)throw Error('release_activation_input');
    const r=await cloudflare.request({method:'GET',path:base+'/deployments'});if(!r.success||r.status!==200)throw Error('release_connector_control_unconfirmed');const list=r.result.deployments??r.result;
@@ -73,5 +73,5 @@ export function controlConnectorCode(path:string,body?:any,expectedActive?:strin
  const prefix='/accounts/'+releaseTarget.account+'/workers/scripts/'+releaseTarget.worker;
  if(!(/^\/deployments$/.test(path)||/^\/versions\?per_page=100$/.test(path)||/^\/versions\/[a-f0-9-]{36}$/.test(path))||(body!==undefined&&path!=='/deployments'))throw Error('release_connector_target');
  const [suffix,query]=path.split('?'),request={method:body===undefined?'GET':'POST',path:prefix+suffix,...(query?{query:{per_page:100}}:{}),...(body===undefined?{}:{body})};
- return 'async()=>await ('+controlCapsule.toString()+')('+JSON.stringify(request)+','+(expectedActive===undefined?'undefined':JSON.stringify(expectedActive))+')';
+ return 'async()=>await ('+controlCapsule.toString()+')('+JSON.stringify(request)+','+(expectedActive===undefined?'undefined':JSON.stringify(expectedActive))+',cloudflare)';
 }

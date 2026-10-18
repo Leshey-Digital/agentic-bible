@@ -1,0 +1,20 @@
+# Staging upload transport diagnosis
+
+Main was fast-forwarded, without force, to independently accepted `efacc76c639a2d131c4b25668a27e3c6f0c66449`. Its qualification `7799dc965e81cbc03c3ce495f9250a1efbff417a5b26c0309c53c1dc52bb0929`, candidate `209494bea1db16e177eb4f818517c893e87cce4cba6e5323453a3133634500ba`, complete retained bundle and failed release journal remain unchanged. No version, deployment or staging hostname was created. Production is untouched.
+
+The same-request guarded release stopped after its two allowed upload invocations: registration returned HTTP 200 with three 27-file buckets; native multipart upload returned HTTP 401. The original response body was not retained, only its status and non-JSON content type. Later diagnostics registered the identical public manifest and made read-only requests; they did not upload assets, create versions or alter the release journal.
+
+Sanitized observations:
+
+- Both connector `cloudflare.request` and native-fetch registration expose `result.jwt` and `result.buckets`, matching the adapter's extraction.
+- The token is 549 characters with three nonempty base64url segments. Its payload decodes, is not expired, is ready under `nbf`, and has the Workers API audience/issuer. `account_id` is a numeric internal identifier; it must not be compared with the public account's hexadecimal ID.
+- `wrangler_single_asset_uploads` is false, matching the bulk path selected by pinned Wrangler. `bulk_upload_from_worker` is also false; its relevance to this rejection is unconfirmed.
+- A native `Request` retains the exact `Bearer ` prefix and token. Native account reads succeed with default account authentication; explicit invalid authorization changes the upstream response. A read-only connector request with an unsupported `headers` field ignores that override. Read-only synthetic invalid-auth probes using an object, a `Headers` instance, a `Request`, and lowercase spelling all returned the same HTTP 400/code 9106 (`Authentication failed (status: 400)`). These checks do not prove what headers reached the failed multipart POST.
+- Header decoding yielded non-JSON bytes through two independent base64 implementations; a known JWT header parsed correctly. This is an anomaly, not proof that the issuer or connector corrupted the token. Pinned Wrangler treats the token as opaque and decodes only its payload. No token was rewritten, exported, committed or logged.
+- The exact endpoint, `base64=true`, Bearer format, multipart base64 files and SDK hash convention agree with the [official upload guide](https://developers.cloudflare.com/workers/static-assets/direct-upload/) and [SDK example](https://github.com/cloudflare/cloudflare-typescript/blob/main/examples/workers/script-with-assets-upload.ts). Endpoint typo, missing field, token expiry and server-selected single-upload mode are unsupported explanations for the observed failure.
+
+Two separate integration defects were reproduced and worked around during the paused operation: the connector supplies a lexical `cloudflare` binding rather than `globalThis.cloudflare`; and the source-read child dropped this executor's required proxy variables. The temporary checkout proxy setting was restored. The isolated patch fixes those contracts and reports 401 explicitly. It does **not** claim to resolve the provider authentication rejection.
+
+Cloudflare code 100124 establishes the bootstrap order: first guarded deployment, then staging-only custom-domain attachment, then TLS/complete served-byte acceptance with same-plan reconciliation if verification initially stops. Do not create additional DNS/routes or enable workers.dev/previews.
+
+Remaining diagnosis requires a separately bounded, reviewed authentication probe that captures an allowlisted error result from the actual multipart POST while keeping its token inside one connector execution. No further POST upload is authorized or attempted by this diagnostic patch. Do not reset counters, change UUIDs to evade the bound, replace credentials or merge/deploy this patch on the basis of controlled tests.
