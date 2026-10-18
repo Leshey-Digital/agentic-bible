@@ -7,7 +7,7 @@ import {sourcePreview} from './source.ts';
 import {createRestorationApproval,revokeRestorationApproval} from '../maintenance-history/restoration-approvals.ts';
 import {MaintenanceReviewError,verifiedCatalog,listMaintenanceReviews,saveMaintenanceReview} from '../maintenance-history/review.ts';
 import {maintenanceAdminHtml,maintenanceAdminCss,maintenanceAdminJs} from '../maintenance-history/admin.ts';
-import {adminHtml,adminCss,adminJs} from './admin.ts';
+import {adminHtml,adminForInboxHtml,adminCss,adminJs} from './admin.ts';
 import {createContributionHandler,intakeConfigured} from './contributions.ts';
 import {adminTrust,verifySignedAdmin} from './identity.ts';
 import {contributionAdminHtml,contributionAdminCss,contributionAdminJs} from './contribution-admin.ts';
@@ -21,7 +21,7 @@ const json=(body:unknown,status=200)=>Response.json(body,{status,headers});
 // Integration settings require separate trusted server-code adapters; configuredPorts
 // never constructs them from bindings, request fields or local fixture identities.
 export function createHostedRuntime(ports:Ports={}){
-const contributions=ports.contributions?createContributionHandler(ports.contributions):undefined;
+const contributions=ports.contributions?createContributionHandler(ports.contributions,ports.sendGitHub):undefined;
 const integrationSettings=ports.integrationSettings?createIntegrationSettingsContract(ports.integrationSettings):undefined;
 return {async fetch(request:Request,env:RuntimeEnv):Promise<Response>{
   const url=new URL(request.url),path=url.pathname;
@@ -79,10 +79,10 @@ return {async fetch(request:Request,env:RuntimeEnv):Promise<Response>{
       if(!ports.verifyAdmin||!ports.approvedNote||!ports.sendGitHub||!env.EDITORIAL_DB)return json({error:'hosted_identity_approval_and_github_not_configured'},503);
       const admin=await ports.verifyAdmin(request);if(!admin||admin.role!=='admin'||admin.csrfVerified!==true||admin.expiresAt<=Date.now())return json({error:'verified_admin_required'},403);
       if(request.method==='GET'&&path.startsWith('/admin/corrections/')){
-        const asset=path==='/admin/corrections/'?[adminHtml,'text/html; charset=utf-8']:path==='/admin/corrections/style.css'?[adminCss,'text/css; charset=utf-8']:path==='/admin/corrections/app.js'?[adminJs,'text/javascript; charset=utf-8']:null;
+        const asset=path==='/admin/corrections/'?[ports.contributions?adminForInboxHtml:adminHtml,'text/html; charset=utf-8']:path==='/admin/corrections/style.css'?[adminCss,'text/css; charset=utf-8']:path==='/admin/corrections/app.js'?[adminJs,'text/javascript; charset=utf-8']:null;
         return asset?new Response(asset[0],{headers:{...headers,'Content-Type':asset[1]}}):json({error:'not_found'},404);
       }
-      if(request.method==='GET'&&path==='/api/admin/corrections/approvals')return json(await listApprovals(env.EDITORIAL_DB,admin));
+      if(request.method==='GET'&&path==='/api/admin/corrections/approvals')return json(await listApprovals(env.EDITORIAL_DB,admin,!!ports.contributions));
       if(request.method==='GET'&&path==='/api/admin/corrections/base'){if(request.headers.get('x-agentic-bible-request')!=='admin'||request.headers.get('sec-fetch-site')==='cross-site')return json({error:'same_origin_required'},403);return json(await sourcePreview(env.EDITORIAL_DB,ports.sendGitHub));}
       if(request.method==='POST'&&['/api/admin/corrections/approvals','/api/admin/corrections/revoke'].includes(path)){
         if(request.headers.get('origin')!==origin||request.headers.get('sec-fetch-site')==='cross-site')return json({error:'same_origin_required'},403);

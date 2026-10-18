@@ -3,7 +3,8 @@ import {articleIds,dispositions,type SqlDatabase,type Disposition} from '../edit
 import {D1EditorialStore} from '../editorial/store.ts';
 import {InputError,RateLimitError,ReplayConflictError,CapacityError,submissionInput,changeInput} from '../editorial/validation.ts';
 import {adminTrust,hostedOrigin,verifySignedAdmin} from './identity.ts';
-import {uuid} from './contracts.ts';
+import {sourcePreview} from './source.ts';
+import {uuid,type Ports} from './contracts.ts';
 import {createSubmissionReview} from './submission-reviews.ts';
 
 // Only trusted server composition can supply this policy. No env or request flag
@@ -14,7 +15,7 @@ const headers={'Cache-Control':'no-store','X-Robots-Tag':'noindex, nofollow','X-
 const json=(value:unknown,status=200)=>Response.json(value,{status,headers});
 export class ContributionError extends Error{readonly code:string;readonly status:number;constructor(code:string,status=400){super(code);this.code=code;this.status=status;}}
 function fail(code:string,status=400):never{throw new ContributionError(code,status);}
-export function intakeConfigured(adapters?:ContributionAdapters){const p=adapters?.policy;return !!p&&p.moderationReady===true&&policyPath(p.termsPath)&&policyPath(p.privacyPath)&&/^[a-zA-Z0-9._-]{1,64}$/.test(p.policyRevision)&&typeof adapters?.clientKey==='function';}
+export function intakeConfigured(adapters?:ContributionAdapters){const p=adapters?.policy;return !!adminTrust(adapters?.trust)&&!!p&&p.moderationReady===true&&policyPath(p.termsPath)&&policyPath(p.privacyPath)&&/^[a-zA-Z0-9._-]{1,64}$/.test(p.policyRevision)&&typeof adapters?.clientKey==='function';}
 export async function contributionJson(request:Request):Promise<any>{
   if(request.headers.get('content-type')?.split(';')[0].trim().toLowerCase()!=='application/json')fail('json_required',415);
   if(!request.body)fail('invalid_request');const reader=request.body.getReader(),parts:Uint8Array[]=[];let bytes=0,timer:ReturnType<typeof setTimeout>|undefined;
@@ -24,7 +25,7 @@ export async function contributionJson(request:Request):Promise<any>{
   try{return JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(body));}catch{fail('invalid_request');}
 }
 const exact=(value:any,keys:string[])=>value&&typeof value==='object'&&!Array.isArray(value)&&Object.keys(value).sort().join(',')===keys.sort().join(',');
-export function createContributionHandler(adapters:ContributionAdapters){
+export function createContributionHandler(adapters:ContributionAdapters,send?:Ports['sendGitHub']){
   const trust=adminTrust(adapters.trust);
   return async(request:Request,db:SqlDatabase):Promise<Response>=>{
     try{
@@ -51,9 +52,10 @@ export function createContributionHandler(adapters:ContributionAdapters){
         const status=url.searchParams.get('status')??'new';if(!(dispositions as readonly string[]).includes(status))fail('invalid_request');
         const result=await store.list(status as Disposition,url.searchParams.get('before')??undefined);fresh();return json(result);
       }
-      const match=/^\/api\/admin\/submissions\/([a-f0-9-]{36})(\/review)?$/.exec(url.pathname);
+      const match=/^\/api\/admin\/submissions\/([a-f0-9-]{36})(\/(?:review|source))?$/.exec(url.pathname);
       if(!match||!uuid(match[1])||url.search)fail('not_found',404);
-      const id=match[1];if(match[2]){if(request.method!=='POST')fail('explicit_post_required',405);const value=await contributionJson(request);fresh();return json(await createSubmissionReview(db,id,value,admin));}
+      const id=match[1];if(match[2]==='/source'){if(request.method!=='GET')fail('method_not_allowed',405);if(!send)fail('source_adapter_unconfigured',503);const item=await store.get(id);if(!item)fail('not_found',404);const preview=await sourcePreview(db,send,item.articleId);fresh();return json(preview);}
+      if(match[2]){if(request.method!=='POST')fail('explicit_post_required',405);const value=await contributionJson(request);fresh();return json(await createSubmissionReview(db,id,value,admin));}
       if(request.method==='GET'){const item=await store.get(id);if(!item)fail('not_found',404);const audit=await store.audit(id);fresh();return json({item,audit});}
       if(request.method!=='PATCH')fail('method_not_allowed',405);
       const value=await contributionJson(request);if(!exact(value,['status','tags','version']))fail('invalid_request');const change=changeInput(value);fresh();

@@ -1,6 +1,8 @@
+import {hostedTarget,sourceCitations} from './targets.ts';
 import type {SqlDatabase} from '../editorial/contracts.ts';
 import {contentPath,gitSha,hash,limits,reject,repository,type Ports} from './contracts.ts';
-export async function sourcePreview(db:SqlDatabase,send:NonNullable<Ports['sendGitHub']>){
+export async function sourcePreview(db:SqlDatabase,send:NonNullable<Ports['sendGitHub']>,articleId?:unknown){
+  const target=articleId===undefined?null:hostedTarget(articleId);if(articleId!==undefined&&!target)reject('invalid_hosted_article');const path=target?.contentPath??contentPath;
   const day=Math.floor(Date.now()/86400000),reserved=await db.prepare('INSERT INTO hosted_source_budget(id,day,requests) VALUES(1,?,4) ON CONFLICT(id) DO UPDATE SET day=excluded.day,requests=CASE WHEN day=excluded.day THEN requests+4 ELSE 4 END WHERE day<excluded.day OR (day=excluded.day AND requests<=8)').bind(day).run();if(reserved.meta.changes!==1)reject('hosted_source_daily_budget');
   async function get(path:string){
     const controller=new AbortController();let timer:ReturnType<typeof setTimeout>|undefined;
@@ -14,8 +16,9 @@ export async function sourcePreview(db:SqlDatabase,send:NonNullable<Ports['sendG
   }
   const ref=await get('/git/ref/heads/main'),baseCommit=ref?.object?.sha;if(!gitSha(baseCommit))reject('github_source_rejected');
   const commit=await get('/git/commits/'+baseCommit);if(commit?.sha!==baseCommit||!gitSha(commit?.tree?.sha))reject('github_source_rejected');
-  const tree=await get('/git/trees/'+commit.tree.sha+'?recursive=1');if(tree?.sha!==commit.tree.sha||tree.truncated!==false||!Array.isArray(tree.tree)||tree.tree.length>1024)reject('github_source_tree_rejected');const entries=tree.tree.filter((x:any)=>x.path===contentPath);if(entries.length!==1||entries[0].type!=='blob'||entries[0].mode!=='100644'||!gitSha(entries[0].sha))reject('github_source_tree_rejected');
-  const file=await get('/contents/'+contentPath+'?ref='+baseCommit);if(file?.type!=='file'||file.sha!==entries[0].sha||file.path!==contentPath||file.encoding!=='base64'||typeof file.content!=='string'||file.content.length>limits.markdownBytes*2||!Number.isSafeInteger(file.size)||file.size<1||file.size>limits.markdownBytes||'target'in file)reject('github_source_rejected');
+  const tree=await get('/git/trees/'+commit.tree.sha+'?recursive=1');if(tree?.sha!==commit.tree.sha||tree.truncated!==false||!Array.isArray(tree.tree)||tree.tree.length>1024)reject('github_source_tree_rejected');const entries=tree.tree.filter((x:any)=>x.path===path);if(entries.length!==1||entries[0].type!=='blob'||entries[0].mode!=='100644'||!gitSha(entries[0].sha))reject('github_source_tree_rejected');
+  const file=await get('/contents/'+path+'?ref='+baseCommit);if(file?.type!=='file'||file.sha!==entries[0].sha||file.path!==path||file.encoding!=='base64'||typeof file.content!=='string'||file.content.length>limits.markdownBytes*2||!Number.isSafeInteger(file.size)||file.size<1||file.size>limits.markdownBytes||'target'in file)reject('github_source_rejected');
   const bytes=Uint8Array.from(atob(file.content.replaceAll('\n','')),c=>c.charCodeAt(0));if(bytes.length!==file.size)reject('github_source_rejected');const markdown=new TextDecoder('utf-8',{fatal:true}).decode(bytes);
-  return {baseCommit,baseMarkdownSha256:await hash(markdown),markdown};
+  let citations:string[]=[];if(target){try{citations=sourceCitations(markdown);}catch{return reject('unsupported_github_baseline');}}
+  return {baseCommit,baseMarkdownSha256:await hash(markdown),markdown,...(target?{articleId:target.articleId,contentPath:target.contentPath,citations}:{})};
 }
