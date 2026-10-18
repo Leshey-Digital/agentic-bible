@@ -6,6 +6,7 @@
 - Revision details use `/history/{articleId}/{eventId}/`; the existing Tool use URL remains available at its same path. A record targeting an unknown article fails the build rather than receiving a guessed title or link.
 - Empty history explains that no maintenance records are included in the edition and does not imply that an article has never changed.
 - History and detail pages describe Git integrity as byte/record provenance only. They do not imply factual accuracy, source authenticity, or editorial certification. Event detail pages remain noindex.
+- Each article's current History entry has a stable unique `article-{articleId}` fragment. Reader revision links target their own History fragment, and the established Tool use fragment remains `#article-tool-use`.
 
 ## Acceptance scenarios
 
@@ -14,3 +15,4 @@
 - Given a receipt with an article identifier absent from the compiled collection, the static build fails closed.
 - Given an edition with zero maintenance receipts, History shows an explicit empty-state explanation and emits no fabricated event pages.
 - Given a Tool use receipt, its existing `/history/tool-use/{eventId}/` URL still resolves, while detail records remain noindex.
+- Given current records for multiple articles, reader revision links resolve to a unique matching History anchor; the prior Tool use fragment continues to resolve.

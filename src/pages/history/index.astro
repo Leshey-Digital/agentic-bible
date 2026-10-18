@@ -38,7 +38,7 @@ const reviewQueue=view.reviewQueue.map(resolveEntry);
   {history.length>0?<section class="history-reading" aria-labelledby="all-history-title">
     <h2 id="all-history-title">Article revision stream</h2>
     <p class="history-notice">Git record integrity shows that bytes match recorded commits. It does not establish source authenticity, factual accuracy, or human editorial certification.</p>
-    <ol class="revision-list">{history.map(({entry,article},index)=><li>
+    <ol class="revision-list">{history.map(({entry,article},index)=><li id={entry.current?`article-${entry.articleId}`:undefined}>
       <div class="revision-label">
         <span class="eyebrow">{entry.current?'Current for this article':'Earlier for this article'} · {index+1} in global history</span>
         <span>{entry.operation==='restoration'?'Reviewed restoration record':'Automatic maintenance record'} · Controlled preview</span>

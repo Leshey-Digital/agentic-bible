@@ -28,6 +28,14 @@ test('two native article heads build into article-aware history, review, and noi
     assert.ok(review.includes(protocolTitle));assert.ok(review.includes(toolTitle));
     assert.ok(review.includes(`/history/model-context-protocol/${protocol.canonical.eventId}/`));
     assert.ok(review.includes(`/history/tool-use/${toolUse.canonical.eventId}/`));
+    const anchorIds=[...history.matchAll(/\bid="([^"]+)"/g)].map(match=>match[1]);
+    assert.equal(new Set(anchorIds).size,anchorIds.length,'History anchor ids are unique');
+    assert.ok(anchorIds.includes('article-tool-use'),'the established Tool use fragment remains available');
+    for(const id of ['tool-use','model-context-protocol']){
+      const article=readFileSync(join(out,'articles',id,'index.html'),'utf8');
+      assert.ok(article.includes(`href="/history/#article-${id}"`),`${id} reader points to its own history anchor`);
+      assert.ok(anchorIds.includes(`article-${id}`),`${id} has a matching History anchor`);
+    }
     for(const [id,event] of [['tool-use',toolUse],['model-context-protocol',protocol]]){
       const detail=readFileSync(join(out,'history',id,event.canonical.eventId,'index.html'),'utf8');
       assert.ok(detail.includes(titleOf(id)));
