@@ -185,3 +185,11 @@ The separate [reviewed maintenance integration candidate](docs/review/reviewed-m
 `npm run test:maintenance-pipeline` exercises one explicit default-disabled source → provider/receipt ledger → canonical writer → exact review-artifact ingestion coordinator. Tests use actual shared local D1, owned Git and the shipped signed-review Worker; live activation remains unavailable. [Stage, recovery and residual-gap contract](docs/controlled-maintenance-pipeline.md). Twenty unchanged article drafts retain their prior PR22/23/27 source-review acceptance.
 
 The [accepted pipeline local composition](docs/review/accepted-pipeline-composition.md) preserves main and accepted PR44 ancestry while excluding the separately reviewed currency-budget checkpoint. Its checks and local checkpoint do not authorize publication, merge or deployment.
+
+## Controlled currency enforcement
+
+The separate [USD maintenance budget](docs/maintenance-currency-budget.md) adds explicit default-disabled integer micro-USD pricing, atomic reservation/settlement and run/day/month limits on the existing D1 proposal ledger. Configured infrastructure allowances can represent the requested $10 monthly target including a $5 Workers baseline; this is not a cap on actual Cloudflare bills. Unknown usage/price/charge outcomes stay held, with no automatic top-ups or retries. Only controlled fake providers execute. Run `npm run test:maintenance-currency` (also in `validate`); secure live setup, approved pricing/caps, rotation/reconciliation, alerts and actual paid execution remain absent.
+
+## Live review-build monitoring
+
+The separate [storage-monitor correction](docs/review-build-storage-monitor.md) tolerates only an enumerated temporary cache entry disappearing during a live scan. Existing root, capacity, file-count and path guards remain strict. Bounded structural stop diagnostics retain the actual reason safely. `npm run test:maintenance-review-monitor` exercises real churn and six fatal safety controls with actual D1/Git accounting. Currency/dispatch behavior and all limits stay unchanged; real execution remains disabled.
