@@ -18,11 +18,12 @@ test('canonical wiki, citations, catalog, retained history and real Pagefind act
   let sourceFetches=0;const local=await localObservations(observations,false,()=>{sourceFetches++;throw new Error('bridge fetch forbidden');});
   const charged=await accounting(local.db);let bridge=new WikiBridge(name),server=wikiServer(bridge);await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
   const origin=`http://127.0.0.1:${server.address().port}`,outside=[],errors=[];page.on('request',request=>{if(new URL(request.url()).origin!==origin)outside.push(request.url());});page.on('pageerror',error=>errors.push(error.message));
-  const search=async(site,term,count)=>{
+  const search=async(site,term,count,articleIds=[])=>{
     await page.goto(`${origin}/wiki-snapshots/${site}/search/`);await page.locator('#search-input').fill(`"${term}"`);await page.locator('#search-form button[type=submit]').click();
     await expect(page.locator('#search-status')).toHaveText(`${count} ${count===1?'entry':'entries'} found for “"${term}"”.`);
     await expect(page.locator('#search-results>li')).toHaveCount(count);
     if(count)await expect(page.locator('#search-results a').first()).toHaveAttribute('href',new RegExp(`^/wiki-snapshots/${site}/articles/`));
+    if(articleIds.length)expect(await page.locator('#search-results a').evaluateAll(links=>links.map(link=>new URL(link.href).pathname))).toEqual(expect.arrayContaining(articleIds.map(id=>`/wiki-snapshots/${site}/articles/${id}/`)));
   };
   try{
     const firstPacket=packet(),first=await bridge.execute(firstPacket,local.db,'fixtures/wiki-bridge/sources');
@@ -33,7 +34,8 @@ test('canonical wiki, citations, catalog, retained history and real Pagefind act
     for(const path of ['/','/topics/capabilities/']){await page.goto(origin+path);await expect(page.locator('main')).toContainText('Published local demonstration');await expect(page.locator('a[href="/wiki-snapshots/'+first.site.id+'/articles/tool-use/"]').first()).toBeVisible();}
     const catalog=await (await page.request.get(origin+'/source-catalog.json')).json();expect(catalog.articles.map(a=>a.id).sort()).toEqual([...readingArticleIds].sort());for(const e of firstPacket.evidence)expect(catalog.sources.find(s=>s.id===e.sourceId)).toMatchObject({url:e.url,articleIds:expect.arrayContaining(['tool-use'])});
     await search(first.site.id,'Cedarharbor',1);await search(first.site.id,'corresponding call identifier',0);await search(first.site.id,'pattern of control',1);await search(first.site.id,'host application',1);
-    for(const term of ['orchestrator produces subtasks','MemGPT','RAG-Sequence','τ-bench','AgentDojo','Tree of Thoughts','Temporal','RFC 8707','Gofer','OpenTelemetry','Amershi'])await search(first.site.id,term,1);
+    for(const term of ['orchestrator produces subtasks','MemGPT','RAG-Sequence','AgentDojo','Tree of Thoughts','Temporal','RFC 8707','Gofer','OpenTelemetry','Amershi'])await search(first.site.id,term,1);
+    await search(first.site.id,'τ-bench',2,['agent-evaluation','structured-outputs']);
     await page.goto(origin+'/articles/tool-use/');await page.setViewportSize({width:390,height:844});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
     expect((await new AxeBuilder({page}).analyze()).violations).toEqual([]);await page.screenshot({path:'test-results/wiki-bridge/canonical-mobile.png',fullPage:true});await page.setViewportSize({width:1440,height:1000});
     const secondPacket=successor(bridge,'wiki-browser-second'),second=await bridge.execute(secondPacket,local.db,'fixtures/wiki-bridge/sources');

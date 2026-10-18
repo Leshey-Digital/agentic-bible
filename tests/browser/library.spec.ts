@@ -11,7 +11,9 @@ test('reading, source anchors, related links and topic navigation work', async (
   await expect(page.locator('#source-patterns')).toBeInViewport();
   await page.locator('.related').getByRole('link', { name: 'Capabilities Tool use' }).click();
   await expect(page.getByRole('heading', { name: 'Tool use', exact: true })).toBeVisible();
-  expect(await page.locator('.prose pre').evaluate(el=>el.scrollWidth<=el.clientWidth)).toBe(true);
+  const codeBlockWidths=await page.locator('.prose pre').evaluateAll(elements=>elements.map(el=>({scrollWidth:el.scrollWidth,clientWidth:el.clientWidth})));
+  expect(codeBlockWidths.length).toBeGreaterThan(0);
+  expect(codeBlockWidths.filter(({scrollWidth,clientWidth})=>scrollWidth>clientWidth)).toEqual([]);
   await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'Topics' }).click();
   await page.getByRole('link', { name: /03.*Protocols/ }).click();
   await expect(page.getByRole('heading', { name: 'Protocols', exact: true })).toBeVisible();
@@ -170,7 +172,7 @@ test('final six topics connect real search, citation anchors, revision history a
     await page.goto('/search/');await expect(page.getByRole('searchbox')).toBeEnabled();await page.getByRole('searchbox').fill(query);
     const result=page.locator(`#search-results a[href="/articles/${id}/"]`);await expect(result).toBeVisible();await result.click();
     await expect(page.getByRole('heading',{name:title,exact:true})).toBeVisible();await expect(page.locator('.article-status')).toContainText('Working draft');
-    await expect(page.locator('#sources time')).toHaveText('17 October 2026');await expect(page.locator('#revision')).toContainText('Pending · no reviewer assigned');
+    await expect(page.locator('#sources time')).toHaveText('17 October 2026');await expect(page.locator('#revision')).toContainText('Pending.');await expect(page.locator('#revision')).toContainText('No human editorial certification is recorded');
     await expect(page.locator('#revision a.text-link')).toHaveAttribute('href',new RegExp(`/commits/${sourceCommit}/src/content/articles/${id}\\.md$`));
     await page.locator('.prose a[href^="#source-"]').first().click();await expect(page.locator(':target')).toBeInViewport();
     await page.locator('.related a').first().click();await expect(page.getByRole('heading',{name:'AI agent',exact:true})).toBeVisible();
