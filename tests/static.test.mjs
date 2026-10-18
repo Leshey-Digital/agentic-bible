@@ -34,7 +34,10 @@ test('twenty substantive articles include provenance, review status and connecte
     const source = html(page);
     assert.match(source, /Editorial review pending/);
     assert.match(source, /AI-assisted project draft/);
-    assert.match(source, /no reviewer assigned/);
+    assert.match(source, /Human editorial certification pending/);
+    assert.match(source, /Pending\. No human editorial certification is recorded\./);
+    assert.match(source, /This records source consultation, not editorial certification\./);
+    assert.match(source, /Claim verification was sampled; this does not certify every factual claim\./);
     assert.match(source, /Sources &amp; context|Sources & context/);
     assert.ok(attrs(source, 'id').filter(id => id.startsWith('source-')).length >= 2);
     assert.ok(source.replace(/<[^>]*>/g, ' ').split(/\s+/).length > 400);
