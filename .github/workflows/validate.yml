@@ -70,6 +70,7 @@ jobs:
       - run: npm run test:maintenance:browser
       - run: PLAYWRIGHT_BROWSERS_PATH=.git/playwright npx --no-install playwright test --config playwright.maintenance-collection.config.ts
       - run: npm run test:maintenance-history:browser
+      - run: npm run test:maintenance-restore:browser
       - run: npm run release:prepare
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
@@ -103,6 +104,10 @@ jobs:
             .git/hosted-maintenance-review-native.json
             .git/hosted-maintenance-review-browser-*.json
             .git/quoted-source-url-proof.json
+            .git/canonical-restoration-native-proof.json
+            .git/canonical-restoration-sigkill-proof.json
+            .git/canonical-restoration-build-proof.json
+            .git/canonical-restoration-browser-*.json
             .git/maintenance-native-proof.json
             .git/maintenance-source-collection-native.json
             .git/canonical-maintenance-writer-native.json
