@@ -33,8 +33,9 @@ test('actual Worker/D1 upgrades populated intake atomically, retains foreign key
     const before = await rows();
     assert.equal((await submit(body('agent-budgets'), 26)).status, 503, 'Reproduce the legacy three-ID storage restriction.');
     const migration = sql('0017_published_contribution_intake.sql');
-    await assert.rejects(db.batch([...migration.map(statement => db.prepare(statement)), db.prepare('INSERT INTO synthetic_missing_table VALUES (1)')]));
-    assert.deepEqual(await rows(), before, 'A later failure rolls the table replacement and every dependent row back.');
+    await assert.rejects(db.batch([...migration.map(statement => db.prepare(statement)), db.prepare("INSERT INTO local_sessions VALUES('synthetic-token','local-editor','admin','synthetic-csrf',9999999999999)")]));
+    assert.deepEqual(await rows(), before, 'A runtime uniqueness failure after the replacement rolls every dependent row back.');
+    assert.equal((await db.prepare("SELECT COUNT(*) AS n FROM sqlite_master WHERE name IN ('submissions_published','intake_audit_backup','intake_corrections_backup')").first())?.n, 0);
     assert.equal((await submit(body('agent-budgets'), 26)).status, 503);
     await db.batch(migration.map(statement => db.prepare(statement)));
     assert.deepEqual(await rows(), before);
