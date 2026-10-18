@@ -5,7 +5,7 @@ import {lookupRestorationApproval} from '../maintenance-history/restoration-appr
 import {readCanonicalMaintenance} from '../maintenance-history/canonical.ts';
 import {WriterOutbox} from '../maintenance-github/outbox.ts';
 import {session,type ControlledGitHub} from '../maintenance-github/transport.ts';
-import {canonical,hash,sha,historyPath,blobSha,commitMutation,repository,branch,type Intent} from '../maintenance-github/contracts.ts';
+import {canonical,hash,sha,historyPath,blobSha,commitMutation,repository,branch,assertCanonicalHistoryCapacity,type Intent} from '../maintenance-github/contracts.ts';
 import {projectFiles} from '../wiki-bridge/files.ts';
 import {ownedGit} from './git.ts';
 import {stop,restoreEvent,makeRestorationRecord,restorationMarkdown,restorationPointer,restorationReceipt,restoreMessage,restoreReceiptReference,type RestorationReceipt} from './contracts.ts';
@@ -45,7 +45,7 @@ export async function restoreMaintenanceRevision(value:unknown,context:Context):
    if(!visible)stop('restore_dispatched_outcome_unconfirmed');oid=visible.receipt.commit;
   }else{
    await active();if((await api.request('/git/ref/heads/'+branch))?.object?.sha!==a.sourceCommit)stop('restore_stale_head');
-   await outbox.dispatch(id,owner,clock());await context.checkpoint?.('dispatched');await active();
+   try{assertCanonicalHistoryCapacity(source.history.map(e=>e.receipt.historyPath));}catch{stop('restore_history_capacity');}await outbox.dispatch(id,owner,clock());await context.checkpoint?.('dispatched');await active();
    const message=restoreMessage(id,authority.approvalHash,articleId),parts=message.trimEnd().split('\n\n');
    const result=await api.request('',{operationName:'CanonicalMaintenanceCommit',query:commitMutation,variables:{input:{branch:{repositoryNameWithOwner:repository,branchName:branch},expectedHeadOid:a.sourceCommit,clientMutationId:fingerprint,message:{headline:parts[0],body:parts.slice(1).join('\n\n')+'\n'},fileChanges:{additions:Object.entries(intent.files).map(([path,contents])=>({path,contents:Buffer.from(contents).toString('base64')}))}}}});
    if(result?.errors||result?.data?.createCommitOnBranch?.clientMutationId!==fingerprint||!sha(result?.data?.createCommitOnBranch?.commit?.oid))stop('restore_commit_unconfirmed');oid=result.data.createCommitOnBranch.commit.oid;await context.checkpoint?.('remote-committed');
