@@ -1,0 +1,85 @@
+{
+  "commit": "d0bfca47cd221b970b01ace838afb3f3bb9a5d32",
+  "populatedPriorTables": {
+    "submissions": {
+      "rows": 1,
+      "sha256": "a67a95708bae6126fccb76e0dc79ac3b6475a9f90e76bacb78f2aa76aaa597f3"
+    },
+    "editorial_audit": {
+      "rows": 2,
+      "sha256": "7e91da78e66ca7f6131e5e11c1d82390b05b50cd9972f1cfacafa75bc95cfe73"
+    },
+    "local_sessions": {
+      "rows": 3,
+      "sha256": "1ba6a5b0372a7bcdba39f6a1c66562bcbcb268e1fdaadf835c75fc72f5c99133"
+    },
+    "rate_windows": {
+      "rows": 1,
+      "sha256": "476b11c2430c1a5a33ee241d579b19065bc13ce7e6c539baac545abf9effda7e"
+    },
+    "monitor_sources": {
+      "rows": 8,
+      "sha256": "8844d4683680bc18160cfaabdc957bce486bcb7bf1be2910d4888d3da3fb9a16"
+    },
+    "monitor_jobs": {
+      "rows": 6,
+      "sha256": "e3792a9ad652d29be1b0bc025a578f8aa18844834d51d3c99be353a665d3d477"
+    },
+    "monitor_reservations": {
+      "rows": 6,
+      "sha256": "43cb1fe95f6dc2715ad17c3db7f72ecf954315a3cc39523f2406f85c2ea49354"
+    },
+    "source_events": {
+      "rows": 1,
+      "sha256": "175a609dafae989536e6b7839d478ceb6f1a239eeff27d639fe2a58bbcf0c693"
+    },
+    "publication_heads": {
+      "rows": 3,
+      "sha256": "6b7c7c8f56269515756ea6b838bcddde1a2220440c63680ead964e92099804af"
+    },
+    "publication_candidates": {
+      "rows": 1,
+      "sha256": "afd606e7c9caa5e1b2b4df3468a04467e90eab021ed688fd501113badf832a77"
+    },
+    "publication_revisions": {
+      "rows": 1,
+      "sha256": "e582f926fa0262d0e3fd0d8158c1a04234d7fa6e070466bf77e2448048833243"
+    },
+    "publication_actions": {
+      "rows": 2,
+      "sha256": "90979c763c1949f249205d57e415dabed948e394cd8e065609ae65c30e9b5aa8"
+    },
+    "measurement_settings": {
+      "rows": 4,
+      "sha256": "e10248ed040d39fd96c3094e43b0bf911f9d5491aad45f504470a3f4a4ca6bfa"
+    },
+    "measurement_audit": {
+      "rows": 1,
+      "sha256": "cf29fdc34605f31272729b0bd02856d0d30933cfb00987a308b58db2cea36fad"
+    },
+    "monitor_batch_commands": {
+      "rows": 2,
+      "sha256": "c3eeff2352e8123f45465c7e67dfbdb4ece47a13ac50bcf796078346d10f8687"
+    }
+  },
+  "migrationOrder": [
+    "0001_editorial.sql",
+    "0002_source_monitoring.sql",
+    "0003_measurement_settings.sql",
+    "0003_monitor_batch_commands.sql",
+    "0004_measurement_request_receipts.sql"
+  ],
+  "countsAndHashesPreserved": true,
+  "reapplyNoop": true,
+  "integrityAndForeignKeys": true,
+  "crossSessionCsrfIsolated": true,
+  "readerAndForgedIdentityRejected": true,
+  "originAndFetchSiteRejected": true,
+  "revokedSessionDeniedAcrossFeatures": true,
+  "otherAdminSessionPreserved": true,
+  "legacySettingsAndBothBatchReplaysPreserved": true,
+  "noopExactAfterLaterWriteAndRestart": true,
+  "settingsReplayDidNotAffectBudget": true,
+  "publicDefaultOff": true,
+  "rejectedSecretAbsent": true
+}

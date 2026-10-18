@@ -1,0 +1,12 @@
+{
+  "controlledGitHubProposal": true,
+  "actualWranglerStaticAssets": true,
+  "project": "mobile",
+  "articles": 20,
+  "projectedNoteReadAndSearch": true,
+  "originalCodeAndOpaqueAttribution": true,
+  "defaultWritesAndFixtureAuthClosed": true,
+  "noindex": true,
+  "externalBrowserRequests": [],
+  "published": false
+}

@@ -1,0 +1,13 @@
+{
+  "actualGitFixture": true,
+  "actualAstroPagefind": true,
+  "actualWranglerStaticAssets": true,
+  "sourceCommits": [
+    "451e49362c339c9415d772f42a9830b2582adee7",
+    "67a56cc7f6acba2b5656a82d3b9f3a79c44b5743"
+  ],
+  "verifiedAssets": 76,
+  "manifestBoundToWorker": true,
+  "publicIntake": false,
+  "liveDeployment": false
+}

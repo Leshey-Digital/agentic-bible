@@ -1,0 +1,40 @@
+{
+  "legacyArticles": 3,
+  "newArticles": 14,
+  "historicalPagefind": true,
+  "currentPagefind": true,
+  "newTopicSearches": [
+    [
+      "agent-planning",
+      "Tree of Thoughts"
+    ],
+    [
+      "durable-agent-execution",
+      "Temporal"
+    ],
+    [
+      "tool-permissions",
+      "RFC 8707"
+    ],
+    [
+      "agent-sandboxing",
+      "Gofer"
+    ],
+    [
+      "agent-observability",
+      "OpenTelemetry"
+    ],
+    [
+      "human-oversight",
+      "Amershi"
+    ]
+  ],
+  "legacyNewTopicsAbsent": true,
+  "historicalSitemapAbsent": true,
+  "legacyReplays": 2,
+  "currentReplay": true,
+  "replayD1Sql": 0,
+  "sourceFetches": 0,
+  "chargesPreserved": true,
+  "oldSnapshotsUnchanged": true
+}

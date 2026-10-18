@@ -1,0 +1,3 @@
+import {execFileSync} from 'node:child_process';import {join,resolve} from 'node:path';import {prepareCandidate,dryRunCandidate,verifyCandidate} from '../src/release/artifact.ts';
+const args=process.argv.slice(2);if(args.length>1)throw Error('release_output_only');const git=execFileSync('git',['rev-parse','--absolute-git-dir'],{encoding:'utf8'}).trim(),output=resolve(args[0]??join(git,'release-candidate'));
+await prepareCandidate(process.cwd(),output);await dryRunCandidate(output);const {candidate,id}=verifyCandidate(output);console.log(JSON.stringify({output,candidateDigest:id,sourceCommit:candidate.sourceCommit,buildId:candidate.buildId,assets:Object.keys(candidate.assets).length,dryRun:true,deployed:false}));

@@ -1,5 +1,7 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import {readFileSync} from 'node:fs';
+const sourceCommit=JSON.parse(readFileSync('dist/release-source.json','utf8')).commit;
 
 test('reading, source anchors, related links and topic navigation work', async ({ page }) => {
   await page.goto('/');
@@ -9,10 +11,11 @@ test('reading, source anchors, related links and topic navigation work', async (
   await expect(page.locator('#source-patterns')).toBeInViewport();
   await page.locator('.related').getByRole('link', { name: 'Capabilities Tool use' }).click();
   await expect(page.getByRole('heading', { name: 'Tool use', exact: true })).toBeVisible();
+  expect(await page.locator('.prose pre').evaluate(el=>el.scrollWidth<=el.clientWidth)).toBe(true);
   await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'Topics' }).click();
   await page.getByRole('link', { name: /03.*Protocols/ }).click();
   await expect(page.getByRole('heading', { name: 'Protocols', exact: true })).toBeVisible();
-  await expect(page.locator('.article-list li')).toHaveCount(1);
+  await expect(page.locator('.article-list li')).toHaveCount(4);
 });
 
 test('real Pagefind supports success, empty, no-results, punctuation and rapid replacement', async ({ page }) => {
@@ -39,24 +42,65 @@ test('real Pagefind supports success, empty, no-results, punctuation and rapid r
   await expect(page.locator('#search-results a')).not.toHaveCount(0);
 });
 
-test('missing index has a useful fallback and retry action', async ({ page }) => {
+test('missing index has a useful fallback and retry action', async ({ page },info) => {
   await page.route('**/pagefind/**', route => route.abort());
   await page.goto('/search/');
   await page.getByRole('searchbox').fill('agent');
   await expect(page.getByRole('heading', { name: 'Search is unavailable' })).toBeVisible();
+  await expect(page.locator('#search-results')).toHaveAttribute('aria-busy','false');
   await expect(page.getByRole('link', { name: 'AI agent Foundations' })).toBeVisible();
+  await page.screenshot({path:info.outputPath('search-unavailable.png'),fullPage:true});
   await page.unroute('**/pagefind/**');
   await page.getByRole('button', { name: 'Retry search' }).click();
   await expect(page.locator('#search-results a')).not.toHaveCount(0);
   await expect(page.getByRole('searchbox')).toHaveValue('agent');
 });
 
-test('all core pages pass automated accessibility and fit the viewport', async ({ page }) => {
-  for (const path of ['/', '/articles/ai-agent/', '/articles/tool-use/', '/articles/model-context-protocol/', '/topics/', '/about/', '/search/']) {
+// Fixed coverage: the same 24 pages, once per desktop/mobile project, with unchanged 30-second per-test and axe/viewport assertions.
+const accessibilityPages = ['/', '/articles/ai-agent/', '/articles/tool-use/', '/articles/model-context-protocol/', '/articles/agent-orchestration/', '/articles/agent-memory/', '/articles/retrieval-augmented-generation/', '/articles/agent-evaluation/', '/articles/prompt-injection/', '/articles/agent-planning/', '/articles/durable-agent-execution/', '/articles/tool-permissions/', '/articles/agent-sandboxing/', '/articles/agent-observability/', '/articles/human-oversight/', '/articles/context-engineering/', '/articles/structured-outputs/', '/articles/agent-identity/', '/articles/agent-to-agent-communication/', '/articles/agent-budgets/', '/articles/computer-use-agents/', '/topics/', '/about/', '/search/'] as const;
+for (const path of accessibilityPages) {
+  test(`automated accessibility and viewport: ${path}`, async ({ page, browser }, testInfo) => {
+    if (path === '/') {
+      const runtime = { project: testInfo.project.name, version: browser.version() };
+      console.log('Browser runtime: ' + JSON.stringify(runtime));
+      await testInfo.attach('browser-runtime', { body: JSON.stringify(runtime), contentType: 'application/json' });
+    }
     await page.goto(path);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
     const audit = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
     expect(audit.violations, `${path}: accessibility violations`).toEqual([]);
+  });
+}
+
+test('five new topics are discoverable through actual Pagefind and connected reading',async({page})=>{
+  for(const [query,id,title]of [
+    ['orchestrator','agent-orchestration','Agent orchestration'],
+    ['MemGPT','agent-memory','Agent memory'],
+    ['RAG-Sequence','retrieval-augmented-generation','Retrieval-augmented generation'],
+    ['τ-bench','agent-evaluation','Agent evaluation'],
+    ['AgentDojo','prompt-injection','Prompt injection'],
+  ]){
+    await page.goto('/search/');await expect(page.getByRole('searchbox')).toBeEnabled();await page.getByRole('searchbox').fill(query);
+    const result=page.locator(`#search-results a[href="/articles/${id}/"]`);await expect(result).toBeVisible();await result.click();
+    await expect(page.getByRole('heading',{name:title,exact:true})).toBeVisible();await expect(page.locator('.article-status')).toContainText('Working draft');
+    await page.locator('.prose a[href^="#source-"]').first().click();await expect(page.locator(':target')).toBeInViewport();
+    await page.locator('.related a').first().click();await expect(page.getByRole('heading',{name:'AI agent',exact:true})).toBeVisible();
+  }
+  await page.goto('/');await expect(page.locator('.article-list li')).toHaveCount(20);
+});
+
+test('six operating-principles topics connect actual Pagefind, evidence and revision context',async({page})=>{
+  for(const [query,id,title]of [
+    ['Tree of Thoughts','agent-planning','Agent planning'],['idempotency','durable-agent-execution','Durable agent execution'],
+    ['RFC 8707','tool-permissions','Tool permissions'],['Gofer','agent-sandboxing','Agent sandboxing'],
+    ['OpenTelemetry','agent-observability','Agent observability'],['Amershi','human-oversight','Human oversight'],
+  ]){
+    await page.goto('/search/');await expect(page.getByRole('searchbox')).toBeEnabled();await page.getByRole('searchbox').fill(query);
+    const result=page.locator(`#search-results a[href="/articles/${id}/"]`);await expect(result).toBeVisible();await result.click();
+    await expect(page.getByRole('heading',{name:title,exact:true})).toBeVisible();await expect(page.locator('#sources time')).toHaveText('17 October 2026');
+    await expect(page.locator('#revision a.text-link')).toHaveAttribute('href',new RegExp(`/commits/${sourceCommit}/src/content/articles/${id}\\.md$`));
+    await page.locator('.prose a[href^="#source-"]').first().click();await expect(page.locator(':target')).toBeInViewport();
+    await page.locator('.related a').first().click();await expect(page.getByRole('heading',{name:'AI agent',exact:true})).toBeVisible();
   }
 });
 
@@ -92,10 +136,13 @@ test('read and search send no external requests and have no runtime or CSP error
 });
 
 test('articles, sources and browse fallback work without JavaScript', async ({ browser, baseURL }) => {
-  const context = await browser.newContext({ javaScriptEnabled: false, baseURL });
+  const context = await browser.newContext({ javaScriptEnabled: false, baseURL, viewport:{width:390,height:844} });
   const page = await context.newPage();
   await page.goto('/articles/tool-use/');
   await expect(page.getByRole('heading', { name: 'Tool use', exact: true })).toBeVisible();
+  await page.locator('[data-article-contents] summary').click();
+  await page.getByRole('navigation',{name:'On this page'}).getByRole('link',{name:'Anatomy of a tool call'}).click();
+  await expect(page.locator('#anatomy-of-a-tool-call')).toBeInViewport();
   await page.locator('.prose a[href="#source-openai"]').first().click();
   await expect(page.locator('#source-openai')).toBeInViewport();
   await page.goto('/search/');
@@ -104,4 +151,28 @@ test('articles, sources and browse fallback work without JavaScript', async ({ b
   await page.getByRole('link', { name: 'AI agent Foundations' }).click();
   await expect(page.getByRole('heading', { name: 'AI agent', exact: true })).toBeVisible();
   await context.close();
+});
+
+test('static staging keeps public intake closed and has no exposed admin page', async ({ page, request }) => {
+  await page.goto('/contribute/');
+  await expect(page.getByLabel('What needs attention?')).toBeDisabled();
+  await expect(page.locator('#intake-status')).toContainText('Public submissions are on hold');
+  await expect(page.locator('#editorial-inbox-link')).toBeHidden();
+  expect((await request.get('/admin/')).status()).toBe(404);
+});
+
+// New topics are exercised in the real static preview on both viewport projects.
+test('final six topics connect real search, citation anchors, revision history and related reading',async({page})=>{
+  // Together with the retained five/six-topic cases and MCP query, every genuine entry has a real search assertion.
+  for(const [query,id]of [['AI agent','ai-agent'],['Tool use','tool-use']]){await page.goto('/search/');await expect(page.getByRole('searchbox')).toBeEnabled();await page.getByRole('searchbox').fill(query);await expect(page.locator(`#search-results a[href="/articles/${id}/"]`)).toBeVisible();}
+
+  for(const [query,id,title]of [["Lost in the Middle", "context-engineering", "Context engineering"], ["JSON Schema 2020-12", "structured-outputs", "Structured outputs"], ["SPIFFE ID", "agent-identity", "Agent identity and delegation"], ["A2A", "agent-to-agent-communication", "Agent-to-agent communication"], ["MaxTurnsExceeded", "agent-budgets", "Agent budgets and termination"], ["OSWorld", "computer-use-agents", "Computer-use agents"]]){
+    await page.goto('/search/');await expect(page.getByRole('searchbox')).toBeEnabled();await page.getByRole('searchbox').fill(query);
+    const result=page.locator(`#search-results a[href="/articles/${id}/"]`);await expect(result).toBeVisible();await result.click();
+    await expect(page.getByRole('heading',{name:title,exact:true})).toBeVisible();await expect(page.locator('.article-status')).toContainText('Working draft');
+    await expect(page.locator('#sources time')).toHaveText('17 October 2026');await expect(page.locator('#revision')).toContainText('Pending · no reviewer assigned');
+    await expect(page.locator('#revision a.text-link')).toHaveAttribute('href',new RegExp(`/commits/${sourceCommit}/src/content/articles/${id}\\.md$`));
+    await page.locator('.prose a[href^="#source-"]').first().click();await expect(page.locator(':target')).toBeInViewport();
+    await page.locator('.related a').first().click();await expect(page.getByRole('heading',{name:'AI agent',exact:true})).toBeVisible();
+  }
 });

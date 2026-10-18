@@ -1,0 +1,15 @@
+{
+  "base": "697d546fc5b6560fe1c38e573584c855c86c13af",
+  "productionAdminSourceUnchangedDuringRed": true,
+  "command": "npm run test:hosted-admin:browser -- --grep 'older completed proposal'",
+  "failed": 2,
+  "projects": ["desktop", "mobile"],
+  "heldAfterActualWorkerProposalResponseWasBuffered": true,
+  "controlledGitHubDraftsBeforeRelease": 1,
+  "actualD1RevocationsBeforeRelease": 1,
+  "listRefreshForcedUnavailable": true,
+  "failure": "The older response reenabled Create or retry GitHub draft after confirmed revocation.",
+  "originalTraceLocation": "actual Git directory/revocation-response-red/hosted-admin",
+  "assertionsOrTimeoutsWeakened": false,
+  "liveGitHubWrites": false
+}

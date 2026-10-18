@@ -1,0 +1,69 @@
+name: Explicit staging release
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        type: choice
+        options: [deploy, rollback]
+        required: true
+      ci_run:
+        description: Successful main-push validation run containing the exact candidate
+        required: true
+      candidate_digest:
+        description: Reviewed candidate.sha256 value
+        required: true
+      request_id:
+        description: New UUID, or the same UUID for explicit uncertain-outcome recovery
+        required: true
+      expected_active:
+        description: Exact active Worker version UUID; none only for an existing Worker with no deployment
+        required: true
+      prior_receipt_run:
+        description: Successful prior release workflow run for rollback
+        required: false
+      confirm:
+        description: Enter agentic-bible-staging
+        required: true
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: agentic-bible-staging-release
+  cancel-in-progress: false
+jobs:
+  release:
+    if: github.ref == 'refs/heads/main' && vars.AGENTIC_BIBLE_STAGING_RELEASE_ENABLED == 'true'
+    environment: staging
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version-file: .nvmrc
+      - run: npm install --global npm@11.9.0
+      - run: npm ci
+      - name: Execute exact reviewed staging operation
+        run: node scripts/release-workflow.mjs
+        env:
+          RELEASE_OWNER_ENABLED: ${{ vars.AGENTIC_BIBLE_STAGING_RELEASE_ENABLED }}
+          RELEASE_ACTION: ${{ inputs.action }}
+          RELEASE_CI_RUN: ${{ inputs.ci_run }}
+          RELEASE_CANDIDATE_DIGEST: ${{ inputs.candidate_digest }}
+          RELEASE_REQUEST_ID: ${{ inputs.request_id }}
+          RELEASE_EXPECTED_ACTIVE: ${{ inputs.expected_active }}
+          RELEASE_PRIOR_RECEIPT_RUN: ${{ inputs.prior_receipt_run }}
+          RELEASE_CONFIRM: ${{ inputs.confirm }}
+          GH_TOKEN: ${{ github.token }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.AGENTIC_BIBLE_STAGING_WORKERS_TOKEN }}
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: release-receipt
+          include-hidden-files: true
+          path: |
+            .git/release-execution/receipt.json
+            .git/release-execution/journal.json
+          retention-days: 30

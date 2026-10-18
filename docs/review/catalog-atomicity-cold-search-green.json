@@ -1,0 +1,38 @@
+{
+  "articles": 14,
+  "elapsedMs": 671,
+  "workerAttempts": 0,
+  "warnings": [],
+  "resources": [
+    {
+      "path": "/wiki-snapshots/0e584d100693fde2450c82a97257cef1fd8451cde292badd6b3aaf620a7c8605/pagefind/pagefind.js",
+      "duration": 96.39999999850988,
+      "responseEnd": 727.7000000029802
+    },
+    {
+      "path": "/wiki-snapshots/0e584d100693fde2450c82a97257cef1fd8451cde292badd6b3aaf620a7c8605/pagefind/pagefind-entry.json",
+      "duration": 90.90000000596046,
+      "responseEnd": 836.3000000044703
+    },
+    {
+      "path": "/wiki-snapshots/0e584d100693fde2450c82a97257cef1fd8451cde292badd6b3aaf620a7c8605/pagefind/pagefind.en_b4df63a0c7.pf_meta",
+      "duration": 114.29999999701977,
+      "responseEnd": 953
+    },
+    {
+      "path": "/wiki-snapshots/0e584d100693fde2450c82a97257cef1fd8451cde292badd6b3aaf620a7c8605/pagefind/wasm.en.pagefind",
+      "duration": 166.30000000447035,
+      "responseEnd": 1006.2000000029802
+    },
+    {
+      "path": "/wiki-snapshots/0e584d100693fde2450c82a97257cef1fd8451cde292badd6b3aaf620a7c8605/pagefind/index/en_584a507.pf_index",
+      "duration": 57,
+      "responseEnd": 1128.5
+    },
+    {
+      "path": "/wiki-snapshots/0e584d100693fde2450c82a97257cef1fd8451cde292badd6b3aaf620a7c8605/pagefind/fragment/en_7257147.pf_fragment",
+      "duration": 49.70000000298023,
+      "responseEnd": 1186.8000000044703
+    }
+  ]
+}

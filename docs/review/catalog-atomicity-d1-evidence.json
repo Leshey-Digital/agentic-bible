@@ -1,0 +1,14 @@
+{
+  "initialRows": 47,
+  "incomingSources": 37,
+  "newIds": 2,
+  "rejectedWithoutPartialChanges": true,
+  "missingHeadNotInsertedOnRejection": true,
+  "restartPreserved": true,
+  "exactBoundary": 48,
+  "idempotentReseed": true,
+  "lateFaultRollback": true,
+  "competingSeedsOneWinner": true,
+  "identicalSeedsBothAdmitted": true,
+  "sourceFetches": 0
+}

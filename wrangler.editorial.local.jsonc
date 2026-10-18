@@ -1,0 +1,25 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "agentic-bible-editorial-local",
+  "main": "./src/editorial/worker.ts",
+  "compatibility_date": "2026-10-16",
+  "workers_dev": false,
+  "preview_urls": false,
+  "send_metrics": false,
+  "vars": { "LOCAL_EDITORIAL_MODE": "synthetic-only" },
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "html_handling": "force-trailing-slash",
+    "not_found_handling": "404-page",
+    "run_worker_first": ["/api/*", "/admin", "/admin/*", "/", "/about/", "/articles/*", "/topics/*"]
+  },
+  "d1_databases": [{
+    "binding": "EDITORIAL_DB",
+    "database_name": "agentic-bible-editorial-local",
+    "database_id": "00000000-0000-0000-0000-000000000001",
+    "migrations_dir": "migrations",
+    "remote": false
+  }],
+  "observability": { "enabled": false }
+}

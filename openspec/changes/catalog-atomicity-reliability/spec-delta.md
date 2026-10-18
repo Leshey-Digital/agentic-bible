@@ -1,0 +1,9 @@
+# Changed requirements
+
+- Whole-catalog admission, existing source title/article associations and publication heads are atomic. At 47 stored rows, a valid catalog requiring two new IDs fails with `catalog_capacity` and preserves all prior logical rows across restart. A storage fault after source upserts rolls those writes back.
+- Materialize admission once before each statement's writes; source row iteration cannot change that decision. Inspect the admitted batch's own result rather than a later observation another concurrent seed can alter.
+- Exact-boundary and identical reseeds preserve observation hashes, validators, checked time and versions. Concurrent competing catalogs cannot exceed 48 rows or let the losing catalog change metadata. Identical concurrent catalogs may both succeed with one resulting row per ID.
+- Preserve archived snapshot/read/replay/source-pin guarantees, accepted source heads and the composition failure record. Mobile and cold-search assertions must expose relevant state/timing and verify actual behavior; increasing timeouts or retrying alone is insufficient evidence of a fix.
+- Keep metadata capacity, live HTTP target allowlist, request/day/spending bounds, schema, disabled live indexing and public release gates unchanged.
+- Current bounded search uses the existing local Pagefind engine without a five-second worker-bootstrap dependency. A controlled silent Worker must not be constructed; cold MemGPT returns the correct current snapshot result, with timing/resource evidence. Historical sealed search code/bytes remain unchanged. No timeout increase alone constitutes the fix.
+- Native editorial form/link navigation must finish document/stylesheet loading before layout/accessibility audits. DOM text availability alone is insufficient. A deterministic withheld stylesheet must keep the readiness guard pending; after release, retain the strict viewport boundary without CSS clipping or width polling.

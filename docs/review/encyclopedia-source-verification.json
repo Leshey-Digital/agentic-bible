@@ -1,0 +1,158 @@
+{
+  "checkedOn": "2026-10-16",
+  "checkedBy": "AI-assisted project draft",
+  "independentEditorialReview": "pending",
+  "method": "Primary-source browsing and relevant full-text section inspection; no external source text stored. Examples and design criteria are original illustrative analysis.",
+  "claims": [
+    {
+      "articleId": "agent-orchestration",
+      "citationId": "patterns",
+      "url": "https://www.anthropic.com/engineering/building-effective-agents",
+      "kind": "vendor-engineering-guidance",
+      "versionContext": "Published 2024-12-19; current page includes subsequent tooling-change note",
+      "sectionsChecked": "What are agents; When (and when not) to use agents; Prompt chaining; Routing; Parallelization; Orchestrator-workers",
+      "supports": "Workflow/model control distinction; coordination patterns; simplicity recommendation",
+      "limits": "Engineering guidance, not universal definitions or a controlled performance comparison"
+    },
+    {
+      "articleId": "agent-orchestration",
+      "citationId": "langgraph",
+      "url": "https://docs.langchain.com/oss/python/langgraph/workflows-agents",
+      "kind": "vendor-implementation-docs",
+      "versionContext": "Living documentation",
+      "sectionsChecked": "Orchestrator-worker, including worker state and Send discussion",
+      "supports": "Dynamic task decomposition, worker inputs, accumulated results and synthesis",
+      "limits": "LangGraph implementation, not a guarantee for every framework"
+    },
+    {
+      "articleId": "agent-orchestration",
+      "citationId": "react",
+      "url": "https://arxiv.org/abs/2210.03629v3",
+      "kind": "primary-research",
+      "versionContext": "v3, 2023-03-10",
+      "sectionsChecked": "Abstract; sections 1 and 2, reasoning/acting/environment loop",
+      "supports": "Alternating reasoning, actions and observations",
+      "limits": "Selected question-answering and interactive environments; no universal reliability claim"
+    },
+    {
+      "articleId": "agent-memory",
+      "citationId": "generative-agents",
+      "url": "https://arxiv.org/abs/2304.03442v2",
+      "kind": "primary-research",
+      "versionContext": "v2, 2023-08-06",
+      "sectionsChecked": "Section 4, Memory and Retrieval; Reflection; Planning",
+      "supports": "Observation records, recency/importance/relevance retrieval and generated reflections",
+      "limits": "Simulated believability; not verified factual knowledge or human consciousness"
+    },
+    {
+      "articleId": "agent-memory",
+      "citationId": "memgpt",
+      "url": "https://arxiv.org/abs/2310.08560v2",
+      "kind": "primary-research",
+      "versionContext": "v2, 2024-02-12",
+      "sectionsChecked": "Section 2.1–2.4; section 3 experiment domains",
+      "supports": "Fixed context, external storage and function-mediated movement",
+      "limits": "External capacity does not equal simultaneous context; tested document/chat tasks"
+    },
+    {
+      "articleId": "agent-memory",
+      "citationId": "langgraph-memory",
+      "url": "https://docs.langchain.com/oss/python/concepts/memory",
+      "kind": "vendor-implementation-docs",
+      "versionContext": "Living documentation; former /langgraph/memory URL redirects here",
+      "sectionsChecked": "Overview; Short-term memory; Long-term memory; Writing memories",
+      "supports": "Thread-scoped checkpoints vs cross-thread stores; immediate/background write tradeoffs",
+      "limits": "Implementation-specific scope labels; no universal retention or best-policy claim"
+    },
+    {
+      "articleId": "retrieval-augmented-generation",
+      "citationId": "rag",
+      "url": "https://arxiv.org/abs/2005.11401v4",
+      "kind": "primary-research",
+      "versionContext": "v4, 2021-04-12; NeurIPS 2020",
+      "sectionsChecked": "Section 2.1, RAG-Sequence and RAG-Token; 2.2 retriever",
+      "supports": "Parametric/nonparametric retrieval-generation and per-sequence/per-token latent-document marginalization",
+      "limits": "Specific trained architectures, not equivalence with every search-and-prompt application"
+    },
+    {
+      "articleId": "retrieval-augmented-generation",
+      "citationId": "dpr",
+      "url": "https://arxiv.org/abs/2004.04906v3",
+      "kind": "primary-research",
+      "versionContext": "v3, 2020-09-30",
+      "sectionsChecked": "Abstract; sections 2 and 3.1",
+      "supports": "Question and passage encoders select candidate passages before reading/answering",
+      "limits": "Retrieval score is not authority, recency or claim verification"
+    },
+    {
+      "articleId": "retrieval-augmented-generation",
+      "citationId": "long-context",
+      "url": "https://arxiv.org/abs/2307.03172v3",
+      "kind": "primary-research",
+      "versionContext": "v3, 2023-11-20",
+      "sectionsChecked": "Abstract; sections 2 and 3 controlled tasks",
+      "supports": "Position of relevant information affects evaluated QA/key-value retrieval",
+      "limits": "Historical models and setups; no all-current-model or numeric performance claim"
+    },
+    {
+      "articleId": "agent-evaluation",
+      "citationId": "agentbench",
+      "url": "https://arxiv.org/abs/2308.03688v3",
+      "kind": "primary-research",
+      "versionContext": "v3, 2025-10-04; ICLR 2024 benchmark",
+      "sectionsChecked": "Abstract; interactive-environment description; failure-analysis headings",
+      "supports": "Evaluation of reasoning and decisions in interactive environments",
+      "limits": "No general competence certificate, current rankings or reproduced statistics"
+    },
+    {
+      "articleId": "agent-evaluation",
+      "citationId": "tau-bench",
+      "url": "https://arxiv.org/abs/2406.12045v1",
+      "kind": "primary-research",
+      "versionContext": "v1, 2024-06-17",
+      "sectionsChecked": "Section 2, User simulation; Task instances; Evaluation; Pass^k metric",
+      "supports": "Simulated users, policies/tools, final state/output checks; all-trial vs at-least-once success",
+      "limits": "Simulated users are not a real-customer study; metric conditions matter"
+    },
+    {
+      "articleId": "agent-evaluation",
+      "citationId": "evaluation-guidance",
+      "url": "https://developers.openai.com/api/docs/guides/evaluation-best-practices",
+      "kind": "vendor-guidance",
+      "versionContext": "Living documentation",
+      "sectionsChecked": "Anti-patterns; Design your eval process",
+      "supports": "Objective/dataset/metric/comparison/continuous evaluation; human calibration",
+      "limits": "Development advice, not independent evidence or service requirement"
+    },
+    {
+      "articleId": "prompt-injection",
+      "citationId": "indirect-injection",
+      "url": "https://arxiv.org/abs/2302.12173v2",
+      "kind": "primary-research",
+      "versionContext": "v2, 2023-05-05",
+      "sectionsChecked": "Abstract and introduction",
+      "supports": "Indirect instructions in retrieved material; data/instruction authority confusion",
+      "limits": "Demonstrated studied systems; no all-current-product vulnerability claim"
+    },
+    {
+      "articleId": "prompt-injection",
+      "citationId": "agentdojo",
+      "url": "https://arxiv.org/abs/2406.13352v3",
+      "kind": "primary-research",
+      "versionContext": "v3, 2024-11-24",
+      "sectionsChecked": "Abstract; sections 3–4; 4.1 utility/attack success discussion",
+      "supports": "Extensible tool/untrusted-data environment; benign utility and attacker success considered separately",
+      "limits": "Bounded threat model and environment; no rates or universal defense claim"
+    },
+    {
+      "articleId": "prompt-injection",
+      "citationId": "safety-guidance",
+      "url": "https://developers.openai.com/api/docs/guides/agent-builder-safety",
+      "kind": "vendor-guidance",
+      "versionContext": "Living documentation",
+      "sectionsChecked": "Untrusted variables; Structured outputs; Tool approvals; Evals; Combine techniques",
+      "supports": "Input separation, constrained data flow, confirmations and evaluation; residual risk",
+      "limits": "Vendor recommendations, not independent certification or guarantee"
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "controlledProvider": true,
+  "bootstrapNoPriorRollback": true,
+  "lostUploadRecoveredWithoutDuplicate": true,
+  "lostActivationRecoveredWithoutDuplicate": true,
+  "rollbackReusesExactVersion": true,
+  "originalArtifactUnchanged": true,
+  "receipts": [
+    {
+      "schemaVersion": 1,
+      "state": "verified-serving",
+      "requestId": "689fd52d-16e5-420f-a63e-a457628ac770",
+      "action": "deploy",
+      "candidateDigest": "216e4f48336fe65acf9ea1417f9708f6853a71e6f8ecf0a255bf871bdb5991fc",
+      "buildId": "63e102b405a44a27d5d477532a1bc3f21db02027283f23fb4978f59e9b6792ca",
+      "sourceCommit": "451e49362c339c9415d772f42a9830b2582adee7",
+      "versionId": "201bb693-a144-4578-b009-02c9d83120c9",
+      "previousVersion": null,
+      "hasPreviousVersion": false,
+      "target": {
+        "account": "c370be29e4065365de03bc8652da2cdc",
+        "worker": "agentic-bible-staging",
+        "origin": "https://staging.agenticbible.si"
+      },
+      "verifiedAssets": 76,
+      "verifiedAt": 1792220200324
+    },
+    {
+      "schemaVersion": 1,
+      "state": "verified-serving",
+      "requestId": "875b5711-2ac5-46fc-9472-3b671fc4118a",
+      "action": "deploy",
+      "candidateDigest": "7d5ec20e8c7670fad784e71aba2dd3e487d0efe3d6f09a35da2d96e10b76c611",
+      "buildId": "db1ebe99d9a1d6344a2209344344c4ab349274dd8cb770b4d9056026ddcf674c",
+      "sourceCommit": "67a56cc7f6acba2b5656a82d3b9f3a79c44b5743",
+      "versionId": "bb2717c2-f24a-4d61-bb25-439f221363ea",
+      "previousVersion": "201bb693-a144-4578-b009-02c9d83120c9",
+      "hasPreviousVersion": true,
+      "target": {
+        "account": "c370be29e4065365de03bc8652da2cdc",
+        "worker": "agentic-bible-staging",
+        "origin": "https://staging.agenticbible.si"
+      },
+      "verifiedAssets": 76,
+      "verifiedAt": 1792220200772
+    },
+    {
+      "schemaVersion": 1,
+      "state": "verified-serving",
+      "requestId": "c3328841-ca15-4eda-8803-9ce6b5143764",
+      "action": "rollback",
+      "candidateDigest": "216e4f48336fe65acf9ea1417f9708f6853a71e6f8ecf0a255bf871bdb5991fc",
+      "buildId": "63e102b405a44a27d5d477532a1bc3f21db02027283f23fb4978f59e9b6792ca",
+      "sourceCommit": "451e49362c339c9415d772f42a9830b2582adee7",
+      "versionId": "201bb693-a144-4578-b009-02c9d83120c9",
+      "previousVersion": "bb2717c2-f24a-4d61-bb25-439f221363ea",
+      "hasPreviousVersion": true,
+      "target": {
+        "account": "c370be29e4065365de03bc8652da2cdc",
+        "worker": "agentic-bible-staging",
+        "origin": "https://staging.agenticbible.si"
+      },
+      "verifiedAssets": 76,
+      "verifiedAt": 1792220201189
+    }
+  ],
+  "liveDeployment": false
+}

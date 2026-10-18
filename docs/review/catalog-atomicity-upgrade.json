@@ -1,0 +1,47 @@
+{
+  "legacyHead": "c3d1d7a47e55862c53840d52ad4c71631bd9ad9e",
+  "oldArticles": 3,
+  "newArticles": 14,
+  "legacySites": [
+    {
+      "id": "42fac47f7283d382d85855e67b8f26e5071f9e5ef5b5ad91e730ebe87636ec2c",
+      "manifestHash": "b50263ed53d96ae65285a57aac10aadc9214ada2df329fcaa9c851e005c43b8b"
+    },
+    {
+      "id": "27ad9bd628fdf81e5fc86160c607b10c99f29004a9bc116c1c4a5efe02237f02",
+      "manifestHash": "2a73239d5bb3d7a7ec8e3fb23b82496732e9a5a4a1bfa287e3ad3b331c76f11e"
+    }
+  ],
+  "currentSite": {
+    "id": "e24f39cba51e7cf76a97db12e5f21f0fe5c88d6949c07148c484fa0dce58087d",
+    "manifestHash": "357e66f2b49a494c27c2aca2c0945213bee7bc1db453b21cf188969bb318b7c8"
+  },
+  "legacyHttpStatus": 200,
+  "currentHttpStatus": 200,
+  "legacyReplays": 2,
+  "replayD1Sql": 0,
+  "statusAndCurrentUnchanged": true,
+  "futureProof": {
+    "legacyServing": 200,
+    "currentServing": 200,
+    "legacyReplays": 2,
+    "currentReplay": true,
+    "replayD1Sql": 0,
+    "changedSourceWrite": "build_source_changed",
+    "changedSourcePending": "build_source_changed",
+    "chargesPreserved": true,
+    "sourceFetches": 0
+  },
+  "corruptCurrentHttpStatus": 503,
+  "missingDeclaredArticleRejected": true,
+  "newMissingArticleRejected": true,
+  "missingCurrentIds": [
+    "agent-memory",
+    "agent-planning"
+  ],
+  "unlistedArticleRejected": true,
+  "oldSnapshotsUnchanged": true,
+  "publisherJobsAndPointerUnchanged": true,
+  "originalMarkdownAndDistPreserved": true,
+  "sourceFetches": 0
+}

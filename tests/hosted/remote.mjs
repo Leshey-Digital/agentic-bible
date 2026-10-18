@@ -1,0 +1,22 @@
+import assert from 'node:assert/strict';import {createHash} from 'node:crypto';import {readFileSync} from 'node:fs';import {repository,contentPath} from '../../src/hosted/contracts.ts';
+const article=readFileSync('src/content/articles/tool-use.md','utf8');
+const gitHash=v=>createHash('sha1').update(JSON.stringify(v)).digest('hex');
+export function remote(){const base='a'.repeat(40),tree='b'.repeat(40),state={base,main:base,tree,refs:new Map(),trees:new Map([[tree,{[contentPath]:article,'unrelated.txt':'Must stay unchanged.'}]]),commits:new Map([[base,{sha:base,tree:{sha:tree},parents:[],message:'base'}]]),pulls:[],calls:[],lost:null,hold:null,shift:false,redirect:false,oversize:false,delayMs:0,commitSerial:0,afterWrite:null,sourceMode:'100644',truncated:false};
+  const send=async req=>{const u=new URL(req.url);assert.equal(u.origin,'https://api.github.com');assert.ok(u.pathname.startsWith('/repos/'+repository+'/'));assert.ok(['GET','POST'].includes(req.method));state.calls.push({method:req.method,path:u.pathname.replace('/repos/'+repository,'')});const route=u.pathname.replace('/repos/'+repository,''),body=req.method==='POST'?await req.json():null;let result,status=200;
+    if(state.delayMs){const ms=state.delayMs;state.delayMs=0;await new Promise(done=>setTimeout(done,ms));}if(state.oversize){state.oversize=false;return Response.json({data:'x'.repeat(262144)});}if(state.redirect){state.redirect=false;return new Response(null,{status:302,headers:{Location:'https://example.org/private'}});}
+    if(state.hold){const held=state.hold;state.hold=null;held.started();await held.wait;}
+    if(route==='/git/ref/heads/main')result={object:{sha:state.main}};
+    else if(route==='/contents/'+contentPath){assert.equal(u.searchParams.get('ref'),base);result={sha:gitHash(article),type:'file',path:contentPath,encoding:'base64',size:Buffer.byteLength(article),content:Buffer.from(article).toString('base64')};}
+    else if(route.startsWith('/git/trees/')&&req.method==='GET'){assert.equal(u.searchParams.get('recursive'),'1');result={sha:tree,truncated:state.truncated,tree:Object.entries(state.trees.get(tree)).map(([path,content])=>({path,type:'blob',mode:path===contentPath?state.sourceMode:'100644',sha:gitHash(content)}))};}
+    else if(route.startsWith('/git/commits/')&&req.method==='GET')result=state.commits.get(route.split('/').at(-1));
+    else if(route.startsWith('/git/ref/heads/')){const name=route.slice('/git/ref/heads/'.length);result=state.refs.has(name)?{ref:'refs/heads/'+name,object:{sha:state.refs.get(name)}}:null;if(!result)status=404;}
+    else if(route==='/git/trees'){assert.equal(body.base_tree,tree);assert.equal(body.tree.length,1);assert.equal(body.tree[0].path,contentPath);assert.equal(body.tree[0].mode,'100644');assert.equal(body.tree[0].type,'blob');const files={...state.trees.get(tree),[contentPath]:body.tree[0].content},sha=gitHash(files);state.trees.set(sha,files);result={sha};status=201;}
+    else if(route==='/git/commits'){assert.deepEqual(body.parents,[base]);assert.ok(state.trees.has(body.tree));const sha=gitHash({body,serial:++state.commitSerial});result={sha,message:body.message,tree:{sha:body.tree},parents:[{sha:base}]};state.commits.set(sha,result);status=201;}
+    else if(route==='/git/refs'){const name=body.ref.replace('refs/heads/','');assert.ok(name.startsWith('content-corrections/'));assert.ok(!state.refs.has(name),'no ref overwrite');state.refs.set(name,body.sha);result={ref:body.ref,object:{sha:body.sha}};status=201;if(state.shift)state.main='c'.repeat(40);}
+    else if(route==='/pulls'&&req.method==='GET'){assert.equal(u.searchParams.get('state'),'all');const name=u.searchParams.get('head').split(':')[1];result=state.pulls.filter(p=>p.head.ref===name);}
+    else if(route==='/pulls'&&req.method==='POST'){assert.equal(body.draft,true);assert.equal(body.base,'main');const head=state.refs.get(body.head);assert.ok(head);const number=900000001+state.pulls.length;result={...body,number,html_url:`https://github.com/${repository}/pull/${number}`,head:{ref:body.head,sha:head},base:{ref:'main',sha:state.main},state:'open'};state.pulls.push(result);status=201;}
+    else throw Error('unexpected controlled GitHub route');
+    if(req.method==='POST'&&state.afterWrite)await state.afterWrite(route);
+    if(state.lost===route&&req.method==='POST'){state.lost=null;throw Error('controlled lost response after effect');}
+    return Response.json(result??{error:'not_found'},{status});
+  };return {state,send};}

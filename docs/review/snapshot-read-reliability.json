@@ -1,0 +1,173 @@
+{
+  "baselineHead": "d3c80414634480fdf479131bd96e490c58b1d1a0",
+  "measurement": "cumulative requested Buffer.alloc capacity, not peak RSS",
+  "sameSavedArtifactBefore": {
+    "artifactBytes": 1306218,
+    "loadRequestedCapacity": 1410367875,
+    "loadAllocationCalls": 87,
+    "pinnedCurrentInventoryValidations": 2,
+    "httpStatus": 200,
+    "responseBytes": 13207
+  },
+  "sameSavedArtifactAfter": {
+    "artifactBytes": 1306218,
+    "loadRequestedCapacity": 1333194,
+    "loadAllocationCalls": 87,
+    "pinnedCurrentInventoryValidations": 1,
+    "httpStatus": 200,
+    "responseBytes": 13207
+  },
+  "currentNativeRegression": {
+    "artifactBytes": 1298618,
+    "allocatedCapacity": 1323072,
+    "allocationCalls": 86,
+    "pinnedCurrentInventories": 1,
+    "lateArticleRaceRejected": true,
+    "lateManifestRaceRejected": true,
+    "freshCorruptionDetected": true,
+    "unrequestedCorruptionDetected": true,
+    "restorationServed": true,
+    "parallelBuilds": [
+      {
+        "status": "fulfilled"
+      },
+      {
+        "status": "fulfilled"
+      }
+    ]
+  },
+  "blockedExternalNetwork": {
+    "controlBlockedMetadataAttempts": 1,
+    "legacyEnvironmentExternalAttempts": 0,
+    "currentFactoryExternalAttempts": 0,
+    "applicationFetches": 0,
+    "actualD1Value": 7
+  },
+  "earlyGuardImportHook": {
+    "unchangedTimeoutMs": 5000,
+    "results": [
+      {
+        "label": "frozen-pr27",
+        "exitCode": 1,
+        "signal": null,
+        "timedOut": false,
+        "heavyImportsAttempted": true,
+        "elapsedMs": 34
+      },
+      {
+        "label": "candidate",
+        "exitCode": 3,
+        "signal": null,
+        "timedOut": false,
+        "heavyImportsAttempted": false,
+        "elapsedMs": 34
+      }
+    ]
+  },
+  "historicalArtifacts": [
+    {
+      "label": "eight",
+      "head": "398bacc73a4c8b8e8a40dd75d1aa7d96bb86c950",
+      "articles": 8,
+      "name": "wiki-bridge-test-upgrade-eight",
+      "site": {
+        "id": "c74381f694e09b7f932dd248dd10250ab29587ea84c5c20ca5e9a13f30d6c146",
+        "manifestHash": "94ed7765b8d370168332f201f039b932cbb81ea1d76658ee029c672dc4c48e31"
+      },
+      "originalBytesPreserved": true,
+      "replayD1Sql": 0
+    },
+    {
+      "label": "fourteen",
+      "head": "54b9d0793af36c00c9feca7a8933d3c1a9fa9d95",
+      "articles": 14,
+      "name": "wiki-bridge-test-upgrade-fourteen",
+      "site": {
+        "id": "e5c9f0aa65b5cd253bac4d5148ba88df77616039d1e4becce88b5c3b4a364d0f",
+        "manifestHash": "9c215444cdc79e7a4634479195724d11f275078e30f8e36eb87189c4510ce40a"
+      },
+      "originalBytesPreserved": true,
+      "replayD1Sql": 0
+    }
+  ],
+  "fullValidate": {
+    "tests": 124,
+    "passed": 124,
+    "failed": 0,
+    "cancelled": 0
+  },
+  "unresolved": [
+    "original 59.919-second socket closure",
+    "original discarded parallel rejection",
+    "intermittent mobile search failure",
+    "composition timeout"
+  ],
+  "retainedSuites": [
+    {
+      "command": "npm run test:wiki-seo:browser",
+      "exitCode": 0,
+      "seconds": 13.68,
+      "browserCases": 1
+    },
+    {
+      "command": "npm run test:browser",
+      "exitCode": 0,
+      "seconds": 73.31,
+      "browserCases": 22
+    },
+    {
+      "command": "npm run test:editorial:browser",
+      "exitCode": 0,
+      "seconds": 42.65,
+      "browserCases": 23
+    },
+    {
+      "command": "npm run test:integration:browser",
+      "exitCode": 0,
+      "seconds": 11.87,
+      "browserCases": 1
+    },
+    {
+      "command": "npm run test:monitoring:worker",
+      "exitCode": 0,
+      "seconds": 19.81,
+      "browserCases": 0
+    },
+    {
+      "command": "npm run test:settings:worker",
+      "exitCode": 0,
+      "seconds": 24.96,
+      "browserCases": 0
+    },
+    {
+      "command": "npm run test:publication:browser",
+      "exitCode": 0,
+      "seconds": 7.92,
+      "browserCases": 1
+    },
+    {
+      "command": "npm run test:combined:browser",
+      "exitCode": 0,
+      "seconds": 6.56,
+      "browserCases": 1
+    },
+    {
+      "command": "npm run test:wiki-bridge:browser",
+      "exitCode": 0,
+      "seconds": 28.95,
+      "browserCases": 4
+    },
+    {
+      "command": "npm run staging:check",
+      "exitCode": 0,
+      "seconds": 1.1,
+      "browserCases": 0
+    }
+  ],
+  "totalBrowserCases": 53,
+  "stagingDryRun": {
+    "assets": 107,
+    "bindings": 0,
+    "deployed": false
+  }
+}

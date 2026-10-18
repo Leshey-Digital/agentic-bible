@@ -9,9 +9,15 @@ const articles = defineCollection({
     description: z.string(),
     topic: z.enum(['Foundations', 'Capabilities', 'Protocols']),
     order: z.number().int().positive(),
-    status: z.literal('Working draft'),
+    status: z.enum(['Working draft','Published local demonstration']),
     verified: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-    author: z.literal('AI-assisted project draft'),
+    author: z.enum(['AI-assisted project draft','Supplied local demonstration']),
+    publication: z.object({
+      revisionId:z.string().regex(/^[a-f0-9]{64}$/),publisherSnapshot:z.string().regex(/^[a-f0-9]{64}$/),
+      flags:z.array(z.enum(['editorial-review','source-recency','coverage-gap','limited-source-coverage'])),
+      reviewedCorrections:z.array(z.object({approvalId:z.uuid(),submissionId:z.uuid(),submissionVersion:z.number().int().positive(),reviewer:z.literal('local-editor'),approvedAt:z.number().int().nonnegative()})).max(6).optional(),
+      evidence:z.array(z.object({citationId:z.string(),sourceId:z.string(),url:z.url(),hash:z.string().regex(/^[a-f0-9]{64}$/),receiptKey:z.string()})),
+    }).optional(),
     related: z.array(z.string()).min(1),
     sources: z.array(z.object({
       id: z.string(), title: z.string(), url: z.url(),

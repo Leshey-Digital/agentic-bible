@@ -1,0 +1,18 @@
+{
+  "sourceAdminHead": "c8b485f205c55cbbf71cb4770e34de65a9942a18",
+  "sourceAdminUnmodifiedDuringRed": true,
+  "projects": [
+    "desktop",
+    "mobile"
+  ],
+  "actualShippedWorkerdD1": true,
+  "controlledSignedAssertions": true,
+  "heldAfterDurableApproval": true,
+  "approvalCountBeforeRelease": 1,
+  "githubProposals": 0,
+  "expectedNewerTextPreserved": true,
+  "actualNewerTextareaValue": "",
+  "regressionCasesFailed": 2,
+  "traceDirectory": "hosted-draft-red-browser",
+  "harnessSetupIssue": "Initial hold did not buffer the Miniflare response body; corrected before both valid red reproductions."
+}

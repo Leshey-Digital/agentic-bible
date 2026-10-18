@@ -1,0 +1,47 @@
+---
+import Base from '../layouts/Base.astro';
+import { library } from '../lib/library';
+import {articleIds} from '../editorial/contracts.ts';
+const articles = (await library()).filter(article=>articleIds.some(id=>id===article.id));
+---
+<Base title="Suggest a correction">
+  <link rel="stylesheet" href="/editorial.css" />
+  <div class="editorial contribution">
+    <header class="page-intro"><p class="eyebrow">Improve the reference</p><h1>A better source.<br />A clearer explanation.</h1><p>Point to the claim that needs attention and the evidence that helps explain it.</p></header>
+    <div class="contribution-layout">
+      <section aria-labelledby="form-title">
+        <h2 id="form-title">Suggest a correction or source</h2>
+        <p id="intake-status" role="status">Public submissions are on hold while contribution terms are resolved. The form is available only in the local synthetic preview for AI agent, Tool use, and Model Context Protocol.</p>
+        <div id="receipt" class="notice" hidden tabindex="-1"></div>
+        <form id="contribution-form" novalidate>
+          <fieldset disabled id="contribution-fields">
+            <legend class="sr-only">Suggestion details</legend>
+            <label for="article-id">Article</label>
+            <select id="article-id" name="articleId" aria-describedby="articleId-error">{articles.map(article => <option value={article.id}>{article.data.title}</option>)}</select>
+            <p class="field-error" id="articleId-error"></p>
+            <label for="suggestion-kind">Suggestion type</label>
+            <select id="suggestion-kind" name="kind" aria-describedby="kind-error"><option value="correction">Correction or clarification</option><option value="source">Additional primary source</option></select>
+            <p class="field-error" id="kind-error"></p>
+            <label for="suggestion-message">What needs attention?</label>
+            <textarea id="suggestion-message" name="message" rows="7" minlength="20" maxlength="2000" required aria-describedby="message-help message-error"></textarea>
+            <p id="message-help" class="field-help">20–2,000 characters. Plain text only. Describe the claim, the correction, and supporting evidence.</p>
+            <p class="field-error" id="message-error"></p>
+            <label for="source-url">Primary source URL <span class="optional">(required for a source suggestion)</span></label>
+            <input id="source-url" name="sourceUrl" type="url" maxlength="500" placeholder="https://…" aria-describedby="source-help sourceUrl-error" />
+            <p id="source-help" class="field-help">Public HTTPS URLs only. The server stores your link; it does not fetch or execute it.</p>
+            <p class="field-error" id="sourceUrl-error"></p>
+            <div class="honeypot" aria-hidden="true"><label for="website">Leave this field empty</label><input id="website" name="website" tabindex="-1" autocomplete="off" /></div>
+            <input type="hidden" name="requestKey" id="request-key" />
+            <button id="send-suggestion" type="submit">Send local suggestion</button>
+            <button id="clear-draft" class="quiet-button" type="button">Clear draft</button>
+            <button id="renew-reference" class="quiet-button" type="button" hidden aria-describedby="draft-recovery">Keep draft with new reference</button>
+            <p id="draft-recovery" class="field-help" role="status" hidden>An earlier version may already be saved. Retry unchanged to confirm it, or use a new reference for the current draft. Your text and source will be kept.</p>
+          </fieldset>
+          <p id="form-error" role="alert"></p>
+        </form>
+      </section>
+      <aside class="contribution-note"><p class="kicker">Before you send</p><h2>Evidence over certainty.</h2><p>Use primary documentation or research. Include version context when behavior can change.</p><p>This is a local test flow. Use synthetic text, without personal data, credentials, or copied third-party article text.</p><p>Your synthetic draft is retained in this tab's session storage until sent or cleared. Saved suggestions remain in the local database.</p><p>Suggestions do not directly change an article. Automatic article publication with post-publication review flags remains the approved policy; that publication pipeline is separate.</p><a id="editorial-inbox-link" href="/admin/" hidden>Open local editorial inbox</a></aside>
+    </div>
+  </div>
+  <script src="../scripts/contribute.ts"></script>
+</Base>

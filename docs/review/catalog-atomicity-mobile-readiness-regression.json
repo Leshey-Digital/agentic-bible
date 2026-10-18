@@ -1,0 +1,15 @@
+{
+  "pending": {
+    "viewport": 390,
+    "scrollWidth": 785,
+    "stylesheetLoaded": false
+  },
+  "loaded": {
+    "viewport": 390,
+    "scrollWidth": 390,
+    "stylesheetLoaded": true
+  },
+  "nativeClickResolvedBeforeStyles": true,
+  "guardWaitedForStyles": true,
+  "strictWidthBoundary": true
+}

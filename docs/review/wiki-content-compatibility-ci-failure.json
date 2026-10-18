@@ -1,0 +1,21 @@
+{
+  "head": "8d3cb96c72ee11cb98ca3b555203d779d9979c57",
+  "run": "https://github.com/Leshey-Digital/agentic-bible/actions/runs/38990505207",
+  "jobId": 117271633518,
+  "failedStep": "npm run test:editorial:browser",
+  "failedTest": "tests/editorial-browser/monitor.spec.ts:9:1",
+  "assertion": "document.documentElement.scrollWidth <= innerWidth at viewport 390x844",
+  "expected": true,
+  "received": false,
+  "editorialPassed": 21,
+  "editorialFailed": 1,
+  "earlierPassed": ["npm ci", "npm run validate", "npm run staging:check", "npm run test:browser"],
+  "remainingSuites": "skipped after editorial failure",
+  "localBrowser": "Chromium 154.0.8037.57 Debian",
+  "ciBrowser": "Chrome for Testing 156.0.8078.4, Playwright chromium v1248",
+  "localOriginalSuite": "all 22 editorial cases passed",
+  "localGeometryProbe": "390px scroll width at 390px viewport, immediate and after two animation frames, across six font families",
+  "ciBrowserDownload": "blocked: CDN returned 403 Domain forbidden",
+  "rootCause": "not established; strict assertion retained with bounded geometry diagnostics",
+  "workflowRerun": false
+}

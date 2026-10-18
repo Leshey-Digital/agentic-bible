@@ -19,15 +19,19 @@ Last prepared: 2026-10-16. This document distinguishes founder direction from te
 
 ## Implementation choices and remaining proposals
 - First feature branch implements Astro + TypeScript static pages, Pagefind, Markdown and GitHub file history, with local Workers Static Assets validation. D1 remains deferred until a concrete mutable-data need justifies it.
-- The authorized first slice contains AI agent, tool use and Model Context Protocol. The accepted MVP scope is 20 articles across three clusters; the remaining article list is unfinished.
+- The authorized first slice contains AI agent, tool use and Model Context Protocol. The accepted MVP scope is 20 articles across three clusters; the final working collection now contains twenty entries on its separate review branch, with independent editorial acceptance pending; see [the content handoff](review/mvp-twenty.md).
 - An OpenSpec-style directory workflow plus AGENTS.md, GitHub issues, and draft PRs.
 - Automatic article publication and post-publication review flags are now approved policy. The publishing pipeline, admin review inbox and escalation delivery are not implemented in this static slice. Code review and deployment checks remain separate.
+- The next stacked branch implements a local synthetic correction/source inbox with role-scoped test sessions, human-entered suggestion tags, dispositions and audit records. Public intake, production identity, article publishing, email delivery and live settings integrations remain disabled. This is implementation progress, not a change to the automatic-publication policy.
+- The measurement-settings branch adds locally persisted non-secret Google/Clarity identifiers, independent admin forms, denied consent defaults and value-free audit. Its optional public policy template is inert and local only: no provider script, tracking, credential setup or ads are activated. Live integrations and reviewed production identity remain unconfigured.
+- The source-monitoring branch implements bounded fixture checks and automatic local source-observation metadata revisions with later review flags. This is not article-text generation or a public publication pipeline. Its request/retry/day limits are local test bounds, not actual currency/provider spending caps. Live fetching, cron and Jev/model integration remain disabled pending secure setup.
 - The $10/month operating target is accepted. Numeric Jev allocation, per-run/day limits, provider credentials and the enforcement mechanism remain undefined; paid jobs stay disabled until these are concrete.
+- A separate local article-publication slice on accepted PR10 renders supplied synthetic cited revisions into isolated HTML/search/history snapshots with post-publication flags and rollback. It does not write canonical Markdown or a public release and is not connected to the source-monitoring transport/event outbox. Identity, factual/licensing validation, full-site publishing, artifact distribution and production cost enforcement remain future work.
 
 ## Decisions still needed
-- Active zone agenticbible.si was verified in foundation preparation. Canonical production origin and deployment prerequisites remain to be validated. Reviewed release authority is granted; this slice does not exercise it. Isolated staging target: staging.agenticbible.si.
+- Active zone agenticbible.si was verified in foundation preparation. The user specifies https://agenticbible.si for explicit production builds in the bridge/SEO composition; ownership/deployment prerequisites remain unexercised. Default staging stays staging.agenticbible.si and no release is performed here.
 - Code/content licensing and contributor terms before accepting third-party submissions.
-- Initial three articles and cluster boundaries.
+- Independent editorial acceptance of the twenty working drafts and their proposed cluster boundaries.
 - Provider/model, approved numeric spending caps, billing alerts, overage/stop behavior.
 - Approved analytics providers, account ownership, consent/retention requirements and private security contact.
 - Release evidence and launch prerequisites; advertising provider and activation decision later.
