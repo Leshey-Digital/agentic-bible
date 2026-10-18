@@ -3,13 +3,13 @@ import '../styles/global.css';
 import { repository } from '../lib/library';
 import {discoveryPolicy,pageDiscovery} from '../seo/policy.ts';
 import {articleStructuredData,eligibleArticle,jsonLd,type SeoArticle} from '../seo/articles.ts';
+import {socialImageUrl} from '../seo/social.ts';
 interface Props { title: string; description?: string; active?: 'library' | 'topics' | 'about' | 'search'; seoArticle?:SeoArticle; seoImage?:string; seoImageAlt?:string; }
 const { title, description = `${title} — Agentic Bible, a sourced reference for AI agents and their technology.`, active,seoArticle,seoImage,seoImageAlt='Agentic Bible — a sourced reference for AI agents and their technology' } = Astro.props;
 const discovery=discoveryPolicy();
 const page=pageDiscovery(discovery,Astro.url.pathname,!!seoArticle&&!eligibleArticle(seoArticle));
 const structured=seoArticle?articleStructuredData(seoArticle,discovery):null;
-if(seoImage&&!/^\/[A-Za-z0-9/_-]+\.(?:png|jpe?g|webp)$/.test(seoImage))throw new Error('invalid_social_image');
-const socialImage=seoImage?new URL(seoImage,discovery.origin).href:null;
+const socialImage=socialImageUrl(seoImage,discovery.origin);
 const maintenancePreview=process.env.AGENTIC_BIBLE_MAINTENANCE_HISTORY_MODE==='controlled-static-preview';
 const localBridge=process.env.AGENTIC_BIBLE_LOCAL_WIKI_BUILD==='1';
 ---
