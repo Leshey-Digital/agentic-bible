@@ -1,0 +1,439 @@
+{
+  "inputs": {
+    "main": {
+      "head": "6987bf2c53d8ddc9ffb34d9b89d453caf0adf213",
+      "tree": "e51a16167debd9356900abc5ae8457cf7f5380d1"
+    },
+    "PR46": {
+      "head": "6af6cde08edab58e9abdd1cff9b428849239173f",
+      "tree": "0890738f56150b8ad60eade78df02714aef6b190"
+    },
+    "PR47": {
+      "head": "566877cc5e5685b088f145df6be27c65a03c293a",
+      "tree": "6324d5c549d704a1cbb2c5e7d89691be22adcc5f"
+    },
+    "PR48": {
+      "head": "2d67d191d91721178f0de937f7cdbaedef38eb5a",
+      "tree": "da6f8fd87a2ed7c89983baeb0224065cdf8db622"
+    }
+  },
+  "sourceCompositionHead": "02fcd3a438535df28f4e60a9985c82f4e3814e67",
+  "sourceCompositionTree": "490513c62bfd641aeeec599a63f1cae7ea921413",
+  "mergeParents": [
+    "9eb404009e109f6eef6d90a696ae6da77b9e5800",
+    "2d67d191d91721178f0de937f7cdbaedef38eb5a"
+  ],
+  "inputHeadsAreAncestors": true,
+  "excludedCacheIsolation": "6b140131281a780f5e069a5c73c5b54f6f449b27",
+  "excludedIsAncestor": false,
+  "PR48Review": "pending",
+  "compositionReview": "pending",
+  "scope": "unpublished local composition",
+  "runtimeTestsScriptsPackagesMigrationsWorkflowsMatchPR48": true,
+  "inheritedDifferencesFromPR48": [
+    "AGENTS.md",
+    "README.md",
+    "docs/commit-pinned-releases.md",
+    "docs/review/accepted-pipeline-composition-source.json",
+    "docs/review/accepted-pipeline-composition.md",
+    "docs/review/commit-pinned-release-path.md",
+    "docs/review/reviewed-maintenance-composition-source.json",
+    "docs/review/reviewed-maintenance-composition.md",
+    "docs/workflow.md",
+    "openspec/changes/accepted-pipeline-composition/proposal.md",
+    "openspec/changes/accepted-pipeline-composition/spec-delta.md",
+    "openspec/changes/accepted-pipeline-composition/tasks.md",
+    "openspec/changes/reviewed-maintenance-composition/proposal.md",
+    "openspec/changes/reviewed-maintenance-composition/spec-delta.md",
+    "openspec/changes/reviewed-maintenance-composition/tasks.md"
+  ],
+  "changesFromMainBeforeCompositionHandoff": [
+    {
+      "path": ".github/workflows/validate.yml",
+      "blob": "0a77a5fde3842e9f83b0d100b0c03f309b44db14",
+      "matchesInputs": [
+        "PR48"
+      ]
+    },
+    {
+      "path": "AGENTS.md",
+      "blob": "c41985d906379cd954871c6f41ab8b3624975e44",
+      "matchesInputs": []
+    },
+    {
+      "path": "README.md",
+      "blob": "f01e1438f80cf2773eb50692821a898bb292bff0",
+      "matchesInputs": []
+    },
+    {
+      "path": "docs/commit-pinned-releases.md",
+      "blob": "217c495b298e7f2844e44fb14343c86285a7bb25",
+      "matchesInputs": [
+        "PR47"
+      ]
+    },
+    {
+      "path": "docs/controlled-maintenance-pipeline.md",
+      "blob": "577698733a6988f32225eb0d7cac9dd87e573a7a",
+      "matchesInputs": [
+        "PR46",
+        "PR48"
+      ]
+    },
+    {
+      "path": "docs/maintenance-currency-budget.md",
+      "blob": "6332793abf444574390cfe9e94a1e41efa7071a1",
+      "matchesInputs": [
+        "PR48"
+      ]
+    },
+    {
+      "path": "docs/restored-maintenance-base.md",
+      "blob": "16d775e5851c3e641e5a3743a6898bca88297071",
+      "matchesInputs": [
+        "PR46",
+        "PR48"
+      ]
+    },
+    {
+      "path": "docs/review-build-storage-monitor.md",
+      "blob": "0c4564c3f62f593e2a7da5ede44b240712290362",
+      "matchesInputs": [
+        "PR48"
+      ]
+    },
+    {
+      "path": "docs/review/accepted-pipeline-composition-source.json",
+      "blob": "d010ca06489a9249fbc457a76ecd4f93d44e30ce",
+      "matchesInputs": [
+        "PR46"
+      ]
+    },
+    {
+      "path": "docs/review/accepted-pipeline-composition.md",
+      "blob": "5a2665ed1dc7cfd0a696dc74097ede6c5beb329a",
+      "matchesInputs": [
+        "PR46"
+      ]
+    },
+    {
+      "path": "docs/review/commit-pinned-release-path.md",
+      "blob": "0acec6c5e0c663766ac1d17027d228bbf28f1065",
+      "matchesInputs": [
+        "PR47"
+      ]
+    },
+    {
+      "path": "docs/workflow.md",
+      "blob": "d054eac86fd18b660f6d0cb5cf352719c42a2cff",
+      "matchesInputs": [
+        "PR47"
+      ]
+    },
+    {
+      "path": "migrations/0015_maintenance_pipeline.sql",
+      "blob": "d4507771e6f1982d18a27333e86f5ef70bde82ae",
+      "matchesInputs": [
+        "PR46",
+        "PR48"
+      ]
+    },
+    {
+      "path": "migrations/0016_maintenance_currency.sql",
+      "blob": "86d0c7cf262ac1d2438f52e39d7ad3672451ddc5",
+      "matchesInputs": [
+        "PR48"
+      ]
+    },
+    {
+      "path": "openspec/changes/accepted-pipeline-composition/proposal.md",
+      "blob": "60fde287ba01cc00b055edc9c34a7387fa9e0ac9",
+      "matchesInputs": [
+        "PR46"
+      ]
+    },
+    {
+      "path": "openspec/changes/accepted-pipeline-composition/spec-delta.md",
+      "blob": "3e7fdc547aa7e17c6e248ce43a2985fe62424621",
+      "matchesInputs": [
+        "PR46"
+      ]
+    },
+    {
+      "path": "openspec/changes/accepted-pipeline-composition/tasks.md",
+      "blob": "e030c9c61992808ad36d071cd391c59bc1211659",
+      "matchesInputs": [
+        "PR46"
+      ]
+    },
+    {
+      "path": "openspec/changes/controlled-maintenance-pipeline/proposal.md",
+      "blob": "033b8b5cb4c34b4dc365948edc186667dcf3b67b",
+      "matchesInputs": [
+        "PR46",
+        "PR48"
+      ]
+    },
+    {
+      "path": "openspec/changes/controlled-maintenance-pipeline/spec-delta.md",
+      "blob": "789862010c05b84a0bb3747257c6cea172e5493e",
+      "matchesInputs": [
+        "PR46",
+        "PR48"
+      ]
+    },
+    {
+      "path": "openspec/changes/controlled-maintenance-pipeline/tasks.md",
+      "blob": "7f8f99e630f2042b78d39839704cb81d3bf4dc81",
+      "matchesInputs": [
+        "PR46",
+        "PR48"
+      ]
+    },
+    {
+      "path": "openspec/changes/maintenance-currency-budget/proposal.md",
+      "blob": "e29c2355a050e02006e24f5980aa6e3f6a2bc1f6",
+      "matchesInputs": [
+        "PR48"
+      ]
+    },
+    {
+      "path": "openspec/changes/maintenance-currency-budget/spec-delta.md",
+      "blob": "e5cad0121ea47b40c52606d087fb8db78d9d0bc0",
+      "matchesInputs": [
+        "PR48"
+      ]
+    },
+    {
+      "path": "openspec/changes/maintenance-currency-budget/tasks.md",
+      "blob": "79913cd44297fc9160becdc8905f088da1ecaeb0",
+      "matchesInputs": [
+        "PR48"
+      ]
+    },
+    {
+      "path": "openspec/changes/maintenance-dispatch-eligibility/proposal.md",
+      "blob": "e88fb7928f09951e9caee6d4589123a446b4d5ba",
+      "matchesInputs": [
+        "PR48"
+      ]
+    },
+    {
+      "path": "openspec/changes/maintenance-dispatch-eligibility/spec-delta.md",
+      "blob": "749bd7475cfe6b62eed05df85cbeb03c31cdd47e",
+      "matchesInputs": [
+        "PR48"
+      ]
+    },
+    {
+      "path": "openspec/changes/maintenance-dispatch-eligibility/tasks.md",
+      "blob": "29ae956f8c0fb8e4cb95e41021ca376a67103cc5",
+      "matchesInputs": [
+        "PR48"
+      ]
+    },
+    {
+      "path": "openspec/changes/review-build-storage-monitor/proposal.md",
+      "blob": "d30d3d3452734d74f30b520d8228ecd67fda5587",
+      "matchesInputs": [
+        "PR48"
+      ]
+    },
+    {
+      "path": "openspec/changes/review-build-storage-monitor/spec-delta.md",
+      "blob": "bf79128654c1ee602f1e1f463a0f675cc1dc3529",
+      "matchesInputs": [
+        "PR48"
+      ]
+    },
+    {
+      "path": "openspec/changes/review-build-storage-monitor/tasks.md",
+      "blob": "0f31a39b3c497fd04d19b180d0d257a1624288ee",
+      "matchesInputs": [
+        "PR48"
+      ]
+    },
+    {
+      "path": "package.json",
+      "blob": "58853f6489a9af106eff1667f034406350104c10",
+      "matchesInputs": [
+        "PR48"
+      ]
+    },
+    {
+      "path": "scripts/maintenance-review-build.mjs",
+      "blob": "0ce7e0f3acccb89a5de83bb85c4568f3daece1ce",
+      "matchesInputs": [
+        "PR46",
+        "PR48"
+      ]
+    },
+    {
+      "path": "src/maintenance-base/read.ts",
+      "blob": "e4f4c622ff59330b3d36d540350d40d941bdf29d",
+      "matchesInputs": [
+        "PR46",
+        "PR48"
+      ]
+    },
+    {
+      "path": "src/maintenance-github/writer.ts",
+      "blob": "764b22c94eb27971d536af26c82948e71146a364",
+      "matchesInputs": [
+        "PR48"
+      ]
+    },
+    {
+      "path": "src/maintenance-pipeline/ledger.ts",
+      "blob": "d44941cd8670a8903633600f71f3d79bc0e509c8",
+      "matchesInputs": [
+        "PR46",
+        "PR48"
+      ]
+    },
+    {
+      "path": "src/maintenance-pipeline/review.ts",
+      "blob": "eef693cf901f46684034da2a68213017793612e8",
+      "matchesInputs": [
+        "PR48"
+      ]
+    },
+    {
+      "path": "src/maintenance-pipeline/runner.ts",
+      "blob": "ae1e84c148b52db31b15d68e72eced3cb20ed3c1",
+      "matchesInputs": [
+        "PR48"
+      ]
+    },
+    {
+      "path": "src/wiki-bridge/files.ts",
+      "blob": "170e01c8c456cea44a7e94c1235e4fcd834c743f",
+      "matchesInputs": [
+        "PR46",
+        "PR48"
+      ]
+    },
+    {
+      "path": "src/wiki-bridge/maintenance-budget.ts",
+      "blob": "fee30624f58ff88576b43c2bd6fbdab6f738a4a8",
+      "matchesInputs": [
+        "PR48"
+      ]
+    },
+    {
+      "path": "src/wiki-bridge/maintenance-currency.ts",
+      "blob": "4ff7440e7fca2aac2b1d2e7964e5ebe85fd7189b",
+      "matchesInputs": [
+        "PR48"
+      ]
+    },
+    {
+      "path": "src/wiki-bridge/maintenance.ts",
+      "blob": "424b44217b550823d4ce14e1bbf1fdd0aa49bb35",
+      "matchesInputs": [
+        "PR48"
+      ]
+    },
+    {
+      "path": "tests/maintenance-currency/helpers.mjs",
+      "blob": "48fc4706c3b4139390b1cc6558c48e093364380b",
+      "matchesInputs": [
+        "PR48"
+      ]
+    },
+    {
+      "path": "tests/maintenance-currency/ledger.test.mjs",
+      "blob": "04b4940ba7af31dc87553a13aa09432ef002109a",
+      "matchesInputs": [
+        "PR48"
+      ]
+    },
+    {
+      "path": "tests/maintenance-currency/pipeline.test.mjs",
+      "blob": "f17e67fe8b01e69f9527753da4e60feda25fa770",
+      "matchesInputs": [
+        "PR48"
+      ]
+    },
+    {
+      "path": "tests/maintenance-history/hosted-fixture.mjs",
+      "blob": "7b64b2c5ef13c6bc89d85ef9e2c22c42f1ef0e51",
+      "matchesInputs": [
+        "PR46",
+        "PR48"
+      ]
+    },
+    {
+      "path": "tests/maintenance-pipeline/helpers.mjs",
+      "blob": "65fadd3acb4cccaded63b78b7ab55ae38f0fd097",
+      "matchesInputs": [
+        "PR48"
+      ]
+    },
+    {
+      "path": "tests/maintenance-pipeline/kill-worker.mjs",
+      "blob": "585ac2a8f364f978eb4576a97bfdb8de168de519",
+      "matchesInputs": [
+        "PR46",
+        "PR48"
+      ]
+    },
+    {
+      "path": "tests/maintenance-pipeline/monitor.test.mjs",
+      "blob": "049a2c455b79ac3593addc7d0261fc6f1a502b2b",
+      "matchesInputs": [
+        "PR48"
+      ]
+    },
+    {
+      "path": "tests/maintenance-pipeline/pipeline.test.mjs",
+      "blob": "f1c8dcc249af0e7a28c5bade736753a3b2a0356e",
+      "matchesInputs": [
+        "PR46",
+        "PR48"
+      ]
+    },
+    {
+      "path": "tests/maintenance-pipeline/support/monitor-child.mjs",
+      "blob": "54367d5dae212d77e7f1529ebfb3f6da3f24e9a9",
+      "matchesInputs": [
+        "PR48"
+      ]
+    }
+  ],
+  "immutableSha256": {
+    "src/content/articles/agent-budgets.md": "4d08ff128eb132755f7f0b8ef442b45129c43fa0abfcd777fd1ca7881ea199dd",
+    "src/content/articles/agent-evaluation.md": "a02bfef9fc5fdcefe08e52d82a2563d155d0cc9ef9c68293ca1a1920546ac061",
+    "src/content/articles/agent-identity.md": "7c91ffeff39be1efbe4460ae8ed2fb5520083b85e4474807a9c53f55984e2fb8",
+    "src/content/articles/agent-memory.md": "b148a65bdc33304a533d50d4299d4225e1bc9ecc76f2148212d0808930022de0",
+    "src/content/articles/agent-observability.md": "049b0dc639c785f012b4956e5c054e1940527cffe2254dfb0ba6db612e750c6d",
+    "src/content/articles/agent-orchestration.md": "f2fe90af6be60a7722819d6e78a3d2a89bc72c8ac2a5b3dc8a87d4a49cbd3d6f",
+    "src/content/articles/agent-planning.md": "c4c69bbe4318cb5a1776e65033314adf4d2926d39c471166240d546aba1aadc2",
+    "src/content/articles/agent-sandboxing.md": "2941adb2262f3b6f089540b0b8fee45e52ed4641867cd84c589ac9c543b0068c",
+    "src/content/articles/agent-to-agent-communication.md": "3dbf81152cbb8c971a323061af080de5fb464a3acd4453d690e905a96ccb65cb",
+    "src/content/articles/ai-agent.md": "8b9991a3d7f13ca51c359b63442557beabfcb1714df04ce849491c4aedb1a3a6",
+    "src/content/articles/computer-use-agents.md": "d7a7f169f547c84963f616ba8b8091eae9e35421bab513bb8d13ef1aea64c5aa",
+    "src/content/articles/context-engineering.md": "690cdc7482ed85bbe542b154a63d44f57f654d6f8667161d8c5996de4e3c451d",
+    "src/content/articles/durable-agent-execution.md": "637a4b2158524d5fd1ed74bbac4b8f0b0d9d44e22e0387081a4e7951c8723805",
+    "src/content/articles/human-oversight.md": "05f95df8fbbb3c6c78dd992ad08ed8d9c7c86fec2b27dd370ab24435d5c5fe59",
+    "src/content/articles/model-context-protocol.md": "1b038336e7ce0438e97a36eb2e536a9dd87dd5bf3a068eae394a978bb76a2abf",
+    "src/content/articles/prompt-injection.md": "44db0f983ce79da5fbf32a22c66fefb6867d788cdd7c016a3334f7ca2d6be1e7",
+    "src/content/articles/retrieval-augmented-generation.md": "455019da889922747a8b4e023ffb3f90859b5d080e85f97ab3d4b6d79a9d5216",
+    "src/content/articles/structured-outputs.md": "845e9153c1f788913d1750e108a7948141feaee583cf41491ed44992ed6b5c41",
+    "src/content/articles/tool-permissions.md": "274e5ae371484412776644847bb5494ac234cf1beac6398e1098678ea7e76756",
+    "src/content/articles/tool-use.md": "cf1e3a2bbb77a85d472e2509fa8eefda9bccbae2a73f1931902354de50aa9681",
+    "package-lock.json": "1054e37ef96929c79ab0cc99239145bb95118698607eda80c8bd5805b0216e06",
+    "wrangler.editorial.local.jsonc": "4af058ab06ec2d71d5e42b8e388a66200459f6ae7f76d1faa4965b1f0b45495c",
+    "wrangler.runtime.staging.jsonc": "88a7252e525ef2492f3be1c28a0a4104b20e8741f4d003bd9ddffd018f7a1046",
+    "wrangler.staging.jsonc": "02f3b58d60ee27a4d98864993554e0b9c93ef8972cf893278af7c914f353f1ef"
+  },
+  "conflicts": [
+    "AGENTS.md",
+    "README.md"
+  ],
+  "resolution": "Retain both README histories and all unique instructions; keep duplicated pipeline instruction once, renumber currency/dispatch/monitor instructions 49/50/51; append local instruction 52",
+  "publicBranchOrPr": false,
+  "mainMerge": false,
+  "liveConfigurationChanged": false,
+  "deployed": false
+}

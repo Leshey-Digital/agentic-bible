@@ -193,3 +193,7 @@ The separate [USD maintenance budget](docs/maintenance-currency-budget.md) adds 
 ## Live review-build monitoring
 
 The separate [storage-monitor correction](docs/review-build-storage-monitor.md) tolerates only an enumerated temporary cache entry disappearing during a live scan. Existing root, capacity, file-count and path guards remain strict. Bounded structural stop diagnostics retain the actual reason safely. `npm run test:maintenance-review-monitor` exercises real churn and six fatal safety controls with actual D1/Git accounting. Currency/dispatch behavior and all limits stay unchanged; real execution remains disabled.
+
+## Unpublished corrected pipeline composition
+
+The [local composition handoff](docs/review/corrected-pipeline-composition.md) preserves main, accepted PR46/PR47 and PR48's monitor/currency ancestry. PR48 independent review and composition acceptance remain pending; the branch is not published. The README opening still describes observed main, while these successor sections describe local candidate code. The earlier PR44 11/12 result and separate unreviewed cache-isolation finding remain explicit limits. No live port or release is enabled.
