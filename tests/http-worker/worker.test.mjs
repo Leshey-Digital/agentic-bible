@@ -6,6 +6,7 @@ import {Miniflare,convertV4MiniflareOptions} from 'miniflare';
 import {build} from 'esbuild';
 import {HttpObservationStore} from '../../src/monitoring/http-store.ts';
 import {httpSources} from '../../src/monitoring/http-registry.ts';
+import {migrationStatements} from '../support/migration-statements.mjs';
 
 test('actual workerd/D1 HTTP observations survive restart with atomic budgets, retries and last-good failures',{timeout:120000},async()=>{
   const path=resolve('.git/http-observation-worker-state');rmSync(path,{recursive:true,force:true});mkdirSync(path,{recursive:true});
@@ -25,12 +26,12 @@ test('actual workerd/D1 HTTP observations survive restart with atomic budgets, r
     await start();
     // Apply the real migration stack, then assert the HTTP migration preserves populated prior data.
     for(const name of readdirSync('migrations').filter(name=>name.endsWith('.sql')&&name!=='0005_http_observations.sql').sort()){
-      for(const statement of readFileSync('migrations/'+name,'utf8').replace(/--[^\n]*/g,'').split(';').map(s=>s.trim()).filter(Boolean))await sql(statement);
+      for(const statement of migrationStatements(readFileSync('migrations/'+name,'utf8')))await sql(statement);
     }
     await sql("INSERT INTO rate_windows(client_hash,window,count) VALUES('synthetic-http-upgrade',1,2)");
     const tables=(await db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE '_cf_%' ORDER BY name").all()).results.map(r=>r.name);
     const before=Object.fromEntries(await Promise.all(tables.map(async table=>[table,await rows(table)])));
-    for(const statement of readFileSync('migrations/0005_http_observations.sql','utf8').replace(/--[^\n]*/g,'').split(';').map(s=>s.trim()).filter(Boolean))await sql(statement);
+    for(const statement of migrationStatements(readFileSync('migrations/0005_http_observations.sql','utf8')))await sql(statement);
     for(const table of tables)assert.deepEqual(await rows(table),before[table]);
     assert.deepEqual(await(await mf.dispatchFetch('http://localhost/probe')).json(),{unsupported:true,lookupCalled:false});assert.equal(calls.length,0);calls=[];
     for(const id of ['https://127.0.0.1/','https://169.254.169.254/',httpSources[0].url,'https://user:pass@developers.openai.com/'])assert.equal((await action(id,key())).status,503);
