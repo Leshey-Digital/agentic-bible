@@ -1,0 +1,52 @@
+---
+import Base from '../../../layouts/Base.astro';
+import '../../../styles/history.css';
+import {library,articleUrl} from '../../../lib/library';
+import {maintenanceBuild} from '../../../maintenance-history/build.ts';
+
+export async function getStaticPaths(){
+  const [view,articles]=await Promise.all([Promise.resolve(maintenanceBuild()),library()]);
+  const byId=new Map(articles.map(article=>[article.id,article]));
+  return view.history.map(entry=>{
+    const article=byId.get(entry.articleId);
+    if(!article)throw new Error(`history_article_unknown:${entry.articleId}`);
+    return {params:{article:entry.articleId,event:entry.eventId},props:{entry,articleTitle:article.data.title}};
+  });
+}
+
+const {entry,articleTitle}=Astro.props;
+const currentLabel=entry.current?'Current revision for this article':'Earlier revision for this article';
+---
+<Base title={`${articleTitle} revision record`} description={`Recorded maintenance revision for ${articleTitle}. Git record integrity does not certify factual accuracy or source authenticity.`}>
+  <div class="article-breadcrumb"><a href="/history/">Revision history</a><span>/</span><a href={articleUrl(entry.articleId)}>{articleTitle}</a></div>
+  <article class="history-reading">
+    <header>
+      <p class="eyebrow">{currentLabel} · Controlled preview</p>
+      <h1>{articleTitle}: revision record.</h1>
+      {entry.operation==='restoration'?<p>This record reflects a separate reviewed restoration in the controlled preview. Earlier revisions remain in the history; factual accuracy and source freshness still need follow-up.</p>:<p>This revision was automatically published in the controlled preview after its recorded technical checks. Human follow-up occurs after publication.</p>}
+      <p>Git record integrity means the recorded bytes match their commit history. It does not establish source authenticity, factual accuracy, or human editorial certification.</p>
+    </header>
+    <dl class="receipt-details">
+      <div><dt>Article</dt><dd><a href={articleUrl(entry.articleId)}>{articleTitle}</a></dd></div>
+      <div><dt>Writer commit</dt><dd><a href={`https://github.com/Leshey-Digital/agentic-bible/commit/${entry.receipt.commit}`}><code>{entry.receipt.commit}</code></a></dd></div>
+      <div><dt>Article revision</dt><dd><code>{entry.receipt.articleRevision}</code></dd></div>
+      <div><dt>Review flags on this revision</dt><dd>{entry.flags.length?entry.flags.join(', '):'No flags recorded'}</dd></div>
+    </dl>
+    <nav class="history-nav" aria-label="Revision actions">
+      <a href={articleUrl(entry.articleId)}>Read current {articleTitle}</a>
+      <a href="/history/">All article history</a>
+      <a href="/review/">Current review flags</a>
+    </nav>
+    <section id="changes">
+      <h2>Text changes from the preceding commit</h2>
+      <p>Removed text is labelled “Removed”; added text is labelled “Added”. Front matter is omitted from this comparison. Unchanged lines provide context.</p>
+      {entry.changes.length?<div class="text-diff" aria-label={`Text changes for ${articleTitle}`}>{entry.changes.map(line=><div class={`diff-line ${line.kind}`}><span class="diff-label">{line.kind==='removed'?'Removed':line.kind==='added'?'Added':'Context'}</span>{line.kind==='removed'?<del>{line.text||' '}</del>:line.kind==='added'?<ins>{line.text||' '}</ins>:<span>{line.text||' '}</span>}</div>)}</div>:<p>No article body changes are included in this comparison. The complete revision and its attached evidence are available below.</p>}
+    </section>
+    <section>
+      <h2>Evidence retained with this revision</h2>
+      {entry.sources.length?<ul>{entry.sources.map(source=><li><a href={source.url}>{source.sourceId}</a><p>Observed <time datetime={new Date(source.observedAt).toISOString()}>{new Date(source.observedAt).toISOString()}</time> · {source.bytes} original bytes</p><code>{source.bodyHash}</code></li>)}</ul>:<p>This record contains no source-observation bindings.</p>}
+    </section>
+    <details><summary>Complete revision Markdown</summary><pre class="revision-markdown" tabindex="0" aria-label={`Complete ${articleTitle} revision Markdown`}>{entry.markdown}</pre></details>
+    <p>Restoration creates a separate record and does not erase this entry. <a href="/admin/">Open the editorial workspace</a>.</p>
+  </article>
+</Base>

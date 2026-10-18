@@ -1,7 +1,37 @@
 ---
 import Base from '../layouts/Base.astro';
 import '../styles/history.css';
+import {library} from '../lib/library';
 import {maintenanceBuild} from '../maintenance-history/build.ts';
+
+const articles=await library();
+const byId=new Map(articles.map(article=>[article.id,article]));
 const view=maintenanceBuild();
+const reviewQueue=view.reviewQueue.map(entry=>{
+  const article=byId.get(entry.articleId);
+  if(!article)throw new Error(`review_article_unknown:${entry.articleId}`);
+  return {entry,article};
+});
 ---
-<Base title="Post-publication review"><header class="page-intro"><p class="eyebrow">Human follow-up</p><h1>Review after publication.</h1><p>Valid revisions publish automatically. These flags request follow-up on articles that are already available to read.</p></header><nav class="history-nav" aria-label="Review navigation"><a href="/history/">Revision history</a><a href="/admin/">Editorial workspace</a></nav><section class="history-reading"><h2>Current publication flags</h2><p>This static view records flags at publication. Authenticated review decisions retain a separate audit; they do not remove the original flags or constitute factual approval.</p>{view.reviewQueue.length?<ul class="revision-list">{view.reviewQueue.map(entry=><li><h3><a href="/articles/tool-use/">Tool use</a></h3><p>{entry.operation==='restoration'?'Admin-approved restoration':'Automatic maintenance bot'} · Controlled preview</p><ul>{entry.flags.map(flag=><li>{flag==='editorial-review'?'Editorial review requested':flag.replaceAll('-',' ')}</li>)}</ul><p><a href={`/history/tool-use/${entry.eventId}/`}>Read revision and text changes</a></p><code>{entry.receipt.articleRevision}</code></li>)}</ul>:<p>No maintenance review flags are recorded in this edition. Original drafts retain their separate editorial-review status.</p>}</section></Base>
+<Base title="Post-publication review" description="Current article revisions carrying follow-up flags in the Agentic Bible controlled preview.">
+  <header class="page-intro">
+    <p class="eyebrow">Human follow-up</p>
+    <h1>Review after publication.</h1>
+    <p>Valid revisions publish before human follow-up. These current flags identify articles for review; they do not certify or preapprove their contents.</p>
+  </header>
+  <nav class="history-nav" aria-label="Review navigation">
+    <a href="/history/">Revision history</a>
+    <a href="/admin/">Editorial workspace</a>
+  </nav>
+  <section class="history-reading">
+    <h2>Current article flags</h2>
+    <p>This static view records flags on each article's current revision. Authenticated review decisions retain a separate audit; they do not remove the original flags or constitute factual approval.</p>
+    {reviewQueue.length?<ul class="revision-list">{reviewQueue.map(({entry,article})=><li>
+      <div class="revision-label"><span class="eyebrow">Current for this article</span><span>{entry.operation==='restoration'?'Reviewed restoration record':'Automatic maintenance record'} · Controlled preview</span></div>
+      <h3><a href={`/articles/${article.id}/`}>{article.data.title}</a></h3>
+      <ul>{entry.flags.map(flag=><li>{flag==='editorial-review'?'Editorial review requested':flag.replaceAll('-',' ')}</li>)}</ul>
+      <p><a href={`/history/${entry.articleId}/${entry.eventId}/`}>Read revision and text changes</a></p>
+      <code>{entry.receipt.articleRevision}</code>
+    </li>)}</ul>:<p>No maintenance review flags are recorded in this edition. Original drafts retain their separate editorial-review status.</p>}
+  </section>
+</Base>
