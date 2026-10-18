@@ -45,6 +45,7 @@ test('native Worker acquisition preserves charged original bytes and receipt ver
    [()=>new Response(document().replace(urls[mcp],urls[openai]),{headers:{'Content-Type':'text/html'}}),'adapter_source_identity'],
    [()=>new Response('{"evidence":"invented JSON source profile"}',{headers:{'Content-Type':'application/json'}}),'adapter_profile_content_type'],
    [()=>new Response('{broken',{headers:{'Content-Type':'application/json'}}),'malformed_body'],
+   [()=>new Response(new TextEncoder().encode('\ufeff'+document()),{headers:{'Content-Type':'text/html'}}),'adapter_raw_bom'],
    [()=>new Response('x'.repeat(32769),{headers:{'Content-Type':'text/html'}}),'body_too_large'],
    [()=>new Response('x',{headers:{'Content-Type':'text/html','Content-Length':'32769'}}),'body_too_large'],
    [()=>new Response(document(),{headers:{'Content-Type':'text/html','Content-Encoding':'gzip'}}),'unsupported_content_encoding'],

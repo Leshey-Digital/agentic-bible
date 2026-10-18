@@ -26,6 +26,14 @@ test('profile registry is compiled, bounded to known official URLs and cannot as
  await assert.rejects(extractMaintenanceSource('s-d4b8988f42afd69d3b72da14',bytes(document()),'text/html'),{code:'adapter_profile_not_registered'});
 });
 
+test('leading UTF-8 BOM is rejected before decoding can shift original byte spans',async()=>{
+ const original=bytes(document(mcp,'Café source spans must map to the exact original UTF-8 bytes.'));
+ const raw=new Uint8Array(original.length+3);raw.set([0xef,0xbb,0xbf]);raw.set(original,3);
+ await assert.rejects(extractMaintenanceSource(mcp,raw,'text/html'),{code:'adapter_raw_bom'});
+ const packet=await extractMaintenanceSource(mcp,original,'text/html');packet.raw.bytes=raw;packet.raw.hash=hash(raw);
+ await assert.rejects(validateExtractedSource(packet),{code:'adapter_raw_bom'});
+});
+
 test('unsupported JSON/plain profiles, ambiguous HTML and identity/structure failures fail closed',async()=>{
  for(const [raw,type,code] of [
   [bytes('{"text":"A JSON object cannot nominate a new source profile."}'),'application/json','adapter_profile_content_type'],
