@@ -1,6 +1,6 @@
 import {readingArticleIds} from '../lib/article-ids.ts';
 export const articleIds=readingArticleIds;
-export const publicRoutes=['/','/about/','/topics/','/topics/foundations/','/topics/capabilities/','/topics/protocols/',...articleIds.map(id=>`/articles/${id}/`)];
+export const publicRoutes=['/','/about/','/topics/','/topics/foundations/','/topics/capabilities/','/topics/protocols/','/history/',...articleIds.map(id=>`/articles/${id}/`)];
 export type DiscoveryPolicy={mode:'staging'|'canonical'|'synthetic';origin:string};
 export function canonicalOrigin(value:unknown):string{
   if(typeof value!=='string')throw new Error('canonical_origin_required');
@@ -16,9 +16,10 @@ export function discoveryPolicy(env:Record<string,string|undefined>=process.env)
   return {mode:'canonical',origin:canonicalOrigin(env.AGENTIC_BIBLE_CANONICAL_ORIGIN)};
 }
 export function pageDiscovery(policy:DiscoveryPolicy,path:string,synthetic=false){
-  const publicPage=publicRoutes.includes(path)&&!synthetic;
+  const productionHistory=path==='/history/'&&policy.mode==='canonical';
+  const publicPage=publicRoutes.includes(path)&&!synthetic&&(path!=='/history/'||productionHistory);
   return {canonical:publicPage?new URL(path,policy.origin).href:null,indexable:policy.mode==='canonical'&&publicPage};
 }
 export const robots=(policy:DiscoveryPolicy)=>`User-agent: *\nAllow: /\n${policy.mode==='canonical'?`Sitemap: ${policy.origin}/sitemap.xml\n`:''}`;
 // Crawlers must be able to read noindex; robots.txt is never an authentication boundary.
-export const privateHeaderPaths=['/admin*','/api*','/contribute*','/search*','/404*','/history*','/review*','/local-publications*','/wiki-snapshots*','/fixtures*','/indexing-manifest.json','/source-catalog.json','/release-source.json','/release.json','/maintenance-history.json'];
+export const privateHeaderPaths=['/admin*','/api*','/contribute*','/search*','/404*','/history/tool-use/*','/history/*/*','/review*','/local-publications*','/wiki-snapshots*','/fixtures*','/indexing-manifest.json','/source-catalog.json','/release-source.json','/release.json','/maintenance-history.json'];
