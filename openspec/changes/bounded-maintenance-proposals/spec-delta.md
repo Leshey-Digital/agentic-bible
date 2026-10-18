@@ -1,0 +1,8 @@
+# Proposed specification delta
+
+- Missing runtime opt-in, deterministic provider identity, finite policy/tokenizer/rates or accounting storage means zero provider/publisher calls. Shipped routes/workflows configure none.
+- A producer accepts only an existing local synthetic tool-use packet and currently valid original source receipts/files; rejects community approval metadata, stale site/publisher/source pins and unsupported source profiles before provider dispatch.
+- Atomically reserve one request, exact fake input-token count, worst-case output tokens and simulated cost before dispatch; enforce finite run/day/month bounds, storage and concurrency across independent callers. Retain ambiguous reservations; no automatic model retry/refund.
+- Untrusted sources are data. A strict structured output may reference only supplied source IDs/hashes and exact complete bounded source paragraphs. Extra claims, instructions/fields/URLs, malformed or oversized/late outputs and invalid usage cannot publish.
+- Persist the validated packet before automatic local publication. Same-event retry resumes the existing bridge or returns its historical receipt without new generation/reactivation. Technically valid sourced packets receive post-publication human flags; community corrections still require their separate explicit admin review.
+- Demonstrate actual local D1/HTTP accounting, deterministic fake generation, whole Astro/Pagefind/history/review publication, restart/replay and limits/failures without live fetch/model/GitHub writes or spend. Report remaining canonical/live connections explicitly.
