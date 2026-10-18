@@ -81,13 +81,13 @@ export async function completedMaintenance(value:unknown,context:Pick<Context,'d
 }
 
 // Verify a known semantic denial without publishing, refunding or redispatching.
-export async function deniedMaintenance(value:unknown,context:Pick<Context,'db'|'bridge'|'sourceDirectory'|'policy'|'clock'|'canonicalBase'|'currency'|'quality'>){
+export async function deniedMaintenance(value:unknown,context:Pick<Context,'db'|'bridge'|'sourceDirectory'|'policy'|'clock'|'canonicalBase'|'currency'|'quality'>,historicalReplay=false){
  if(!context.quality)stop('quality_verifier_unconfigured');qualityIdentity(context.quality);
  const currency=currencyInput(context.currency);currencyProvider(currency,'fake-extractive-v1','synthetic-utf8-bytes');
  const policy=policyInput(context.policy),command=bridgeInput(value);if(command.kind!=='apply'||command.revision.article.reviewedCorrections)stop('maintenance_not_community_approval');
  const now=(context.clock??Date.now)();if(!Number.isSafeInteger(now)||now<0||now>253402300799999)stop('maintenance_clock');
  const project=projectFiles(context.bridge.repo);if(hash(project.files['src/content/articles/tool-use.md'])!==command.originalMarkdownHash)stop('maintenance_original_changed');
- const evidence=await validateEvidence(command,context.db,context.sourceDirectory);if(evidence.bindings.some(b=>b.observedAt>now||now-b.observedAt>policy.maxSourceAgeMs))stop('maintenance_stale_evidence');
+ const evidence=await validateEvidence(command,context.db,context.sourceDirectory);if(!historicalReplay&&evidence.bindings.some(b=>b.observedAt>now||now-b.observedAt>policy.maxSourceAgeMs))stop('maintenance_stale_evidence');
  const basePort=context.canonicalBase?{...context.canonicalBase}:undefined,base=basePort?readMaintenanceBase(basePort,context.bridge.repo):undefined;
  const request:ProviderRequest={schemaVersion:1,kind:'extractive-source-data',sources:command.evidence.map(e=>sourceData(e.citationId,e.bodyHash,evidence.files[e.bodyHash])),maxOutputTokens:policy.maxOutputTokens,...(base?{canonicalBase:{untrusted:true as const,sourceCommit:base.metadata.sourceCommit,receiptHash:base.metadata.receipt.receiptHash,articleRevision:base.metadata.receipt.articleRevision,markdownSha256:base.metadata.receipt.markdownSha256,markdown:base.markdown}}:{})};
  const fingerprint=hash(canonical({command,sourceTreeHash:project.hash,evidenceHash:evidence.evidenceHash,bridge:context.bridge.root,policy,...(context.quality?{quality:qualityIdentity(context.quality)}:{}),...(currency?{currency}:{}),provider:'fake-extractive-v1',...(base?{canonicalBase:base.metadata}:{})}));
