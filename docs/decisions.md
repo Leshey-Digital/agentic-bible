@@ -39,3 +39,7 @@ Last prepared: 2026-10-16. This document distinguishes founder direction from te
 Record each accepted decision with date, owner, rationale, alternatives, and the corresponding issue/PR. Never fill approval fields from an assistant recommendation.
 
 Decision record: founder, 2026-10-16; rationale is autonomous publishing with visible human follow-up and lean operating costs. This supersedes the manual-initial-review and unaccepted-$10 proposals at foundation commit aed0712. Do not rewrite that historical PR as if it contained the later approval. Code/content license choices, Jev allocation and admin identity setup remain explicit open decisions.
+
+## Release execution decision (2026-10-18)
+
+The founder rejects GitHub Actions as a required build/test/release service because account minutes are limited. GitHub remains canonical source/history; complete qualification runs in the saved coding environment, and exact qualified bytes use the existing Cloudflare connector. Do not substitute paid Workers Builds or bypass release guarantees. No GitHub environment/release-token setup is required for this path. [Contract, review pins, cost assessment and live prerequisites](local-qualified-releases.md). No production deployment, credential or security change is authorized by the implementation task.

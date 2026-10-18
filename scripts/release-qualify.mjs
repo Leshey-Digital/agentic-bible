@@ -1,0 +1,4 @@
+import {execFileSync} from 'node:child_process';import {join,resolve} from 'node:path';import {existsSync,mkdirSync} from 'node:fs';import {randomUUID} from 'node:crypto';import {chromium} from '@playwright/test';import {runQualification} from '../src/release/qualification.ts';
+const git=execFileSync('git',['rev-parse','--absolute-git-dir'],{encoding:'utf8'}).trim(),base=join(git,'local-qualifications');mkdirSync(base,{recursive:true,mode:0o700});const args=process.argv.slice(2);if(args.length>1)throw Error('release_qualification_output_only');
+const path=resolve(process.env.CHROMIUM_PATH||(existsSync('/usr/bin/chromium')?'/usr/bin/chromium':chromium.executablePath())),browser=await chromium.launch({executablePath:path});let version;try{version=browser.version();}finally{await browser.close();}
+console.log(JSON.stringify(await runQualification(process.cwd(),resolve(args[0]??join(base,randomUUID())),{path,version})));

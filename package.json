@@ -76,7 +76,12 @@
     "test:maintenance-base": "node --test tests/maintenance-base/integration.test.mjs",
     "test:maintenance-pipeline": "node --test tests/maintenance-pipeline/pipeline.test.mjs",
     "test:maintenance-currency": "node --test tests/maintenance-currency/*.test.mjs",
-    "test:maintenance-review-monitor": "node --test tests/maintenance-pipeline/monitor.test.mjs"
+    "test:maintenance-review-monitor": "node --test tests/maintenance-pipeline/monitor.test.mjs",
+    "test:maintenance-collection:browser": "PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright test --config playwright.maintenance-collection.config.ts",
+    "release:qualify": "node scripts/release-qualify.mjs",
+    "release:qualification:verify": "node scripts/release-qualification-verify.mjs",
+    "release:execute": "node scripts/release-local.mjs",
+    "release:bridge:request": "node scripts/release-bridge-request.mjs"
   },
   "dependencies": {
     "astro": "7.4.0"

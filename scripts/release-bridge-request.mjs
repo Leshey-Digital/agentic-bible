@@ -1,0 +1,1 @@
+import {inspectBridgeRequest} from '../src/release/bridge.ts';const [path,digest,...extra]=process.argv.slice(2);if(!path||!digest||extra.length)throw Error('release_bridge_request_and_digest_required');const {request,code}=inspectBridgeRequest(path,digest);console.log(JSON.stringify({...request,codeBytes:Buffer.byteLength(code)}));

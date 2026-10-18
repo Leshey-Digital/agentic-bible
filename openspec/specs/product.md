@@ -36,3 +36,7 @@ Reserve optional provider-neutral ad placements with no active ad network by def
 - Validate analytics-provider IDs. Do not accept arbitrary executable scripts as ordinary settings.
 - Handle API keys through authenticated server-side write-only setup with masked status, scoped connection tests, budget controls and redacted audit events. Never expose credentials in browser responses, static bundles or logs.
 - Admin identity and persistent credential provisioning require specific setup approval. Open-source direction and the $10 operating target are accepted; specific licenses and numeric Jev allocation remain undefined.
+
+## Saved-environment release qualification (2026-10-18 direction)
+
+GitHub remains canonical source while required Actions execution is replaced by complete saved-environment qualification and direct connector promotion of exact reviewed bytes. No automatic Actions trigger or Workers Builds substitute is selected. Retain independent review, source/inventory/qualification pins, default-closed/noindex staging, expected-active preflight, exclusive writer controls, durable recovery/receipts and retained-version rollback. [Contract and live validation gaps](../../docs/local-qualified-releases.md). Implementation and controlled tests do not establish live deployment readiness.

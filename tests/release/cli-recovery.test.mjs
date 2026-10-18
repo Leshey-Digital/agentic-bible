@@ -9,7 +9,7 @@ import {controlledPorts} from './support/operation.mjs';
 import {executeRelease} from '../../src/release/controller.ts';
 import {verifyCandidate} from '../../src/release/artifact.ts';
 const providerScript=resolve('tests/release/support/provider.mjs'),runner=resolve('tests/release/support/operation.mjs');
-const permit=a=>({ownerEnabled:true,environment:'staging',repository:'Leshey-Digital/agentic-bible',sourceCommit:a.candidate.sourceCommit,ciRun:1,ciEvent:'push',ciBranch:'main',ciConclusion:'success',candidateDigest:a.id,requestId:randomUUID(),expectedActive:null,action:'deploy'});
+const permit=a=>({ownerEnabled:true,environment:'staging',repository:'Leshey-Digital/agentic-bible',sourceCommit:a.candidate.sourceCommit,qualificationDigest:'b'.repeat(64),reviewedQualificationDigest:'b'.repeat(64),exclusiveWriter:true,candidateDigest:a.id,requestId:randomUUID(),expectedActive:null,action:'deploy'});
 async function provider(root,fault){
  const directory=mkdtempSync(join(git,'release-cli-recovery-')),statePath=join(directory,'provider.json'),evidence=join(directory,'network.jsonl');
  writeFileSync(statePath,JSON.stringify({fault,versions:[],calls:[],active:null,activations:0}));

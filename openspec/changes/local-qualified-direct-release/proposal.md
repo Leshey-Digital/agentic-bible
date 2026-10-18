@@ -1,0 +1,5 @@
+# Replace Actions dependency with local qualification and connector promotion
+
+The founder rejects required GitHub Actions because account minutes are limited. Preserve GitHub canonical source and every existing release guarantee while moving complete qualification/artifact retention to the saved coding environment. Archive executable Actions workflows; do not substitute Workers Builds. Bind exact clean source, full command/log evidence and immutable bytes to independently supplied review pins, retain exclusive local writer locking and existing bounded controller recovery/rollback, and bridge sanitized fixed-target operations to the existing Cloudflare connector. Asset JWTs stay inside a single native-fetch upload capsule. [Contract, cost assessment and live prerequisites](../../../docs/local-qualified-releases.md).
+
+No deployment, credential/security change, paid build service, production resource or source/article/budget behavior change is authorized by implementation. Parent coordinates connector operations and independent review. Live protocol/hostname/serving checks remain unperformed.
