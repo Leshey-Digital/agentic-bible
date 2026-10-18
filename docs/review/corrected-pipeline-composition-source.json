@@ -26,9 +26,9 @@
   "inputHeadsAreAncestors": true,
   "excludedCacheIsolation": "6b140131281a780f5e069a5c73c5b54f6f449b27",
   "excludedIsAncestor": false,
-  "PR48Review": "pending",
+  "PR48Review": "Owner-reported bounded independent acceptance, no actionable findings; supplied after local composition began",
   "compositionReview": "pending",
-  "scope": "unpublished local composition",
+  "scope": "integration candidate; draft publication authorized after local checks, then independent exact-head composition review",
   "runtimeTestsScriptsPackagesMigrationsWorkflowsMatchPR48": true,
   "inheritedDifferencesFromPR48": [
     "AGENTS.md",
@@ -432,8 +432,8 @@
     "README.md"
   ],
   "resolution": "Retain both README histories and all unique instructions; keep duplicated pipeline instruction once, renumber currency/dispatch/monitor instructions 49/50/51; append local instruction 52",
-  "publicBranchOrPr": false,
   "mainMerge": false,
   "liveConfigurationChanged": false,
-  "deployed": false
+  "deployed": false,
+  "publicationAtSourceComposition": "unpublished"
 }
