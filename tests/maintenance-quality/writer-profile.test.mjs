@@ -1,6 +1,6 @@
 import {test,after} from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync,writeFileSync} from 'node:fs';
+import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';
 import {join} from 'node:path';
 import {close} from 'pagefind';
 import {generalizedFixture} from './generalized-helpers.mjs';
@@ -15,6 +15,7 @@ after(async()=>close());
 
 test('fixed writer rejects omitted quality/base ports before fresh or retained-intent dispatch and keeps original charges',async()=>{
  const f=await generalizedFixture('writer-profile');try{
+  mkdirSync(join(git,'production-quality-evidence'),{recursive:true});
   const first=await f.run('tool-use','quality'),selected=f.selection('tool-use','legacy'),command=selected.command;command.schemaVersion=1;
   const context=f.context();delete context.quality;delete context.canonicalBase;const collected=[];
   for(const e of command.evidence)collected.push(await collectMaintenanceSource({sourceId:e.sourceId,citationId:e.citationId,requestKey:e.receiptKey},{enabled:true,db:f.db,collectionName:context.collectionName,transport:context.source}));

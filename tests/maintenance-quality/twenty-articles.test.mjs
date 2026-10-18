@@ -30,6 +30,7 @@ function schedulingDatabase(actual){
 test('twenty actual quality-admitted producers and guarded writers share canonical Git/D1 across bounded batches and one final signed review build', {timeout:600000}, async()=>{
  const f=await generalizedFixture('twenty'),db=schedulingDatabase(f.db),originals=Object.fromEntries(readingArticleIds.map(id=>[id,readFileSync(maintenanceTarget(id).articlePath)])),receipts=[];let providerCalls=0,sourceCalls=0;
  try{
+  mkdirSync(join(git,'production-quality-evidence'),{recursive:true});
   for(const [index,articleId]of readingArticleIds.entries()){
    // Unchanged default request/cost limits: one call per day, five per month.
    const at=Date.UTC(2026,10+Math.floor(index/5),1+index%5,12),clock=()=>at,bridgeName='wiki-bridge-test-quality-twenty-'+index,collectionName='maintenance-source-collection-test-quality-twenty-'+index;
