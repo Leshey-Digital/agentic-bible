@@ -73,7 +73,7 @@ test('actual local D1 outbox migration/replay/concurrency/restart/faults and bou
   const rows=async()=>({receipts:(await db.prepare('SELECT * FROM indexing_enqueue_receipts ORDER BY event_key').all()).results,notifications:(await db.prepare('SELECT * FROM indexing_notifications ORDER BY id').all()).results});
   const provider={id:'indexnow',origin:config.origin,ownershipVerified:true,supports:'canonical-article-updates',async notify(){calls++;return {status:200};}};
   try{
-    for(const file of readdirSync('migrations').filter(f=>f.endsWith('.sql')&&f!=='0006_indexing_outbox.sql').sort())for(const sql of readFileSync(join('migrations',file),'utf8').replace(/--[^\n]*/g,'').split(';').map(s=>s.trim()).filter(Boolean))await db.prepare(sql).run();
+    for(const file of readdirSync('migrations').filter(f=>f.endsWith('.sql')&&f!=='0006_indexing_outbox.sql').sort())for(const sql of migrationStatements(readFileSync(join('migrations',file),'utf8')))await db.prepare(sql).run();
     await db.prepare("UPDATE http_request_budget SET day=20000,used=7 WHERE id=1").run();
     const legacyTables=(await db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE '_cf_%' ORDER BY name").all()).results.map(x=>x.name);const legacy=async()=>Object.fromEntries(await Promise.all(legacyTables.map(async table=>[table,(await db.prepare(`SELECT * FROM ${table} ORDER BY rowid`).all()).results])));const before=await legacy();
     for(const sql of readFileSync('migrations/0006_indexing_outbox.sql','utf8').replace(/--[^\n]*/g,'').split(';').map(s=>s.trim()).filter(Boolean))await db.prepare(sql).run();assert.deepEqual(await legacy(),before);
@@ -98,3 +98,4 @@ test('actual local D1 outbox migration/replay/concurrency/restart/faults and bou
     await runtime.dispose();await start();assert.deepEqual(await rows(),snapshot);assert.deepEqual(await legacy(),before);
   }finally{await runtime.dispose();}
 });
+import {migrationStatements} from '../support/migration-statements.mjs';

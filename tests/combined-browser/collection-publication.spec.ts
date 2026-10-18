@@ -39,7 +39,7 @@ test('controlled HTTP collection and separately supplied revisions retain distin
   const outside:string[]=[];const errors:string[]=[];
   try{
     for(const file of readdirSync('migrations').filter(file=>file.endsWith('.sql')).sort()){
-      for(const sql of readFileSync(join('migrations',file),'utf8').replace(/--[^\n]*/g,'').split(';').map(sql=>sql.trim()).filter(Boolean))await db.prepare(sql).run();
+      for(const sql of migrationStatements(readFileSync(join('migrations',file),'utf8')))await db.prepare(sql).run();
     }
     const firstKey=crypto.randomUUID();const baseline=await collect(firstKey);expect(baseline.observation.kind).toBe('baseline');expect(publisher.current()).toBeNull();
     await runtime!.dispose();db=await start();expect(await collect(firstKey)).toEqual(baseline);expect(requests).toBe(1);expect(publisher.current()).toBeNull();
@@ -81,3 +81,4 @@ test('controlled HTTP collection and separately supplied revisions retain distin
     if(server)await new Promise<void>(resolve=>server!.close(()=>resolve()));if(runtime)await runtime.dispose();await closePagefind();
   }
 });
+import {migrationStatements} from '../support/migration-statements.mjs';
