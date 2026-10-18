@@ -1,0 +1,7 @@
+# Real currency guards for the controlled pipeline
+
+The existing pipeline reserves simulated cost only. Add explicit integer USD pricing, bounded maximum reservation and known usage settlement to the existing D1 proposal ledger. Preserve PR44, automatic technically valid publication and subsequent editorial flags.
+
+The scoped outcome is default-disabled local enforcement under a pinned policy shared by all participating callers. Include configured daily/monthly infrastructure allowances, with the requested $10/month and $5 Workers baseline representable as policy. Never claim control over actual Cloudflare billing. Use deterministic provider fixtures and actual D1 concurrency/restart, owned Git and signed review. No live rate selection, credential, paid call, deployment, remote migration, notification or license choice.
+
+Extending existing proposal rows preserves one authority for dispatch/accounting. A singleton configuration record prevents per-caller cap/rate changes; a separate money job ledger or platform/framework would duplicate authority. Fail closed on missing prices/usage, lost replies and unsettled charges; immutable prices intentionally require later reviewed rotation/reconciliation/retention. Existing row, request, byte, deadline and conservative uncertainty bounds remain. No numerical fixture is an approved provider allocation. See [contracts and limits](../../../docs/maintenance-currency-budget.md).

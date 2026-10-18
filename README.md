@@ -179,3 +179,7 @@ A separate successor adds explicit signed restoration approval and a default-dis
 ## Controlled hosted operating pipeline
 
 `npm run test:maintenance-pipeline` exercises one explicit default-disabled source → provider/receipt ledger → canonical writer → exact review-artifact ingestion coordinator. Tests use actual shared local D1, owned Git and the shipped signed-review Worker; live activation remains unavailable. [Stage, recovery and residual-gap contract](docs/controlled-maintenance-pipeline.md). Twenty unchanged article drafts retain their prior PR22/23/27 source-review acceptance.
+
+## Controlled currency enforcement
+
+The separate [USD maintenance budget](docs/maintenance-currency-budget.md) adds explicit default-disabled integer micro-USD pricing, atomic reservation/settlement and run/day/month limits on the existing D1 proposal ledger. Configured infrastructure allowances can represent the requested $10 monthly target including a $5 Workers baseline; this is not a cap on actual Cloudflare bills. Unknown usage/price/charge outcomes stay held, with no automatic top-ups or retries. Only controlled fake providers execute. Run `npm run test:maintenance-currency` (also in `validate`); secure live setup, approved pricing/caps, rotation/reconciliation, alerts and actual paid execution remain absent.
