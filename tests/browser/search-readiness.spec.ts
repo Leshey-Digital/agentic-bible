@@ -1,4 +1,15 @@
 import { test, expect } from '@playwright/test';
+import { readFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+
+test('browser server serves the release source pinned to this checkout', async ({ request }) => {
+  const builtSource = JSON.parse(readFileSync('dist/release-source.json', 'utf8'));
+  const checkoutHead = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
+  expect(builtSource.commit).toBe(checkoutHead);
+  const response = await request.get('/release-source.json');
+  expect(response.ok()).toBeTruthy();
+  expect(await response.json()).toEqual(builtSource);
+});
 
 test('recognized reader questions use bounded local keyword expansions', async ({ page }) => {
   const externalRequests: string[] = [];
@@ -22,17 +33,30 @@ test('recognized reader questions use bounded local keyword expansions', async (
   expect(externalRequests).toEqual([]);
 });
 
-test('ambiguous and unrelated questions get no inferred expansion', async ({ page }) => {
+test('SQL injection and ordinary after phrasing do not trigger inferred expansion', async ({ page }) => {
   await page.goto('/search/');
   const input = page.locator('#search-input');
+  for (const query of [
+    'protect an AI assistant from SQL injection',
+    'repeat a workflow after eating lunch outdoors',
+    'avoid duplicate actions after lunch in the cafeteria',
+  ]) {
+    await input.fill(query);
+    await expect(page.locator('#search-status')).toContainText(`for “${query}”.`);
+    await expect(page.locator('#search-results')).toHaveAttribute('aria-busy', 'false');
+    await expect(page.locator('#search-status')).not.toContainText('using the related keyword');
+  }
+
   await input.fill('protect my budget from crashes');
+  await expect(page.locator('#search-status')).toContainText('for “protect my budget from crashes”.');
+  await expect(page.locator('#search-results')).toHaveAttribute('aria-busy', 'false');
   await expect(page.locator('#no-results')).toBeVisible();
-  await expect(page.locator('#search-status')).toContainText('0 entries found for');
   await expect(page.locator('#search-status')).not.toContainText('related keyword');
 
   await input.fill('how do black holes evaporate');
-  await expect(page.locator('#no-results')).toBeVisible();
-  await expect(page.locator('#search-status')).toContainText('0 entries found for');
+  await expect(page.locator('#search-status')).toContainText('for “how do black holes evaporate”.');
+  await expect(page.locator('#search-results')).toHaveAttribute('aria-busy', 'false');
+  await expect(page.locator('#search-results li').first()).toBeVisible();
   await expect(page.locator('#search-status')).not.toContainText('related keyword');
 });
 

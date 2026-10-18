@@ -6,3 +6,4 @@
 - [x] Add focused browser regressions for recognized, ambiguous, unrelated, safe-output, keyboard, sequencing and recovery behavior.
 - [x] Run Astro check/build and the focused real-Pagefind browser suite; record actual outcomes.
 - [x] Review the final diff and record the exact local checkpoint and remaining limits.
+- [x] Close independent review finding: require prompt-specific evidence and technical-interruption evidence before expansion; exercise SQL-injection/ordinary-after negatives only after their current query completes.

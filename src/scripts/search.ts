@@ -20,11 +20,15 @@ function relatedKeywordQuery(query: string): string | undefined {
   const words = query.toLowerCase();
   const protectiveIntent = /\b(protect|defend|prevent|avoid|safeguard|secure)\w*\b/.test(words);
   const agentContext = /\b(agent|agents|ai|model|assistant)\b/.test(words);
-  const injectionContext = /\b(prompt injection|injection|malicious instruction|untrusted content|retrieved content|retrieved document)\b/.test(words);
+  const injectionContext = /\bprompt injection\b/.test(words)
+    || (/\b(?:malicious|untrusted) instructions?\b/.test(words)
+      && /\b(?:retrieved|content|document|text|page|source|tool output)\b/.test(words))
+    || /\buntrusted (?:retrieved )?(?:content|document|text)\b/.test(words)
+    || /\bretrieved (?:content|document|text)\b/.test(words);
   if (protectiveIntent && agentContext && injectionContext) return 'prompt injection';
 
   const repeatIntent = /\b(duplicate|repeat|again|twice|replay|retry|retries)\w*\b/.test(words);
-  const interruption = /\b(crash|failure|failed|interruption|restart|recovery|after)\w*\b/.test(words);
+  const interruption = /\b(crash(?:ed|es)?|fail(?:ure|ed|ures)?|interrupt(?:ed|ion|ions)?|restart(?:ed|s)?|recover(?:y|ed|ing)|timeout(?:s)?|process (?:stops?|exits?|dies?))\b/.test(words);
   const actionContext = /\b(action|actions|effect|effects|operation|operations|request|requests|run|workflow)\w*\b/.test(words);
   if (repeatIntent && interruption && actionContext) return 'durable agent execution';
   return undefined;
