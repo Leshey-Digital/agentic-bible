@@ -1,0 +1,142 @@
+{
+  "checks": [
+    {
+      "command": "npm run validate",
+      "exitCode": 0,
+      "seconds": 130.54,
+      "log": "revocation-state-validate.log",
+      "tests": 151
+    },
+    {
+      "command": "npm run test:browser",
+      "exitCode": 0,
+      "seconds": 87.55,
+      "log": "revocation-state-test-browser.log",
+      "cases": 74
+    },
+    {
+      "command": "npm run test:editorial:browser",
+      "exitCode": 0,
+      "seconds": 37.97,
+      "log": "revocation-state-test-editorial-browser.log",
+      "cases": 23
+    },
+    {
+      "command": "npm run test:integration:browser",
+      "exitCode": 0,
+      "seconds": 11.32,
+      "log": "revocation-state-test-integration-browser.log",
+      "cases": 1
+    },
+    {
+      "command": "npm run test:monitoring:worker",
+      "exitCode": 0,
+      "seconds": 17.73,
+      "log": "revocation-state-test-monitoring-worker.log"
+    },
+    {
+      "command": "npm run test:settings:worker",
+      "exitCode": 0,
+      "seconds": 22.88,
+      "log": "revocation-state-test-settings-worker.log"
+    },
+    {
+      "command": "npm run test:publication:browser",
+      "exitCode": 0,
+      "seconds": 7.96,
+      "log": "revocation-state-test-publication-browser.log",
+      "cases": 1
+    },
+    {
+      "command": "npm run test:combined:browser",
+      "exitCode": 0,
+      "seconds": 5.54,
+      "log": "revocation-state-test-combined-browser.log",
+      "cases": 1
+    },
+    {
+      "command": "npm run test:wiki-bridge:browser",
+      "exitCode": 0,
+      "seconds": 26.82,
+      "log": "revocation-state-test-wiki-bridge-browser.log",
+      "cases": 4
+    },
+    {
+      "command": "npm run test:wiki-seo:browser",
+      "exitCode": 0,
+      "seconds": 12.8,
+      "log": "revocation-state-test-wiki-seo-browser.log",
+      "cases": 1
+    },
+    {
+      "command": "npm run test:corrections:browser",
+      "exitCode": 0,
+      "seconds": 37.75,
+      "log": "revocation-state-test-corrections-browser.log",
+      "cases": 2
+    },
+    {
+      "command": "npm run test:hosted:browser",
+      "exitCode": 0,
+      "seconds": 9.19,
+      "log": "revocation-state-test-hosted-browser.log",
+      "cases": 2
+    },
+    {
+      "command": "npm run test:hosted-admin:browser",
+      "exitCode": 0,
+      "seconds": 28.48,
+      "log": "revocation-state-test-hosted-admin-browser.log",
+      "cases": 16
+    },
+    {
+      "command": "npm run staging:check",
+      "exitCode": 0,
+      "seconds": 1.07,
+      "log": "revocation-state-staging-check.log"
+    },
+    {
+      "command": "npm run runtime:check",
+      "exitCode": 0,
+      "seconds": 1.03,
+      "log": "revocation-state-runtime-check.log"
+    }
+  ],
+  "completed": true,
+  "allPassed": true,
+  "base": "99b565a8bb0a1666ccd210398f927d3f20cbae8f",
+  "branch": "fix/admin-revocation-state",
+  "validationTests": 151,
+  "browserCases": 125,
+  "adminCases": 16,
+  "nativePersistenceChecks": 2,
+  "dryRuns": 2,
+  "redCases": 2,
+  "originalArticlesUnchanged": 20,
+  "backendAuthorityChanged": false,
+  "releaseFilesChanged": false,
+  "dependencyVersionsChanged": false,
+  "resourcesChanged": false,
+  "independentAcceptance": false,
+  "publication": "Not attempted for corrected successor; earlier admin draft publication was rejected by automatic approval review.",
+  "ci": "Not run; no PR or alternate CI trigger.",
+  "localRuntime": {
+    "node": "24.19.0",
+    "npm": "11.9.0",
+    "chromium": "154.0.8037.57"
+  },
+  "testedFiles": [
+    {
+      "path": "src/hosted/admin.ts",
+      "sha256": "0496bb3ce9230c9fb05920f17b77aac4d168c091047e7459f239035f65b1efbe"
+    },
+    {
+      "path": "scripts/hosted-admin-test-server.mjs",
+      "sha256": "8a0797ac5516719bfe4f0aae1b9c23cf59fea5dc859ff9576e83e2d44ba5902b"
+    },
+    {
+      "path": "tests/hosted-admin-browser/admin.spec.mjs",
+      "sha256": "f50973287a8379ddfb3fab939b6270a9e50e32a5dcddb220675435dbfce31c09"
+    }
+  ]
+}
