@@ -1,0 +1,9 @@
+# Focused production content corrections and examples
+
+The owner authorizes corrections and substantive examples within the existing twenty canonical articles. Preserve their identities and reviewed source heads; historical byte-preservation instructions are superseded only for these requested edits. This component owns four articles: correct the τ-bench v1 section annotation in agent evaluation, repair the first human-oversight source annotation’s grammar, complete the tool-use request/result/error example, and add a real small schema with parsing, validation and factual contrasts to structured outputs.
+
+Use the existing content schema, stack and tone. Label original generic interfaces and invented records explicitly. Verify precise claims against primary versioned sources and validate literal examples without executing tools or calling models. Preserve the distinction between schema validity, factual support, authority and observed completion. No blanket fact-check or invented human approval is warranted: all twenty articles have received internal/external deep reads, but only sampled claims have been verified.
+
+The alternative of leaving prose-only examples would not demonstrate the boundaries the owner requested. Broad article rewrites and variant proliferation are outside this component. No application dependencies, package scripts, UI, layout, SEO, backend, configuration, live resource or spend changes are needed. Tests use the existing saved-environment Python jsonschema package; complete combined qualification remains with the parent. Publication, deployment and paid execution are separate and are not performed here.
+
+The [review record](../../../docs/review/production-content-examples.md) supplies source locations, actual checks and remaining limits. Revert this component’s commit to restore its prior content and remove its focused tests/change records.

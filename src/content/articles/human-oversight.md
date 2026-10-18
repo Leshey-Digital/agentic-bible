@@ -12,7 +12,7 @@ sources:
     title: Guidelines for Human-AI Interaction
     url: https://www.microsoft.com/en-us/research/publication/guidelines-for-human-ai-interaction/
     publisher: Amershi et al., Microsoft Research / CHI 2019
-    context: Primary research publication and linked camera-ready paper, checked 17 October 2026; Linked-paper guideline discussion address capabilities, dismissal, correction and controls. Design evaluation is not proof that human review prevents every error.
+    context: Primary research publication and linked camera-ready paper, checked 17 October 2026; the linked paper’s guideline discussion addresses capabilities, dismissal, correction and controls. Design evaluation is not proof that human review prevents every error.
   - id: langgraph-interrupts
     title: LangGraph interrupts
     url: https://docs.langchain.com/oss/python/langgraph/interrupts

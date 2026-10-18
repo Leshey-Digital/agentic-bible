@@ -17,7 +17,7 @@ sources:
     title: 'τ-bench: A Benchmark for Tool-Agent-User Interaction in Real-World Domains'
     url: https://arxiv.org/abs/2406.12045v1
     publisher: Yao et al., arXiv
-    context: Version 1, 17 June 2024; section 2 describes simulated users, tools, domain policies, goal-state checks, and consistency across trials. Simulated conversations are not a live customer study.
+    context: Version 1, 17 June 2024; section 3 describes simulated users, tools, domain policies, goal-state checks, and consistency across trials. Simulated conversations are not a live customer study.
   - id: evaluation-guidance
     title: Evaluation best practices
     url: https://developers.openai.com/api/docs/guides/evaluation-best-practices

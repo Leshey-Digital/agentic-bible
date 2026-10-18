@@ -29,13 +29,52 @@ sources:
 
 ## Agree on a contract
 
-Consider an original reference-library example with a response containing a proposed article identifier, a short explanation and an evidence list. A schema could require the explanation to be a string and the evidence list to contain objects. The receiver could then reject a missing field before attempting to display or store the response. This example describes a possible design, not an implemented generation feature of this site.
+Consider an original reference-library example that extracts a source identifier and publication year. Here is a small JSON Schema using the Draft 2020-12 dialect. It is an application validation contract, not a provider API request or a claim of support for every provider’s schema subset. [1](#source-schema-core) [2](#source-schema-validation)
 
-The application would also need a meaning for each field. Does an empty evidence list mean no source was found, or that the search was not attempted? Does an article identifier refer to a current page or a proposed one? Structural rules help make these differences representable, but the contract needs documented semantics and appropriate checks at the receiver.
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "source_id": { "type": "string", "minLength": 1 },
+    "publication_year": { "type": "integer", "minimum": 2000, "maximum": 2100 }
+  },
+  "required": ["source_id", "publication_year"],
+  "additionalProperties": false
+}
+```
+
+For this example, `source_id` names a record in the receiver’s source catalog, and `publication_year` means the initial publication year of that specific version. The year bounds are an arbitrary application choice; older sources would need a different contract. This schema rejects missing fields, extra fields and a year encoded as a string. It cannot check whether a source identifier exists or whether the year matches its record.
 
 ## Parsing is only one boundary
 
 Valid JSON can still violate a schema. A schema-valid object can still contain the wrong date. A factually correct proposal can still request an unauthorized action. These are separate failure modes, so passing one check should not silently stand in for the others. [Tool use](/articles/tool-use/) describes the handoff to executable software; [tool permissions](/articles/tool-permissions/) describes the authority required there.
+
+Compare four inputs under the contract above. This first input passes both parsing and schema validation. Its year also agrees with the [τ-bench v1 publication record](https://arxiv.org/abs/2406.12045v1), dated 17 June 2024:
+
+```json
+{ "source_id": "tau-bench-v1", "publication_year": 2024 }
+```
+
+This input is invalid JSON because of its trailing comma. Parsing fails before schema validation:
+
+```text
+{ "source_id": "tau-bench-v1", "publication_year": 2024, }
+```
+
+This input is valid JSON but schema-invalid: the year is a string, not an integer:
+
+```json
+{ "source_id": "tau-bench-v1", "publication_year": "2024" }
+```
+
+This input parses and satisfies the schema, but its publication year is factually wrong for that version:
+
+```json
+{ "source_id": "tau-bench-v1", "publication_year": 2023 }
+```
+
+The last failure requires comparison with evidence. A successful schema check alone cannot catch it, and none of these objects grants authority to change the catalog. If the year is unknown, this contract requires the receiver to report an unresolved extraction separately; inventing a year to satisfy the schema would defeat its purpose.
 
 JSON Schema 2020-12 defines assertions such as types, numeric bounds and required properties. Its treatment of `format` needs particular care: the format annotation vocabulary does not require full format validation, while support for the format assertion vocabulary is optional and has stronger requirements when declared. A receiver must know the validator’s dialect, vocabulary support and configuration before claiming a string’s format was checked. [2](#source-schema-validation)
 
