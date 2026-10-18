@@ -1,0 +1,14 @@
+{
+  "project": "mobile",
+  "shippedWorker": true,
+  "actualWorkerdD1": true,
+  "controlledSignedAssertions": true,
+  "heldAfterGitHubProposalCompleted": true,
+  "confirmedRevocations": 1,
+  "failedFollowupRead": true,
+  "lateResponsePreservesRevokedStateAndMessage": true,
+  "draftControlsStayDisabled": true,
+  "controlledDrafts": 1,
+  "canonicalMainUnchanged": true,
+  "axe": true
+}

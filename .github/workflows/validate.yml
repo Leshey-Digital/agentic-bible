@@ -93,6 +93,7 @@ jobs:
             .git/hosted-connected-build-proof.json
             .git/hosted-admin-browser-*.json
             .git/hosted-draft-response-*.json
+            .git/hosted-revocation-response-*.json
             .git/usability-widths-*.json
             .git/hosted-projection-build-proof.json
             .git/hosted-runtime-browser-*.json
