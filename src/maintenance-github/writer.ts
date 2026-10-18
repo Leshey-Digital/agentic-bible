@@ -1,3 +1,4 @@
+import type {QualityControl} from '../maintenance-quality/contracts.ts';
 import type {CurrencyControl} from '../wiki-bridge/maintenance-currency.ts';
 import {readMaintenanceBase,type CanonicalBasePort} from '../maintenance-base/read.ts';
 import type {SqlDatabase} from '../editorial/contracts.ts';
@@ -12,7 +13,7 @@ import {repository,branch,articlePath,pointerPath,writerLimits,commitMutation,ca
 export {WriterError,writerLimits} from './contracts.ts';
 type Authority=Awaited<ReturnType<typeof completedMaintenance>>;
 type Selection={schemaVersion:1;mode:'local-synthetic-only';expectedBaseCommit:string;previousRevision:string|null;command:unknown};
-type Context={currency?:CurrencyControl;canonicalBase?:CanonicalBasePort;enabled?:boolean;transport?:ControlledGitHub;db:SqlDatabase;bridge:WikiBridge;sourceDirectory:string;policy:unknown;clock?:()=>number;checkpoint?:(phase:'intent'|'dispatched'|'remote-committed'|'verified')=>void|Promise<void>};
+type Context={quality?:QualityControl;currency?:CurrencyControl;canonicalBase?:CanonicalBasePort;enabled?:boolean;transport?:ControlledGitHub;db:SqlDatabase;bridge:WikiBridge;sourceDirectory:string;policy:unknown;clock?:()=>number;checkpoint?:(phase:'intent'|'dispatched'|'remote-committed'|'verified')=>void|Promise<void>};
 type Entry={path:string;type:string;mode:string;sha:string};
 function selection(value:unknown):Selection{
  if(!value||typeof value!=='object'||Array.isArray(value)||Object.keys(value).sort().join(',')!=='command,expectedBaseCommit,mode,previousRevision,schemaVersion')stop('writer_invalid_selection');const v=value as Selection;
@@ -38,7 +39,7 @@ async function projection(authority:Authority,v:Selection,outbox:WriterOutbox,pr
  else if(previousEvent!==null)stop('writer_previous_revision_conflict');
  const {front,body}=publicationMarkdown(authority.command.revision.article,authority.receipt.publisher,authority.bindings);front.publication.revisionId=authority.articleRevision;front.publication.flags=qualityFlags(authority.command.revision.article);
  const markdown='---\n'+Object.entries(front).map(([key,value])=>key+': '+JSON.stringify(value)).join('\n')+'\n---\n\n'+body+'\n';
- const descriptor={...(authority.canonicalBase?{canonicalBase:authority.canonicalBase}:{}),schemaVersion:1,kind:'controlled-automatic-maintenance-revision',eventId:authority.command.eventId,articleId:'tool-use',articleRevision:authority.articleRevision,previous,expectedBaseCommit:v.expectedBaseCommit,markdownSha256:hash(markdown),authorityHash:hash(canonical(authority)),packetHash:authority.packetHash,providerResponseHash:authority.providerResponseHash,sourceTreeHash:authority.sourceTreeHash,evidenceHash:authority.evidenceHash,sourceBindings:authority.bindings,localPublicationReceipt:authority.receipt,generation:authority.generation,flags:qualityFlags(authority.command.revision.article)};
+ const descriptor={...(authority.canonicalBase?{canonicalBase:authority.canonicalBase}:{}),schemaVersion:authority.quality?2:1,kind:'controlled-automatic-maintenance-revision',...(authority.quality?{quality:authority.quality}:{}),eventId:authority.command.eventId,articleId:'tool-use',articleRevision:authority.articleRevision,previous,expectedBaseCommit:v.expectedBaseCommit,markdownSha256:hash(markdown),authorityHash:hash(canonical(authority)),packetHash:authority.packetHash,providerResponseHash:authority.providerResponseHash,sourceTreeHash:authority.sourceTreeHash,evidenceHash:authority.evidenceHash,sourceBindings:authority.bindings,localPublicationReceipt:authority.receipt,generation:authority.generation,flags:qualityFlags(authority.command.revision.article)};
  const record=canonical(descriptor),pointer=canonical({schemaVersion:1,kind:'controlled-automatic-maintenance-head',eventId:authority.command.eventId,articleRevision:authority.articleRevision,markdownSha256:hash(markdown),recordPath:historyPath(authority.command.eventId),recordSha256:hash(record),flags:descriptor.flags});
  return intentInput({schemaVersion:1,expectedBase:v.expectedBaseCommit,previousEvent,files:{[articlePath]:markdown,[historyPath(authority.command.eventId)]:record,[pointerPath]:pointer}},authority.command.eventId);
 }
