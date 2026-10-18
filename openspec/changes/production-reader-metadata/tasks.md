@@ -7,7 +7,7 @@
 - [x] Add truthful unique metadata previews and production-only History discovery.
 - [x] Clarify review limits and undecided cadence in About; clarify empty History scope.
 - [x] Add focused Git-lineage, staging/production policy, and browser copy/accessibility coverage.
-- [ ] Run focused SEO build, docs validation, browser checks, and inspect final diff.
+- [x] Run focused SEO build, docs validation, browser checks, and inspect final diff.
 - [ ] Independent candidate review (pending).
 
 No merge, deployment, credential setup, paid calls, tracking, or expanded persistent access.
