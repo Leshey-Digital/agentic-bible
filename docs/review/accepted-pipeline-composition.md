@@ -1,0 +1,11 @@
+# Accepted pipeline local composition
+
+Inputs are main 6987bf2c53d8ddc9ffb34d9b89d453caf0adf213 (tree e51a16167debd9356900abc5ae8457cf7f5380d1) and owner-reported independently accepted PR44 d0a4f9b4648bb66fe7acac7ba69b95a7e98b36f4 (tree 7197e61865c9dfb7fbc518c8ff5d77a2db7bd8eb). Both ancestries are preserved by one local merge. Main's twenty article bytes, dependency lockfile and default runtime configurations match PR44 and remain unchanged. [Exact input hashes and exclusions](accepted-pipeline-composition-source.json).
+
+The only merge conflicts were README.md and AGENTS.md append collisions. Both histories are retained and the pipeline instruction is renumbered. Accepted runtime, tests, scripts, workflow and local migration are preserved without application changes. Currency-budget checkpoint 25e95cfa015609c0fc204db7274e2387992890dd and its code are excluded.
+
+Verification results, final commit/tree, named changed paths, commands/logs and any review-build recurrence are recorded in .git/accepted-pipeline-composition-handoff.json. Full native validation includes the twelve actual shared-D1/owned-Git/shipped-review pipeline cases and the pinned-Wrangler release regressions. Both standard dry runs and clean candidate preparation remain non-deploying. No remote CI result is claimed for this local checkpoint. The earlier blocked artifact download is not retried.
+
+Existing [pipeline contract and limits](../controlled-maintenance-pipeline.md) and [canonical-base record safety](../restored-maintenance-base.md) remain. Valid controlled publication stays automatic with post-publication flags, while live identity/provider/Git/release ports stay closed. Once new canonical-base records exist, PR41/older direct downgrade is unsupported. Retain a format-aware reader or separately reviewed migration; never rewrite history or erase journals/ambiguous operations.
+
+Next action is review of the reported local checkpoint and actual evidence. This task publishes no branch/PR and performs no main/source merge, deployment, remote migration, security/credential change, paid call, indexing or license change. Code rollback before new records exist can return to the input main while retaining all owned journals/artifacts; the format-aware-reader limitation controls later rollback.

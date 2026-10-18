@@ -1,3 +1,4 @@
+import {currencyInput,currencyProvider,type CurrencyControl,type Usage} from './maintenance-currency.ts';
 import {readMaintenanceBase,type CanonicalBasePort} from '../maintenance-base/read.ts';
 import type {SqlDatabase} from '../editorial/contracts.ts';
 import {canonical,hash,type Article} from '../publishing/contracts.ts';
@@ -6,10 +7,11 @@ import {projectFiles} from './files.ts';
 import {WikiBridge,type BridgePhase} from './store.ts';
 import {MaintenanceBudget,type ProposalRow} from './maintenance-budget.ts';
 import {MaintenanceError,stop,policyInput,sourceData,tokens,validateReply,invokeBounded,type Provider,type ProviderRequest} from './maintenance-provider.ts';
-type Context={canonicalBase?:CanonicalBasePort;enabled?:boolean;policy?:unknown;provider?:Provider;db:SqlDatabase;bridge:WikiBridge;sourceDirectory:string;clock?:()=>number;checkpoint?:(phase:'reserved'|'proposal-ready')=>void|Promise<void>;bridgeCheckpoint?:(phase:BridgePhase)=>void|Promise<void>};
+type Context={currency?:CurrencyControl;canonicalBase?:CanonicalBasePort;enabled?:boolean;policy?:unknown;provider?:Provider;db:SqlDatabase;bridge:WikiBridge;sourceDirectory:string;clock?:()=>number;checkpoint?:(phase:'reserved'|'proposal-ready')=>void|Promise<void>;bridgeCheckpoint?:(phase:BridgePhase)=>void|Promise<void>};
 // Trusted code port only. No shipped route, schedule, secret or real provider config imports this producer.
 export async function runMaintenance(value:unknown,context:Context){
  if(context.enabled!==true||!context.provider||context.provider.kind!=='deterministic-extractive-fake'||context.provider.id!=='fake-extractive-v1'||context.provider.tokenizer!=='synthetic-utf8-bytes')stop('maintenance_provider_disabled');
+ const currency=currencyInput(context.currency);currencyProvider(currency,'fake-extractive-v1','synthetic-utf8-bytes');
  const policy=policyInput(context.policy),command=bridgeInput(value);if(command.kind!=='apply'||command.revision.article.reviewedCorrections)stop('maintenance_not_community_approval');
  const now=(context.clock??Date.now)();if(!Number.isSafeInteger(now)||now<0||now>253402300799999)stop('maintenance_clock');
  const project=projectFiles(context.bridge.repo);if(hash(project.files['src/content/articles/tool-use.md'])!==command.originalMarkdownHash)stop('maintenance_original_changed');
@@ -18,9 +20,9 @@ export async function runMaintenance(value:unknown,context:Context){
  const basePort=context.canonicalBase?{...context.canonicalBase}:undefined,base=basePort?readMaintenanceBase(basePort,context.bridge.repo):undefined;
  const request:ProviderRequest={schemaVersion:1,kind:'extractive-source-data',sources:command.evidence.map(e=>sourceData(e.citationId,e.bodyHash,evidence.files[e.bodyHash])),maxOutputTokens:policy.maxOutputTokens,...(base?{canonicalBase:{untrusted:true as const,sourceCommit:base.metadata.sourceCommit,receiptHash:base.metadata.receipt.receiptHash,articleRevision:base.metadata.receipt.articleRevision,markdownSha256:base.metadata.receipt.markdownSha256,markdown:base.markdown}}:{})};
  const inputTokens=tokens(request);if(inputTokens>policy.maxInputTokens)stop('maintenance_input_tokens');
- const fingerprint=hash(canonical({command,sourceTreeHash:project.hash,evidenceHash:evidence.evidenceHash,bridge:context.bridge.root,policy,provider:context.provider.id,...(base?{canonicalBase:base.metadata}:{})})),budget=new MaintenanceBudget(context.db);
+ const fingerprint=hash(canonical({command,sourceTreeHash:project.hash,evidenceHash:evidence.evidenceHash,bridge:context.bridge.root,policy,...(currency?{currency}:{}),provider:context.provider.id,...(base?{canonicalBase:base.metadata}:{})})),budget=new MaintenanceBudget(context.db,currency?{enabled:true,policy:currency}:undefined);
  let row=await budget.job(command.eventId),generatedNow=false;
- if(row&&row.fingerprint!==fingerprint)stop('maintenance_event_conflict');
+ if(row&&row.fingerprint!==fingerprint)stop('maintenance_event_conflict');if(row)budget.verifyCurrency(row);
  const freshBase=()=>{if(basePort)readMaintenanceBase(basePort,context.bridge.repo,true);};
  if(row?.state!=='complete')freshBase();
  if(!row){
@@ -28,13 +30,13 @@ export async function runMaintenance(value:unknown,context:Context){
   if(canonical(active?.reference??null)!==canonical(command.expectedSite)||canonical(publisher?.reference??null)!==canonical(command.expectedPublisher)||(publisher?.manifest.state.articles['tool-use']??null)!==command.revision.baseRevision)stop('maintenance_stale_base');
   if(active&&active.manifest.state.sourceTreeHash!==project.hash||status.pending.length||status.active&&status.active.sequence>=7||status.storage.accountedBytes+96*1024*1024>status.storage.limitBytes)stop('maintenance_bridge_unavailable');
   row=await budget.reserve(command.eventId,fingerprint,policy,inputTokens,now);await context.checkpoint?.('reserved');
-  let response:unknown,packet:Apply,actualCost:number;
-  try{freshBase();response=await invokeBounded(context.provider,request);const checked=validateReply(response,request,policy);actualCost=checked.actualCost;packet=generated(command,checked.output.extracts.map(e=>({citationId:e.citationId,quote:e.quote})),evidence.bindings.map(b=>b.observedAt));}
+  let response:unknown,packet:Apply,actualCost:number,usage:Usage;
+  try{const eligible=currency?await budget.dispatchEligibility(row):undefined;freshBase();eligible?.((context.clock??Date.now)());response=await invokeBounded(context.provider,request);const checked=validateReply(response,request,policy);actualCost=checked.actualCost;usage=checked.usage;packet=generated(command,checked.output.extracts.map(e=>({citationId:e.citationId,quote:e.quote})),evidence.bindings.map(b=>b.observedAt));}
   catch(error){await budget.rejected(row,!(error instanceof MaintenanceError)||error.code==='maintenance_provider_timeout');throw error instanceof MaintenanceError?error:new MaintenanceError('maintenance_provider_failed');}
-  await budget.ready(row,response,packet,actualCost);generatedNow=true;row=(await budget.job(command.eventId))!;await context.checkpoint?.('proposal-ready');
+  try{await budget.ready(row,response,packet,actualCost,{usage,now:(context.clock??Date.now)()});}catch(error){if(currency){try{await budget.rejected(row,true);}catch{/* Existing reservation remains held. */}}throw error;}generatedNow=true;row=(await budget.job(command.eventId))!;await context.checkpoint?.('proposal-ready');
  }
  if(row.state==='calling'||row.state==='uncertain')stop('maintenance_provider_unconfirmed_no_retry');if(row.state==='failed')stop('maintenance_provider_rejected_no_retry');
- const saved=verified(row,command,request,policy,evidence.bindings.map(b=>b.observedAt));
+ const saved=verified(row,command,request,policy,evidence.bindings.map(b=>b.observedAt));budget.verifyCurrency(row,JSON.parse(row.response!).usage,true);
  if(row.state==='complete'&&!context.bridge.current()?.manifest.state.events.some(e=>e.eventId===command.eventId&&e.fingerprint===hash(canonical(saved))))stop('maintenance_receipt_unavailable');
  if(row.state!=='complete')freshBase();
  const result=await context.bridge.execute(saved,context.db,context.sourceDirectory,{checkpoint:context.bridgeCheckpoint});
@@ -52,17 +54,18 @@ function verified(row:ProposalRow,command:Apply,request:ProviderRequest,policy:R
 }
 
 // Read-only authorization for a downstream writer; never generates or resumes publication.
-export async function completedMaintenance(value:unknown,context:Pick<Context,'db'|'bridge'|'sourceDirectory'|'policy'|'clock'|'canonicalBase'>){
+export async function completedMaintenance(value:unknown,context:Pick<Context,'db'|'bridge'|'sourceDirectory'|'policy'|'clock'|'canonicalBase'|'currency'>){
+ const currency=currencyInput(context.currency);currencyProvider(currency,'fake-extractive-v1','synthetic-utf8-bytes');
  const policy=policyInput(context.policy),command=bridgeInput(value);if(command.kind!=='apply'||command.revision.article.reviewedCorrections)stop('maintenance_not_community_approval');
  const now=(context.clock??Date.now)();if(!Number.isSafeInteger(now)||now<0||now>253402300799999)stop('maintenance_clock');
  const project=projectFiles(context.bridge.repo);if(hash(project.files['src/content/articles/tool-use.md'])!==command.originalMarkdownHash)stop('maintenance_original_changed');
  const evidence=await validateEvidence(command,context.db,context.sourceDirectory);if(evidence.bindings.some(b=>b.observedAt>now||now-b.observedAt>policy.maxSourceAgeMs))stop('maintenance_stale_evidence');
  const basePort=context.canonicalBase?{...context.canonicalBase}:undefined,base=basePort?readMaintenanceBase(basePort,context.bridge.repo):undefined;
  const request:ProviderRequest={schemaVersion:1,kind:'extractive-source-data',sources:command.evidence.map(e=>sourceData(e.citationId,e.bodyHash,evidence.files[e.bodyHash])),maxOutputTokens:policy.maxOutputTokens,...(base?{canonicalBase:{untrusted:true as const,sourceCommit:base.metadata.sourceCommit,receiptHash:base.metadata.receipt.receiptHash,articleRevision:base.metadata.receipt.articleRevision,markdownSha256:base.metadata.receipt.markdownSha256,markdown:base.markdown}}:{})};
- const fingerprint=hash(canonical({command,sourceTreeHash:project.hash,evidenceHash:evidence.evidenceHash,bridge:context.bridge.root,policy,provider:'fake-extractive-v1',...(base?{canonicalBase:base.metadata}:{})}));
- const row=await new MaintenanceBudget(context.db).job(command.eventId);if(!row||row.state!=='complete'||row.fingerprint!==fingerprint||!row.receipt)stop('maintenance_completed_authority_required');
+ const fingerprint=hash(canonical({command,sourceTreeHash:project.hash,evidenceHash:evidence.evidenceHash,bridge:context.bridge.root,policy,...(currency?{currency}:{}),provider:'fake-extractive-v1',...(base?{canonicalBase:base.metadata}:{})}));
+ const budget=new MaintenanceBudget(context.db,currency?{enabled:true,policy:currency}:undefined),row=await budget.job(command.eventId);if(!row||row.state!=='complete'||row.fingerprint!==fingerprint||!row.receipt)stop('maintenance_completed_authority_required');
  if(row.reserved_cost!==tokens(request)*policy.inputRate+policy.maxOutputTokens*policy.outputRate)stop('maintenance_proposal_corrupt');
- const saved=verified(row,command,request,policy,evidence.bindings.map(b=>b.observedAt)),current=context.bridge.current(),event=current?.manifest.state.events.find(e=>e.eventId===command.eventId&&e.fingerprint===hash(canonical(saved)));
+ const saved=verified(row,command,request,policy,evidence.bindings.map(b=>b.observedAt));budget.verifyCurrency(row,JSON.parse(row.response!).usage,true);const current=context.bridge.current(),event=current?.manifest.state.events.find(e=>e.eventId===command.eventId&&e.fingerprint===hash(canonical(saved)));
  if(!current||!event)stop('maintenance_receipt_unavailable');
  const receipt={...event,outcome:'site-activated' as const,site:event.sequence===current.manifest.state.sequence?current.reference:current.manifest.state.ancestors[event.sequence-1],parent:event.sequence===1?null:current.manifest.state.ancestors[event.sequence-2]};
  if(canonical(receipt)!==row.receipt)stop('maintenance_receipt_corrupt');
