@@ -39,8 +39,8 @@ The owner requests recoverable, separate branches from the exact deployed main. 
 
 | Branch | Scope | Exact checkpoint / review |
 |---|---|---|
-| `feat/published-contribution-intake` | Reuse canonical published inventory for all twenty article choices and server admission; reject unknown/unpublished IDs; preserve abuse, moderation, replay and local-only gates. | In progress; record exact implementation/test/review checkpoint before claiming completion. |
-| `feat/admin-integration-contracts` | Unmounted authenticated write-only secret commands, safe status, explicit rotation and bounded connection-test contracts with synthetic local adapters. | In progress; no actual credential persistence, routes or live wiring. |
+| `feat/published-contribution-intake` | Reuse canonical published inventory for all twenty article choices and server admission; reject unknown/unpublished IDs; preserve abuse, moderation, replay and local-only gates. Add local migration `0017` to remove the historical three-ID SQL constraint without changing old migrations. | Implementation `545eaa7afaa1fc4d1b50248f558ae0feb0a7b205`; 13 focused tests passed, including native D1 populated upgrade/rollback/restart/all-twenty submissions. Full validation and independent review are running; no remote migration. |
+| `feat/admin-integration-contracts` | Unmounted authenticated write-only secret commands, safe status, explicit rotation and bounded connection-test contracts with synthetic local adapters. | Implementation `9d38eea50b8da486b43895ee8fc12cc6f33462cd`; 16 focused tests, 19 retained settings tests, eight static tests and actual build passed. Astro reports zero errors/warnings and one suggestion hint. Independent review is running; no actual credential persistence, routes or live wiring. |
 
 Each implementation has its own OpenSpec change record and independent exact-head review. Source commits, passed/failed/not-run checks and findings belong in this table once available. No merge, remote publication or deployment is inferred from a local commit. Do not change the released archive to package a successor.
 
