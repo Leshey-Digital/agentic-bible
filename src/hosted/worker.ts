@@ -4,6 +4,7 @@ import {runtimeRelease} from '../release/public.ts';
 import {configuredPorts} from './configuration.ts';
 import {createApproval,listApprovals,revokeApproval} from './approvals.ts';
 import {sourcePreview} from './source.ts';
+import {createRestorationApproval,revokeRestorationApproval} from '../maintenance-history/restoration-approvals.ts';
 import {MaintenanceReviewError,verifiedCatalog,listMaintenanceReviews,saveMaintenanceReview} from '../maintenance-history/review.ts';
 import {maintenanceAdminHtml,maintenanceAdminCss,maintenanceAdminJs} from '../maintenance-history/admin.ts';
 import {adminHtml,adminCss,adminJs} from './admin.ts';
@@ -23,11 +24,12 @@ export function createHostedRuntime(ports:Ports={}){return {async fetch(request:
       if(!ports.maintenanceReview||!ports.verifyAdmin||!env.EDITORIAL_DB)return json({error:'maintenance_review_unconfigured'},503);
       const admin=await ports.verifyAdmin(request);if(!admin||admin.role!=='admin'||admin.csrfVerified!==true||!Number.isSafeInteger(admin.expiresAt)||admin.expiresAt<=Date.now()||!/^signed-admin:[a-f0-9]{64}$/.test(admin.subject))return json({error:'verified_admin_required'},403);
       if(request.method==='GET'&&(path==='/admin/'||path.startsWith('/admin/maintenance/'))){const asset=path==='/admin/'||path==='/admin/maintenance/'?[maintenanceAdminHtml,'text/html; charset=utf-8']:path==='/admin/maintenance/style.css'?[maintenanceAdminCss,'text/css; charset=utf-8']:path==='/admin/maintenance/app.js'?[maintenanceAdminJs,'text/javascript; charset=utf-8']:null;return asset?new Response(asset[0],{headers:{...headers,'Content-Type':asset[1]}}):json({error:'not_found'},404);}
-      if(path!=='/api/admin/maintenance/review')return json({error:'not_found'},404);
+      if(!['/api/admin/maintenance/review','/api/admin/maintenance/restore-approval','/api/admin/maintenance/restore-revoke'].includes(path))return json({error:'not_found'},404);
       if(!['GET','POST'].includes(request.method))return json({error:'explicit_post_required'},405);
       if(request.method==='POST'&&(request.headers.get('origin')!==origin||request.headers.get('sec-fetch-site')==='cross-site'||request.headers.get('x-agentic-bible-request')!=='admin'))return json({error:'same_origin_required'},403);
       if(request.method==='POST'&&request.headers.get('content-type')?.split(';')[0]!=='application/json')return json({error:'json_required'},415);
       const view=await verifiedCatalog(env.ASSETS);
+      if(path!=='/api/admin/maintenance/review'){if(request.method!=='POST')return json({error:'explicit_post_required'},405);const input=await inputJson(request);if(path.endsWith('/restore-approval')){const result=await createRestorationApproval(env.EDITORIAL_DB,input,admin,view);return json({approvalId:result.approval.approvalId,requestId:result.approval.requestId,active:result.active,articleChanged:false,canonicalDispatchEnabled:false});}if(!input||Object.keys(input).join(',')!=='approvalId')return json({error:'approval_id_only'},400);return json(await revokeRestorationApproval(env.EDITORIAL_DB,input.approvalId,admin));}
       return json(request.method==='GET'?await listMaintenanceReviews(env.EDITORIAL_DB,admin,view):await saveMaintenanceReview(env.EDITORIAL_DB,admin,await inputJson(request),view));
     }
     const connectedAdmin=ports.hostedApprovals&&path!=='/api/admin/corrections/github-proposal'&&(path.startsWith('/admin/corrections/')||path.startsWith('/api/admin/corrections/'));

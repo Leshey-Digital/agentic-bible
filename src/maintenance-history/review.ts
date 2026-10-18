@@ -44,3 +44,14 @@ export async function saveMaintenanceReview(db:SqlDatabase,admin:VerifiedAdmin,v
  const row=await get();if(row){if(row.owner_hash!==owner||row.input_json!==raw)reject('maintenance_review_key_conflict');await integrity(row);return {...result(row),replayed:false,current:true};}
  const count=await db.prepare('SELECT COUNT(*) n FROM hosted_maintenance_reviews').first<{n:number}>();reject(count&&count.n>=64?'maintenance_review_capacity':'maintenance_review_stale_version');
 }
+
+// Server-only immutable authority lookup. The note remains private; this is not a
+// claim that a request alone authorizes canonical restoration.
+export async function reviewedRevertAuthority(db:SqlDatabase,id:string,admin:VerifiedAdmin){
+ auth(admin);if(!uuid(id))reject('maintenance_review_input',400);
+ const row=await db.prepare('SELECT * FROM hosted_maintenance_reviews WHERE request_id=?').bind(id).first<Row>();
+ if(!row)reject('restoration_review_required',403);const value=await integrity(row);
+ if(row.owner_hash!==await ownerHash(admin)||value.decision!=='revert-requested')reject('restoration_review_required',403);
+ const latest=await db.prepare('SELECT MAX(version) n FROM hosted_maintenance_reviews WHERE receipt_commit=?').bind(row.receipt_commit).first<{n:number}>();
+ return {input:value,fingerprint:row.fingerprint,version:row.version,owner:row.owner_hash,latest:latest?.n===row.version};
+}

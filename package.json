@@ -16,7 +16,7 @@
     "test:docs": "node scripts/validate-docs.mjs",
     "test": "node --test tests/static.test.mjs",
     "test:browser": "PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright test",
-    "validate": "npm run test:docs && npm run check && npm run build && npm test && npm run test:editorial && npm run test:monitoring && npm run test:settings && npm run test:integration && npm run test:http-sources && npm run test:http-worker && npm run test:publication && npm run test:seo && npm run test:seo:build && npm run test:wiki-bridge && npm run test:corrections && npm run test:hosted && npm run test:release && npm run test:maintenance-sources && npm run test:maintenance && npm run test:maintenance-github && npm run test:maintenance-history && npm run test:maintenance-review",
+    "validate": "npm run test:docs && npm run check && npm run build && npm test && npm run test:editorial && npm run test:monitoring && npm run test:settings && npm run test:integration && npm run test:http-sources && npm run test:http-worker && npm run test:publication && npm run test:seo && npm run test:seo:build && npm run test:wiki-bridge && npm run test:corrections && npm run test:hosted && npm run test:release && npm run test:maintenance-sources && npm run test:maintenance && npm run test:maintenance-github && npm run test:maintenance-history && npm run test:maintenance-review && npm run test:maintenance-restore",
     "staging:check": "node scripts/assert-staging-discovery.mjs && XDG_CONFIG_HOME=.git/runtime-config XDG_CACHE_HOME=.git/runtime-cache WRANGLER_SEND_METRICS=false wrangler deploy --dry-run --config wrangler.staging.jsonc",
     "staging:local": "node scripts/assert-staging-discovery.mjs && CLOUDFLARE_CF_FETCH_ENABLED=false XDG_CONFIG_HOME=.git/runtime-config XDG_CACHE_HOME=.git/runtime-cache WRANGLER_SEND_METRICS=false wrangler dev --local --config wrangler.staging.jsonc --ip 127.0.0.1 --port 8787",
     "browser:install": "PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright install chromium",
@@ -70,7 +70,9 @@
     "test:maintenance-github": "node --test tests/maintenance-github/writer.test.mjs",
     "test:maintenance-history": "node --test tests/maintenance-history/history.test.mjs",
     "test:maintenance-review": "node --test tests/maintenance-history/review.test.mjs tests/maintenance-history/quoted-url.test.mjs",
-    "test:maintenance-history:browser": "PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright test --config playwright.maintenance-history.config.ts"
+    "test:maintenance-history:browser": "PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright test --config playwright.maintenance-history.config.ts",
+    "test:maintenance-restore": "node --test tests/maintenance-restore/restoration.test.mjs",
+    "test:maintenance-restore:browser": "PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright test --config playwright.maintenance-restore.config.ts"
   },
   "dependencies": {
     "astro": "7.4.0"
