@@ -171,3 +171,7 @@ The separate local hosted-history successor adds static history/diff/flag pages 
 ## Controlled canonical restoration successor
 
 A separate successor adds explicit signed restoration approval and a default-disabled local coordinator that appends a new atomic article/history/review-pointer commit. Old requests remain request-only; ordinary valid automatic publication keeps its policy. [Restoration authority, recovery and live gaps](docs/canonical-maintenance-restoration.md) distinguish real owned-Git/local-D1 tests from missing production integration. `npm run test:maintenance-restore` is included in `validate`; `npm run test:maintenance-restore:browser` covers the rebuilt desktop/mobile artifact. No route, provider credential or live write is enabled.
+
+## Controlled maintenance after restoration
+
+`npm run test:maintenance-base` covers separate signed restoration followed by a canonical-base-bound fake generation, atomic writer, strict public history build and source-matching release candidate on owned Git/shared local D1. It is included in `validate`. The port is opt-in fixture-only; no route, schedule, provider, credential or deployment is enabled. [Contract, stale-base recovery and production gaps](docs/restored-maintenance-base.md).
