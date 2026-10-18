@@ -1,14 +1,27 @@
 import {execFileSync,spawn} from 'node:child_process';
-import {existsSync,lstatSync,mkdirSync,readdirSync,realpathSync,symlinkSync} from 'node:fs';import {join} from 'node:path';
+import {existsSync,lstatSync,mkdirSync,readdirSync,realpathSync,symlinkSync,openSync,closeSync,writeFileSync,fstatSync,fsyncSync,constants} from 'node:fs';import {join} from 'node:path';
 import {canonical,hash} from '../publishing/contracts.ts';import {atomic,bounded} from '../wiki-bridge/files.ts';
 import {prepareCandidate,verifyCandidate} from '../release/artifact.ts';
 import {readCanonicalMaintenance} from '../maintenance-history/canonical.ts';
-import {limits,stop,PipelineLedger,type Row} from './ledger.ts';
+import {limits,stop,PipelineLedger,PipelineError,type Row} from './ledger.ts';
 export type ReviewState={sourceCommit:string;catalogHash:string;receiptCommit:string|null};
 export type ReviewArtifact={schemaVersion:1;eventId:string;fingerprint:string;attempt:number;sourceCommit:string;receiptHash:string;candidateDigest:string;catalogHash:string};
 export type ReviewPort={kind:'controlled-review-ingestion-fixture';read:()=>Promise<ReviewState>;activate:(value:{artifact:ReviewArtifact;candidatePath:string;expected:ReviewState})=>Promise<unknown>};
 export function storeRoot(repo:string,name:string){if(!/^maintenance-pipeline-[a-z0-9-]{1,55}$/.test(name))stop('pipeline_store_name');const git=execFileSync('git',['-C',repo,'rev-parse','--absolute-git-dir'],{encoding:'utf8'}).trim(),root=join(realpathSync(git),name);if(existsSync(root)&&lstatSync(root).isSymbolicLink())stop('pipeline_unsafe_store');mkdirSync(root,{recursive:true});return root;}
-function bytes(root:string,ignored=new Set<string>()){let total=0,count=0;const visit=(path:string)=>{if(ignored.has(path))return;const stat=lstatSync(path);if(stat.isSymbolicLink())stop('pipeline_unsafe_store');if(stat.isDirectory()){for(const name of readdirSync(path))visit(join(path,name));}else{if(!stat.isFile()||++count>8192)stop('pipeline_storage_limit');total+=stat.size;if(total>limits.storeBytes)stop('pipeline_storage_limit');}};visit(root);return total;}
+function bytes(root:string,ignored=new Set<string>(),live=false){
+ let total=0,count=0;
+ const visit=(path:string,enumerated=false)=>{
+  if(ignored.has(path))return;
+  // Only an entry already enumerated inside the live stage may disappear benignly.
+  const stat=live&&enumerated?lstatSync(path,{throwIfNoEntry:false}):lstatSync(path);
+  if(!stat){if(live&&enumerated)return;stop('pipeline_unsafe_store');}
+  if(stat.isSymbolicLink())stop('pipeline_unsafe_store');
+  if(stat.isDirectory()){
+   let names:string[];try{names=readdirSync(path);}catch(error){if(live&&enumerated&&(error as NodeJS.ErrnoException).code==='ENOENT')return;throw error;}
+   for(const name of names)visit(join(path,name),true);
+  }else{if(!stat.isFile()||++count>8192)stop('pipeline_storage_limit');total+=stat.size;if(total>limits.storeBytes)stop('pipeline_storage_limit');}
+ };visit(root);return total;
+}
 function ignores(root:string){const result=new Set<string>();for(const name of readdirSync(root)){if(!/^[a-f0-9]{64}-[1-3]$/.test(name))stop('pipeline_unsafe_store');result.add(join(root,name,'project/node_modules'));}return result;}
 function stage(root:string,id:string,attempt:number){return join(root,hash(id)+'-'+attempt);}
 export function artifactPath(root:string,artifact:ReviewArtifact){if(!Number.isInteger(artifact.attempt)||artifact.attempt<1||artifact.attempt>3)stop('pipeline_artifact_invalid');return join(stage(root,artifact.eventId,artifact.attempt),'project/.git/review-candidate');}
@@ -22,7 +35,25 @@ export async function prepareReview(root:string,row:Row,owner:string,ledger:Pipe
  if(bytes(canonicalRepo)>limits.repoBytes||bytes(root,ignores(root))+limits.stageBytes>limits.storeBytes)stop('pipeline_storage_limit');row=await ledger.build(row,owner,clock());const folder=stage(root,row.event_id,row.build_attempts);if(existsSync(folder))stop('pipeline_review_stage_exists');mkdirSync(folder);const project=join(folder,'project');
  execFileSync('git',['-c','core.hooksPath=/dev/null','clone','--local','--no-hardlinks','--no-checkout','-b','main',canonicalRepo,project],{env:{PATH:process.env.PATH,GIT_ALLOW_PROTOCOL:'file',GIT_TERMINAL_PROMPT:'0'},timeout:10000,maxBuffer:16384,stdio:'pipe'});execFileSync('git',['-c','core.hooksPath=/dev/null','-C',project,'checkout','--detach',receipt.commit],{env:{PATH:process.env.PATH,GIT_ALLOW_PROTOCOL:'',GIT_NO_LAZY_FETCH:'1'},timeout:10000,maxBuffer:16384,stdio:'pipe'});
  const modules=join(project,'node_modules'),installed=realpathSync(join(repo,'node_modules'));mkdirSync(modules);for(const name of readdirSync(installed))symlinkSync(join(installed,name),join(modules,name));
- await new Promise<void>((done,failed)=>{const child=spawn(process.execPath,[join(project,'scripts/maintenance-review-build.mjs'),project,String(process.pid)],{cwd:project,env:{PATH:process.env.PATH??'',CI:'1',ASTRO_TELEMETRY_DISABLED:'1',CLOUDFLARE_CF_FETCH_ENABLED:'false',AGENTIC_BIBLE_MAINTENANCE_HISTORY_MODE:'controlled-static-preview',AGENTIC_BIBLE_SOURCE_COMMIT:receipt.commit},stdio:['ignore','ignore','pipe']});let reason='pipeline_review_build_failed';const timer=setTimeout(()=>{reason='pipeline_review_build_timeout';child.kill('SIGKILL');},limits.buildMs),monitor=setInterval(()=>{try{if(bytes(folder,new Set([modules]))>limits.stageBytes){reason='pipeline_storage_limit';child.kill('SIGKILL');}}catch{child.kill('SIGKILL');}},100);child.stderr.on('data',()=>{});child.once('error',()=>{clearTimeout(timer);clearInterval(monitor);failed(Error(reason));});child.once('exit',code=>{clearTimeout(timer);clearInterval(monitor);code===0?done():failed(Error(reason));});});
+ await new Promise<void>((done,failed)=>{
+  const child=spawn(process.execPath,[join(project,'scripts/maintenance-review-build.mjs'),project,String(process.pid)],{cwd:project,env:{PATH:process.env.PATH??'',CI:'1',ASTRO_TELEMETRY_DISABLED:'1',CLOUDFLARE_CF_FETCH_ENABLED:'false',AGENTIC_BIBLE_MAINTENANCE_HISTORY_MODE:'controlled-static-preview',AGENTIC_BIBLE_SOURCE_COMMIT:receipt.commit},stdio:['ignore','ignore','pipe']});
+  const started=performance.now(),diagnostic={schemaVersion:1,stop:'complete',reason:null as string|null,filesystemCode:null as string|null,exitCode:null as number|null,signal:null as string|null,elapsedMs:0,stderrBytes:0,stderrTruncated:false,persisted:false};
+  let settled=false,stopping=false;
+  const fsCode=(error:unknown)=>{const code=(error as NodeJS.ErrnoException)?.code;return code&&['ENOENT','ENOTDIR','ELOOP','EACCES','EPERM','EIO','EBADF','EMFILE','ENFILE'].includes(code)?code:'UNKNOWN';};
+  const persist=()=>{let fd:number|undefined;try{
+   for(const path of [root,folder]){const stat=lstatSync(path);if(stat.isSymbolicLink()||!stat.isDirectory())return;}
+   const raw=canonical({...diagnostic,persisted:true});if(Buffer.byteLength(raw)>2048)return;
+   fd=openSync(join(folder,'build-diagnostics.json'),constants.O_WRONLY|constants.O_CREAT|constants.O_EXCL|constants.O_NOFOLLOW|constants.O_NONBLOCK,0o600);if(!fstatSync(fd).isFile())return;writeFileSync(fd,raw);fsyncSync(fd);diagnostic.persisted=true;
+  }catch{/* A diagnostic failure never replaces the actual stop or recreates missing paths. */}finally{if(fd!==undefined)closeSync(fd);}};
+  const stopChild=(reason:string,kind:string,error?:unknown)=>{if(stopping||settled)return;stopping=true;diagnostic.reason=reason;diagnostic.stop=kind;if(error)diagnostic.filesystemCode=fsCode(error);child.kill('SIGKILL');};
+  const timer=setTimeout(()=>stopChild('pipeline_review_build_timeout','deadline'),limits.buildMs),monitor=setInterval(()=>{if(stopping||settled)return;try{if(bytes(folder,new Set([modules]),true)>limits.stageBytes)stopChild('pipeline_storage_limit','capacity');}catch(error){if(error instanceof PipelineError&&['pipeline_storage_limit','pipeline_unsafe_store'].includes(error.code))stopChild(error.code,error.code==='pipeline_storage_limit'?'capacity':'unsafe-store');else stopChild('pipeline_review_monitor_failed','scan-error',error);}},100);
+  child.stderr.on('data',chunk=>{if(settled)return;const total=diagnostic.stderrBytes+chunk.length;diagnostic.stderrBytes=Math.min(total,8192);if(total>8192)diagnostic.stderrTruncated=true;});
+  const finish=(code:number|null,signal:string|null,error?:unknown)=>{if(settled)return;settled=true;clearTimeout(timer);clearInterval(monitor);diagnostic.exitCode=code;diagnostic.signal=signal;diagnostic.elapsedMs=Math.round(performance.now()-started);
+   if(error&&!diagnostic.reason){diagnostic.stop='spawn';diagnostic.reason='pipeline_review_build_failed';diagnostic.filesystemCode=fsCode(error);}else if(code!==0&&!diagnostic.reason){diagnostic.stop='child-exit';diagnostic.reason='pipeline_review_build_failed';}
+   persist();if(code===0&&!diagnostic.reason)done();else{const failure=Error(diagnostic.reason??'pipeline_review_build_failed') as Error&{diagnostics:Readonly<typeof diagnostic>};failure.diagnostics=Object.freeze({...diagnostic});failed(failure);}
+  };
+  child.once('error',error=>finish(null,null,error));child.once('exit',(code,signal)=>finish(code,signal));
+ });
  const output=join(project,'.git/review-candidate');await prepareCandidate(project,output);const {candidate,id}=verifyCandidate(output),artifact:ReviewArtifact={schemaVersion:1,eventId:row.event_id,fingerprint:row.fingerprint,attempt:row.build_attempts,sourceCommit:receipt.commit,receiptHash:hash(canonical(receipt)),candidateDigest:id,catalogHash:candidate.assets['maintenance-history.json'].sha256};verifyArtifact(root,artifact,receipt,row.fingerprint);atomic(join(folder,'seal.json'),artifact);return artifact;
 }
 export async function boundedPort<T>(call:()=>Promise<T>):Promise<T>{let timer:ReturnType<typeof setTimeout>|undefined;try{return await Promise.race([call(),new Promise<never>((_done,reject)=>{timer=setTimeout(()=>reject(Error('pipeline_review_outcome_unconfirmed')),limits.portMs);})]);}finally{clearTimeout(timer);}}
