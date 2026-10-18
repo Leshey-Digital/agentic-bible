@@ -30,3 +30,7 @@ The selected producer connects only one missing local stage. Live discovery/sche
 | Independent PR34 review | Separate read-only worktree at `697d546fc5b6560fe1c38e573584c855c86c13af` | Do not edit frozen head; preserve its screenshots/failure evidence. |
 
 Keep `package.json`, lockfile, shared CI, README, AGENTS and shared migrations integration under one coordinator. These are proposals for disjoint worktrees, not permission to create services or spend. No deployment, merge, secret/account configuration, paid call or live indexing is authorized by the resumed speed request.
+
+## Runtime smoke follow-up
+
+The first demo import failed before any provider/D1 execution because a TypeScript constructor parameter property is unsupported by Node 24 strip-only execution. Replacing it with an explicit field/assignment fixes native imports. The subsequent explicit demo performed two controlled source fetches, one deterministic fake call, actual-D1 reservation (2,842 simulated micro-units), validated output (1,556 simulated units) and automatic local full-wiki activation. Restart/replay performed zero source fetches and zero provider calls and returned the same snapshot. Real spend remained zero. These are smoke results, not completed concurrency/failure/budget test coverage. Logs and exact receipts are in the actual Git directory. UI reviewer fixes take priority on a separate successor; maintenance remains unmerged and unreviewed.

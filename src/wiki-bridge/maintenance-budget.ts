@@ -3,7 +3,8 @@ import {canonical,hash} from '../publishing/contracts.ts';
 import {stop,policyInput,type Policy} from './maintenance-provider.ts';
 export type ProposalRow={event_id:string;fingerprint:string;owner:string;state:'calling'|'uncertain'|'failed'|'ready'|'complete';created_at:number;day:number;month:string;input_tokens:number;output_tokens:number;reserved_cost:number;actual_cost:number|null;response:string|null;packet:string|null;packet_hash:string|null;receipt:string|null;error:string|null};
 export class MaintenanceBudget {
- constructor(readonly db:SqlDatabase){}
+ readonly db:SqlDatabase;
+ constructor(db:SqlDatabase){this.db=db;}
  async job(event:string){try{return await this.db.prepare('SELECT * FROM maintenance_proposals WHERE event_id=?').bind(event).first<ProposalRow>();}catch{return stop('maintenance_accounting_unavailable');}}
  async reserve(event:string,fingerprint:string,policy:Readonly<Policy>,inputTokens:number,now:number){
   policy=policyInput(policy);if(!Number.isSafeInteger(now)||now<0||now>253402300799999)stop('maintenance_clock');if(!Number.isSafeInteger(inputTokens)||inputTokens<1||inputTokens>policy.maxInputTokens)stop('maintenance_input_tokens');
