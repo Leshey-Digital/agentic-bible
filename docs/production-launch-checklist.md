@@ -6,10 +6,10 @@ This preparation does not deploy production or enable credentials, public intake
 
 - [x] Preserve the reviewed intake and integration-contract ancestors on separate recovery branches.
 - [x] Independently review and compose the article corrections, examples, search and revision metadata fixes.
-- [ ] Resolve every independent hosted and publishing finding at exact frozen successor commits.
-- [ ] Exercise actual contribution intake, signed review, source update, quality admission, canonical publication, revision review and restoration across different existing articles in one controlled repository.
-- [ ] Include every new regression suite in the central saved-environment qualification command.
-- [ ] Complete the retained native, browser, accessibility, interruption/restart and dry-run checks on the exact composition.
+- [x] Resolve the reviewed hosted and publishing findings at frozen successor commits. The final writer continuity review remains blocked by the automated filter and is explicitly not accepted; see the composition record.
+- [x] Exercise actual contribution intake, signed review, source update, quality admission, canonical publication, revision review and restoration across different existing articles in one controlled repository. The latest proof ran twenty heads/captures/charged proposals and one final Astro/Pagefind/release/signed-review build.
+- [x] Include every new regression suite in the central saved-environment qualification command.
+- [ ] Complete the retained native, browser, accessibility, interruption/restart and dry-run checks on the exact composition. Full exact-composition qualification is still running or pending.
 - [ ] Prepare and independently verify the immutable source, candidate, inventory and qualification identities; preserve failures and receipts with the recovery package.
 
 All twenty articles have received deep reads across the retained external and internal reviews. Only sampled claims were verified. Neither this checklist nor a successful qualification labels the collection fully fact-checked.
