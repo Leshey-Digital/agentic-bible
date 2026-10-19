@@ -7,21 +7,35 @@ import {policyInput,stop} from '../wiki-bridge/maintenance-provider.ts';
 export const cloudflareProseModel='@cf/meta/llama-3.2-1b-instruct';
 export const cloudflareProseLimits=Object.freeze({promptBytes:8192,responseBytes:4096,timeoutMs:2000});
 export type WorkersAiBinding={run:(model:string,input:{prompt:string;max_tokens:number})=>Promise<unknown>};
-export type ProseUsageReader=(value:unknown)=>Usage;
 export type ProseInputBound=(prompt:string)=>number;
 export type CloudflareProseOptions={enabled?:boolean;ai?:WorkersAiBinding;db?:SqlDatabase;currency?:CurrencyControl;policy?:unknown;
- usageReader?:ProseUsageReader;inputTokenUpperBound?:ProseInputBound;clock?:()=>number;timeoutMs?:number};
+ inputTokenUpperBound?:ProseInputBound;clock?:()=>number;timeoutMs?:number};
 export type ProseDraft={kind:'unverified-prose-draft';model:string;text:string;usage:Usage;costUpperBoundMicroUsd:number;costSettledMicroUsd:number;eventId:string};
 
-// Opt-in, server-side adapter. The usage reader is required because Cloudflare
-// documents a usage object but does not define its nested token field names here.
+// The pinned Workerd Workers AI output type models this generation result as
+// usage.prompt_tokens, usage.completion_tokens and usage.total_tokens. Do not
+// accept aliases or caller-supplied mappings: uncertainty must retain the hold.
+export function readCloudflareProseUsage(value:unknown):Usage{
+ if(!value||typeof value!=='object'||Array.isArray(value))stop('cloudflare_prose_usage');
+ const usage=(value as Record<string,unknown>).usage;
+ if(!usage||typeof usage!=='object'||Array.isArray(usage))stop('cloudflare_prose_usage');
+ const counts=usage as Record<string,unknown>,keys=Object.keys(counts).sort();
+ if(keys.join(',')!=='completion_tokens,prompt_tokens,total_tokens')stop('cloudflare_prose_usage');
+ const inputTokens=counts.prompt_tokens,outputTokens=counts.completion_tokens,totalTokens=counts.total_tokens;
+ if(!Number.isSafeInteger(inputTokens)||!Number.isSafeInteger(outputTokens)||!Number.isSafeInteger(totalTokens)||
+    (inputTokens as number)<0||(outputTokens as number)<0||(totalTokens as number)!==(inputTokens as number)+(outputTokens as number))stop('cloudflare_prose_usage');
+ return {inputTokens:inputTokens as number,outputTokens:outputTokens as number};
+}
+
+// Opt-in, server-side adapter. Cloudflare documents the usage object; the
+// pinned model's generated binding type supplies its nested token fields.
 // No Worker route or Wrangler binding imports this module by default.
 export function createCloudflareProseAdapter(options:CloudflareProseOptions={}){
- const {enabled,ai,db,currency:control,policy:policyControl,usageReader,inputTokenUpperBound,clock}=options,timeout=options.timeoutMs??cloudflareProseLimits.timeoutMs;
+ const {enabled,ai,db,currency:control,policy:policyControl,inputTokenUpperBound,clock}=options,timeout=options.timeoutMs??cloudflareProseLimits.timeoutMs;
  return Object.freeze({connectionStatus:'unverified' as const,capability:'draft-prose-only' as const,
   async generate(prompt:string):Promise<ProseDraft>{
    if(enabled!==true)stop('cloudflare_prose_disabled');if(!ai||typeof ai.run!=='function')stop('cloudflare_prose_binding_unconfigured');if(!db)stop('cloudflare_prose_storage_unconfigured');
-   if(typeof usageReader!=='function')stop('cloudflare_prose_usage_unconfigured');if(typeof inputTokenUpperBound!=='function')stop('cloudflare_prose_input_bound_unconfigured');
+   if(typeof inputTokenUpperBound!=='function')stop('cloudflare_prose_input_bound_unconfigured');
    if(!Number.isSafeInteger(timeout)||timeout<1||timeout>cloudflareProseLimits.timeoutMs)stop('cloudflare_prose_deadline');
    const bytes=new TextEncoder().encode(prompt??'').byteLength;if(typeof prompt!=='string'||bytes<1||bytes>cloudflareProseLimits.promptBytes)stop('cloudflare_prose_prompt_limit');
    const policy=policyInput(policyControl),currency=currencyInput(control);if(!currency)stop('cloudflare_prose_currency_unconfigured');
@@ -40,7 +54,7 @@ export function createCloudflareProseAdapter(options:CloudflareProseOptions={}){
     if(controller.signal.aborted)stop('cloudflare_prose_timeout');
     if(!raw||typeof raw!=='object'||Array.isArray(raw))stop('cloudflare_prose_response');const value=raw as Record<string,unknown>;
     if(typeof value.response!=='string'||value.response.trim().length<1||new TextEncoder().encode(value.response).byteLength>cloudflareProseLimits.responseBytes)stop('cloudflare_prose_response');
-    const usage=usageReader(value.usage);if(!usage||!Number.isSafeInteger(usage.inputTokens)||usage.inputTokens<1||usage.inputTokens>policy.maxInputTokens||!Number.isSafeInteger(usage.outputTokens)||usage.outputTokens<0||usage.outputTokens>policy.maxOutputTokens)stop('cloudflare_prose_usage');
+    const usage=readCloudflareProseUsage(value);if(usage.inputTokens<1||usage.inputTokens>policy.maxInputTokens||usage.outputTokens<0||usage.outputTokens>policy.maxOutputTokens)stop('cloudflare_prose_usage');
     const settledAt=(clock??Date.now)(),cost=currencyCost(currency,usage,price.id),receipt={schemaVersion:1,provider:'cloudflare-workers-ai',model:cloudflareProseModel,priceId:price.id,requestHash,usage,costUpperBoundMicroUsd:row.currency_reserved,costSettledMicroUsd:cost,draftHash:hash(value.response)};
     const draft:ProseDraft={kind:'unverified-prose-draft',model:cloudflareProseModel,text:value.response,usage,costUpperBoundMicroUsd:row.currency_reserved!,costSettledMicroUsd:cost,eventId:event};
     await budget.ready(row,{response:value.response,usage,provider:'cloudflare-workers-ai',model:cloudflareProseModel},{kind:'cloudflare-prose-draft',...receipt},usage.inputTokens+usage.outputTokens,{usage,now:settledAt});
