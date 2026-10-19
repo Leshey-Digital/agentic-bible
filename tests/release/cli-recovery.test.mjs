@@ -8,6 +8,7 @@ import {fixture,git} from './fixture.mjs';
 import {controlledPorts} from './support/operation.mjs';
 import {executeRelease} from '../../src/release/controller.ts';
 import {verifyCandidate} from '../../src/release/artifact.ts';
+import {expectedStagingBindings,hasExactBindings} from '../../src/release/bindings.ts';
 const providerScript=resolve('tests/release/support/provider.mjs'),runner=resolve('tests/release/support/operation.mjs');
 const permit=a=>({ownerEnabled:true,environment:'staging',repository:'Leshey-Digital/agentic-bible',sourceCommit:a.candidate.sourceCommit,qualificationDigest:'b'.repeat(64),reviewedQualificationDigest:'b'.repeat(64),exclusiveWriter:true,candidateDigest:a.id,requestId:randomUUID(),expectedActive:null,action:'deploy'});
 async function provider(root,fault){
@@ -18,6 +19,13 @@ async function provider(root,fault){
  const read=()=>JSON.parse(readFileSync(statePath)),write=value=>writeFileSync(statePath,JSON.stringify(value));
  return {directory,statePath,evidence,origin,read,write,close:async()=>{const exited=new Promise(done=>child.once('exit',done));child.kill();await exited;assert.equal(errors,'');}};
 }
+test('pinned Wrangler upload preflight rejects extra or misbound settings before starting the uploader',{timeout:60000},async()=>{
+ const f=await fixture(),a=await f.revision(),remote=await provider(a.root,'none');try{
+  const state=remote.read();remote.write({...state,settingsOverride:[{name:'EDITORIAL_DB',type:'d1',id:'1ca9a6f8-c0a9-4040-8a2f-e22d888a985a'},{name:'HOSTED_ADMIN_TRUST',type:'secret_text'},{name:'INTEGRATION_VAULT_KEY',type:'secret_text'},{name:'INTEGRATION_VAULT_KEY_ID',type:'secret_text'},{name:'EXTRA_SECRET',type:'secret_text'}]});
+  const ports=controlledPorts(remote.origin,remote.evidence);await assert.rejects(ports.upload(a.root,a.id,randomUUID()),/release_runtime_bindings_required/);
+  const after=remote.read();assert.equal(after.versions.length,0);assert.equal(after.calls.filter(call=>call.path.endsWith('/settings')).length,1);assert.equal(after.calls.some(call=>call.path.endsWith('/assets-upload-session')),false);
+ }finally{await remote.close();}
+});
 test('pinned Wrangler retries ambiguous creates; SIGKILL and same-UUID replay reconcile duplicates safely',{timeout:120000},async t=>{
  const f=await fixture(),a=await f.revision(),proof=[];
  for(const fault of ['drop','500']){await t.test(fault,async()=>{
@@ -25,7 +33,7 @@ test('pinned Wrangler retries ambiguous creates; SIGKILL and same-UUID replay re
    const p=permit(a),journal=join(remote.directory,'journal.json'),plan={root:a.root,permit:p,origin:remote.origin,evidence:remote.evidence,journal},planPath=join(remote.directory,'plan.json');writeFileSync(planPath,JSON.stringify(plan));
    const killed=spawnSync(process.execPath,[runner,planPath],{encoding:'utf8',timeout:30000});assert.equal(killed.signal,'SIGKILL',killed.stderr);
    const state=remote.read();assert.equal(state.versions.length,2,'actual pinned CLI must create two versions');assert.equal(state.activations,0);assert.equal(JSON.parse(readFileSync(journal)).state,'upload-pending');assert.equal(JSON.parse(readFileSync(journal)).versionId,null);
-   for(const row of state.versions){assert.equal(row.workerSha256,a.candidate.workerSha256);assert.equal(row.annotations['workers/message'],'ab-candidate:'+a.id+':'+p.requestId);assert.deepEqual(row.resources.bindings,[{name:'ASSETS',type:'assets'}]);}
+   for(const row of state.versions){assert.equal(row.workerSha256,a.candidate.workerSha256);assert.equal(row.annotations['workers/message'],'ab-candidate:'+a.id+':'+p.requestId);assert.ok(hasExactBindings(row.resources.bindings,expectedStagingBindings));}
    const blocked=existsSync(remote.evidence)?readFileSync(remote.evidence,'utf8').trim().split('\n').map(JSON.parse):[];assert.ok(blocked.every(row=>row.blocked&&row.host==='registry.npmjs.org'&&row.method==='GET'),'only blocked package-update reads are permitted');assert.equal(verifyCandidate(a.root).id,a.id);
    const ports=controlledPorts(remote.origin,remote.evidence),selected=state.versions.map(v=>v.id).sort()[0],sibling=state.versions.find(v=>v.id!==selected).id;
    assert.equal(await controlledPorts(remote.origin,remote.evidence).findVersion(a.id,p.requestId),selected);

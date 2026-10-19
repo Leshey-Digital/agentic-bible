@@ -21,7 +21,7 @@ export async function verifyServing(root:string,ports:Pick<Ports,'read'>){
    try{for(;;){const part=await reader.read();if(part.done)break;total+=part.value.length;if(total>file.bytes){void reader.cancel();throw Error('release_served_capacity');}chunks.push(part.value);}}finally{reader.releaseLock();}
    if(total!==file.bytes||digest(Buffer.concat(chunks))!==file.sha256)throw Error('release_served_bytes_changed');count++;
  }
- const response=await ports.read('/api/runtime/status'),status=await responseJson(response,4096);if(response.status!==200||status.releaseCommit!==candidate.sourceCommit||status.releaseManifestVerified!==true||status.releaseManifestSha256!==candidate.manifestSha256||status.releaseBuildId!==candidate.buildId||status.releaseVerified!==false||status.publicIntake!==false||status.gitHubProposalsConfigured!==false||status.hostedCanonicalWrites!==false)throw Error('release_runtime_binding_or_closed_policy');
+ const response=await ports.read('/api/runtime/status'),status=await responseJson(response,4096);if(response.status!==200||status.releaseCommit!==candidate.sourceCommit||status.releaseManifestVerified!==true||status.releaseManifestSha256!==candidate.manifestSha256||status.releaseBuildId!==candidate.buildId||status.releaseVerified!==false||status.adminVerifierConfigured!==true||status.integrationSettingsConfigured!==true||status.publicIntake!==false||status.gitHubProposalsConfigured!==false||status.hostedCanonicalWrites!==false||status.jevDispatchState!=='not-mounted'||status.jevDispatchConfigured!==false||status.localFixtureIdentity!==false)throw Error('release_runtime_binding_or_closed_policy');
  return count;
 }
 export async function executeRelease(root:string,p:Permit,ports:Ports,journalPath:string):Promise<Receipt>{

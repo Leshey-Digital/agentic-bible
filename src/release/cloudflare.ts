@@ -1,5 +1,6 @@
 import {execFileSync} from 'node:child_process';import {readFileSync,mkdtempSync,cpSync} from 'node:fs';import {join,dirname,resolve} from 'node:path';import {createRequire} from 'node:module';
 import {releaseTarget} from './public.ts';import {verifyCandidate} from './artifact.ts';import type {Ports} from './controller.ts';
+import {expectedStagingBindings,expectedStagingSettingsBindings,hasExactBindings} from './bindings.ts';
 const root='https://api.cloudflare.com/client/v4/accounts/'+releaseTarget.account+'/workers/scripts/'+releaseTarget.worker;
 const uuid=(value:unknown):value is string=>typeof value==='string'&&/^[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}$/.test(value);
 export function cloudflarePorts(token:string|null,assertSource:()=>Promise<void>,options:{send?:typeof fetch;uploadCommand?:typeof execFileSync;api?:(path:string,body?:unknown)=>Promise<any>;upload?:Ports['upload']}={}):Ports{
@@ -13,7 +14,7 @@ export function cloudflarePorts(token:string|null,assertSource:()=>Promise<void>
  function annotations(value:any){return value.annotations??value.metadata?.annotations??{};}
  async function versionDetail(id:string){
    if(!uuid(id))throw Error('release_version_id');const value=await api('/versions/'+id),message=annotations(value)['workers/message'];
-   if(!Array.isArray(value.resources?.bindings)||value.resources.bindings.length!==1||value.resources.bindings[0].name!=='ASSETS'||value.resources.bindings[0].type!=='assets')throw Error('release_unreviewed_bindings');
+   if(!hasExactBindings(value.resources?.bindings,expectedStagingBindings))throw Error('release_unreviewed_bindings');
    if(value.id!==id||typeof message!=='string'||!/^ab-candidate:[a-f0-9]{64}:[a-f0-9-]{36}$/.test(message))throw Error('release_foreign_version');
    return {versionId:id,candidateDigest:message.split(':')[1],message};
  }
@@ -33,7 +34,7 @@ export function cloudflarePorts(token:string|null,assertSource:()=>Promise<void>
    if(selected!==undefined&&!found.includes(selected))throw Error('release_version_selection_missing');
    return selected??found.sort()[0]??null;
   },
-  upload:async(directory,id,requestId)=>{verifyCandidate(directory,id);if(options.upload)return options.upload(directory,id,requestId);const require=createRequire(import.meta.url),cli=join(dirname(require.resolve('wrangler/package.json')),'bin/wrangler.js'),scratch=mkdtempSync(join(resolve(directory),'..','release-upload-')),output=join(scratch,'output.jsonl');cpSync(directory,join(scratch,'candidate'),{recursive:true});
+  upload:async(directory,id,requestId)=>{verifyCandidate(directory,id);if(options.upload)return options.upload(directory,id,requestId);const settings=await api('/settings');if(!hasExactBindings(settings?.bindings,expectedStagingSettingsBindings))throw Error('release_runtime_bindings_required');const require=createRequire(import.meta.url),cli=join(dirname(require.resolve('wrangler/package.json')),'bin/wrangler.js'),scratch=mkdtempSync(join(resolve(directory),'..','release-upload-')),output=join(scratch,'output.jsonl');cpSync(directory,join(scratch,'candidate'),{recursive:true});
     try{command(process.execPath,[cli,'versions','upload','--config',join(scratch,'candidate/wrangler.json'),'--no-bundle','--tag',id.slice(0,32),'--message','ab-candidate:'+id+':'+requestId],{timeout:90000,maxBuffer:262144,env:{PATH:process.env.PATH,CLOUDFLARE_API_TOKEN:token??undefined,CLOUDFLARE_ACCOUNT_ID:releaseTarget.account,WRANGLER_SEND_METRICS:'false',CLOUDFLARE_CF_FETCH_ENABLED:'false',WRANGLER_OUTPUT_FILE_PATH:output,XDG_CONFIG_HOME:join(scratch,'config'),XDG_CACHE_HOME:join(scratch,'cache')},stdio:['ignore','pipe','pipe']});}catch{throw Error('release_upload_outcome_unconfirmed');}
     const rows=readFileSync(output,'utf8').trim().split('\n').map(line=>JSON.parse(line)),row=rows.find(v=>v.type==='version-upload'&&v.version===1);if(!row||!/^[a-f0-9-]{36}$/.test(row.version_id))throw Error('release_upload_unconfirmed');return row.version_id;},
   activate:async(id,operation)=>{if(!/^[a-f0-9-]{36}$/.test(id)||!/^ab-release:[a-f0-9-]{36}:[a-f0-9]{64}$/.test(operation))throw Error('release_activation_input');await api('/deployments',{strategy:'percentage',versions:[{version_id:id,percentage:100}],annotations:{'workers/message':operation}});},

@@ -7,6 +7,7 @@ import {createRequire} from 'node:module';
 import {build} from 'esbuild';
 import {articleSource} from './source.ts';
 import {releaseTarget} from './public.ts';
+import {stagingEditorialDatabase,requiredStagingSecrets} from './bindings.ts';
 export const canonical=(v:unknown):string=>JSON.stringify(v,(_key,value)=>value&&typeof value==='object'&&!Array.isArray(value)?Object.fromEntries(Object.entries(value).sort(([a],[b])=>a<b?-1:a>b?1:0)):value)+'\n';
 export const digest=(v:string|Uint8Array)=>createHash('sha256').update(v).digest('hex');
 export const limits={files:256,bytes:16*1024*1024,fileBytes:4*1024*1024};
@@ -17,7 +18,7 @@ export function inventory(root:string):Inventory{
   function walk(dir:string){for(const name of readdirSync(dir).sort()){const path=join(dir,name),stat=lstatSync(path);if(stat.isSymbolicLink())throw Error('release_symlink');if(stat.isDirectory()){walk(path);continue;}const key=relative(root,path);if(!stat.isFile()||!pathSafe(key)||stat.size>limits.fileBytes)throw Error('release_file_rejected');bytes+=stat.size;if(bytes>limits.bytes||Object.keys(files).length>=limits.files)throw Error('release_capacity');const data=readFileSync(path);if(data.length!==stat.size)throw Error('release_file_changed');files[key]={sha256:digest(data),bytes:data.length};}}
   walk(root);return files;
 }
-export function runtimeConfig(){return {name:releaseTarget.worker,account_id:releaseTarget.account,main:'./worker/worker.js',compatibility_date:'2026-10-16',compatibility_flags:['nodejs_compat'],workers_dev:false,preview_urls:false,send_metrics:false,assets:{directory:'./assets',binding:'ASSETS',run_worker_first:['/api/*','/admin','/admin/*'],html_handling:'force-trailing-slash',not_found_handling:'404-page'},observability:{enabled:false}};}
+export function runtimeConfig(){return {name:releaseTarget.worker,account_id:releaseTarget.account,main:'./worker/worker.js',compatibility_date:'2026-10-16',compatibility_flags:['nodejs_compat'],workers_dev:false,preview_urls:false,send_metrics:false,assets:{directory:'./assets',binding:'ASSETS',run_worker_first:['/api/*','/admin','/admin/*'],html_handling:'force-trailing-slash',not_found_handling:'404-page'},d1_databases:[stagingEditorialDatabase],secrets:{required:[...requiredStagingSecrets]},observability:{enabled:false}};}
 export type Candidate={schemaVersion:1;repository:string;sourceCommit:string;sourceTree:string;buildId:string;target:typeof releaseTarget;assets:Inventory;workerSha256:string;configSha256:string;manifestSha256:string};
 export async function prepareCandidate(root:string,output:string){
   root=resolve(root);output=resolve(output);if(existsSync(output))throw Error('release_output_exists');
