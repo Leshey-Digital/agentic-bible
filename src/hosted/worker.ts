@@ -14,9 +14,17 @@ import {contributionAdminHtml,contributionAdminCss,contributionAdminJs} from './
 import {integrationAdminHtml,integrationAdminCss,integrationAdminJs} from '../integration-settings/admin.ts';
 import {createIntegrationSettingsContract} from '../integration-settings/contracts.ts';
 import {recordAbuseOutcome,type AbuseOutcome} from './privacy.ts';
+import {jevLimits,jevModels} from '../maintenance-adapters/jev.ts';
 const origin='https://staging.agenticbible.si';
 const headers={'Cache-Control':'no-store','X-Robots-Tag':'noindex, nofollow','X-Content-Type-Options':'nosniff','Referrer-Policy':'same-origin','Content-Security-Policy':"default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; img-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'"};
 const json=(body:unknown,status=200)=>Response.json(body,{status,headers});
+function publicJevDecision(value:unknown){
+  if(!value||typeof value!=='object'||Array.isArray(value))return null;const v=value as any;
+  if(Object.keys(v).sort().join(',')!=='advisoryOnly,answers,capability,model,usage'||v.capability!=='structured-decision'||v.advisoryOnly!==true||!jevModels.includes(v.model)||!v.answers||typeof v.answers!=='object'||Array.isArray(v.answers)||Object.keys(v.answers).join(',')!=='needs_editorial_attention')return null;
+  const answer=v.answers.needs_editorial_attention,usage=v.usage;
+  if(!answer||typeof answer!=='object'||Array.isArray(answer)||Object.keys(answer).sort().join(',')!=='noul,type'||answer.type!=='noul'||typeof answer.noul!=='number'||!Number.isFinite(answer.noul)||answer.noul<0||answer.noul>1||!usage||typeof usage!=='object'||Array.isArray(usage)||Object.keys(usage).sort().join(',')!=='inputTokens,outputTokens'||!Number.isSafeInteger(usage.inputTokens)||usage.inputTokens<1||!Number.isSafeInteger(usage.outputTokens)||usage.outputTokens<0)return null;
+  return {capability:'structured-decision',advisoryOnly:true,model:v.model,answers:{needs_editorial_attention:{type:'noul',noul:answer.noul}},usage:{inputTokens:usage.inputTokens,outputTokens:usage.outputTokens}};
+}
 // Ports are trusted server code, not environment flags, cookies or request fields.
 // Existing hosted correction ports use explicit server trust, D1 and secret bindings.
 // Integration settings require separate trusted server-code adapters; configuredPorts
@@ -31,7 +39,7 @@ return {async fetch(request:Request,env:RuntimeEnv):Promise<Response>{
     // Decode once only to reject aliases of the private settings namespace. Never
     // dispatch a decoded alias; malformed encodings retain existing route behavior.
     let decodedPath=path;try{decodedPath=decodeURIComponent(path);}catch{}
-    if(decodedPath!==path&&(decodedPath==='/api/submissions'||decodedPath==='/api/admin/submissions'||decodedPath.startsWith('/api/admin/submissions/')||decodedPath==='/api/admin/abuse-counters'||decodedPath.startsWith('/admin/contributions/')||decodedPath.startsWith('/admin/integrations/')||decodedPath==='/api/admin/settings'||decodedPath.startsWith('/api/admin/settings/')))return json({error:'hosted_admin_and_public_intake_not_configured'},503);
+    if(decodedPath!==path&&(decodedPath==='/api/submissions'||decodedPath.startsWith('/api/admin/jev/')||decodedPath.startsWith('/api/admin/submissions/')||decodedPath==='/api/admin/submissions'||decodedPath==='/api/admin/abuse-counters'||decodedPath.startsWith('/admin/contributions/')||decodedPath.startsWith('/admin/integrations/')||decodedPath==='/api/admin/settings'||decodedPath.startsWith('/api/admin/settings/')))return json({error:'hosted_admin_and_public_intake_not_configured'},503);
     if(path.startsWith('/admin/integrations/')){
       if(url.origin!==origin)return json({error:'hosted_origin_required'},403);
       if(!integrationSettings)return json({error:'integration_settings_unconfigured'},503);
@@ -48,6 +56,24 @@ return {async fetch(request:Request,env:RuntimeEnv):Promise<Response>{
       const response=await (path.endsWith('/typesafe-jev')?jevSettings!:integrationSettings)(request),secured=new Headers(response.headers);
       for(const [key,value] of Object.entries(headers))secured.set(key,value);
       return new Response(response.body,{status:response.status,headers:secured});
+    }
+    if(path==='/api/admin/jev/evaluate'){
+      if(url.origin!==origin)return json({error:'hosted_origin_required'},403);
+      if(request.method!=='POST')return new Response(JSON.stringify({error:'explicit_post_required'}),{status:405,headers:{...headers,'Content-Type':'application/json','Allow':'POST'}});
+      if(request.headers.get('origin')!==origin||request.headers.get('sec-fetch-site')==='cross-site')return json({error:'same_origin_required'},403);
+      if(!ports.verifyAdmin)return json({error:'hosted_admin_identity_unconfigured'},503);
+      const admin=await ports.verifyAdmin(request);
+      if(!admin||admin.role!=='admin'||admin.csrfVerified!==true||!Number.isSafeInteger(admin.expiresAt)||admin.expiresAt<=Date.now()||typeof admin.subject!=='string'||!admin.subject||admin.subject.length>256||['local-editor','local-reader'].includes(admin.subject))return json({error:'verified_admin_required'},403);
+      if(!ports.jevDispatch||ports.jevDispatch.state!=='configured')return json({error:'jev_dispatch_unconfigured'},503);
+      if(request.headers.get('content-type')?.split(';')[0]!=='application/json')return json({error:'json_required'},415);
+      const input=await inputJson(request,jevLimits.requestBytes+2048);
+      if(!input||typeof input!=='object'||Array.isArray(input)||Object.keys(input).join(',')!=='content')return json({error:'content_only_required'},400);
+      if(typeof input.content!=='string'||input.content.trim().length<1||new TextEncoder().encode(input.content).byteLength>jevLimits.requestBytes)return json({error:'jev_content_limit'},413);
+      try{
+        const decision=publicJevDecision(await ports.jevDispatch.evaluate(input.content,request.signal));
+        if(!decision)return json({error:'jev_result_unavailable'},503);
+        return json({decision});
+      }catch{return json({error:'jev_evaluation_unavailable'},503);}
     }
     if(path==='/api/submissions'||path==='/api/admin/submissions'||path.startsWith('/api/admin/submissions/')||path==='/api/admin/abuse-counters'||path.startsWith('/admin/contributions/')){
       if(url.origin!==origin)return json({error:'hosted_origin_required'},403);
@@ -120,9 +146,9 @@ return {async fetch(request:Request,env:RuntimeEnv):Promise<Response>{
     const response=await env.ASSETS.fetch(request),merged=new Headers(response.headers);merged.set('X-Robots-Tag','noindex, nofollow');return new Response(request.method==='HEAD'?null:response.body,{status:response.status,headers:merged});
   }catch(error){if(error instanceof MaintenanceReviewError)return json({error:error.code,articleChanged:false},error.status);if(error instanceof SyntaxError)return json({error:'invalid_json'},400);return json({error:error instanceof ProposalError?error.code:'github_outcome_unconfirmed',published:false},error instanceof ProposalError&&error.code==='input_capacity'?413:error instanceof ProposalError&&new Set(['github_approval_conflict','github_proposal_busy','github_outbox_capacity','github_request_budget_or_lease','github_invocation_budget','stale_github_base','stale_github_content','github_foreign_branch','github_proposal_conflict','stale_github_base_after_proposal','github_correction_capacity_or_duplicate','github_markdown_capacity','hosted_approval_capacity','hosted_approval_key_conflict','hosted_approval_revoked','hosted_source_daily_budget']).has(error.code)?409:error instanceof ProposalError&&path==='/api/admin/corrections/approvals'&&['invalid_verified_approval','explicit_hosted_review_required'].includes(error.code)?400:503);}
 }};}
-async function inputJson(request:Request){
+async function inputJson(request:Request,maxBytes=8192){
   if(request.headers.get('content-type')?.split(';')[0]!=='application/json')throw new SyntaxError('json required');const reader=request.body?.getReader();if(!reader)throw new SyntaxError('body required');const chunks:Uint8Array[]=[];let bytes=0;
-  try{for(;;){const part=await reader.read();if(part.done)break;bytes+=part.value.length;if(bytes>8192){void reader.cancel();throw new ProposalError('input_capacity');}chunks.push(part.value);}}finally{reader.releaseLock();}
+  try{for(;;){const part=await reader.read();if(part.done)break;bytes+=part.value.length;if(bytes>maxBytes){void reader.cancel();throw new ProposalError('input_capacity');}chunks.push(part.value);}}finally{reader.releaseLock();}
   const body=new Uint8Array(bytes);let offset=0;for(const part of chunks){body.set(part,offset);offset+=part.length;}return JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(body));
 }
 export default {async fetch(request:Request,env:RuntimeEnv){return createHostedRuntime(await configuredPorts(env)).fetch(request,env);}};
