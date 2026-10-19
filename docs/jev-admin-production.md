@@ -37,6 +37,8 @@ Focused verification includes signed contract tests, actual workerd/D1 vault res
 
 Independent scoped review found no actionable provider/backend/UI or currency-rotation defect after focused checks, including both forced reservation-versus-rotation race schedules. Full release qualification is run separately on the exact final commit and does not establish live validation. The canonical writer review remains incomplete after the prior platform security denial; no retry or bypass was attempted. No PR or deployment is created by this work.
 
+The exact-source qualification for `2b6959f4b235a9d8404955c54bb579dbab61f9e4` completed all 59 pinned checks, including the browser/runtime steps and `release:prepare`; qualification digest `4cfd4ce621ca6f1ad94c7771a9bed2d54eabc34e7afdf70df835a580ad113023`, candidate digest `8928e42ab07c9bd238db96d2d1e57d368e93a3a9674ab4816491403848506bed`. Follow-on `6c6aa7ab0d57bd6a12be784140a9495965c02a21` adds the protected route and fake-transport coverage after that qualification. The follow-on commit has targeted verification only and does not have an exact-source release qualification or a prepared candidate.
+
 ## Owner-only activation work
 
 - Keep the new Typesafe key in the owner's password manager. Do not enter it on currently deployed staging, paste it into chat, or set a guessed `JEV_API_KEY` Worker binding: no such runtime variable is supported. Once compatible code is deployed and the vault is wired to the dispatcher, the intended entry is `/admin/integrations/` → `Typesafe Jev`; its protected API is `/api/admin/settings/integrations/typesafe-jev` with field `secret`.
