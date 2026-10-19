@@ -1,0 +1,8 @@
+- [x] Add exact signed-owner credential resolution under the encrypted vault lock.
+- [x] Pass verified owner identity from the protected route into dispatch.
+- [x] Require explicit supported model, provider price identity, token bounds and currency policy before dispatch composition.
+- [x] Keep dispatch unmounted when vault or runtime policy is absent; test deliberate disabled state.
+- [x] Cover owner isolation, missing/disabled credential, vault decryption failure, one-attempt transport behavior, response redaction and denied-request zero-dispatch behavior with synthetic fixtures.
+- [x] Run the affected hosted, vault, integration-settings and production-hosted suites, admin browser journeys, documentation checks and runtime dry-run.
+- [ ] Push a normal feature checkpoint and record its exact unqualified commit.
+- [ ] Owner-only: approve actual caps and policy, configure staging trust/D1/vault and enter provider credential through the protected write-only UI after compatible staging code is separately authorized and deployed.

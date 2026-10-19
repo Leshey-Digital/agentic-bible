@@ -6,6 +6,10 @@ import {lookupApproval} from './approvals.ts';
 import {createEncryptedIntegrationAdapters} from '../integration-settings/vault.ts';
 import {intakeConfigured,type IntakePolicy} from './contributions.ts';
 import {createHmacClientKey} from './privacy.ts';
+import {createJevDispatchPort} from './jev-dispatch.ts';
+import {jevEndpoint,jevModels,type JevModel} from '../maintenance-adapters/jev.ts';
+import {currencyInput,type CurrencyPolicy} from '../wiki-bridge/maintenance-currency.ts';
+import type {JevTokenBounds} from '../maintenance-adapters/jev-currency.ts';
 export function credentialTransport(token:unknown,send:typeof fetch=fetch):Ports['sendGitHub']|undefined{
   if(typeof token!=='string'||token.length<16||token.length>512||/\s|[\u0000-\u001f\u007f]/.test(token))return undefined;
   return request=>{
@@ -25,6 +29,21 @@ function keyBytes(raw:unknown):Uint8Array|undefined{
   try{const bytes=Uint8Array.from(atob(raw),c=>c.charCodeAt(0));return bytes.length===32&&btoa(String.fromCharCode(...bytes))===raw?bytes:undefined;}catch{return;}
 }
 function keyMaterial(bytes:Uint8Array):ArrayBuffer{const copy=new ArrayBuffer(bytes.byteLength);new Uint8Array(copy).set(bytes);return copy;}
+type JevRuntimePolicy={enabled:boolean;model:JevModel;currency:Readonly<CurrencyPolicy>;inputTokensPerByte:1;outputTokenUpperBound:number};
+function jevRuntimePolicy(raw:unknown):JevRuntimePolicy|undefined{
+  if(typeof raw!=='string'||raw.length>8192)return;
+  try{
+    const value:unknown=JSON.parse(raw);if(!value||typeof value!=='object'||Array.isArray(value))return;
+    const config=value as Record<string,unknown>;
+    if(Object.keys(config).sort().join(',')!=='currency,enabled,inputTokensPerByte,model,outputTokenUpperBound'||typeof config.enabled!=='boolean'||!jevModels.includes(config.model as JevModel)||config.inputTokensPerByte!==1||config.outputTokenUpperBound!==2048)return;
+    const currency=currencyInput({enabled:true,policy:config.currency});if(!currency)return;
+    return {enabled:config.enabled,model:config.model as JevModel,currency,inputTokensPerByte:1,outputTokenUpperBound:Number(config.outputTokenUpperBound)};
+  }catch{return;}
+}
+function jevTransport(url:string,init:RequestInit):Promise<Response>{
+  if(url!==jevEndpoint||init.method!=='POST'||init.redirect!=='error'||init.credentials!=='omit'||init.cache!=='no-store'||init.referrerPolicy!=='no-referrer'||init.signal?.aborted)throw Error('jev_transport_rejected');
+  return fetch(url,init);
+}
 export async function configuredPorts(env:RuntimeEnv):Promise<Ports>{
   const trust=adminTrust(env.HOSTED_ADMIN_TRUST),send=credentialTransport(env.GITHUB_CONTENT_TOKEN);if(!trust||!env.EDITORIAL_DB)return {};
   const review=historyBindingConfigured()?{maintenanceReview:true as const}:{};
@@ -35,6 +54,11 @@ export async function configuredPorts(env:RuntimeEnv):Promise<Ports>{
   const vaultBytes=keyBytes(env.INTEGRATION_VAULT_KEY),keyId=env.INTEGRATION_VAULT_KEY_ID;
   if(vaultBytes&&typeof keyId==='string'&&/^[a-zA-Z0-9._-]{1,64}$/.test(keyId)){
     try{const key=await crypto.subtle.importKey('raw',keyMaterial(vaultBytes),'AES-GCM',false,['encrypt','decrypt']);ports.integrationSettings=createEncryptedIntegrationAdapters({db:env.EDITORIAL_DB,key,keyId,trust:env.HOSTED_ADMIN_TRUST,send:request=>fetch(request),connectionEvidence:'unverified'});}catch{/* Invalid optional vault configuration leaves settings closed. */}
+  }
+  const jevConfig=jevRuntimePolicy(env.JEV_DISPATCH_POLICY),credential=ports.integrationSettings?.resolveJevCredential;
+  if(jevConfig&&credential){
+    const tokenBounds:JevTokenBounds={inputUpperBound:requestJson=>new TextEncoder().encode(requestJson).byteLength,outputUpperBound:()=>jevConfig.outputTokenUpperBound};
+    ports.jevDispatch=createJevDispatchPort({enabled:jevConfig.enabled,credential,model:jevConfig.model,db:env.EDITORIAL_DB,currency:{enabled:true,policy:jevConfig.currency},tokenBounds,transport:jevTransport});
   }
   return ports;
 }

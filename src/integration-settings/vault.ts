@@ -1,5 +1,6 @@
 import type {SqlDatabase} from '../editorial/contracts.ts';
 import type {IntegrationStorage,IntegrationRecord,IntegrationTransaction,IntegrationId,IntegrationAdapters,ConnectionEvidence} from './contracts.ts';
+import {validateIntegrationRecord} from './record.ts';
 import {repository} from '../hosted/contracts.ts';
 
 type VaultRow={key_id:string;metadata_json:string;nonce:string;ciphertext:string};
@@ -74,5 +75,14 @@ export function createEncryptedIntegrationAdapters(options:Options):IntegrationA
       }catch{return 'unavailable';}finally{clearTimeout(timer);controller.abort();input.signal.removeEventListener('abort',abort);try{reader?.releaseLock();}catch{}}
     });
   };
-  return {trust:options.trust,storage,testConnection,connectionEvidence:options.connectionEvidence??'unverified'};
+  const resolveJevCredential=async(ownerRef:string):Promise<string|null>=>{
+    if(typeof ownerRef!=='string'||!/^signed-admin:[a-f0-9]{64}$/.test(ownerRef))return null;
+    return lock('typesafe-jev',async()=>{
+      const current=await load('typesafe-jev');
+      const checked=validateIntegrationRecord(current.record);
+      if(!checked||checked.ownerRef!==ownerRef||!current.secret)return null;
+      return current.secret;
+    });
+  };
+  return {trust:options.trust,storage,testConnection,resolveJevCredential,connectionEvidence:options.connectionEvidence??'unverified'};
 }

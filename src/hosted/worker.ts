@@ -70,7 +70,7 @@ return {async fetch(request:Request,env:RuntimeEnv):Promise<Response>{
       if(!input||typeof input!=='object'||Array.isArray(input)||Object.keys(input).join(',')!=='content')return json({error:'content_only_required'},400);
       if(typeof input.content!=='string'||input.content.trim().length<1||new TextEncoder().encode(input.content).byteLength>jevLimits.requestBytes)return json({error:'jev_content_limit'},413);
       try{
-        const decision=publicJevDecision(await ports.jevDispatch.evaluate(input.content,request.signal));
+        const decision=publicJevDecision(await ports.jevDispatch.evaluate(input.content,admin.subject,request.signal));
         if(!decision)return json({error:'jev_result_unavailable'},503);
         return json({decision});
       }catch{return json({error:'jev_evaluation_unavailable'},503);}

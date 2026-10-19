@@ -42,7 +42,8 @@ test('signed same-origin Jev evaluation reaches only the injected fake transport
     assert.equal(body.questions.needs_editorial_attention.type,'noul');
     return Response.json({model,answers:{needs_editorial_attention:{type:'noul',noul:0.25}},usage:{input_tokens:8,output_tokens:0}});
   },chargedExecution:{execute:async(_request,dispatch)=>{reservations++;await dispatch();}}});
-  const runtime=createHostedRuntime({verifyAdmin:request=>verifySignedAdmin(request,trust),jevDispatch:{state:'configured',evaluate:(content,signal)=>adapter.evaluate(content,signal)}}),signed=await assertion();
+  const expectedOwner='signed-admin:'+await (async()=>{const {createHash}=await import('node:crypto');return createHash('sha256').update(JSON.stringify({audience:trustValue.audience,issuer:trustValue.issuer,subject:'controlled-jev-admin'})+'\n').digest('hex');})();
+  const runtime=createHostedRuntime({verifyAdmin:request=>verifySignedAdmin(request,trust),jevDispatch:{state:'configured',evaluate:(content,ownerRef,signal)=>{assert.equal(ownerRef,expectedOwner);return adapter.evaluate(content,signal);}}}),signed=await assertion();
   const response=await runtime.fetch(request(signed),env);assert.equal(response.status,200);const value=await response.json();
   assert.deepEqual(value.decision,{capability:'structured-decision',advisoryOnly:true,model,answers:{needs_editorial_attention:{type:'noul',noul:0.25}},usage:{inputTokens:8,outputTokens:0}});
   assert.equal(reservations,1);assert.equal(transports,1);assert.doesNotMatch(JSON.stringify(value),/synthetic editorial text|synthetic-jev-key/);
@@ -50,4 +51,10 @@ test('signed same-origin Jev evaluation reaches only the injected fake transport
   const wrongOrigin=await runtime.fetch(request(signed,{content:'synthetic editorial text'},{headers:{Origin:'https://attacker.invalid'}}),env);assert.equal(wrongOrigin.status,403);assert.equal(transports,1);
   const unexpected=createHostedRuntime({verifyAdmin:request=>verifySignedAdmin(request,trust),jevDispatch:{state:'configured',evaluate:async()=>({capability:'structured-decision',advisoryOnly:true,secret:'must-not-be-projected'})}});
   const rejected=await unexpected.fetch(request(signed),env);assert.equal(rejected.status,503);assert.doesNotMatch(await rejected.text(),/must-not-be-projected/);
+});
+
+test('one failed synthetic Jev dispatch is redacted and never automatically retried',async()=>{
+  let attempts=0;const adapter=createJevDecisionAdapter({enabled:true,apiKey:'synthetic-jev-test-key',model:'jev-1.14.0',transport:async()=>{attempts++;throw Error('synthetic credential and response detail');},chargedExecution:{execute:async(_charge,dispatch)=>{await dispatch();}}});
+  await assert.rejects(adapter.evaluate('synthetic bounded test'),error=>error.code==='jev_transport_failed'&&!error.message.includes('synthetic credential'));
+  assert.equal(attempts,1);
 });

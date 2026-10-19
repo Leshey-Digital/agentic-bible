@@ -13,7 +13,7 @@ const keys=await crypto.subtle.generateKey({name:'RSASSA-PKCS1-v1_5',modulusLeng
 const publicKey={...await crypto.subtle.exportKey('jwk',keys.publicKey),kid:'disposable-native',alg:'RS256',use:'sig'};
 const trust=JSON.stringify({issuer:'https://native-gateway.invalid',audience:'disposable-settings',assertionHeader:'cf-access-jwt-assertion',subjects:['owner-a','owner-b'],keys:[publicKey]});
 const secret='disposable-native-secret-not-a-credential',replacement='disposable-replacement-not-a-credential';
-const bundles=await Promise.all(['tests/hosted-integration-settings/entry.ts','src/hosted/worker.ts'].map(entry=>build({entryPoints:[entry],bundle:true,write:false,platform:'browser',format:'esm',target:'es2022'})));
+const bundles=await Promise.all(['tests/hosted-integration-settings/entry.ts','src/hosted/worker.ts'].map(entry=>build({entryPoints:[entry],bundle:true,write:false,platform:'browser',format:'esm',target:'es2022',external:['node:crypto']})));
 async function assertion(subject='owner-a',claims={}){
   const now=Math.floor(Date.now()/1000),encode=value=>Buffer.from(JSON.stringify(value)).toString('base64url');
   const input=encode({alg:'RS256',kid:'disposable-native',typ:'JWT'})+'.'+encode({iss:'https://native-gateway.invalid',aud:'disposable-settings',sub:subject,iat:now,exp:now+300,...claims});
@@ -23,7 +23,7 @@ const command=(operation='configure',revision=0,value=secret)=>({integration:'gi
 async function fixture(shipped=false){
   const directory=mkdtempSync(join(git,'hosted-integration-settings-'));let assets=0,outbound=0;
   const bindings={TEST_SIGNED_TRUST:trust,HOSTED_ADMIN_TRUST:trust,GITHUB_CONTENT_TOKEN:secret,LOCAL_EDITORIAL_MODE:'synthetic-only',LOCAL_CORRECTIONS_MODE:'reviewed-notes',INTEGRATION_SETTINGS:'enabled',INTEGRATION_SETTINGS_STORAGE:'memory',integrationSettings:{trust,storage:'untrusted-env-data',testConnection:'enabled'}};
-  const runtime=new Miniflare({...convertV4MiniflareOptions({modules:true,script:bundles[shipped?1:0].outputFiles[0].text,compatibilityDate:'2026-10-16',bindings,d1Databases:{EDITORIAL_DB:'disposable-settings-closed'},serviceBindings:{ASSETS:async()=>{assets++;return new Response('assets must not receive admin settings');}},outboundService:()=>{outbound++;throw Error('unexpected controlled outbound request');}}),cf:false,resourcePersistencePath:directory});
+  const runtime=new Miniflare({...convertV4MiniflareOptions({modules:true,script:bundles[shipped?1:0].outputFiles[0].text,compatibilityDate:'2026-10-16',compatibilityFlags:['nodejs_compat'],bindings,d1Databases:{EDITORIAL_DB:'disposable-settings-closed'},serviceBindings:{ASSETS:async()=>{assets++;return new Response('assets must not receive admin settings');}},outboundService:()=>{outbound++;throw Error('unexpected controlled outbound request');}}),cf:false,resourcePersistencePath:directory});
   async function request(body,options={}){
     const response=await runtime.dispatchFetch(options.url??origin+(options.path??path),{method:options.method??(body===undefined?'GET':'POST'),headers:{'Content-Type':'application/json',Origin:origin,'X-Agentic-Bible-Request':'admin','Cf-Access-Jwt-Assertion':await assertion(options.subject,options.claims),...options.headers},body:body===undefined?undefined:JSON.stringify(body)});
     const text=await response.text();assert.equal(text.includes(secret),false);assert.equal(text.includes(replacement),false);

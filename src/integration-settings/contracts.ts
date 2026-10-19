@@ -1,7 +1,10 @@
 import {uuid} from '../hosted/contracts.ts';
 import {adminTrust,hostedOrigin,verifySignedAdmin} from '../hosted/identity.ts';
+import {validateIntegrationRecord} from './record.ts';
+import {integrationLimits} from './limits.ts';
+export {validateIntegrationRecord} from './record.ts';
+export {integrationLimits} from './limits.ts';
 
-export const integrationLimits=Object.freeze({bodyBytes:8192,bodyMs:1000,secretBytes:512,events:64,tests:8,testMs:1000});
 export type IntegrationId='github-content'|'typesafe-jev';
 export type ConnectionEvidence='controlled'|'provider'|'unverified';
 export type ConnectionResult='connected'|'rejected'|'unavailable'|'timeout';
@@ -23,24 +26,13 @@ export type IntegrationStorage={
 export type IntegrationConnectionTest=(input:{integration:IntegrationId;revision:number;signal:AbortSignal})=>Promise<unknown>;
 // Test adapter resolves the exact credential revision through trusted storage. It must
 // honor abort, use a fixed scoped endpoint, cap transport work, and never retry/log secrets.
-export type IntegrationAdapters={connectionEvidence?:ConnectionEvidence;trust:unknown;storage:IntegrationStorage;testConnection:IntegrationConnectionTest};
+export type IntegrationAdapters={connectionEvidence?:ConnectionEvidence;trust:unknown;storage:IntegrationStorage;testConnection:IntegrationConnectionTest;resolveJevCredential?:(ownerRef:string)=>Promise<string|null>};
 type Command={integration:IntegrationId;operation:Operation;revision:number;requestKey:string;secret?:string};
 const errors={invalid_request:400,body_too_large:413,body_timeout:408,unsupported_media_type:415,verified_admin_required:403,same_origin_required:403,not_configured:409,owner_required:403,stale_revision:409,request_replayed:409,capacity_reached:503,test_in_progress:409,contract_unavailable:503,connection_test_unsupported:409} as const;
 type ErrorCode=keyof typeof errors;
 class ContractError extends Error{readonly code:ErrorCode;constructor(code:ErrorCode){super(code);this.code=code;}}
 function fail(code:ErrorCode):never{throw new ContractError(code);}
 const object=(v:unknown):v is Record<string,unknown>=>!!v&&typeof v==='object'&&!Array.isArray(v);
-const result=(v:unknown):v is ConnectionResult=>['connected','rejected','unavailable','timeout'].includes(v as string);
-function record(value:IntegrationRecord|null):IntegrationRecord|null{
-  if(value===null)return null;
-  if(!object(value)||Object.keys(value).sort().join(',')!=='audit,lastTest,ownerRef,pendingTest,requestKeys,revision,testsUsed'||!/^signed-admin:[a-f0-9]{64}$/.test(value.ownerRef)||!Number.isSafeInteger(value.revision)||value.revision<1||value.revision>integrationLimits.events||!Array.isArray(value.requestKeys)||value.requestKeys.length>integrationLimits.events||value.requestKeys.some(k=>!uuid(k))||new Set(value.requestKeys).size!==value.requestKeys.length||!Number.isSafeInteger(value.testsUsed)||value.testsUsed<0||value.testsUsed>integrationLimits.tests||(!result(value.lastTest)&&!['pending','never'].includes(value.lastTest))||!Array.isArray(value.audit)||value.audit.length>integrationLimits.events)fail('contract_unavailable');
-  if(value.pendingTest!==null&&(!object(value.pendingTest)||Object.keys(value.pendingTest).sort().join(',')!=='requestKey,revision'||!uuid(value.pendingTest.requestKey)||value.pendingTest.revision!==value.revision||!value.requestKeys.includes(value.pendingTest.requestKey)))fail('contract_unavailable');
-  if((value.lastTest==='pending')!==(value.pendingTest!==null))fail('contract_unavailable');
-  for(const event of value.audit){
-    if(!object(event)||Object.keys(event).sort().join(',')!=='at,eventId,operation,result,revision'||!['configure','rotate','test'].includes(event.operation)||!uuid(event.eventId)||!Number.isSafeInteger(event.revision)||event.revision<1||event.revision>value.revision||!Number.isSafeInteger(event.at)||event.at<0||(!result(event.result)&&!['configured','rotated','reserved'].includes(event.result)))fail('contract_unavailable');
-  }
-  return structuredClone(value);
-}
 function projection(value:IntegrationRecord|null,integration:IntegrationId,connectionEvidence:ConnectionEvidence){
   return {integration,connectionEvidence,testSupported:integration==='github-content',generationSupported:false,configured:value!==null,maskedSecret:value?'********':null,revision:value?.revision??0,connection:value?.lastTest??'never',audit:(value?.audit??[]).map(e=>({operation:e.operation,revision:e.revision,eventId:e.eventId,at:e.at,result:e.result}))};
 }
@@ -80,7 +72,7 @@ export function createIntegrationSettingsContract(adapters:IntegrationAdapters,i
       if(new URL(request.url).origin!==hostedOrigin||request.headers.get('x-agentic-bible-request')!=='admin'||request.headers.get('sec-fetch-site')==='cross-site'||(request.method!=='GET'&&request.headers.get('origin')!==hostedOrigin))fail('same_origin_required');
       const admin=await verifySignedAdmin(request,trust);if(!admin)fail('verified_admin_required');
       const fresh=()=>{if(admin.expiresAt<=Date.now())fail('verified_admin_required');};
-      if(request.method==='GET')return json(await adapters.storage.transaction(integration,async tx=>{const current=record(await tx.read());fresh();return project(owned(current,admin.subject));}));
+      if(request.method==='GET')return json(await adapters.storage.transaction(integration,async tx=>{const current=validateIntegrationRecord(await tx.read());fresh();return project(owned(current,admin.subject));}));
       if(request.method!=='POST')fail('invalid_request');
       const input=await command(request,integration);
       // No documented non-billable Jev connection endpoint. Never issue a paid
@@ -88,7 +80,7 @@ export function createIntegrationSettingsContract(adapters:IntegrationAdapters,i
       if(input.operation==='test'&&integration==='typesafe-jev')fail('connection_test_unsupported');
       if(input.operation!=='test'){
         return json(await adapters.storage.transaction(input.integration,async tx=>{
-          const current=record(await tx.read());guard(current,input,admin.subject);
+          const current=validateIntegrationRecord(await tx.read());guard(current,input,admin.subject);
           if(input.operation==='configure'&&current)fail('stale_revision');if(input.operation==='rotate'&&!current)fail('not_configured');
           const next:IntegrationRecord={ownerRef:admin.subject,revision:(current?.revision??0)+1,requestKeys:[...(current?.requestKeys??[]),input.requestKey],testsUsed:current?.testsUsed??0,lastTest:'never',pendingTest:null,audit:[...(current?.audit??[]),{operation:input.operation,revision:(current?.revision??0)+1,eventId:crypto.randomUUID(),at:Date.now(),result:input.operation==='configure'?'configured':'rotated'}]};
           fresh();await tx.replaceSecret(input.secret!);await tx.write(next);return project(next);
@@ -97,7 +89,7 @@ export function createIntegrationSettingsContract(adapters:IntegrationAdapters,i
       // Reserve the request before invoking any test. Interrupted tests stay pending;
       // no automatic retry/refund. Rotation invalidates older pending completion.
       await adapters.storage.transaction(input.integration,async tx=>{
-        const current=record(await tx.read());fresh();guard(current,input,admin.subject);if(!current)fail('not_configured');if(current.pendingTest)fail('test_in_progress');
+        const current=validateIntegrationRecord(await tx.read());fresh();guard(current,input,admin.subject);if(!current)fail('not_configured');if(current.pendingTest)fail('test_in_progress');
         // Reserve room for both reservation and completion, even if another write runs.
         if(current.testsUsed>=integrationLimits.tests||current.audit.length+2>integrationLimits.events)fail('capacity_reached');
         current.requestKeys.push(input.requestKey);current.testsUsed++;current.lastTest='pending';current.pendingTest={revision:current.revision,requestKey:input.requestKey};current.audit.push({operation:'test',revision:current.revision,eventId:crypto.randomUUID(),at:Date.now(),result:'reserved'});await tx.write(current);
@@ -118,7 +110,7 @@ export function createIntegrationSettingsContract(adapters:IntegrationAdapters,i
         outcome=await Promise.race([connection(),timeout]);
       }finally{clearTimeout(timer);controller.abort();}
       return json(await adapters.storage.transaction(input.integration,async tx=>{
-        const current=record(await tx.read());fresh();owned(current,admin.subject);
+        const current=validateIntegrationRecord(await tx.read());fresh();owned(current,admin.subject);
         if(!current||current.revision!==input.revision||current.pendingTest?.requestKey!==input.requestKey)fail('stale_revision');
         if(current.audit.length>=integrationLimits.events)fail('capacity_reached');
         current.lastTest=outcome;current.pendingTest=null;current.audit.push({operation:'test',revision:current.revision,eventId:crypto.randomUUID(),at:Date.now(),result:outcome});await tx.write(current);return project(current);
