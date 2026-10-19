@@ -1,0 +1,21 @@
+// Documentation example only. This file is not referenced by any active Wrangler
+// configuration and is deliberately incomplete. Do not deploy or copy verbatim.
+{
+  "name": "agentic-bible-runtime-example-not-configured",
+  "main": "./src/hosted/worker.ts",
+  "vars": {
+    // Must remain invalid until an owner-approved signed gateway trust is supplied.
+    "HOSTED_ADMIN_TRUST": "<owner-supplied-signed-trust-json>",
+    // Must remain invalid until actual terms/privacy documents and moderation approval exist.
+    "HOSTED_INTAKE_POLICY": "<owner-approved-policy-json>",
+    "INTEGRATION_VAULT_KEY_ID": "<owner-selected-key-version>"
+  },
+  // Bind these separately through approved secret management; no values are shown:
+  // HOSTED_INTAKE_RATE_KEY (32 random bytes, base64)
+  // INTEGRATION_VAULT_KEY (independent 32 random bytes, base64)
+  "d1_databases": [{
+    "binding": "EDITORIAL_DB",
+    "database_name": "<not-provisioned>",
+    "database_id": "<not-provisioned>"
+  }]
+}

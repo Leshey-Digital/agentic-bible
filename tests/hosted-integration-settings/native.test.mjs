@@ -34,7 +34,7 @@ async function fixture(shipped=false){
 }
 
 test('actual shipped entrypoint stays closed with valid existing trust/D1/token and lookalike env/request flags',{timeout:20000},async()=>{
-  const ports=configuredPorts({HOSTED_ADMIN_TRUST:trust,GITHUB_CONTENT_TOKEN:secret,EDITORIAL_DB:{},integrationSettings:{trust,storage:'memory'}});
+  const ports=await configuredPorts({HOSTED_ADMIN_TRUST:trust,GITHUB_CONTENT_TOKEN:secret,EDITORIAL_DB:{},integrationSettings:{trust,storage:'memory'}});
   assert.equal(Object.hasOwn(ports,'integrationSettings'),false);
   const app=await fixture(true);try{
     for(const body of [undefined,command(),command('test',1),{...command(),role:'admin',csrfVerified:true,integrationSettings:{enabled:true}}]){

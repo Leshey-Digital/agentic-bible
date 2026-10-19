@@ -13,6 +13,7 @@ import {adminTrust,verifySignedAdmin} from './identity.ts';
 import {contributionAdminHtml,contributionAdminCss,contributionAdminJs} from './contribution-admin.ts';
 import {integrationAdminHtml,integrationAdminCss,integrationAdminJs} from '../integration-settings/admin.ts';
 import {createIntegrationSettingsContract} from '../integration-settings/contracts.ts';
+import {recordAbuseOutcome,type AbuseOutcome} from './privacy.ts';
 const origin='https://staging.agenticbible.si';
 const headers={'Cache-Control':'no-store','X-Robots-Tag':'noindex, nofollow','X-Content-Type-Options':'nosniff','Referrer-Policy':'same-origin','Content-Security-Policy':"default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; img-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'"};
 const json=(body:unknown,status=200)=>Response.json(body,{status,headers});
@@ -30,7 +31,7 @@ return {async fetch(request:Request,env:RuntimeEnv):Promise<Response>{
     // Decode once only to reject aliases of the private settings namespace. Never
     // dispatch a decoded alias; malformed encodings retain existing route behavior.
     let decodedPath=path;try{decodedPath=decodeURIComponent(path);}catch{}
-    if(decodedPath!==path&&(decodedPath==='/api/submissions'||decodedPath==='/api/admin/submissions'||decodedPath.startsWith('/api/admin/submissions/')||decodedPath.startsWith('/admin/contributions/')||decodedPath.startsWith('/admin/integrations/')||decodedPath==='/api/admin/settings'||decodedPath.startsWith('/api/admin/settings/')))return json({error:'hosted_admin_and_public_intake_not_configured'},503);
+    if(decodedPath!==path&&(decodedPath==='/api/submissions'||decodedPath==='/api/admin/submissions'||decodedPath.startsWith('/api/admin/submissions/')||decodedPath==='/api/admin/abuse-counters'||decodedPath.startsWith('/admin/contributions/')||decodedPath.startsWith('/admin/integrations/')||decodedPath==='/api/admin/settings'||decodedPath.startsWith('/api/admin/settings/')))return json({error:'hosted_admin_and_public_intake_not_configured'},503);
     if(path.startsWith('/admin/integrations/')){
       if(url.origin!==origin)return json({error:'hosted_origin_required'},403);
       if(!integrationSettings)return json({error:'integration_settings_unconfigured'},503);
@@ -48,7 +49,7 @@ return {async fetch(request:Request,env:RuntimeEnv):Promise<Response>{
       for(const [key,value] of Object.entries(headers))secured.set(key,value);
       return new Response(response.body,{status:response.status,headers:secured});
     }
-    if(path==='/api/submissions'||path==='/api/admin/submissions'||path.startsWith('/api/admin/submissions/')||path.startsWith('/admin/contributions/')){
+    if(path==='/api/submissions'||path==='/api/admin/submissions'||path.startsWith('/api/admin/submissions/')||path==='/api/admin/abuse-counters'||path.startsWith('/admin/contributions/')){
       if(url.origin!==origin)return json({error:'hosted_origin_required'},403);
       if(!contributions||!env.EDITORIAL_DB)return json({error:'hosted_contributions_unconfigured',publicIntake:false,reason:'trusted_server_adapters_and_approved_policy_required'},503);
       if(path.startsWith('/admin/contributions/')){
@@ -56,7 +57,13 @@ return {async fetch(request:Request,env:RuntimeEnv):Promise<Response>{
         if(request.method!=='GET'||url.search)return json({error:'invalid_request'},400);
         const asset=path==='/admin/contributions/'?[contributionAdminHtml,'text/html; charset=utf-8']:path==='/admin/contributions/style.css'?[contributionAdminCss,'text/css; charset=utf-8']:path==='/admin/contributions/app.js'?[contributionAdminJs,'text/javascript; charset=utf-8']:null;return asset?new Response(asset[0],{headers:{...headers,'Content-Type':asset[1]}}):json({error:'not_found'},404);
       }
-      const response=await contributions(request,env.EDITORIAL_DB),secured=new Headers(response.headers);for(const [key,value]of Object.entries(headers))secured.set(key,value);return new Response(response.body,{status:response.status,headers:secured});
+      const response=await contributions(request,env.EDITORIAL_DB);
+      if(path==='/api/submissions'&&request.method==='POST'){
+        let outcome:AbuseOutcome=response.status===201?'accepted':response.status===202?'honeypot':response.status===429?'rate_limited':response.status===403?'forbidden':response.status===503?'capacity':'rejected';
+        try{const body=await response.clone().json() as {duplicate?:unknown;error?:unknown};if(body.duplicate===true)outcome='duplicate';else if(response.status===503&&body.error==='editorial_unavailable')outcome='other_error';}catch{}
+        try{await recordAbuseOutcome(env.EDITORIAL_DB,outcome);}catch{return json({error:'editorial_unavailable'},503);}
+      }
+      const secured=new Headers(response.headers);for(const [key,value]of Object.entries(headers))secured.set(key,value);return new Response(response.body,{status:response.status,headers:secured});
     }
     if(path==='/api/runtime/status'&&request.method==='GET')return json({schemaVersion:1,contentAuthority:'github-build',...await runtimeRelease(env.ASSETS),publicIntake:!!env.EDITORIAL_DB&&intakeConfigured(ports.contributions),integrationSettingsConfigured:!!integrationSettings&&!!adminTrust(ports.integrationSettings?.trust),contributionAdminConfigured:!!env.EDITORIAL_DB&&!!adminTrust(ports.contributions?.trust),publicIntakeReason:intakeConfigured(ports.contributions)?'trusted_policy_configured':'approved_terms_privacy_moderation_and_rate_identity_required',adminVerifierConfigured:!!ports.verifyAdmin,adminApprovalsConfigured:!!ports.hostedApprovals,gitHubProposalsConfigured:!!ports.verifyAdmin&&!!ports.approvedNote&&!!ports.sendGitHub&&!!env.EDITORIAL_DB,hostedCanonicalWrites:false,localFixtureIdentity:false});
     if(path==='/api/editorial/status'&&request.method==='GET')return json({enabled:!!ports.hostedApprovals||!!env.EDITORIAL_DB&&!!adminTrust(ports.contributions?.trust),mode:ports.contributions?'hosted-contributions':ports.hostedApprovals?'hosted-admin-notes':'hosted-unconfigured',publicIntake:!!env.EDITORIAL_DB&&intakeConfigured(ports.contributions),reason:intakeConfigured(ports.contributions)?'trusted_policy_configured':'approved_terms_privacy_moderation_and_rate_identity_required',policy:intakeConfigured(ports.contributions)?{termsPath:ports.contributions!.policy!.termsPath,privacyPath:ports.contributions!.policy!.privacyPath,revision:ports.contributions!.policy!.policyRevision}:null});
@@ -118,4 +125,4 @@ async function inputJson(request:Request){
   try{for(;;){const part=await reader.read();if(part.done)break;bytes+=part.value.length;if(bytes>8192){void reader.cancel();throw new ProposalError('input_capacity');}chunks.push(part.value);}}finally{reader.releaseLock();}
   const body=new Uint8Array(bytes);let offset=0;for(const part of chunks){body.set(part,offset);offset+=part.length;}return JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(body));
 }
-export default {fetch(request:Request,env:RuntimeEnv){return createHostedRuntime(configuredPorts(env)).fetch(request,env);}};
+export default {async fetch(request:Request,env:RuntimeEnv){return createHostedRuntime(await configuredPorts(env)).fetch(request,env);}};

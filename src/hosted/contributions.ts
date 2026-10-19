@@ -6,6 +6,7 @@ import {adminTrust,hostedOrigin,verifySignedAdmin} from './identity.ts';
 import {sourcePreview} from './source.ts';
 import {uuid,type Ports} from './contracts.ts';
 import {createSubmissionReview} from './submission-reviews.ts';
+import {listAbuseOutcomes} from './privacy.ts';
 
 // Only trusted server composition can supply this policy. No env or request flag
 // is interpreted as approval; paths name the owner's future approved documents.
@@ -33,6 +34,12 @@ export function createContributionHandler(adapters:ContributionAdapters,send?:Po
       if(url.origin!==hostedOrigin)fail('hosted_origin_required',403);
       if(request.headers.get('sec-fetch-site')==='cross-site'||(!['GET','HEAD'].includes(request.method)&&request.headers.get('origin')!==hostedOrigin))fail('same_origin_required',403);
       const store=new D1EditorialStore(db,true,'hosted-submitter');
+      if(url.pathname==='/api/admin/abuse-counters'){
+        if(request.method!=='GET'||url.search)fail('invalid_request',400);
+        if(!trust||request.headers.get('x-agentic-bible-request')!=='admin')fail('verified_admin_required',403);
+        const admin=await verifySignedAdmin(request,trust);if(!admin||admin.expiresAt<=Date.now())fail('verified_admin_required',403);
+        return json(await listAbuseOutcomes(db));
+      }
       if(publicRoute){
         if(!intakeConfigured(adapters))return json({error:'public_intake_policy_unconfigured',publicIntake:false},503);
         if(request.method!=='POST')fail('explicit_post_required',405);

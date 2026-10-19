@@ -22,7 +22,17 @@ export type ApprovedNoteV1={schemaVersion:1;mode:'verified-admin-github-proposal
 export type ApprovedNoteV2=Omit<ApprovedNoteV1,'schemaVersion'|'citationId'> & {schemaVersion:2;articleId:HostedArticleId;contentPath:string;citationId:string};
 export type ApprovedNote=ApprovedNoteV1|ApprovedNoteV2;
 export type Ports={verifyAdmin?:(request:Request)=>Promise<VerifiedAdmin|null>;approvedNote?:(id:string,admin:VerifiedAdmin)=>Promise<ApprovedNote|null>;sendGitHub?:(request:Request)=>Promise<Response>;hostedApprovals?:true;maintenanceReview?:true;integrationSettings?:IntegrationAdapters;contributions?:ContributionAdapters};
-export type RuntimeEnv={ASSETS:{fetch(request:Request):Promise<Response>};EDITORIAL_DB?:SqlDatabase;HOSTED_ADMIN_TRUST?:string;GITHUB_CONTENT_TOKEN?:string};
+export type RuntimeEnv={
+  ASSETS:{fetch(request:Request):Promise<Response>};
+  EDITORIAL_DB?:SqlDatabase;
+  HOSTED_ADMIN_TRUST?:string;
+  GITHUB_CONTENT_TOKEN?:string;
+  /** Optional operator bindings. Example values are deliberately invalid/closed. */
+  HOSTED_INTAKE_POLICY?:string;
+  HOSTED_INTAKE_RATE_KEY?:string;
+  INTEGRATION_VAULT_KEY?:string;
+  INTEGRATION_VAULT_KEY_ID?:string;
+};
 export type ProposalReceiptV1={schemaVersion:1;state:'draft-proposed';published:false;approvalId:string;baseCommit:string;headCommit:string;branch:string;pullRequest:number;url:string;markdownSha256:string};
 export type ProposalReceiptV2=Omit<ProposalReceiptV1,'schemaVersion'>&{schemaVersion:2;articleId:HostedArticleId;contentPath:string};
 export type ProposalReceipt=ProposalReceiptV1|ProposalReceiptV2;
