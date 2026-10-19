@@ -7,7 +7,9 @@
 - [x] Run the focused quality/admission tests and retained publication suite.
 - [x] Run type checking; record the unrelated pre-existing/concurrent recovery error in the handoff.
 - [x] Record exact local checkpoint and remaining canonical-registration boundary.
+- [x] Close the publication CLI bypass: reject new IDs without trusted quality context and route the fixed synthetic demo through durable local D1 admission.
+- [x] Add CLI apply/demo/replay regression coverage and distinguish synthetic demo evidence in user documentation.
 
 ## Verification note
 
-The focused command `node --test tests/maintenance-quality/new-article-publication.test.mjs tests/maintenance-quality/admission.test.mjs` passed (9 tests), and `npm run test:publication` passed (12 tests). A full `npm run test:maintenance-quality` attempt also exposed five failures in existing canonical-source pin/build tests while other branch work was changing tracked inputs; the new lifecycle test's initial import/assertion issues were corrected and its focused rerun passed. `npx tsc --noEmit` currently stops on `src/recovery/d1.ts(118,78): TS2538` in concurrent recovery work outside this change's scope.
+The focused command `node --test tests/maintenance-quality/new-article-publication.test.mjs tests/maintenance-quality/admission.test.mjs` passed (9 tests). `npm run test:publication` passed (14 tests), including the CLI boundary/replay cases. `npm run check` passed for 188 files with zero errors, warnings or hints. An earlier full `npm run test:maintenance-quality` attempt exposed five failures in existing canonical-source pin/build tests while other branch work was changing tracked inputs; the focused lifecycle tests passed on rerun.

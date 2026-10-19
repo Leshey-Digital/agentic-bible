@@ -6,6 +6,8 @@
 - Given an identical event retry, return the original quality and publication receipts without new verifier dispatch or publication operation. Reuse of an event with changed candidate or sources conflicts.
 - Given a rollback, restore only the expected active ancestor snapshot while retaining immutable publication history and event receipts. Replaying an already completed publication after rollback returns its original receipt and does not reactivate it.
 - Canonical maintenance file targets remain limited to the existing `readingArticleIds`; this local publication admission does not expand canonical Git write authority.
+- Given an `apply` CLI publish command for an ID outside the compiled twenty and absent from retained history in that selected store, reject before publication with `new_identity_requires_quality_context`.
+- The fixed demo may exercise the coordinator only with a deterministic `controlled-test` verifier, clearly identified synthetic evidence, and durable isolated local D1 receipts; it must not represent this assessment as factual verification or live provider evidence.
 
 # Acceptance scenarios
 

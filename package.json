@@ -34,7 +34,7 @@
     "test:settings:worker": "node --test tests/settings-worker/*.test.mjs",
     "test:http-sources": "node --test tests/http-sources/*.test.ts",
     "test:http-worker": "node --test tests/http-worker/*.test.mjs",
-    "test:publication": "node --test tests/publishing/*.test.ts",
+    "test:publication": "node --test tests/publishing/*.test.ts tests/publishing/*.test.mjs",
     "test:publication:browser": "PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright test --config playwright.publication.config.ts",
     "publication:demo": "node scripts/article-publication.mjs demo",
     "publication:local": "node scripts/article-publication.mjs preview",
