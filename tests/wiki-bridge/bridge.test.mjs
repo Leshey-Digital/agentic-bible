@@ -2,7 +2,6 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {existsSync,cpSync,writeFileSync,readFileSync,readdirSync,rmSync,symlinkSync,openSync,ftruncateSync,closeSync} from 'node:fs';
 import {join} from 'node:path';
-import {spawn} from 'node:child_process';
 import {Response as ControlledResponse} from 'miniflare';
 import {WikiBridge} from '../../src/wiki-bridge/store.ts';
 import {localObservations} from '../../src/wiki-bridge/local-d1.ts';
@@ -11,6 +10,7 @@ import {inventory,projectFiles,write} from '../../src/wiki-bridge/files.ts';
 import {wikiServer} from '../../src/wiki-bridge/preview.ts';
 import {prepareWikiEvidence} from '../../scripts/wiki-bridge-demo.mjs';
 import {git,packet,clean,accounting,successor} from './helpers.mjs';
+import {spawnProcessGroup,signalProcessGroup} from './process-group.mjs';
 
 test('actual charged D1 evidence rejects invalid input before domain effects and recovers SIGKILL boundaries', {timeout:360000},async t=>{
   const observations='wiki-observations-test-unit';clean(observations);
@@ -80,7 +80,7 @@ test('actual charged D1 evidence rejects invalid input before domain effects and
       // Show that an existing canonical full wiki remains pinned while its successor is pending.
       if(phase==='build-started'){await bridge.execute(p,local.db,'fixtures/wiki-bridge/sources');prior=bridge.current();p=successor(bridge,'kill-replacement');}
       const file=join(git,'wiki-bridge-test-kill-input.json');writeFileSync(file,JSON.stringify(p));await local.runtime.dispose();
-      const signal=await new Promise((resolve,reject)=>{const child=spawn(process.execPath,['tests/wiki-bridge/kill-worker.mjs',storeName,observations,file,phase],{stdio:'ignore'});const timer=setTimeout(()=>{child.kill('SIGKILL');reject(new Error('kill checkpoint timed out'));},60000);child.on('error',reject);child.on('exit',(code,signal)=>{clearTimeout(timer);resolve(signal??code);});});assert.equal(signal,'SIGKILL');
+      const signal=await new Promise((resolve,reject)=>{const child=spawnProcessGroup(process.execPath,['tests/wiki-bridge/kill-worker.mjs',storeName,observations,file,phase],{stdio:'ignore'});const timer=setTimeout(()=>{signalProcessGroup(child,'SIGKILL');reject(new Error('kill checkpoint timed out'));},60000);child.on('error',reject);child.on('exit',(code,signal)=>{clearTimeout(timer);signalProcessGroup(child,'SIGTERM');resolve(signal??code);});});assert.equal(signal,'SIGKILL');
       local=await localObservations(observations,false,()=>{fetches++;throw new Error('bridge fetch');});bridge=new WikiBridge(storeName);
       if(phase!=='after-activate'){assert.deepEqual(bridge.current()?.reference??null,prior?.reference??null);assert.equal(bridge.status().pending[0].phase,'article-accepted/site-pending');}
       else assert.equal(bridge.status().pending.length,0);

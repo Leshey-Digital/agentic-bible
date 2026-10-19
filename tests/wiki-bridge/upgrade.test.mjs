@@ -13,14 +13,15 @@ import {validateCatalog} from '../../src/monitoring/catalog.ts';
 import {readingArticleIds} from '../../src/lib/article-ids.ts';
 import {BridgeError} from '../../src/wiki-bridge/limits.ts';
 import {git,clean,accounting,packet} from './helpers.mjs';
+import {spawnProcessGroup,signalProcessGroup} from './process-group.mjs';
 const legacyHead='c3d1d7a47e55862c53840d52ad4c71631bd9ad9e';
 async function worker(mode,repo,file){
   await new Promise((done,failed)=>{
-    const start=performance.now(),child=spawn(process.execPath,[resolve('tests/wiki-bridge/upgrade-worker.mjs'),mode,repo,file],{cwd:repo,env:{PATH:process.env.PATH,ASTRO_TELEMETRY_DISABLED:'1',CLOUDFLARE_CF_FETCH_ENABLED:'false'},stdio:['ignore','ignore','pipe']});let partial='',diagnostics=[];
+    const start=performance.now(),child=spawnProcessGroup(process.execPath,[resolve('tests/wiki-bridge/upgrade-worker.mjs'),mode,repo,file],{cwd:repo,env:{PATH:process.env.PATH,ASTRO_TELEMETRY_DISABLED:'1',CLOUDFLARE_CF_FETCH_ENABLED:'false'},stdio:['ignore','ignore','pipe']});let partial='',diagnostics=[];
     child.stderr.on('data',chunk=>{partial=(partial+chunk.toString()).slice(-8192);for(;;){const end=partial.indexOf('\n');if(end<0)break;const line=partial.slice(0,end);partial=partial.slice(end+1);if(diagnostics.length>=8)continue;const prefix=['AB_UPGRADE_DIAGNOSTIC ','AB_RUNTIME_DIAGNOSTIC '].find(p=>line.startsWith(p));if(prefix)try{diagnostics.push(JSON.parse(line.slice(prefix.length)));}catch{}}});
     const save=(result)=>{const value={mode,elapsedMs:Math.round(performance.now()-start),...result,diagnostics};writeFileSync(join(git,'wiki-upgrade-'+mode+'-diagnostics.json'),JSON.stringify(value,null,2)+'\n');return value;};
-    const timer=setTimeout(()=>{child.kill('SIGKILL');failed(Error('upgrade worker timeout '+JSON.stringify(save({outcome:'deadline'}))));},120000);
-    child.once('error',()=>{clearTimeout(timer);failed(Error('upgrade worker spawn failed'));});child.once('close',(code,signal)=>{clearTimeout(timer);const result=save({code,signal});code===0?done():failed(Error('upgrade worker failed '+JSON.stringify(result)));});
+    const timer=setTimeout(()=>{signalProcessGroup(child,'SIGKILL');failed(Error('upgrade worker timeout '+JSON.stringify(save({outcome:'deadline'}))));},120000);
+    child.once('error',()=>{clearTimeout(timer);failed(Error('upgrade worker spawn failed'));});child.once('exit',()=>signalProcessGroup(child,'SIGTERM'));child.once('close',(code,signal)=>{clearTimeout(timer);signalProcessGroup(child,'SIGTERM');const result=save({code,signal});code===0?done():failed(Error('upgrade worker failed '+JSON.stringify(result)));});
   });
 }
 

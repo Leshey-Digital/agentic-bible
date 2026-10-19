@@ -1,13 +1,13 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync,writeFileSync,readdirSync,existsSync,mkdirSync} from 'node:fs';
-import {spawn} from 'node:child_process';
 import {join} from 'node:path';
 import {tmpdir} from 'node:os';
 import {WikiBridge} from '../../src/wiki-bridge/store.ts';
 import {localObservations} from '../../src/wiki-bridge/local-d1.ts';
 import {prepareWikiEvidence} from '../../scripts/wiki-bridge-demo.mjs';
 import {git,packet,clean,accounting,successor} from './helpers.mjs';
+import {spawnProcessGroup,signalProcessGroup} from './process-group.mjs';
 const prose=html=>/<div class="prose"[^>]*>([\s\S]*?)<\/div>/.exec(html)?.[1]??'';
 test('canonical current/history retain URL-shaped prose and code-like text byte-for-byte',{timeout:60000},async()=>{
   const name='wiki-bridge-test-history-literals',observations='wiki-observations-test-history-literals';clean(name);clean(observations);await prepareWikiEvidence(observations);const local=await localObservations(observations);
@@ -27,7 +27,7 @@ test('canonical current/history retain URL-shaped prose and code-like text byte-
 test('SIGKILL captures stay owned/accounted; recovery preserves another capture and respects capacity',{timeout:120000},async()=>{
   const name='wiki-bridge-test-owned-captures',observations='wiki-observations-test-owned-captures';clean(name);clean(observations);await prepareWikiEvidence(observations);
   const globalBefore=readdirSync(tmpdir()).filter(n=>n.startsWith('agentic-wiki-bridge-')).sort(),file=join(git,'wiki-bridge-test-owned-input.json');writeFileSync(file,JSON.stringify(packet()));
-  const signal=await new Promise((done,failed)=>{const child=spawn(process.execPath,['tests/wiki-bridge/kill-worker.mjs',name,observations,file,'build-started'],{stdio:'ignore'});const timer=setTimeout(()=>{child.kill('SIGKILL');failed(Error('kill checkpoint timeout'));},60000);child.on('error',failed);child.on('exit',(code,signal)=>{clearTimeout(timer);done(signal??code);});});assert.equal(signal,'SIGKILL');
+  const signal=await new Promise((done,failed)=>{const child=spawnProcessGroup(process.execPath,['tests/wiki-bridge/kill-worker.mjs',name,observations,file,'build-started'],{stdio:'ignore'});const timer=setTimeout(()=>{signalProcessGroup(child,'SIGKILL');failed(Error('kill checkpoint timeout'));},60000);child.on('error',failed);child.on('exit',(code,signal)=>{clearTimeout(timer);signalProcessGroup(child,'SIGTERM');done(signal??code);});});assert.equal(signal,'SIGKILL');
   assert.deepEqual(readdirSync(tmpdir()).filter(n=>n.startsWith('agentic-wiki-bridge-')).sort(),globalBefore,'new global captured project leaked');
   const local=await localObservations(observations);try{
     let bridge=new WikiBridge(name);const before=await accounting(local.db),status=bridge.status();assert.equal(status.storage.captureSlots,1);assert.equal(status.storage.reservedCaptureBytes,64*1024*1024);assert.equal(status.pending[0].phase,'article-accepted/site-pending');
