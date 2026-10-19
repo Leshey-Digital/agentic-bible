@@ -73,3 +73,23 @@ test('quality verifier uncertainty and malformed new identity have no publicatio
     assert.equal(publisher.current(),null);
   }finally{await ledger.close();}
 });
+
+test('bounded local collection publishes arbitrary supplied IDs past the compiled twenty and retains rollback history',async()=>{
+  const ledger=await fixture('new-article-beyond-twenty'),publisher=store(),{article,sources}=sample(),context={db:ledger.db,quality:quality(),sources,publisher};let first;
+  try{
+    for(let index=1;index<=21;index++){
+      const candidate=structuredClone(article);candidate.id=`local-entry-${String(index).padStart(2,'0')}`;candidate.title=`Supplied local entry ${index}`;candidate.related=['ai-agent','tool-use'];
+      const receipt=await executeQualityPublication({schemaVersion:1,kind:'publish',eventId:`local-entry-event-${index}`,baseRevision:null,article:candidate},context);
+      if(index===1)first=publisher.current();
+      assert.equal(receipt.publication.articleId,candidate.id);
+    }
+    const twentyFirst=publisher.current();assert.ok(twentyFirst);assert.equal(Object.keys(twentyFirst.manifest.state.articles).length,21);
+    const selected='local-entry-21',previous=twentyFirst.manifest.state.articles[selected],revised=structuredClone(article);revised.id=selected;revised.title='Supplied local entry 21 with retained metadata';revised.related=['ai-agent','tool-use'];
+    const revision=await executeQualityPublication({schemaVersion:1,kind:'publish',eventId:'local-entry-21-revision',baseRevision:previous,article:revised},context);
+    const latest=publisher.current();assert.deepEqual(latest.manifest.state.history[selected],[previous,revision.publication.revisionId]);
+    const rollback=await executeQualityPublication({schemaVersion:1,kind:'rollback',eventId:'local-entry-21-rollback',expectedRelease:latest.reference.id,targetRelease:first.reference.id},context);
+    assert.equal(rollback.action,'rollback');const restored=publisher.current();assert.equal(Object.keys(restored.manifest.state.articles).length,1);
+    assert.deepEqual(restored.manifest.state.history[selected],[previous,revision.publication.revisionId]);
+    assert.ok(restored.manifest.files[`history/${selected}/${revision.publication.revisionId}.html`]);
+  }finally{await ledger.close();}
+});

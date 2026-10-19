@@ -2,7 +2,8 @@ import {correctionCredits,type CorrectionCredit} from '../corrections/credits.ts
 import {createHash} from 'node:crypto';
 import {validateSource} from '../editorial/validation.ts';
 
-export const publicationLimits=Object.freeze({inputBytes:32768,operations:32,revisions:32,articles:20,diskBytes:64*1024*1024,artifactBytes:8*1024*1024});
+// At most 31 publish operations fit before the reserved terminal rollback.
+export const publicationLimits=Object.freeze({inputBytes:32768,operations:32,revisions:32,articles:31,diskBytes:64*1024*1024,artifactBytes:8*1024*1024});
 export const baselineArticles=['ai-agent','tool-use','model-context-protocol'];
 export const concerns=['editorial-review','source-recency','coverage-gap','limited-source-coverage'] as const;
 export type Concern=typeof concerns[number];

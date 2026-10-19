@@ -2,6 +2,7 @@ import {hostedTarget,type HostedArticleId} from './targets.ts';
 import type {SqlDatabase} from '../editorial/contracts.ts';
 import type {ContributionAdapters} from './contributions.ts';
 import type {IntegrationAdapters} from '../integration-settings/contracts.ts';
+import type {JevDispatchPort} from './jev-dispatch.ts';
 export const repository='Leshey-Digital/agentic-bible';
 export const contentPath='src/content/articles/tool-use.md';
 export const baseRef='main';
@@ -21,7 +22,7 @@ export type VerifiedAdmin={subject:string;role:'admin';expiresAt:number;csrfVeri
 export type ApprovedNoteV1={schemaVersion:1;mode:'verified-admin-github-proposal';approvalId:string;submissionId:string;submissionRevision:number;reviewerRef:string;approvedAt:number;baseCommit:string;baseMarkdownSha256:string;note:string;citationId:'openai'|'claude'|'mcp-tools'};
 export type ApprovedNoteV2=Omit<ApprovedNoteV1,'schemaVersion'|'citationId'> & {schemaVersion:2;articleId:HostedArticleId;contentPath:string;citationId:string};
 export type ApprovedNote=ApprovedNoteV1|ApprovedNoteV2;
-export type Ports={verifyAdmin?:(request:Request)=>Promise<VerifiedAdmin|null>;approvedNote?:(id:string,admin:VerifiedAdmin)=>Promise<ApprovedNote|null>;sendGitHub?:(request:Request)=>Promise<Response>;hostedApprovals?:true;maintenanceReview?:true;integrationSettings?:IntegrationAdapters;contributions?:ContributionAdapters};
+export type Ports={verifyAdmin?:(request:Request)=>Promise<VerifiedAdmin|null>;approvedNote?:(id:string,admin:VerifiedAdmin)=>Promise<ApprovedNote|null>;sendGitHub?:(request:Request)=>Promise<Response>;hostedApprovals?:true;maintenanceReview?:true;integrationSettings?:IntegrationAdapters;contributions?:ContributionAdapters;jevDispatch?:JevDispatchPort};
 export type RuntimeEnv={
   ASSETS:{fetch(request:Request):Promise<Response>};
   EDITORIAL_DB?:SqlDatabase;
