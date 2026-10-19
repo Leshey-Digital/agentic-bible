@@ -18,7 +18,7 @@ export function createJevCurrencyAuthority(options:JevCurrencyAuthorityOptions={
  return Object.freeze({async execute(request:JevChargeRequest,dispatch:()=>Promise<JevDecision>,signal:AbortSignal){
   if(enabled!==true)stop('jev_currency_disabled');if(!db)stop('jev_currency_storage_unconfigured');if(!tokenBounds||typeof tokenBounds.inputUpperBound!=='function'||typeof tokenBounds.outputUpperBound!=='function')stop('jev_currency_token_bounds_unconfigured');
   const currency=currencyInput(control);if(!currency)stop('jev_currency_policy_unconfigured');
-  currencyProvider(currency,'typesafe','typesafe-reported-token-usage-v1',request.model);
+  const price=currencyProvider(currency,'typesafe','typesafe-reported-token-usage-v1',request.model);if(!price)stop('jev_currency_policy_unconfigured');
   const requestBytes=new TextEncoder().encode(request.requestJson).byteLength;
   if(requestBytes<1||requestBytes>16384)stop('jev_currency_request_limit');
   const inputReservation=tokenBounds.inputUpperBound(request.requestJson),outputReservation=tokenBounds.outputUpperBound(2048);
@@ -29,7 +29,7 @@ export function createJevCurrencyAuthority(options:JevCurrencyAuthorityOptions={
   const event='jev-'+request.requestSha256.slice(0,48),fingerprint=hash(canonical({provider:request.provider,model:request.model,requestSha256:request.requestSha256,currency}));
   const reservedCost=inputReservation+outputReservation,ledgerPolicy:Readonly<Policy>=Object.freeze({unit:'SIMULATED_MICRO_USD',maxInputTokens:inputReservation,maxOutputTokens:outputReservation,
    inputRate:1,outputRate:1,runCost:reservedCost,dayCost:reservedCost*8,monthCost:reservedCost*16,dayRequests:8,monthRequests:16,maxSourceAgeMs:86400000});
-  const budget=new MaintenanceBudget(db,{enabled:true,policy:currency}),row=await budget.reserve(event,fingerprint,ledgerPolicy,inputReservation,now);
+  const budget=new MaintenanceBudget(db,{enabled:true,policy:currency}),row=await budget.reserve(event,fingerprint,ledgerPolicy,inputReservation,now,price.id);
   let dispatched=false;
   try{
    const eligible=await budget.dispatchEligibility(row);eligible((clock??Date.now)());

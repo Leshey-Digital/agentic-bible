@@ -25,14 +25,14 @@ export function createCloudflareProseAdapter(options:CloudflareProseOptions={}){
    if(!Number.isSafeInteger(timeout)||timeout<1||timeout>cloudflareProseLimits.timeoutMs)stop('cloudflare_prose_deadline');
    const bytes=new TextEncoder().encode(prompt??'').byteLength;if(typeof prompt!=='string'||bytes<1||bytes>cloudflareProseLimits.promptBytes)stop('cloudflare_prose_prompt_limit');
    const policy=policyInput(policyControl),currency=currencyInput(control);if(!currency)stop('cloudflare_prose_currency_unconfigured');
-   currencyProvider(currency,'cloudflare-workers-ai','cloudflare-reported-token-usage-v1',cloudflareProseModel);
+   const price=currencyProvider(currency,'cloudflare-workers-ai','cloudflare-reported-token-usage-v1',cloudflareProseModel);if(!price)stop('cloudflare_prose_currency_unconfigured');
    const inputReservation=inputTokenUpperBound(prompt);if(!Number.isSafeInteger(inputReservation)||inputReservation<1||inputReservation>policy.maxInputTokens)stop('cloudflare_prose_prompt_reservation_limit');
    if(policy.maxOutputTokens>2048)stop('cloudflare_prose_output_reservation_limit');
    const now=(clock??Date.now)();if(!Number.isSafeInteger(now)||now<0||now>253402300799999)stop('maintenance_clock');
    const request={model:cloudflareProseModel,prompt,max_tokens:policy.maxOutputTokens},requestHash=hash(canonical(request));
-   const event='cfa-'+requestHash.slice(0,48),fingerprint=hash(canonical({requestHash,policy,currency:currencyPin(currency)}));
+   const event='cfa-'+requestHash.slice(0,48),fingerprint=hash(canonical({requestHash,policy,currency:currencyPin(currency),priceId:price.id}));
    const reservationPolicy=Object.freeze({...policy,maxInputTokens:inputReservation});
-   const budget=new MaintenanceBudget(db,{enabled:true,policy:currency}),row=await budget.reserve(event,fingerprint,reservationPolicy,inputReservation,now);
+   const budget=new MaintenanceBudget(db,{enabled:true,policy:currency}),row=await budget.reserve(event,fingerprint,reservationPolicy,inputReservation,now,price.id);
    let dispatched=false;const controller=new AbortController();let timer:ReturnType<typeof setTimeout>|undefined;
    try{
     const eligible=await budget.dispatchEligibility(row);eligible((clock??Date.now)());if(controller.signal.aborted)stop('cloudflare_prose_cancelled');dispatched=true;
@@ -41,7 +41,7 @@ export function createCloudflareProseAdapter(options:CloudflareProseOptions={}){
     if(!raw||typeof raw!=='object'||Array.isArray(raw))stop('cloudflare_prose_response');const value=raw as Record<string,unknown>;
     if(typeof value.response!=='string'||value.response.trim().length<1||new TextEncoder().encode(value.response).byteLength>cloudflareProseLimits.responseBytes)stop('cloudflare_prose_response');
     const usage=usageReader(value.usage);if(!usage||!Number.isSafeInteger(usage.inputTokens)||usage.inputTokens<1||usage.inputTokens>policy.maxInputTokens||!Number.isSafeInteger(usage.outputTokens)||usage.outputTokens<0||usage.outputTokens>policy.maxOutputTokens)stop('cloudflare_prose_usage');
-    const settledAt=(clock??Date.now)(),cost=currencyCost(currency,usage),receipt={schemaVersion:1,provider:'cloudflare-workers-ai',model:cloudflareProseModel,requestHash,usage,costUpperBoundMicroUsd:row.currency_reserved,costSettledMicroUsd:cost,draftHash:hash(value.response)};
+    const settledAt=(clock??Date.now)(),cost=currencyCost(currency,usage,price.id),receipt={schemaVersion:1,provider:'cloudflare-workers-ai',model:cloudflareProseModel,priceId:price.id,requestHash,usage,costUpperBoundMicroUsd:row.currency_reserved,costSettledMicroUsd:cost,draftHash:hash(value.response)};
     const draft:ProseDraft={kind:'unverified-prose-draft',model:cloudflareProseModel,text:value.response,usage,costUpperBoundMicroUsd:row.currency_reserved!,costSettledMicroUsd:cost,eventId:event};
     await budget.ready(row,{response:value.response,usage,provider:'cloudflare-workers-ai',model:cloudflareProseModel},{kind:'cloudflare-prose-draft',...receipt},usage.inputTokens+usage.outputTokens,{usage,now:settledAt});
     const ready=await budget.job(event);if(!ready)stop('maintenance_accounting_unconfirmed');await budget.complete(ready,receipt);return draft;

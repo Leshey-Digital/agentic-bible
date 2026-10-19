@@ -15,7 +15,7 @@ type Context={quality?:QualityControl;currency?:CurrencyControl;canonicalBase?:C
 export async function runMaintenance(value:unknown,context:Context){
  if(context.enabled!==true||!context.provider||context.provider.kind!=='deterministic-extractive-fake'||context.provider.id!=='fake-extractive-v1'||context.provider.tokenizer!=='synthetic-utf8-bytes')stop('maintenance_provider_disabled');const provider=context.provider;
  if(context.quality)qualityIdentity(context.quality);
- const currency=currencyInput(context.currency);currencyProvider(currency,'fake-extractive-v1','synthetic-utf8-bytes');
+ const currency=currencyInput(context.currency),currencyCard=currencyProvider(currency,'fake-extractive-v1','synthetic-utf8-bytes');
  const policy=policyInput(context.policy),command=bridgeInput(value);if(command.kind!=='apply'||command.revision.article.reviewedCorrections)stop('maintenance_not_community_approval');if(command.schemaVersion===2&&!context.quality)stop('quality_verifier_unconfigured');const target=maintenanceTarget(command.revision.article.id);if(context.quality)context={...context,quality:{...context.quality!,previousCandidateHash:command.revision.baseRevision}};
  const now=(context.clock??Date.now)();if(!Number.isSafeInteger(now)||now<0||now>253402300799999)stop('maintenance_clock');
  const project=projectFiles(context.bridge.repo);if(hash(project.files[target.articlePath])!==command.originalMarkdownHash)stop('maintenance_original_changed');
@@ -33,7 +33,7 @@ export async function runMaintenance(value:unknown,context:Context){
   const active=context.bridge.current(),publisher=context.bridge.publisher.current(),status=context.bridge.status();
   if(canonical(active?.reference??null)!==canonical(command.expectedSite)||canonical(publisher?.reference??null)!==canonical(command.expectedPublisher)||(publisher?.manifest.state.articles[target.articleId]??null)!==command.revision.baseRevision)stop('maintenance_stale_base');
   if(active&&active.manifest.state.sourceTreeHash!==project.hash||status.pending.length||status.active&&status.active.sequence>=7||status.storage.accountedBytes+96*1024*1024>status.storage.limitBytes)stop('maintenance_bridge_unavailable');
-  row=await budget.reserve(command.eventId,fingerprint,policy,inputTokens,now);await context.checkpoint?.('reserved');
+  row=await budget.reserve(command.eventId,fingerprint,policy,inputTokens,now,currencyCard?.id);await context.checkpoint?.('reserved');
   let response:unknown,packet:Apply,actualCost:number,usage:Usage;
   try{const eligible=currency?await budget.dispatchEligibility(row):undefined;freshBase();eligible?.((context.clock??Date.now)());response=await invokeBounded(provider,request);const checked=validateReply(response,request,policy);actualCost=checked.actualCost;usage=checked.usage;packet=generated(command,checked.output.extracts.map(e=>({citationId:e.citationId,quote:e.quote})),evidence.bindings.map(b=>b.observedAt));}
   catch(error){await budget.rejected(row,!(error instanceof MaintenanceError)||error.code==='maintenance_provider_timeout');throw error instanceof MaintenanceError?error:new MaintenanceError('maintenance_provider_failed');}
