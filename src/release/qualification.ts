@@ -18,7 +18,7 @@ export const qualificationManifestDigest=digest(canonical({schemaVersion:3,valid
 export function assertValidationManifest(root:string){
  const expected=validationSteps.map(step=>step==='test'?'npm test':`npm run ${step}`).join(' && ');
  const pkg=JSON.parse(readFileSync(join(root,'package.json'),'utf8'));
- if(pkg.scripts?.validate!==expected||pkg.scripts?.['test:wiki-bridge']!=='node --import ./tests/support/network-diagnostics.mjs --test tests/wiki-bridge/*.test.mjs'||pkg.scripts?.['test:wiki-bridge:serial']!=='node --import ./tests/support/network-diagnostics.mjs --test --test-concurrency=1 tests/wiki-bridge/*.test.mjs')throw Error('release_validation_manifest_mismatch');
+ if(pkg.scripts?.validate!==expected||pkg.scripts?.['test:wiki-bridge']!=='node --import ./tests/support/network-diagnostics.mjs --test tests/wiki-bridge/*.test.mjs'||pkg.scripts?.['test:wiki-bridge:serial']!=='node --import ./tests/support/network-diagnostics.mjs --test --test-concurrency=1 tests/wiki-bridge/*.test.mjs'||pkg.scripts?.['test:maintenance-quality']!=='node --test --test-concurrency=1 tests/maintenance-quality/*.test.mjs')throw Error('release_validation_manifest_mismatch');
  return qualificationManifestDigest;
 }
 const repository='Leshey-Digital/agentic-bible',hex=(v:unknown,n:number)=>typeof v==='string'&&new RegExp('^[a-f0-9]{'+n+'}$').test(v);

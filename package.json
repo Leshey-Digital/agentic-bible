@@ -90,7 +90,7 @@
     "test:reader-metadata": "node --test tests/reader-metadata/*.test.mjs",
     "test:social-metadata": "node --test tests/social-metadata/*.test.mjs",
     "test:content-readiness": "python3 tests/content-readiness/examples_test.py",
-    "test:maintenance-quality": "node --test tests/maintenance-quality/*.test.mjs",
+    "test:maintenance-quality": "node --test --test-concurrency=1 tests/maintenance-quality/*.test.mjs",
     "test:controlled-fixtures": "node --test tests/controlled-fixtures/*.test.mjs",
     "test:production-hosted": "node --test tests/production-hosted/*.test.mjs",
     "test:integration-vault": "node --test tests/integration-vault/*.test.mjs",

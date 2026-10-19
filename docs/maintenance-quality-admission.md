@@ -16,7 +16,7 @@ The producer saves and accounts for its proposal first, then calls quality admis
 
 The canonical writer independently requires the completed quality admission and emits a schema version 2 descriptor with the candidate-bound receipt. The new history reader accepts both formats and checks the receipt against the article revision. Older readers reject version 2 descriptors; direct downgrade is unsupported after their creation. Never rewrite history to make old readers accept a new record.
 
-Run `node --test tests/maintenance-quality/*.test.mjs` using pinned Node 24.19/npm 11.9. Tests use actual local workerd/D1, controlled semantic decisions, controlled source/provider transports and owned Git repositories. No source is fetched outside tests; no model is called, no credential is installed, no real article is edited, and nothing is deployed. The twenty existing articles were deep-read previously, with sampled claims checked; this work does not assert that every claim was fact checked.
+Run `npm run test:maintenance-quality` using pinned Node 24.19/npm 11.9. The script runs test files serially because these cases combine actual local workerd/D1 with full Astro/Pagefind builds; Node's default file concurrency can overlap several memory-intensive fixtures. Tests still execute the same files, assertions, and test-level deadlines. The tests use controlled semantic decisions, controlled source/provider transports and owned Git repositories. No source is fetched outside tests; no model is called, no credential is installed, no real article is edited, and nothing is deployed. The twenty existing articles were deep-read previously, with sampled claims checked; this work does not assert that every claim was fact checked.
 
 ## Generalized canonical targets
 
