@@ -7,4 +7,4 @@
 - [x] Preserve current version-1 behavior and exact existing receipts.
 - [x] Add actual workerd/D1 migration, concurrency, restart, budget aggregation and uncertain-charge tests.
 - [x] Verify limits cannot increase, baselines cannot decrease, UTC-period totals aggregate across policy versions, and a late pinned settlement lands in its original day/month budget.
-- [ ] Review implementation independently; record exact final commit and complete release qualification separately.
+- [x] Review implementation independently; complete full release qualification on the final exact commit and retain the verified evidence bundle.
