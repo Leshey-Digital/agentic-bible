@@ -1,6 +1,6 @@
 import {readFileSync,statSync} from 'node:fs';
 import {PublicationStore} from '../src/publishing/store.ts';
-import {PublicationError,commandInput,hash,publicationLimits} from '../src/publishing/contracts.ts';
+import {PublicationError,canonical,commandInput,hash,publicationLimits} from '../src/publishing/contracts.ts';
 import {publicationServer} from '../src/publishing/preview.ts';
 import {readingArticleIds} from '../src/lib/article-ids.ts';
 import {executeQualityPublication} from '../src/maintenance-quality/publisher.ts';
@@ -35,7 +35,13 @@ try{
     const path=option('--file',undefined);if(!path||statSync(path).size>publicationLimits.inputBytes)throw new PublicationError('bounded_input_file_required');
     let value;try{value=JSON.parse(readFileSync(path,'utf8'));}catch{throw new PublicationError('invalid_json');}
     const command=commandInput(value);const store=new PublicationStore(option('--state','article-publication'));
-    if(command.kind==='publish'&&!readingArticleIds.includes(command.article.id)&&!store.current()?.manifest.state.history[command.article.id])throw new PublicationError('new_identity_requires_quality_context');
+    if(command.kind==='publish'&&!readingArticleIds.includes(command.article.id)){
+      const prior=store.current()?.manifest.state.receipts.find(receipt=>receipt.eventId===command.eventId);
+      // The publisher's immutable event ledger is the sole exception for an
+      // uncompiled ID: exact replay is a no-op; changed input conflicts there.
+      if(!prior)throw new PublicationError('new_identity_requires_quality_context');
+      if(prior.fingerprint!==hash(canonical(command)))throw new PublicationError('event_reference_conflict');
+    }
     console.log(JSON.stringify(await store.execute(value)));
   }else if(action==='demo'){
     const store=new PublicationStore(option('--state','article-publication'));

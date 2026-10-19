@@ -32,6 +32,20 @@ test('the demo uses durable controlled-test quality receipts and stable publicat
     try{
       const rollback=cli('apply','--file',rollbackFile,'--state',state);assert.equal(rollback.status,0,rollback.stderr);
       const afterRollback=cli('status','--state',state);assert.equal(afterRollback.status,0,afterRollback.stderr);assert.equal(JSON.parse(afterRollback.stdout).sequence,3);assert.deepEqual(JSON.parse(afterRollback.stdout).articles,{});
+      const changed=JSON.parse(readFileSync('fixtures/local-publication/article-v1.json','utf8'));changed.eventId='new-identity-revision-after-rollback';changed.baseRevision=result.first.revisionId;changed.article.title='Ungated revision must remain rejected';
+      const changedFile=join(tmpdir(),`agentic-publication-changed-${token}.json`);writeFileSync(changedFile,JSON.stringify(changed));
+      try{
+        const blocked=cli('apply','--file',changedFile,'--state',state);assert.equal(blocked.status,1,blocked.stderr);assert.match(blocked.stderr,/new_identity_requires_quality_context/);
+        const original=JSON.parse(readFileSync('fixtures/local-publication/article-v1.json','utf8'));
+        const exactFile=join(tmpdir(),`agentic-publication-exact-${token}.json`);writeFileSync(exactFile,JSON.stringify(original));
+        try{
+          const exactReplay=cli('apply','--file',exactFile,'--state',state);assert.equal(exactReplay.status,0,exactReplay.stderr);assert.equal(JSON.parse(exactReplay.stdout).eventId,'local-demo-revision-one');
+          const statusAfterExactReplay=cli('status','--state',state);assert.equal(statusAfterExactReplay.status,0,statusAfterExactReplay.stderr);assert.equal(JSON.parse(statusAfterExactReplay.stdout).sequence,3);assert.deepEqual(JSON.parse(statusAfterExactReplay.stdout).articles,{});
+          original.article.title='Changed candidate cannot reuse the trusted event ID';writeFileSync(exactFile,JSON.stringify(original));
+          const changedReplay=cli('apply','--file',exactFile,'--state',state);assert.equal(changedReplay.status,1,changedReplay.stderr);assert.match(changedReplay.stderr,/event_reference_conflict/);
+          const unchanged=cli('status','--state',state);assert.equal(unchanged.status,0,unchanged.stderr);assert.equal(JSON.parse(unchanged.stdout).sequence,3);assert.deepEqual(JSON.parse(unchanged.stdout).articles,{});
+        }finally{rmSync(exactFile,{force:true});}
+      }finally{rmSync(changedFile,{force:true});}
       const replay=cli('demo','--state',state,'--quality-state',qualityState);assert.equal(replay.status,0,replay.stderr);assert.deepEqual(JSON.parse(replay.stdout),result);
       const final=cli('status','--state',state);assert.equal(final.status,0,final.stderr);assert.equal(JSON.parse(final.stdout).sequence,3);assert.deepEqual(JSON.parse(final.stdout).articles,{});
     }finally{rmSync(rollbackFile,{force:true});}
