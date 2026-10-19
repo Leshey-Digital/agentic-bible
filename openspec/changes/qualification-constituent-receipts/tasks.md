@@ -1,0 +1,5 @@
+- [x] Enumerate the current serial `validate` constituents and assert exact package script order before qualification.
+- [x] Run each validation constituent separately with bounded per-step execution and sealed logs.
+- [x] Bind schema-version-2 receipts to the ordered manifest digest and check positions; preserve schema-version-1 verification.
+- [x] Add coverage for inventory drift, omitted/stale receipts, and legacy receipt verification.
+- [x] Run the focused release test suite and project checks.

@@ -1,0 +1,3 @@
+# Local release qualification delta
+
+The qualification runner MUST validate that `package.json`'s `validate` script exactly matches its ordered list of constituent scripts before execution. It MUST execute and record each constituent serially as a separate bounded step, then record each post-validation command. A new qualification MUST bind a digest of the ordered validation and post-validation manifests, phase, and index for every check. Verification MUST reject missing, reordered, stale, or modified records. Verification MUST continue to accept prior schema-version-1 receipts using their original manifest and checks.

@@ -1,0 +1,5 @@
+- [x] Define a secret-free production descriptor contract and fail-closed validation rules.
+- [x] Validate explicit production origin/mode, admin trust identity, D1 binding, GitHub secret scope and indexing controls.
+- [x] Add synthetic positive and negative tests for missing and unsafe configuration.
+- [ ] Integrate the guard with the reviewed release command after independent review and exact-head validation.
+- [ ] Fill descriptor identity/resource values only through owner-controlled setup; do not invent them in code.

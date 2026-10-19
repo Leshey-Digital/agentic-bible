@@ -1,0 +1,6 @@
+- [x] Implement bounded local capture with exact file inventory and content digests.
+- [x] Verify full archive before restore; reject unsafe paths and existing destinations.
+- [x] Add tests for exact restore, omitted/extra/tampered entries, traversal, overwrite and symlink rejection.
+- [x] Run focused recovery suite and inspect resulting diff.
+- [x] Independent review, including descriptor-relative race and bounded-read checks.
+- [ ] Production owner selects/implements offsite retention, encryption, database backup and recovery objectives separately.
