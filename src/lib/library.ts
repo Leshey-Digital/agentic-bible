@@ -1,4 +1,5 @@
 import { getCollection } from 'astro:content';
+import {checkedReaderInventory} from './article-inventory.ts';
 
 export const topics = [
   { id: 'foundations', name: 'Foundations', number: '01', description: 'The ideas behind systems that reason, act, and adapt.' },
@@ -7,7 +8,7 @@ export const topics = [
 ] as const;
 
 export async function library() {
-  return (await getCollection('articles')).sort((a, b) => a.data.order - b.data.order);
+  return checkedReaderInventory(await getCollection('articles'));
 }
 
 export const articleUrl = (id: string) => `/articles/${id}/`;

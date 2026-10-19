@@ -2,7 +2,7 @@
 import Base from '../layouts/Base.astro';
 import { library } from '../lib/library';
 import {articleIds} from '../editorial/contracts.ts';
-const articles = await library();
+const articles = (await library()).filter(article=>articleIds.includes(article.id as typeof articleIds[number]));
 // Fail the build if choices drift from the same compiled inventory enforced by intake.
 if (articles.length !== articleIds.length || new Set(articles.map(article => article.id)).size !== articleIds.length || articles.some(article => !articleIds.some(id => id === article.id))) throw new Error('incomplete_contribution_inventory');
 ---

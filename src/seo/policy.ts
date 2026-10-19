@@ -1,6 +1,8 @@
 import {readingArticleIds} from '../lib/article-ids.ts';
+import {safeArticleSlug} from '../lib/article-inventory.ts';
+// This remains the fixed inventory used by the separately gated IndexNow/outbox path.
 export const articleIds=readingArticleIds;
-export const publicRoutes=['/','/about/','/topics/','/topics/foundations/','/topics/capabilities/','/topics/protocols/','/history/',...articleIds.map(id=>`/articles/${id}/`)];
+export const publicRoutes=['/','/about/','/topics/','/topics/foundations/','/topics/capabilities/','/topics/protocols/','/history/'];
 export type DiscoveryPolicy={mode:'staging'|'canonical'|'synthetic';origin:string};
 export function canonicalOrigin(value:unknown):string{
   if(typeof value!=='string')throw new Error('canonical_origin_required');
@@ -15,9 +17,10 @@ export function discoveryPolicy(env:Record<string,string|undefined>=process.env)
   if(mode!=='production')throw new Error('invalid_discovery_mode');
   return {mode:'canonical',origin:canonicalOrigin(env.AGENTIC_BIBLE_CANONICAL_ORIGIN)};
 }
-export function pageDiscovery(policy:DiscoveryPolicy,path:string,synthetic=false){
+export function pageDiscovery(policy:DiscoveryPolicy,path:string,synthetic=false,articleId?:string){
   const productionHistory=path==='/history/'&&policy.mode==='canonical';
-  const publicPage=publicRoutes.includes(path)&&!synthetic&&(path!=='/history/'||productionHistory);
+  const match=/^\/articles\/([^/]+)\/$/.exec(path),readerArticle=!!match&&safeArticleSlug(articleId)&&articleId===match[1];
+  const publicPage=(publicRoutes.includes(path)||readerArticle)&&!synthetic&&(path!=='/history/'||productionHistory);
   return {canonical:publicPage?new URL(path,policy.origin).href:null,indexable:policy.mode==='canonical'&&publicPage};
 }
 export const robots=(policy:DiscoveryPolicy)=>`User-agent: *\nAllow: /\n${policy.mode==='canonical'?`Sitemap: ${policy.origin}/sitemap.xml\n`:''}`;

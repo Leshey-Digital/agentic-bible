@@ -2,6 +2,8 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync, existsSync, statSync } from 'node:fs';
 import { resolve, dirname, join } from 'node:path';
+import './article-inventory/inventory.test.mjs';
+import './article-inventory/static-build.test.mjs';
 
 function walk(root) { return readdirSync(root).flatMap(name => { const p = join(root, name); return statSync(p).isDirectory() ? walk(p) : [p]; }); }
 const pages = walk('dist').filter(path => path.endsWith('.html'));

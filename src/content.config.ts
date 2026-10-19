@@ -19,9 +19,9 @@ const articles = defineCollection({
       reviewedCorrections:z.array(z.object({approvalId:z.uuid(),submissionId:z.uuid(),submissionVersion:z.number().int().positive(),reviewer:z.literal('local-editor'),approvedAt:z.number().int().nonnegative()})).max(6).optional(),
       evidence:z.array(z.object({citationId:z.string(),sourceId:z.string(),url:z.url(),hash:z.string().regex(/^[a-f0-9]{64}$/),receiptKey:z.string()})),
     }).optional(),
-    related: z.array(z.string()).min(1),
+    related: z.array(z.string().max(50).regex(/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/)).min(1),
     sources: z.array(z.object({
-      id: z.string(), title: z.string(), url: z.url(),
+      id: z.string().max(50).regex(/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/), title: z.string(), url: z.url(),
       publisher: z.string(), context: z.string(),
     })).min(1),
   }),

@@ -7,7 +7,8 @@ import {socialImageUrl} from '../seo/social.ts';
 interface Props { title: string; description?: string; active?: 'library' | 'topics' | 'about' | 'search'; seoArticle?:SeoArticle; seoImage?:string; seoImageAlt?:string; }
 const { title, description = `${title} — Agentic Bible, a sourced reference for AI agents and their technology.`, active,seoArticle,seoImage,seoImageAlt='Agentic Bible — a sourced reference for AI agents and their technology' } = Astro.props;
 const discovery=discoveryPolicy();
-const page=pageDiscovery(discovery,Astro.url.pathname,!!seoArticle&&!eligibleArticle(seoArticle));
+const articleIsEligible=!!seoArticle&&eligibleArticle(seoArticle);
+const page=pageDiscovery(discovery,Astro.url.pathname,!!seoArticle&&!articleIsEligible,articleIsEligible?seoArticle!.id:undefined);
 const structured=seoArticle?articleStructuredData(seoArticle,discovery):null;
 const socialImage=socialImageUrl(seoImage,discovery.origin);
 const maintenancePreview=process.env.AGENTIC_BIBLE_MAINTENANCE_HISTORY_MODE==='controlled-static-preview';

@@ -1,8 +1,9 @@
 import {digest} from '../editorial/validation.ts';
-import {articleIds,type DiscoveryPolicy} from './policy.ts';
+import {safeArticleSlug,readerArticleLimit} from '../lib/article-inventory.ts';
+import type {DiscoveryPolicy} from './policy.ts';
 export type SeoArticle={id:string;body?:string;data:{title:string;description:string;topic:string;status:string;author:string;publication?:unknown;sources:{url:string}[]}};
 export type IndexingManifest={schemaVersion:1;mode:DiscoveryPolicy['mode'];origin:string;entries:{articleId:string;url:string;revision:string}[]};
-export const eligibleArticle=(article:SeoArticle)=>articleIds.includes(article.id as typeof articleIds[number])&&article.data.publication===undefined&&article.data.status==='Working draft'&&article.data.author==='AI-assisted project draft';
+export const eligibleArticle=(article:SeoArticle)=>safeArticleSlug(article.id)&&article.data.publication===undefined&&article.data.status==='Working draft'&&article.data.author==='AI-assisted project draft';
 export function articleStructuredData(article:SeoArticle,policy:DiscoveryPolicy){
   if(policy.mode!=='canonical'||!eligibleArticle(article))return null;
   const url=`${policy.origin}/articles/${article.id}/`;
@@ -21,11 +22,11 @@ export async function indexingManifest(articles:SeoArticle[],policy:DiscoveryPol
 export function checkedManifest(value:unknown):IndexingManifest{
   if(!value||typeof value!=='object'||Array.isArray(value))throw new Error('invalid_indexing_manifest');
   const m=value as IndexingManifest;
-  if(Object.keys(m).sort().join(',')!=='entries,mode,origin,schemaVersion'||m.schemaVersion!==1||!['staging','canonical','synthetic'].includes(m.mode)||!Array.isArray(m.entries)||m.entries.length>articleIds.length)throw new Error('invalid_indexing_manifest');
+  if(Object.keys(m).sort().join(',')!=='entries,mode,origin,schemaVersion'||m.schemaVersion!==1||!['staging','canonical','synthetic'].includes(m.mode)||!Array.isArray(m.entries)||m.entries.length>readerArticleLimit)throw new Error('invalid_indexing_manifest');
   if(m.mode!=='canonical'){if(m.origin!=='https://staging.agenticbible.si'||m.entries.length)throw new Error('invalid_indexing_manifest');return m;}
   if(m.origin!=='https://agenticbible.si')throw new Error('invalid_indexing_manifest');
   const seen=new Set();for(const e of m.entries){
-    if(!e||Object.keys(e).sort().join(',')!=='articleId,revision,url'||!articleIds.includes(e.articleId as typeof articleIds[number])||e.url!==`${m.origin}/articles/${e.articleId}/`||typeof e.revision!=='string'||!/^[a-f0-9]{64}$/.test(e.revision)||seen.has(e.articleId))throw new Error('invalid_indexing_manifest');seen.add(e.articleId);
+    if(!e||Object.keys(e).sort().join(',')!=='articleId,revision,url'||!safeArticleSlug(e.articleId)||e.url!==`${m.origin}/articles/${e.articleId}/`||typeof e.revision!=='string'||!/^[a-f0-9]{64}$/.test(e.revision)||seen.has(e.articleId))throw new Error('invalid_indexing_manifest');seen.add(e.articleId);
   }
   return m;
 }

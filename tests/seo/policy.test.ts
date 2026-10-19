@@ -16,8 +16,9 @@ test('private/query/snapshot/fixture paths never gain a canonical or indexing pe
   assert.deepEqual(pageDiscovery(policy,'/history/'),{canonical:'https://agenticbible.si/history/',indexable:true});
   assert.deepEqual(pageDiscovery(discoveryPolicy({}),'/history/'),{canonical:null,indexable:false});
   assert.deepEqual(pageDiscovery({...policy,mode:'synthetic'},'/history/'),{canonical:null,indexable:false});
-  assert.deepEqual(pageDiscovery(policy,'/articles/tool-use/'),{canonical:'https://agenticbible.si/articles/tool-use/',indexable:true});
-  assert.equal(pageDiscovery(policy,'/articles/tool-use/',true).canonical,null);
+  assert.deepEqual(pageDiscovery(policy,'/articles/tool-use/',false,'tool-use'),{canonical:'https://agenticbible.si/articles/tool-use/',indexable:true});
+  assert.deepEqual(pageDiscovery(policy,'/articles/reader-inventory-regression/',false,'reader-inventory-regression'),{canonical:'https://agenticbible.si/articles/reader-inventory-regression/',indexable:true});
+  assert.equal(pageDiscovery(policy,'/articles/tool-use/',true,'tool-use').canonical,null);
   assert.doesNotMatch(robots(discoveryPolicy({})),/Disallow:|Sitemap:/);assert.match(robots(policy),/Sitemap: https:\/\/agenticbible.si\/sitemap.xml/);
 });
 test('structured data reflects actual metadata, safely escapes JSON-LD and invents no author/date/image',async()=>{
