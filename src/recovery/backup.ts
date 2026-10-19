@@ -81,7 +81,7 @@ export async function createRecoveryBackup(root:string,sourceCommit:string,captu
  }finally{await rootHandle.close();}
 }
 
-function verifyBackup(value:unknown):RecoveryBackup{
+export function verifyRecoveryBackup(value:unknown):RecoveryBackup{
  if(!exactObject(value,['manifest','files']))fail('recovery_bundle_schema');
  const m=(value as any).manifest,f=(value as any).files;
  if(!exactObject(m,['schemaVersion','kind','sourceCommit','capturedAt','fileCount','totalBytes','files'])||m.schemaVersion!==1||m.kind!=='agentic-bible-recovery'||!SOURCE.test(m.sourceCommit)||typeof m.capturedAt!=='string'||!/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}Z$/.test(m.capturedAt)||!Number.isFinite(Date.parse(m.capturedAt))||new Date(m.capturedAt).toISOString()!==m.capturedAt||!Number.isSafeInteger(m.fileCount)||m.fileCount<1||m.fileCount>MAX_FILES||!Number.isSafeInteger(m.totalBytes)||m.totalBytes<0||m.totalBytes>MAX_BYTES||!Array.isArray(m.files)||m.files.length!==m.fileCount||!f||typeof f!=='object'||Array.isArray(f)||Object.getPrototypeOf(f)!==Object.prototype&&Object.getPrototypeOf(f)!==null)fail('recovery_bundle_schema');
@@ -100,7 +100,7 @@ function verifyBackup(value:unknown):RecoveryBackup{
 
 /** Restore only after full verification, into a destination that does not yet exist. */
 export async function restoreRecoveryBackup(value:unknown,destination:string){
- const backup=verifyBackup(value),target=resolve(destination);
+ const backup=verifyRecoveryBackup(value),target=resolve(destination);
  await mkdir(target,{recursive:false});
  try{
   for(const entry of backup.manifest.files){
