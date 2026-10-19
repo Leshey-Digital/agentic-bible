@@ -90,6 +90,14 @@ test('capture never emits an export that exceeds the conservative 100-statement 
   await make(over.db,34);await assert.rejects(createD1RecoveryBackup(over.db,commit,capturedAt),/d1_recovery_statement_limit/);
 });
 
+test('capture rejects oversized table data from in-transaction size aggregates before returning its rows',{timeout:30000},async(t)=>{
+  const source=await database(t,'d1-recovery-byte-limit');await source.db.batch([
+    source.db.prepare('CREATE TABLE large_text(value TEXT)'),source.db.prepare('CREATE TABLE companion(value INTEGER)'),
+    source.db.prepare('INSERT INTO large_text VALUES(?)').bind('x'.repeat(1_200_000)),source.db.prepare('INSERT INTO large_text VALUES(?)').bind('y'.repeat(1_200_000))
+  ]);
+  await assert.rejects(createD1RecoveryBackup(source.db,commit,capturedAt),/d1_recovery_size_limit/);
+});
+
 test('schema/data omissions and column tampering fail inventory checks even when an unkeyed digest is recomputed',{timeout:30000},async(t)=>{
   const source=await database(t,'d1-recovery-inventory-source'),destination=await database(t,'d1-recovery-inventory-dest');await seed(source.db);const original=JSON.parse(await createD1RecoveryBackup(source.db,commit,capturedAt));
   const missing=structuredClone(original);missing.payload.tables=missing.payload.tables.filter((table)=>table.name!=='child');await rehash(missing);await assert.rejects(restoreD1RecoveryBackup(destination.db,missing,{authorizeSchema}),/d1_recovery_inventory_invalid/);

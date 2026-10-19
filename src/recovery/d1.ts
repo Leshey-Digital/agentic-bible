@@ -33,6 +33,7 @@ type Envelope = { manifest: Manifest; payload: Payload };
 
 const quoteIdent = (value: string) => `"${value.replaceAll('"', '""')}"`;
 const quoteSqlString = (value: string) => `'${value.replaceAll("'", "''")}'`;
+const tableMetadataSql = (name: string) => `SELECT cid,name,type,hidden,(SELECT group_concat("table",char(10)) FROM pragma_foreign_key_list(${quoteSqlString(name)})) AS ref_tables FROM pragma_table_xinfo(${quoteSqlString(name)})`;
 const utf8 = new TextEncoder();
 const base64 = (bytes: Uint8Array) => {
   let binary = '';
@@ -101,14 +102,33 @@ export async function createD1RecoveryBackup(db: RecoveryD1Database, sourceCommi
   const discovery = rows(await db.prepare("SELECT type,name,tbl_name,sql FROM sqlite_schema WHERE name NOT LIKE 'sqlite_%' AND name NOT LIKE '_cf_%' AND sql IS NOT NULL ORDER BY type,name").all?.());
   const expected = schemaObjects(discovery);
   const tableObjects = expected.filter((item) => item.type === 'table');
+  const schemaBytes = expected.reduce((size, item) => size + utf8.encode(item.sql).byteLength, 0);
+  // Reserve enough for JSON's worst-case control-character escaping, typed
+  // wrappers and keys before reading row values into the Worker.
+  const dataBudget = Math.floor((MAX_EXPORT_BYTES - schemaBytes - 64 * 1024) / 8);
+  if (dataBudget <= 0) throw new Error('d1_recovery_size_limit');
+  const preliminaryMetadata = await db.batch(tableObjects.map((table) => db.prepare(tableMetadataSql(table.name))));
+  const preliminary = tableObjects.map((table, i) => {
+    const metadata = rows(preliminaryMetadata[i]);
+    const columns = metadata.filter((column) => Number(column.hidden ?? 0) === 0).map((column) => column.name);
+    if (!columns.length || columns.some((name) => typeof name !== 'string')) throw new Error('d1_recovery_columns_invalid');
+    const references = [...new Set(metadata.flatMap((column) => typeof column.ref_tables === 'string' ? column.ref_tables.split('\n') : []))].sort();
+    return { name: table.name, columns: columns as string[], references };
+  });
   // sqlite_sequence carries the AUTOINCREMENT high-water mark, including deleted rows.
   const hasAutoincrement = tableObjects.some((item) => /\bAUTOINCREMENT\b/i.test(item.sql));
   const statements: D1Statement[] = [db.prepare("SELECT type,name,tbl_name,sql FROM sqlite_schema WHERE name NOT LIKE 'sqlite_%' AND name NOT LIKE '_cf_%' AND sql IS NOT NULL ORDER BY type,name")];
-  for (const table of tableObjects) {
+  const maxRowsPerTable = Math.max(1, Math.min(Math.floor(MAX_ROWS / tableObjects.length), Math.floor(dataBudget / (tableObjects.length * Math.max(...preliminary.map((table) => table.columns.length)) * 48))));
+  const maxBytesPerTable = Math.floor(dataBudget / tableObjects.length);
+  for (const table of preliminary) {
     // Table-valued pragma functions are queryable inside D1 batches, unlike
     // direct PRAGMA statements which D1 rejects in its Workers API.
-    statements.push(db.prepare(`SELECT cid,name,type,hidden,(SELECT group_concat("table",char(10)) FROM pragma_foreign_key_list(${quoteSqlString(table.name)})) AS ref_tables FROM pragma_table_xinfo(${quoteSqlString(table.name)})`));
-    statements.push(db.prepare(`SELECT * FROM ${quoteIdent(table.name)}`));
+    statements.push(db.prepare(tableMetadataSql(table.name)));
+    const sizes = table.columns.map((column) => `COALESCE(length(CAST(${quoteIdent(column)} AS BLOB)),0)`).join(' + ');
+    const selected = table.columns.map((column, i) => `${quoteIdent(column)} AS ${quoteIdent(`c_${i}`)}`).join(',');
+    const dataSql = `WITH stats AS (SELECT COUNT(*) AS row_count,COALESCE(SUM(${sizes}),0) AS total_bytes FROM ${quoteIdent(table.name)}) SELECT stats.row_count AS __ab_row_count,stats.total_bytes AS __ab_total_bytes,captured.* FROM stats LEFT JOIN (SELECT ${selected} FROM ${quoteIdent(table.name)}) AS captured ON stats.row_count <= ? AND stats.total_bytes <= ?`;
+    if (utf8.encode(dataSql).byteLength > MAX_SQL_BYTES_PER_STATEMENT) throw new Error('d1_recovery_sql_limit');
+    statements.push(db.prepare(dataSql).bind(maxRowsPerTable, maxBytesPerTable));
   }
   if (hasAutoincrement) statements.push(db.prepare('SELECT name,seq FROM sqlite_sequence ORDER BY name'));
   if (statements.length > MAX_BATCH_STATEMENTS) throw new Error('d1_recovery_statement_limit');
@@ -122,12 +142,19 @@ export async function createD1RecoveryBackup(db: RecoveryD1Database, sourceCommi
     const metadata = rows(result[index++]);
     const columns = metadata.filter((column) => Number(column.hidden ?? 0) === 0).map((column) => column.name);
     if (columns.length === 0 || columns.some((name) => typeof name !== 'string')) throw new Error('d1_recovery_columns_invalid');
-    const references = [...new Set(metadata.flatMap((column) => typeof column.ref_tables === 'string' ? column.ref_tables.split('\n') : []))].sort();
-    const readRows = rows(result[index++]);
-    rowCount += readRows.length;
-    if (rowCount > MAX_ROWS) throw new Error('d1_recovery_row_limit');
     const columnNames = columns as string[];
-    const encoded = readRows.map((row) => columnNames.map((column) => encode(row[column])));
+    const references = [...new Set(metadata.flatMap((column) => typeof column.ref_tables === 'string' ? column.ref_tables.split('\n') : []))].sort();
+    const preflight = preliminary.find((item) => item.name === table.name)!;
+    if (JSON.stringify(columnNames) !== JSON.stringify(preflight.columns) || JSON.stringify(references) !== JSON.stringify(preflight.references)) throw new Error('d1_recovery_schema_changed');
+    const readRows = rows(result[index++]);
+    const actualRows = Number(readRows[0]?.__ab_row_count), actualBytes = Number(readRows[0]?.__ab_total_bytes);
+    if (!Number.isSafeInteger(actualRows) || actualRows < 0 || actualRows > maxRowsPerTable) throw new Error('d1_recovery_row_limit');
+    if (!Number.isSafeInteger(actualBytes) || actualBytes < 0 || actualBytes > maxBytesPerTable) throw new Error('d1_recovery_size_limit');
+    const dataRows = actualRows === 0 ? [] : readRows;
+    if (dataRows.length !== actualRows) throw new Error('d1_recovery_inventory_mismatch');
+    rowCount += actualRows;
+    if (rowCount > MAX_ROWS) throw new Error('d1_recovery_row_limit');
+    const encoded = dataRows.map((row) => columnNames.map((_, i) => encode(row[`c_${i}`])));
     tables.push({ name: table.name, columns: columnNames, references, rows: encoded });
   }
   if (hasAutoincrement) {
