@@ -1,0 +1,7 @@
+# Bounded provider charge adapters
+
+The Jev transport's trusted charged-execution port was previously an interface only. Add a D1-backed Jev authority that reserves a caller-supplied, model-specific maximum token bound before dispatch, settles validated reported usage on the existing `maintenance_proposals` rows, and retains maximum charges after uncertain outcomes. Allow provider and model identifiers to differ, including official scoped model IDs and explicit zero output rates where the pinned provider price states output is free.
+
+Add a separate injected Cloudflare Workers AI prose adapter using the documented binding method and a model-specific output-token ceiling. Require an explicit usage reader and input-token upper-bound function because Cloudflare's model docs describe `usage` as an object without defining its nested properties in the page inspected. The adapter is disabled by default, returns an unverified draft only, and is not wired into a route, schedule, D1 binding or Wrangler configuration.
+
+Use the existing immutable currency policy and atomic D1 reservation ledger. Numeric model rates in tests reflect current public pricing only; they are not accepted owner allocations or approved production policy. The account-wide free Neuron allocation is shared with other Cloudflare workloads and is not a guarantee of the app ledger's cost cap. No credential, billing configuration, provider call, infrastructure, deployment, article write, or publication is authorized.

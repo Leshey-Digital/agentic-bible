@@ -10,7 +10,7 @@ export class MaintenanceBudget {
  verifyCurrency(row:ProposalRow,usage?:Usage,settled=false){
   const p=this.currency;if(!p){if([row.currency_policy,row.currency_policy_hash,row.currency_reserved,row.currency_actual,row.currency_state,row.currency_usage,row.currency_settled_at].some(v=>v!=null))stop('maintenance_currency_required');return;}
   currencyTime(p,row.created_at);const pin=currencyPin(p);if(!['reserved','settled','uncertain'].includes(row.currency_state??'')||row.currency_policy!==pin.json||row.currency_policy_hash!==pin.hash||row.currency_reserved!==currencyCost(p,{inputTokens:row.input_tokens,outputTokens:row.output_tokens}))stop('maintenance_currency_receipt');
-  if(settled){if(!usage||row.currency_state!=='settled'||row.currency_usage!==canonical(usage)||row.currency_actual!==currencyCost(p,usage)||row.currency_actual!>row.currency_reserved!||!Number.isSafeInteger(row.currency_settled_at)||row.currency_settled_at!<row.created_at||row.currency_settled_at!<p.price.validFrom||row.currency_settled_at!>=p.price.validUntil||usage.inputTokens!==row.input_tokens||usage.outputTokens>row.output_tokens||Math.floor(row.currency_settled_at!/86400000)!==row.day)stop('maintenance_currency_receipt');}
+  if(settled){if(!usage||row.currency_state!=='settled'||row.currency_usage!==canonical(usage)||row.currency_actual!==currencyCost(p,usage)||row.currency_actual!>row.currency_reserved!||!Number.isSafeInteger(row.currency_settled_at)||row.currency_settled_at!<row.created_at||row.currency_settled_at!<p.price.validFrom||row.currency_settled_at!>=p.price.validUntil||usage.inputTokens>row.input_tokens||usage.outputTokens>row.output_tokens||Math.floor(row.currency_settled_at!/86400000)!==row.day)stop('maintenance_currency_receipt');}
  }
  // Read durable authority first; call the returned synchronous guard after the last await and base check.
  async dispatchEligibility(row:ProposalRow){
@@ -61,7 +61,7 @@ export class MaintenanceBudget {
   const p=this.currency;this.verifyCurrency(row);
   if(p){
    if(!settlement)stop('maintenance_currency_usage');const {usage,now}=settlement;currencyTime(p,now);
-   if(now<row.created_at||Math.floor(now/86400000)!==row.day||usage.inputTokens!==row.input_tokens||usage.outputTokens>row.output_tokens)stop('maintenance_currency_usage');
+   if(now<row.created_at||Math.floor(now/86400000)!==row.day||usage.inputTokens>row.input_tokens||usage.outputTokens>row.output_tokens)stop('maintenance_currency_usage');
    const usd=currencyCost(p,usage),raw=canonical(usage),pin=currencyPin(p);if(usd>row.currency_reserved!)stop('maintenance_currency_over_reservation');
    const saved=await this.job(row.event_id);if(saved&&['ready','complete'].includes(saved.state)){if(saved.owner!==row.owner||saved.fingerprint!==row.fingerprint)stop('maintenance_currency_receipt');this.verifyCurrency(saved,usage,true);if(saved.response!==reply||saved.packet!==encoded||saved.actual_cost!==actualCost)stop('maintenance_currency_receipt');return;}
    try{await this.db.batch([

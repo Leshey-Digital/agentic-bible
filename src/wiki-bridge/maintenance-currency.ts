@@ -11,9 +11,10 @@ export function currencyInput(value:CurrencyControl|undefined):Readonly<Currency
  const p=value.policy as CurrencyPolicy;shape(p,['schemaVersion','unit','account','runLimit','dayLimit','monthLimit','dayBaseline','monthBaseline','price']);
  shape(p.price,['id','provider','model','tokenizer','basis','inputPerMillion','outputPerMillion','requestFee','validFrom','validUntil']);
  if(p.schemaVersion!==1||p.unit!=='MICRO_USD'||typeof p.account!=='string'||!/^[-a-z0-9]{3,64}$/.test(p.account))stop('maintenance_currency_policy');
- for(const s of [p.price.id,p.price.provider,p.price.model,p.price.tokenizer])if(typeof s!=='string'||!/^[-a-z0-9.]{3,80}$/.test(s))stop('maintenance_currency_price');
+ for(const s of [p.price.id,p.price.provider,p.price.tokenizer])if(typeof s!=='string'||!/^[-a-z0-9.]{3,80}$/.test(s))stop('maintenance_currency_price');
+ if(typeof p.price.model!=='string'||!/^[-a-z0-9.@/]{3,120}$/.test(p.price.model))stop('maintenance_currency_price');
  for(const n of [p.runLimit,p.dayLimit,p.monthLimit,p.dayBaseline,p.monthBaseline,p.price.inputPerMillion,p.price.outputPerMillion,p.price.requestFee])if(!Number.isSafeInteger(n)||n<0||n>100000000)stop('maintenance_currency_policy');
- if(p.runLimit<1||p.dayLimit<p.runLimit||p.monthLimit<p.dayLimit||p.dayBaseline>p.dayLimit||p.monthBaseline>p.monthLimit||p.price.inputPerMillion<1||p.price.outputPerMillion<1||p.price.basis!=='input-output-tokens'||!clock(p.price.validFrom)||!clock(p.price.validUntil)||p.price.validUntil<=p.price.validFrom||p.price.validUntil-p.price.validFrom>32*86400000)stop('maintenance_currency_policy');
+ if(p.runLimit<1||p.dayLimit<p.runLimit||p.monthLimit<p.dayLimit||p.dayBaseline>p.dayLimit||p.monthBaseline>p.monthLimit||p.price.inputPerMillion<1||p.price.basis!=='input-output-tokens'||!clock(p.price.validFrom)||!clock(p.price.validUntil)||p.price.validUntil<=p.price.validFrom||p.price.validUntil-p.price.validFrom>32*86400000)stop('maintenance_currency_policy');
  return Object.freeze({...p,price:Object.freeze({...p.price})});
 }
 export function currencyCost(p:Readonly<CurrencyPolicy>,usage:Usage){
@@ -24,5 +25,5 @@ export function currencyCost(p:Readonly<CurrencyPolicy>,usage:Usage){
  if(cost>100000000n)stop('maintenance_currency_cost_limit');return Number(cost);
 }
 export function currencyTime(p:Readonly<CurrencyPolicy>,now:number){if(!clock(now)||now<p.price.validFrom||now>=p.price.validUntil)stop('maintenance_currency_price_expired');}
-export function currencyProvider(p:Readonly<CurrencyPolicy>|undefined,provider:string,tokenizer:string){if(p&&(p.price.provider!==provider||p.price.model!==provider||p.price.tokenizer!==tokenizer))stop('maintenance_currency_provider');}
+export function currencyProvider(p:Readonly<CurrencyPolicy>|undefined,provider:string,tokenizer:string,model=provider){if(p&&(p.price.provider!==provider||p.price.model!==model||p.price.tokenizer!==tokenizer))stop('maintenance_currency_provider');}
 export function currencyPin(p:Readonly<CurrencyPolicy>){const json=canonical(p);return {json,hash:hash(json)};}

@@ -15,7 +15,13 @@ Official references checked on 2026-10-19:
 
 Jev cannot implement the requested article prose generation. The exact missing contract is a prose-capable generation provider/model and its endpoint/authentication/request/response/usage semantics, or a separately approved supplied-content workflow. `generate()` rejects without invoking Jev. The decision adapter is not mounted into a live route, schedule, article producer or writer.
 
-The charged-execution port is a trusted server seam, not implemented monetary enforcement. Production requires a Jev-specific tokenizer/maximum input reservation, approved rate card (including zero output price), finite run/day/month allocations, durable immediate dispatch revalidation, usage settlement and retained uncertain charges. Existing fake-provider currency tests are not relabeled as Jev billing enforcement.
+`src/maintenance-adapters/jev-currency.ts` now implements a trusted D1-backed charged-execution authority over the existing proposal currency ledger. It requires injected Jev-specific upper-bound functions for input and output token usage, validates the exact provider/model/tokenizer price identity, reserves before dispatch, revalidates durable currency authority immediately before the request, settles the provider's documented usage values and holds the maximum reservation after uncertain outcomes. It remains disabled and unwired until the owner approves an actual rate/allocation and supplies reviewed model token bounds.
+
+`src/maintenance-adapters/cloudflare-prose.ts` is a separate injected Workers AI prose-draft adapter using the official `AI.run(model, { prompt, max_tokens })` binding contract. It requires a trusted usage reader and input-token upper-bound function; it returns a draft marked unverified and cannot publish. The model's nested usage object fields were not established in the official model page inspected, so callers must explicitly map them. The adapter is disabled and no `AI` binding is added to Wrangler or a hosted route.
+
+The existing ledger cap is local application accounting. Cloudflare AI's daily Neuron allowance is account-wide and cannot be guaranteed by this application's ledger when other workloads share the account. Owner approval, account-level spend review and alert/stop setup remain necessary. Controlled fixture success is not provider connectivity, billing verification or production readiness.
+
+The shared D1 currency ledger currently pins one immutable policy and does not support safe price-policy rotation once proposal rows exist. Its price window is at most 32 days, so neither adapter is ready for continuing operation across policy expiry; a versioned rotation that preserves historical reservations and settlements remains follow-up work. The Cloudflare adapter's deadline races the binding call but cannot cancel an `AI.run()` already in progress; timeout leaves the maximum reservation uncertain and blocks replay, while the original call may still finish or incur cost. Owner account controls are still required.
 
 ## Admin behavior
 
@@ -29,13 +35,15 @@ The UI preserves editorial review and GitHub draft workflows, distinguishes a re
 
 Focused verification includes signed contract tests, actual workerd/D1 vault restart/isolation/retained-lock/AAD tests, populated SQLite migration preservation/rollback, actual hosted route tests, controlled transport/error/deadline/budget-port tests, Astro type checks and Markdown link checks. Desktop/mobile production-hosted browser coverage includes actual review persistence, independent Jev setup, write-only redaction, rotation after a lost committed response, zero-call Jev checks, evidence labels, unknown status, ownership denial, publication errors, keyboard navigation, overflow and axe.
 
-Independent scoped review found no actionable new provider/backend/UI defect after these focused checks. This is distinct from full release qualification and live validation. The canonical writer review remains incomplete after the prior platform security denial; no retry or bypass was attempted. The exact pushed commit, complete suite results and draft PR are recorded in the task handoff/PR, after execution, rather than inferred here.
+Independent scoped review found no actionable new provider/backend/UI defect after these focused checks. This is distinct from full release qualification and live validation. The canonical writer review remains incomplete after the prior platform security denial; no retry or bypass was attempted. The exact pushed commit and completed suite results are recorded in the task handoff after execution; PR creation and release qualification are separate steps.
 
 ## Owner-only activation work
 
 - Approve issuer/audience, exact identity subject mapping and membership for the selected administrator `leshey@w3africa.com`; an email alone is not identity trust. Configure key rotation/recovery and approved secret custody through the supported secure route.
 - Provide the Typesafe credential, pinned model, reviewed pricing and actual numeric spend allocations. Funded account status is not a spending cap.
-- Implement/review the concrete charged-execution authority and choose the prose-generation contract; establish factual-quality authority and approved source scope.
+- Before live execution, implement and independently review safe versioned currency-policy/rate rotation that preserves old accounting; the existing single-policy ledger expires after at most 32 days. Provide the Jev model-specific token bounds and Cloudflare usage mapping only after verifying their billing semantics.
+- Provide the Typesafe credential, pinned model, reviewed pricing and actual numeric spend allocations. Funded account status is not a spending cap.
+- Choose the prose-generation contract; establish factual-quality authority and approved source scope.
 - Bind/migrate the production D1/vault and configure the existing server adapters only in a separately authorized activation. Store replacement does not issue/revoke provider credentials.
 - Configure editorial@agenticbible.si delivery, contributor terms/privacy/retention/moderation and ingress controls before public intake. No email delivery is implemented by setup status.
 - Complete writer continuity review and exact-byte deployment/rollback qualification under separate release authority.
