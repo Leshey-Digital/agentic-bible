@@ -81,13 +81,38 @@ test('D1 atomic restore failure rolls back schema and data; existing destination
   assert.equal((await destination.db.prepare('SELECT COUNT(*) n FROM parent').first()).n,1);
 });
 
+test('restore rechecks that the destination is empty inside its atomic batch',{timeout:30000},async(t)=>{
+  const source=await database(t,'d1-recovery-empty-race-source'),destination=await database(t,'d1-recovery-empty-race-dest');await seed(source.db);
+  const encoded=await createD1RecoveryBackup(source.db,commit,capturedAt);let injected=false;
+  const racingDb={
+    prepare(sql){
+      const statement=destination.db.prepare(sql);
+      if(!injected&&sql.startsWith('SELECT type,name FROM sqlite_schema'))return {async all(){const result=await statement.all();injected=true;await destination.db.prepare('CREATE TABLE concurrent_object(value TEXT)').run();return result;}};
+      return statement;
+    },
+    batch(statements){return destination.db.batch(statements);}
+  };
+  await assert.rejects(restoreD1RecoveryBackup(racingDb,encoded,{authorizeSchema}),/CHECK constraint/);
+  assert.equal((await destination.db.prepare("SELECT COUNT(*) n FROM sqlite_schema WHERE name NOT LIKE 'sqlite_%' AND name NOT LIKE '_cf_%'").first()).n,1,'only the concurrent writer object remains');
+  assert.equal((await destination.db.prepare("SELECT COUNT(*) n FROM sqlite_schema WHERE name IN ('parent','child','__agentic_bible_d1_empty_guard')").first()).n,0,'restore schema and its temporary guard roll back together');
+});
+
+test('capture rejects view-only databases and import rejects a rehashed artifact above the table cap',{timeout:30000},async(t)=>{
+  const viewOnly=await database(t,'d1-recovery-view-only');await viewOnly.db.prepare('CREATE VIEW only_view AS SELECT 1 AS value').run();
+  await assert.rejects(createD1RecoveryBackup(viewOnly.db,commit,capturedAt),/d1_recovery_zero_tables/);
+  const source=await database(t,'d1-recovery-forty-one-source');await seed(source.db);const oversized=JSON.parse(await createD1RecoveryBackup(source.db,commit,capturedAt));
+  for(let i=0;i<39;i++){const name=`extra_${String(i).padStart(2,'0')}`;oversized.payload.schema.push({type:'table',name,table:name,sql:`CREATE TABLE ${name}(id INTEGER)`});oversized.payload.tables.push({name,columns:['id'],references:[],rows:[]});}
+  oversized.manifest.tableCount=41;await rehash(oversized);
+  await assert.rejects(verifyD1RecoveryBackup(oversized),/d1_recovery_inventory_invalid/);
+});
+
 test('capture never emits an export that exceeds the conservative 100-statement restore ceiling',{timeout:30000},async(t)=>{
   const near=await database(t,'d1-recovery-near-cap'),over=await database(t,'d1-recovery-over-cap'),make=async(db,count)=>{
     const statements=[];for(let i=0;i<count;i++){const table=`t_${String(i).padStart(2,'0')}`;statements.push(db.prepare(`CREATE TABLE ${table}(id INTEGER PRIMARY KEY,value TEXT)`),db.prepare(`CREATE INDEX ${table}_value_idx ON ${table}(value)`),db.prepare(`INSERT INTO ${table} VALUES(1,?)`).bind(table));}await db.batch(statements);
   };
-  await make(near.db,32);const good=await createD1RecoveryBackup(near.db,commit,capturedAt),destination=await database(t,'d1-recovery-near-cap-dest');
-  assert.equal((await restoreD1RecoveryBackup(destination.db,good,{authorizeSchema:async()=>true})).tableCount,32);
-  await make(over.db,34);await assert.rejects(createD1RecoveryBackup(over.db,commit,capturedAt),/d1_recovery_statement_limit/);
+  await make(near.db,30);const good=await createD1RecoveryBackup(near.db,commit,capturedAt),destination=await database(t,'d1-recovery-near-cap-dest');
+  assert.equal((await restoreD1RecoveryBackup(destination.db,good,{authorizeSchema:async()=>true})).tableCount,30);
+  await make(over.db,32);await assert.rejects(createD1RecoveryBackup(over.db,commit,capturedAt),/d1_recovery_statement_limit/);
 });
 
 test('capture rejects oversized table data from in-transaction size aggregates before returning its rows',{timeout:30000},async(t)=>{

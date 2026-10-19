@@ -65,7 +65,9 @@ function schemaObjects(raw: D1Row[]): SchemaObject[] {
     result.push({ type: row.type as SchemaObject['type'], name: row.name, table: row.tbl_name, sql: row.sql });
   }
   result.sort((a, b) => a.type.localeCompare(b.type) || a.name.localeCompare(b.name));
-  if (result.length === 0 || result.filter((item) => item.type === 'table').length > MAX_TABLES) throw new Error('d1_recovery_table_limit');
+  const tableCount = result.filter((item) => item.type === 'table').length;
+  if (tableCount === 0) throw new Error('d1_recovery_zero_tables');
+  if (tableCount > MAX_TABLES) throw new Error('d1_recovery_table_limit');
   return result;
 }
 function encode(value: unknown): EncodedValue {
@@ -93,7 +95,7 @@ function restoreStatementCount(payload: Payload): number {
   const schemas = payload.schema.length;
   const inserts = payload.tables.filter((table) => table.name !== 'sqlite_sequence').reduce((count, table) => count + Math.ceil(table.rows.length / Math.max(1, Math.floor(MAX_BINDS_PER_STATEMENT / table.columns.length))), 0);
   const sequences = (payload.tables.find((table) => table.name === 'sqlite_sequence')?.rows.length ?? 0) * 2;
-  return schemas + inserts + sequences + 3; // Atomic runtime column-inventory guard.
+  return schemas + inserts + sequences + 6; // Atomic fresh-target and runtime column-inventory guards.
 }
 
 /** Capture all ordinary D1 tables, indexes, triggers, and views at one D1 batch boundary. */
@@ -187,7 +189,7 @@ async function verifyEnvelope(input: string | unknown): Promise<Envelope> {
   const p = envelope.payload;
   if (!m || m.format !== 'agentic-bible-d1-recovery' || m.schemaVersion !== 1 || !COMMIT.test(m.sourceCommit) || typeof m.capturedAt !== 'string' || !Number.isFinite(Date.parse(m.capturedAt)) || new Date(m.capturedAt).toISOString() !== m.capturedAt || !Number.isSafeInteger(m.tableCount) || !Number.isSafeInteger(m.rowCount) || !Number.isSafeInteger(m.payloadBytes) || !SHA256.test(m.payloadSha256) || !p || !Array.isArray(p.schema) || !Array.isArray(p.tables)) throw new Error('d1_recovery_invalid_export');
   const canonicalPayload = JSON.stringify(p);
-  if (utf8.encode(canonicalPayload).byteLength !== m.payloadBytes || p.schema.length > MAX_TABLES * 4 || p.tables.length > MAX_TABLES + 1 || !Number.isSafeInteger(m.rowCount) || m.rowCount > MAX_ROWS) throw new Error('d1_recovery_inventory_invalid');
+  if (utf8.encode(canonicalPayload).byteLength !== m.payloadBytes || p.schema.length > MAX_TABLES * 4 || p.tables.length > MAX_TABLES + 1 || !Number.isSafeInteger(m.tableCount) || m.tableCount < 1 || m.tableCount > MAX_TABLES || !Number.isSafeInteger(m.rowCount) || m.rowCount > MAX_ROWS) throw new Error('d1_recovery_inventory_invalid');
   if (m.tableCount !== p.schema.filter((x) => x?.type === 'table').length || m.rowCount !== p.tables.filter((x) => x?.name !== 'sqlite_sequence').reduce((n, table) => n + (Array.isArray(table?.rows) ? table.rows.length : 0), 0)) throw new Error('d1_recovery_inventory_invalid');
   if (p.tables.length !== p.schema.filter((x) => x?.type === 'table').length + (p.tables.some((x) => x?.name === 'sqlite_sequence') ? 1 : 0)) throw new Error('d1_recovery_inventory_invalid');
   if (p.schema.some((item) => !item || !['table', 'index', 'trigger', 'view'].includes(item.type) || typeof item.name !== 'string' || typeof item.table !== 'string' || typeof item.sql !== 'string' || item.name.startsWith('sqlite_') || item.name.startsWith('_cf_') || utf8.encode(item.sql).byteLength > MAX_SQL_BYTES_PER_STATEMENT)) throw new Error('d1_recovery_schema_invalid');
@@ -215,6 +217,14 @@ export async function restoreD1RecoveryBackup(db: RecoveryD1Database, input: unk
     return rank(a.type) - rank(b.type) || a.name.localeCompare(b.name);
   });
   const statements: D1Statement[] = [];
+  // Recheck emptiness inside the same transaction as restore. The separate
+  // read below gives a useful early error, while this guard closes the race
+  // where another writer creates an object between that read and this batch.
+  const emptyGuardName = '__agentic_bible_d1_empty_guard';
+  if (payload.schema.some((item) => item.name === emptyGuardName)) throw new Error('d1_recovery_reserved_table_name');
+  statements.push(db.prepare(`CREATE TABLE ${quoteIdent(emptyGuardName)}(valid INTEGER NOT NULL CHECK(valid=1))`));
+  statements.push(db.prepare(`INSERT INTO ${quoteIdent(emptyGuardName)}(valid) SELECT CASE WHEN EXISTS (SELECT 1 FROM sqlite_schema WHERE name NOT LIKE 'sqlite_%' AND name NOT LIKE '_cf_%' AND name <> ?) THEN 0 ELSE 1 END`).bind(emptyGuardName));
+  statements.push(db.prepare(`DROP TABLE ${quoteIdent(emptyGuardName)}`));
   for (const object of objects.filter((item) => item.type === 'table')) statements.push(db.prepare(object.sql));
   const restoreTables = payload.tables.filter((table) => table.name !== 'sqlite_sequence');
   const guardName = '__agentic_bible_d1_restore_guard';
