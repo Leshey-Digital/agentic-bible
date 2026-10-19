@@ -13,5 +13,5 @@ export function directUploadPlan(root:string,id:string,requestId:string){
   files[hash]={content,contentType};manifest['/'+path]={hash,size:data.length};
  }
  const config=JSON.parse(readFileSync(join(root,'wrangler.json'),'utf8'));
- return {manifest,files,version:{main_module:'worker.js',modules,compatibility_date:config.compatibility_date,compatibility_flags:[],bindings:[{type:'assets',name:'ASSETS'}],annotations:{'workers/message':'ab-candidate:'+id+':'+requestId,'workers/tag':id.slice(0,32)},assets:{config:{html_handling:config.assets.html_handling,not_found_handling:config.assets.not_found_handling,run_worker_first:config.assets.run_worker_first}}}};
+ return {manifest,files,version:{main_module:'worker.js',modules,compatibility_date:config.compatibility_date,compatibility_flags:config.compatibility_flags,bindings:[{type:'assets',name:'ASSETS'}],annotations:{'workers/message':'ab-candidate:'+id+':'+requestId,'workers/tag':id.slice(0,32)},assets:{config:{html_handling:config.assets.html_handling,not_found_handling:config.assets.not_found_handling,run_worker_first:config.assets.run_worker_first}}}};
 }
