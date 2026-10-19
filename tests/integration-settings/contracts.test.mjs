@@ -41,7 +41,7 @@ async function invoke(handle,body,options){const response=await handle(await req
 function redacted(value,...secrets){const serialized=JSON.stringify(value);for(const secret of secrets)assert.equal(serialized.includes(secret),false);}
 
 test('write-only configure and explicit rotate return constant masks with value-free audit',async()=>{
-  const {handle,storage}=setup();const initial=await invoke(handle);assert.deepEqual(initial.value,{integration:'github-content',configured:false,maskedSecret:null,revision:0,connection:'never',audit:[]});
+  const {handle,storage}=setup();const initial=await invoke(handle);assert.deepEqual(initial.value,{integration:'github-content',connectionEvidence:'unverified',testSupported:true,generationSupported:false,configured:false,maskedSecret:null,revision:0,connection:'never',audit:[]});
   const saved=await invoke(handle,command());assert.equal(saved.status,200);assert.equal(storage.secret,secretA);assert.equal(saved.value.maskedSecret,'********');
   const rotated=await invoke(handle,command('rotate',1,secretB));assert.equal(rotated.status,200);assert.equal(rotated.value.revision,2);assert.equal(storage.secret,secretB);
   const state=await invoke(handle);assert.deepEqual(state.value,rotated.value);redacted([saved,rotated,state,storage.metadata.audit],secretA,secretB);

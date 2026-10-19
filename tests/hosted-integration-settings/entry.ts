@@ -20,7 +20,7 @@ export default {fetch(request:Request,env:any){
   runtime??=createHostedRuntime({
     // Deliberately forged legacy port cannot authorize integration settings.
     verifyAdmin:async()=>({subject:'signed-admin:'+'a'.repeat(64),role:'admin',csrfVerified:true,expiresAt:Date.now()+60000}),
-    integrationSettings:{trust:env.TEST_SIGNED_TRUST,storage,testConnection:async input=>{
+    integrationSettings:{connectionEvidence:'controlled',trust:env.TEST_SIGNED_TRUST,storage,testConnection:async input=>{
       // Revision validation and credential resolution occur synchronously under the
       // same serialized storage transaction; there is no external work in this fake.
       return storage.transaction(input.integration,async tx=>{

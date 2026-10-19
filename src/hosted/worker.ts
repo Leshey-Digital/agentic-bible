@@ -23,6 +23,7 @@ const json=(body:unknown,status=200)=>Response.json(body,{status,headers});
 export function createHostedRuntime(ports:Ports={}){
 const contributions=ports.contributions?createContributionHandler(ports.contributions,ports.sendGitHub):undefined;
 const integrationSettings=ports.integrationSettings?createIntegrationSettingsContract(ports.integrationSettings):undefined;
+const jevSettings=ports.integrationSettings?createIntegrationSettingsContract(ports.integrationSettings,'typesafe-jev'):undefined;
 return {async fetch(request:Request,env:RuntimeEnv):Promise<Response>{
   const url=new URL(request.url),path=url.pathname;
   try{
@@ -38,12 +39,12 @@ return {async fetch(request:Request,env:RuntimeEnv):Promise<Response>{
       if(request.method!=='GET'||url.search)return json({error:'invalid_request'},400);
       const asset=path==='/admin/integrations/'?[integrationAdminHtml,'text/html; charset=utf-8']:path==='/admin/integrations/style.css'?[integrationAdminCss,'text/css; charset=utf-8']:path==='/admin/integrations/app.js'?[integrationAdminJs,'text/javascript; charset=utf-8']:null;return asset?new Response(asset[0],{headers:{...headers,'Content-Type':asset[1]}}):json({error:'not_found'},404);
     }
-    if(path==='/api/admin/settings/integrations/github-content'){
+    if(path==='/api/admin/settings/integrations/github-content'||path==='/api/admin/settings/integrations/typesafe-jev'){
       if(url.origin!==origin)return json({error:'hosted_origin_required'},403);
       if(url.search)return json({error:'invalid_request'},400);
       if(!['GET','POST'].includes(request.method))return new Response(JSON.stringify({error:'method_not_allowed'}),{status:405,headers:{...headers,'Content-Type':'application/json','Allow':'GET, POST'}});
       if(!integrationSettings)return json({error:'integration_settings_unconfigured'},503);
-      const response=await integrationSettings(request),secured=new Headers(response.headers);
+      const response=await (path.endsWith('/typesafe-jev')?jevSettings!:integrationSettings)(request),secured=new Headers(response.headers);
       for(const [key,value] of Object.entries(headers))secured.set(key,value);
       return new Response(response.body,{status:response.status,headers:secured});
     }
