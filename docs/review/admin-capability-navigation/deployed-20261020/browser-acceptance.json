@@ -1,0 +1,45 @@
+{
+  "kind": "parent-reported-real-authenticated-browser-acceptance",
+  "observer": "Parent thread using normal signed browser session",
+  "sourceThreadId": "01a157bf-ff7f-7404-b816-70a5c1d8300f",
+  "independentConnectorRead": false,
+  "state": "bounded-private-review-milestone-complete",
+  "deployedVersion": "7bf23d96-ec17-4ed0-a676-a2bc8d5922ef",
+  "deploymentId": "3c66f6b5-7835-40c9-9e55-00cc9cf60b40",
+  "evidenceBranch": "integration/private-editorial-workflow",
+  "precedingEvidenceCommit": "f074b769b27d02d5bc26d27f6c2056f18553c5ab",
+  "landing": {
+    "from": "https://staging.agenticbible.si/admin/",
+    "to": "https://staging.agenticbible.si/admin/contributions/",
+    "observedRedirect": true
+  },
+  "submissionId": "ce16ca08-cce3-59ee-9ae2-4a5b8cae07cc",
+  "articleId": "tool-use",
+  "sourceCommit": "b81e2093e80cb8dc31b56fcb14f969dad124bdfa",
+  "markdownSha256": "4503018d767d3512098782f5b5adbcbcf0b1dd8008ea99e5b71b11247ac9d48c",
+  "disposition": "follow-up",
+  "review": {
+    "id": "ec7bce60-ef1a-4d4e-bb1f-e899df011a86",
+    "revision": 2,
+    "citationId": "openai",
+    "note": "SYNTHETIC STAGING ACCEPTANCE CHECK. Verified that the authorized editor can review the pinned tool-use source and save this private note. This is test data, not an editorial approval for publication. Do not publish or create a GitHub draft."
+  },
+  "persistence": "Full page reload, fixture reopened; exact note/citation/revision/id persisted.",
+  "auditObserved": [
+    {
+      "action": "review-updated",
+      "at": "2026-10-20T19:17:15.727Z"
+    },
+    {
+      "action": "hosted-note-reviewed",
+      "at": "2026-10-20T19:17:25.413Z"
+    }
+  ],
+  "submittedTimestampMeaning": "Fixed synthetic fixture timestamp, not actual submission time; actual connector insertion is recorded separately.",
+  "gitHubUi": "No GitHub draft request recorded.",
+  "articlePublished": false,
+  "gitHubDraftCreated": false,
+  "securityChangedDuringTrial": false,
+  "productionChanged": false,
+  "preservation": "Keep fixture, saved note and audit; no delete/reset."
+}
