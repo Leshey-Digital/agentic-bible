@@ -1,0 +1,193 @@
+
+Running 8 tests using 1 worker
+
+(node:9834) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [desktop] › tests/browser/library.spec.ts:23:1 › real Pagefind supports success, empty, no-results, punctuation and rapid replacement (12.7s)
+  ✘  2 [desktop] › tests/browser/library.spec.ts:127:1 › read and search send no external requests and have no runtime or CSP errors (4.6s)
+(node:10199) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  3 [desktop] › tests/browser/library.spec.ts:167:1 › final six topics connect real search, citation anchors, revision history and related reading (32.7s)
+(node:10553) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  4 [desktop] › tests/browser/search-readiness.spec.ts:5:1 › browser server serves the release source pinned to this checkout (166ms)
+(node:10595) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  5 [mobile] › tests/browser/library.spec.ts:23:1 › real Pagefind supports success, empty, no-results, punctuation and rapid replacement (14.8s)
+  ✘  6 [mobile] › tests/browser/library.spec.ts:127:1 › read and search send no external requests and have no runtime or CSP errors (5.0s)
+(node:11089) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  7 [mobile] › tests/browser/library.spec.ts:167:1 › final six topics connect real search, citation anchors, revision history and related reading (33.4s)
+(node:11252) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  8 [mobile] › tests/browser/search-readiness.spec.ts:5:1 › browser server serves the release source pinned to this checkout (142ms)
+
+
+  1) [desktop] › tests/browser/library.spec.ts:127:1 › read and search send no external requests and have no runtime or CSP errors 
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  -  1
+    + Received  + 39
+
+    - Array []
+    + Array [
+    +   "http://127.0.0.1:8790/articles/ai-agent/",
+    +   "http://127.0.0.1:8790/_astro/Base.DyzAbnuc.css",
+    +   "http://127.0.0.1:8790/_astro/_id_.w1YKO1jA.css",
+    +   "http://127.0.0.1:8790/favicon.svg",
+    +   "http://127.0.0.1:8790/_astro/Base.astro_astro_type_script_index_0_lang.D-1rZP_q.js",
+    +   "http://127.0.0.1:8790/_astro/_id_.astro_astro_type_script_index_0_lang.psVNdFbS.js",
+    +   "http://127.0.0.1:8790/favicon.svg",
+    +   "http://127.0.0.1:8790/search/",
+    +   "http://127.0.0.1:8790/_astro/Base.DyzAbnuc.css",
+    +   "http://127.0.0.1:8790/favicon.svg",
+    +   "http://127.0.0.1:8790/_astro/search.astro_astro_type_script_index_0_lang.DMqmczpQ.js",
+    +   "http://127.0.0.1:8790/_astro/Base.astro_astro_type_script_index_0_lang.D-1rZP_q.js",
+    +   "http://127.0.0.1:8790/pagefind/pagefind.js",
+    +   "http://127.0.0.1:8790/favicon.svg",
+    +   "http://127.0.0.1:8790/pagefind/pagefind-entry.json?ts=1792506537202",
+    +   "http://127.0.0.1:8790/pagefind/pagefind.en_83825bc69a.pf_meta",
+    +   "http://127.0.0.1:8790/pagefind/wasm.en.pagefind",
+    +   "http://127.0.0.1:8790/pagefind/index/en_a3d517c.pf_index",
+    +   "http://127.0.0.1:8790/pagefind/fragment/en_f11189b.pf_fragment",
+    +   "http://127.0.0.1:8790/pagefind/fragment/en_739e49a.pf_fragment",
+    +   "http://127.0.0.1:8790/pagefind/fragment/en_43bdaf5.pf_fragment",
+    +   "http://127.0.0.1:8790/pagefind/fragment/en_bdba527.pf_fragment",
+    +   "http://127.0.0.1:8790/pagefind/fragment/en_d1ffe17.pf_fragment",
+    +   "http://127.0.0.1:8790/pagefind/fragment/en_a37eb2e.pf_fragment",
+    +   "http://127.0.0.1:8790/pagefind/fragment/en_236d6e4.pf_fragment",
+    +   "http://127.0.0.1:8790/pagefind/fragment/en_9d15f02.pf_fragment",
+    +   "http://127.0.0.1:8790/pagefind/fragment/en_74942b7.pf_fragment",
+    +   "http://127.0.0.1:8790/pagefind/fragment/en_794a4ec.pf_fragment",
+    +   "http://127.0.0.1:8790/pagefind/fragment/en_8b4ae56.pf_fragment",
+    +   "http://127.0.0.1:8790/pagefind/fragment/en_e2cc90b.pf_fragment",
+    +   "http://127.0.0.1:8790/pagefind/fragment/en_823590d.pf_fragment",
+    +   "http://127.0.0.1:8790/pagefind/fragment/en_cf368bc.pf_fragment",
+    +   "http://127.0.0.1:8790/pagefind/fragment/en_46176f2.pf_fragment",
+    +   "http://127.0.0.1:8790/pagefind/fragment/en_97656a7.pf_fragment",
+    +   "http://127.0.0.1:8790/pagefind/fragment/en_eadced5.pf_fragment",
+    +   "http://127.0.0.1:8790/pagefind/fragment/en_4513fe1.pf_fragment",
+    +   "http://127.0.0.1:8790/pagefind/fragment/en_ea2991b.pf_fragment",
+    + ]
+
+      134 |   await page.goto('/search/#q=agent');
+      135 |   await expect(page.locator('#search-results a')).not.toHaveCount(0);
+    > 136 |   expect(external).toEqual([]);
+          |                    ^
+      137 |   expect(failures).toEqual([]);
+      138 | });
+      139 |
+        at /workspace/agentic-bible/tests/browser/library.spec.ts:136:20
+
+    Error Context: .git/production-module-release/browser-results/library-read-and-search-se-e4341-ve-no-runtime-or-CSP-errors-desktop/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    .git/production-module-release/browser-results/library-read-and-search-se-e4341-ve-no-runtime-or-CSP-errors-desktop/trace.zip
+    Usage:
+
+        npx playwright show-trace .git/production-module-release/browser-results/library-read-and-search-se-e4341-ve-no-runtime-or-CSP-errors-desktop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [desktop] › tests/browser/library.spec.ts:167:1 › final six topics connect real search, citation anchors, revision history and related reading 
+
+    Test timeout of 30000ms exceeded.
+
+    Error Context: .git/production-module-release/browser-results/library-final-six-topics-c-034ea-history-and-related-reading-desktop/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    .git/production-module-release/browser-results/library-final-six-topics-c-034ea-history-and-related-reading-desktop/trace.zip
+    Usage:
+
+        npx playwright show-trace .git/production-module-release/browser-results/library-final-six-topics-c-034ea-history-and-related-reading-desktop/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [mobile] › tests/browser/library.spec.ts:127:1 › read and search send no external requests and have no runtime or CSP errors 
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  -  1
+    + Received  + 39
+
+    - Array []
+    + Array [
+    +   "http://127.0.0.1:8790/articles/ai-agent/",
+    +   "http://127.0.0.1:8790/_astro/Base.DyzAbnuc.css",
+    +   "http://127.0.0.1:8790/_astro/_id_.w1YKO1jA.css",
+    +   "http://127.0.0.1:8790/favicon.svg",
+    +   "http://127.0.0.1:8790/_astro/Base.astro_astro_type_script_index_0_lang.D-1rZP_q.js",
+    +   "http://127.0.0.1:8790/_astro/_id_.astro_astro_type_script_index_0_lang.psVNdFbS.js",
+    +   "http://127.0.0.1:8790/favicon.svg",
+    +   "http://127.0.0.1:8790/search/",
+    +   "http://127.0.0.1:8790/_astro/Base.DyzAbnuc.css",
+    +   "http://127.0.0.1:8790/favicon.svg",
+    +   "http://127.0.0.1:8790/_astro/search.astro_astro_type_script_index_0_lang.DMqmczpQ.js",
+    +   "http://127.0.0.1:8790/_astro/Base.astro_astro_type_script_index_0_lang.D-1rZP_q.js",
+    +   "http://127.0.0.1:8790/pagefind/pagefind.js",
+    +   "http://127.0.0.1:8790/favicon.svg",
+    +   "http://127.0.0.1:8790/pagefind/pagefind-entry.json?ts=1792506611901",
+    +   "http://127.0.0.1:8790/pagefind/pagefind.en_83825bc69a.pf_meta",
+    +   "http://127.0.0.1:8790/pagefind/wasm.en.pagefind",
+    +   "http://127.0.0.1:8790/pagefind/index/en_a3d517c.pf_index",
+    +   "http://127.0.0.1:8790/pagefind/fragment/en_f11189b.pf_fragment",
+    +   "http://127.0.0.1:8790/pagefind/fragment/en_739e49a.pf_fragment",
+    +   "http://127.0.0.1:8790/pagefind/fragment/en_43bdaf5.pf_fragment",
+    +   "http://127.0.0.1:8790/pagefind/fragment/en_bdba527.pf_fragment",
+    +   "http://127.0.0.1:8790/pagefind/fragment/en_d1ffe17.pf_fragment",
+    +   "http://127.0.0.1:8790/pagefind/fragment/en_a37eb2e.pf_fragment",
+    +   "http://127.0.0.1:8790/pagefind/fragment/en_236d6e4.pf_fragment",
+    +   "http://127.0.0.1:8790/pagefind/fragment/en_9d15f02.pf_fragment",
+    +   "http://127.0.0.1:8790/pagefind/fragment/en_74942b7.pf_fragment",
+    +   "http://127.0.0.1:8790/pagefind/fragment/en_794a4ec.pf_fragment",
+    +   "http://127.0.0.1:8790/pagefind/fragment/en_8b4ae56.pf_fragment",
+    +   "http://127.0.0.1:8790/pagefind/fragment/en_e2cc90b.pf_fragment",
+    +   "http://127.0.0.1:8790/pagefind/fragment/en_823590d.pf_fragment",
+    +   "http://127.0.0.1:8790/pagefind/fragment/en_cf368bc.pf_fragment",
+    +   "http://127.0.0.1:8790/pagefind/fragment/en_46176f2.pf_fragment",
+    +   "http://127.0.0.1:8790/pagefind/fragment/en_97656a7.pf_fragment",
+    +   "http://127.0.0.1:8790/pagefind/fragment/en_eadced5.pf_fragment",
+    +   "http://127.0.0.1:8790/pagefind/fragment/en_4513fe1.pf_fragment",
+    +   "http://127.0.0.1:8790/pagefind/fragment/en_ea2991b.pf_fragment",
+    + ]
+
+      134 |   await page.goto('/search/#q=agent');
+      135 |   await expect(page.locator('#search-results a')).not.toHaveCount(0);
+    > 136 |   expect(external).toEqual([]);
+          |                    ^
+      137 |   expect(failures).toEqual([]);
+      138 | });
+      139 |
+        at /workspace/agentic-bible/tests/browser/library.spec.ts:136:20
+
+    Error Context: .git/production-module-release/browser-results/library-read-and-search-se-e4341-ve-no-runtime-or-CSP-errors-mobile/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    .git/production-module-release/browser-results/library-read-and-search-se-e4341-ve-no-runtime-or-CSP-errors-mobile/trace.zip
+    Usage:
+
+        npx playwright show-trace .git/production-module-release/browser-results/library-read-and-search-se-e4341-ve-no-runtime-or-CSP-errors-mobile/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [mobile] › tests/browser/library.spec.ts:167:1 › final six topics connect real search, citation anchors, revision history and related reading 
+
+    Test timeout of 30000ms exceeded.
+
+    Error Context: .git/production-module-release/browser-results/library-final-six-topics-c-034ea-history-and-related-reading-mobile/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    .git/production-module-release/browser-results/library-final-six-topics-c-034ea-history-and-related-reading-mobile/trace.zip
+    Usage:
+
+        npx playwright show-trace .git/production-module-release/browser-results/library-final-six-topics-c-034ea-history-and-related-reading-mobile/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4 failed
+    [desktop] › tests/browser/library.spec.ts:127:1 › read and search send no external requests and have no runtime or CSP errors 
+    [desktop] › tests/browser/library.spec.ts:167:1 › final six topics connect real search, citation anchors, revision history and related reading 
+    [mobile] › tests/browser/library.spec.ts:127:1 › read and search send no external requests and have no runtime or CSP errors 
+    [mobile] › tests/browser/library.spec.ts:167:1 › final six topics connect real search, citation anchors, revision history and related reading 
+  4 passed (2.6m)

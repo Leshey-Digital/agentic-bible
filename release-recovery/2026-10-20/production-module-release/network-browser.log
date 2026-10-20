@@ -1,0 +1,11 @@
+
+Running 2 tests using 1 worker
+
+(node:10606) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [desktop] › .git/production-module-release/browser/network.spec.ts:2:1 › read and search send no external requests and have no runtime or CSP errors (7.8s)
+(node:10890) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  2 [mobile] › .git/production-module-release/browser/network.spec.ts:2:1 › read and search send no external requests and have no runtime or CSP errors (7.8s)
+
+  2 passed (27.3s)

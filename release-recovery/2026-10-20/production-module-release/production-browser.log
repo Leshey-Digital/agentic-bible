@@ -1,0 +1,13 @@
+
+Running 4 tests using 1 worker
+
+(node:9840) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [desktop] › .git/production-launch/browser/production.spec.ts:2:1 › production keyboard shortcuts, missing route, canonical discovery and closed writes (15.1s)
+  ✓  2 [desktop] › .git/production-launch/browser/production.spec.ts:11:1 › production article and site previews retain page-specific metadata and canonical history URL (5.1s)
+(node:10208) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  3 [mobile] › .git/production-launch/browser/production.spec.ts:2:1 › production keyboard shortcuts, missing route, canonical discovery and closed writes (7.7s)
+  ✓  4 [mobile] › .git/production-launch/browser/production.spec.ts:11:1 › production article and site previews retain page-specific metadata and canonical history URL (3.4s)
+
+  4 passed (47.6s)

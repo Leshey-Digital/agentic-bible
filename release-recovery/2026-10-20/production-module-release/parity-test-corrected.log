@@ -1,0 +1,12 @@
+✔ all81 public frozen files roundtrip exactly through native Worker, including repeated WASM (2050.4143ms)
+✔ canonical redirects preserve query and stay same origin (46.457782ms)
+✔ HEAD conditional caching and byte ranges preserve exact semantics (114.235916ms)
+✔ private headers,404 bytes,normalization and writes remain closed (253.169176ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2786.825154

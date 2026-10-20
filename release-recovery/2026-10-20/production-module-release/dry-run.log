@@ -1,0 +1,420 @@
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mProxy environment variables detected. We'll use your proxy for fetch requests.[0m
+
+
+
+ ⛅️ wrangler 4.151.1
+────────────────────
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/0.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/1.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/10.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/11.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/12.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/13.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/14.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/15.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/16.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/17.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/18.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/19.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/2.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/20.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/21.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/22.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/23.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/24.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/25.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/26.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/27.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/28.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/29.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/3.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/30.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/31.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/32.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/33.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/34.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/35.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/36.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/37.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/38.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/39.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/4.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/40.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/41.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/42.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/43.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/44.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/45.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/46.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/47.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/48.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/49.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/5.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/50.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/51.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/52.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/53.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/54.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/55.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/56.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/57.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/58.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/59.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/6.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/60.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/61.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/62.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/63.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/64.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/65.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/66.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/67.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/68.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/69.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/7.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/70.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/71.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/72.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/73.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/74.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/75.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/76.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/77.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/78.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/79.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/8.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/80.bin (buffer)[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mIgnoring duplicate module: data/9.bin (buffer)[0m
+
+
+Attaching additional modules:
+┌────────────────────┬────────┬─────────────┐
+│ Name               │ Type   │ Size        │
+├────────────────────┼────────┼─────────────┤
+│ data/0.bin         │ buffer │ 3.33 KiB    │
+├────────────────────┼────────┼─────────────┤
+│ data/1.bin         │ buffer │ 20.59 KiB   │
+├────────────────────┼────────┼─────────────┤
+│ data/10.bin        │ buffer │ 20.86 KiB   │
+├────────────────────┼────────┼─────────────┤
+│ data/11.bin        │ buffer │ 19.55 KiB   │
+├────────────────────┼────────┼─────────────┤
+│ data/12.bin        │ buffer │ 20.51 KiB   │
+├────────────────────┼────────┼─────────────┤
+│ data/13.bin        │ buffer │ 21.24 KiB   │
+├────────────────────┼────────┼─────────────┤
+│ data/14.bin        │ buffer │ 20.25 KiB   │
+├────────────────────┼────────┼─────────────┤
+│ data/15.bin        │ buffer │ 20.75 KiB   │
+├────────────────────┼────────┼─────────────┤
+│ data/16.bin        │ buffer │ 21.02 KiB   │
+├────────────────────┼────────┼─────────────┤
+│ data/17.bin        │ buffer │ 19.66 KiB   │
+├────────────────────┼────────┼─────────────┤
+│ data/18.bin        │ buffer │ 22.82 KiB   │
+├────────────────────┼────────┼─────────────┤
+│ data/19.bin        │ buffer │ 19.56 KiB   │
+├────────────────────┼────────┼─────────────┤
+│ data/2.bin         │ buffer │ 0.33 KiB    │
+├────────────────────┼────────┼─────────────┤
+│ data/20.bin        │ buffer │ 19.77 KiB   │
+├────────────────────┼────────┼─────────────┤
+│ data/21.bin        │ buffer │ 21.15 KiB   │
+├────────────────────┼────────┼─────────────┤
+│ data/22.bin        │ buffer │ 21.60 KiB   │
+├────────────────────┼────────┼─────────────┤
+│ data/23.bin        │ buffer │ 18.35 KiB   │
+├────────────────────┼────────┼─────────────┤
+│ data/24.bin        │ buffer │ 22.27 KiB   │
+├────────────────────┼────────┼─────────────┤
+│ data/25.bin        │ buffer │ 20.64 KiB   │
+├────────────────────┼────────┼─────────────┤
+│ data/26.bin        │ buffer │ 20.97 KiB   │
+├────────────────────┼────────┼─────────────┤
+│ data/27.bin        │ buffer │ 21.10 KiB   │
+├────────────────────┼────────┼─────────────┤
+│ data/28.bin        │ buffer │ 18.92 KiB   │
+├────────────────────┼────────┼─────────────┤
+│ data/29.bin        │ buffer │ 7.96 KiB    │
+├────────────────────┼────────┼─────────────┤
+│ data/3.bin         │ buffer │ 0.81 KiB    │
+├────────────────────┼────────┼─────────────┤
+│ data/30.bin        │ buffer │ 9.68 KiB    │
+├────────────────────┼────────┼─────────────┤
+│ data/31.bin        │ buffer │ 0.29 KiB    │
+├────────────────────┼────────┼─────────────┤
+│ data/32.bin        │ buffer │ 3.80 KiB    │
+├────────────────────┼────────┼─────────────┤
+│ data/33.bin        │ buffer │ 20.41 KiB   │
+├────────────────────┼────────┼─────────────┤
+│ data/34.bin        │ buffer │ 3.45 KiB    │
+├────────────────────┼────────┼─────────────┤
+│ data/35.bin        │ buffer │ 0.12 KiB    │
+├────────────────────┼────────┼─────────────┤
+│ data/36.bin        │ buffer │ 2.15 KiB    │
+├────────────────────┼────────┼─────────────┤
+│ data/37.bin        │ buffer │ 2.26 KiB    │
+├────────────────────┼────────┼─────────────┤
+│ data/38.bin        │ buffer │ 2.38 KiB    │
+├────────────────────┼────────┼─────────────┤
+│ data/39.bin        │ buffer │ 2.55 KiB    │
+├────────────────────┼────────┼─────────────┤
+│ data/4.bin         │ buffer │ 1.19 KiB    │
+├────────────────────┼────────┼─────────────┤
+│ data/40.bin        │ buffer │ 2.17 KiB    │
+├────────────────────┼────────┼─────────────┤
+│ data/41.bin        │ buffer │ 2.40 KiB    │
+├────────────────────┼────────┼─────────────┤
+│ data/42.bin        │ buffer │ 2.28 KiB    │
+├────────────────────┼────────┼─────────────┤
+│ data/43.bin        │ buffer │ 1.82 KiB    │
+├────────────────────┼────────┼─────────────┤
+│ data/44.bin        │ buffer │ 2.30 KiB    │
+├────────────────────┼────────┼─────────────┤
+│ data/45.bin        │ buffer │ 2.21 KiB    │
+├────────────────────┼────────┼─────────────┤
+│ data/46.bin        │ buffer │ 2.43 KiB    │
+├────────────────────┼────────┼─────────────┤
+│ data/47.bin        │ buffer │ 2.21 KiB    │
+├────────────────────┼────────┼─────────────┤
+│ data/48.bin        │ buffer │ 2.34 KiB    │
+├────────────────────┼────────┼─────────────┤
+│ data/49.bin        │ buffer │ 2.18 KiB    │
+├────────────────────┼────────┼─────────────┤
+│ data/5.bin         │ buffer │ 4.27 KiB    │
+├────────────────────┼────────┼─────────────┤
+│ data/50.bin        │ buffer │ 2.17 KiB    │
+├────────────────────┼────────┼─────────────┤
+│ data/51.bin        │ buffer │ 2.16 KiB    │
+├────────────────────┼────────┼─────────────┤
+│ data/52.bin        │ buffer │ 2.28 KiB    │
+├────────────────────┼────────┼─────────────┤
+│ data/53.bin        │ buffer │ 2.26 KiB    │
+├────────────────────┼────────┼─────────────┤
+│ data/54.bin        │ buffer │ 1.83 KiB    │
+├────────────────────┼────────┼─────────────┤
+│ data/55.bin        │ buffer │ 2.12 KiB    │
+├────────────────────┼────────┼─────────────┤
+│ data/56.bin        │ buffer │ 10.86 KiB   │
+├────────────────────┼────────┼─────────────┤
+│ data/57.bin        │ buffer │ 29.56 KiB   │
+├────────────────────┼────────┼─────────────┤
+│ data/58.bin        │ buffer │ 40.85 KiB   │
+├────────────────────┼────────┼─────────────┤
+│ data/59.bin        │ buffer │ 171.38 KiB  │
+├────────────────────┼────────┼─────────────┤
+│ data/6.bin         │ buffer │ 1.79 KiB    │
+├────────────────────┼────────┼─────────────┤
+│ data/60.bin        │ buffer │ 0.17 KiB    │
+├────────────────────┼────────┼─────────────┤
+│ data/61.bin        │ buffer │ 43.31 KiB   │
+├────────────────────┼────────┼─────────────┤
+│ data/62.bin        │ buffer │ 7.16 KiB    │
+├────────────────────┼────────┼─────────────┤
+│ data/63.bin        │ buffer │ 14.29 KiB   │
+├────────────────────┼────────┼─────────────┤
+│ data/64.bin        │ buffer │ 14.14 KiB   │
+├────────────────────┼────────┼─────────────┤
+│ data/65.bin        │ buffer │ 117.17 KiB  │
+├────────────────────┼────────┼─────────────┤
+│ data/66.bin        │ buffer │ 40.29 KiB   │
+├────────────────────┼────────┼─────────────┤
+│ data/67.bin        │ buffer │ 0.28 KiB    │
+├────────────────────┼────────┼─────────────┤
+│ data/68.bin        │ buffer │ 44.49 KiB   │
+├────────────────────┼────────┼─────────────┤
+│ data/69.bin        │ buffer │ 70.52 KiB   │
+├────────────────────┼────────┼─────────────┤
+│ data/7.bin         │ buffer │ 4.74 KiB    │
+├────────────────────┼────────┼─────────────┤
+│ data/70.bin        │ buffer │ 66.43 KiB   │
+├────────────────────┼────────┼─────────────┤
+│ data/71.bin        │ buffer │ 2.35 KiB    │
+├────────────────────┼────────┼─────────────┤
+│ data/72.bin        │ buffer │ 3.61 KiB    │
+├────────────────────┼────────┼─────────────┤
+│ data/73.bin        │ buffer │ 0.07 KiB    │
+├────────────────────┼────────┼─────────────┤
+│ data/74.bin        │ buffer │ 12.04 KiB   │
+├────────────────────┼────────┼─────────────┤
+│ data/75.bin        │ buffer │ 2.01 KiB    │
+├────────────────────┼────────┼─────────────┤
+│ data/76.bin        │ buffer │ 10.57 KiB   │
+├────────────────────┼────────┼─────────────┤
+│ data/77.bin        │ buffer │ 8.89 KiB    │
+├────────────────────┼────────┼─────────────┤
+│ data/78.bin        │ buffer │ 8.88 KiB    │
+├────────────────────┼────────┼─────────────┤
+│ data/79.bin        │ buffer │ 4.88 KiB    │
+├────────────────────┼────────┼─────────────┤
+│ data/8.bin         │ buffer │ 6.11 KiB    │
+├────────────────────┼────────┼─────────────┤
+│ data/80.bin        │ buffer │ 6.16 KiB    │
+├────────────────────┼────────┼─────────────┤
+│ data/9.bin         │ buffer │ 19.38 KiB   │
+├────────────────────┼────────┼─────────────┤
+│ Total (81 modules) │        │ 1274.08 KiB │
+└────────────────────┴────────┴─────────────┘
+Total Upload: 1293.37 KiB / gzip: 432.87 KiB
+No bindings found.
+--dry-run: exiting now.
