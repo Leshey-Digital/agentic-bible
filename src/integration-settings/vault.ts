@@ -1,3 +1,4 @@
+import {credentialTransport} from '../hosted/github-transport.ts';
 import type {SqlDatabase} from '../editorial/contracts.ts';
 import type {IntegrationStorage,IntegrationRecord,IntegrationTransaction,IntegrationId,IntegrationAdapters,ConnectionEvidence} from './contracts.ts';
 import {validateIntegrationRecord} from './record.ts';
@@ -9,8 +10,7 @@ const encode=(bytes:Uint8Array)=>btoa(String.fromCharCode(...bytes));
 const decode=(value:string)=>Uint8Array.from(atob(value),c=>c.charCodeAt(0));
 const utf8=new TextEncoder();
 const error=()=>new Error('integration_vault_unavailable');
-// No construction occurs in configuredPorts or the shipped entrypoint. A server
-// owner must supply a non-exportable key and scoped trusted transport explicitly.
+// Trusted composition supplies a non-exportable key and scoped transport.
 export function createEncryptedIntegrationAdapters(options:Options):IntegrationAdapters{
   if(options.key.type!=='secret'||options.key.extractable||options.key.algorithm.name!=='AES-GCM'||(options.key.algorithm as AesKeyAlgorithm).length!==256||!options.key.usages.includes('encrypt')||!options.key.usages.includes('decrypt')||!/^[a-zA-Z0-9._-]{1,64}$/.test(options.keyId)||typeof options.send!=='function')throw error();
   const aad=(metadata:string,integration:IntegrationId)=>utf8.encode('agentic-bible-integration-vault-v1\n'+integration+'\n'+options.keyId+'\n'+metadata);
@@ -75,6 +75,23 @@ export function createEncryptedIntegrationAdapters(options:Options):IntegrationA
       }catch{return 'unavailable';}finally{clearTimeout(timer);controller.abort();input.signal.removeEventListener('abort',abort);try{reader?.releaseLock();}catch{}}
     });
   };
+  const gitHubTransport:NonNullable<IntegrationAdapters['gitHubTransport']>=async admin=>{
+    const fresh=()=>{if(admin.role!=='admin'||admin.csrfVerified!==true||!/^signed-admin:[a-f0-9]{64}$/.test(admin.subject)||!Number.isSafeInteger(admin.expiresAt)||admin.expiresAt<=Date.now())throw error();};
+    const revision=await lock('github-content',async()=>{
+      const current=await load('github-content'),record=validateIntegrationRecord(current.record);fresh();
+      if(!record||record.ownerRef!==admin.subject||!current.secret)throw error();return record.revision;
+    });
+    return (request,beforeDispatch)=>lock('github-content',async()=>{
+      const current=await load('github-content'),record=validateIntegrationRecord(current.record);
+      if(!record||record.ownerRef!==admin.subject||record.revision!==revision||!current.secret)throw error();
+      // Recheck approval after vault awaits, before any remote effect. Rotation
+      // cannot overtake dispatch while this existing durable lock is held.
+      if(beforeDispatch)await beforeDispatch();
+      fresh();if(request.signal.aborted)throw error();
+      const send=credentialTransport(current.secret,options.send);if(!send)throw error();
+      try{return await send(request);}catch{throw error();}
+    });
+  };
   const resolveJevCredential=async(ownerRef:string):Promise<string|null>=>{
     if(typeof ownerRef!=='string'||!/^signed-admin:[a-f0-9]{64}$/.test(ownerRef))return null;
     return lock('typesafe-jev',async()=>{
@@ -84,5 +101,5 @@ export function createEncryptedIntegrationAdapters(options:Options):IntegrationA
       return current.secret;
     });
   };
-  return {trust:options.trust,storage,testConnection,resolveJevCredential,connectionEvidence:options.connectionEvidence??'unverified'};
+  return {trust:options.trust,storage,testConnection,gitHubTransport,resolveJevCredential,connectionEvidence:options.connectionEvidence??'unverified'};
 }

@@ -6,7 +6,7 @@ import type {RuntimeEnv} from './contracts.ts';
 export function createModuleRuntime(assets:RuntimeEnv['ASSETS'],snapshot:BuildReviewSnapshot){
  const reviewSource=buildReviewSource(snapshot);
  return {async fetch(request:Request,bindings:Omit<RuntimeEnv,'ASSETS'>){
-  const env:RuntimeEnv={...bindings,ASSETS:assets},ports=await configuredPorts(env);
+  const env:RuntimeEnv={...bindings,ASSETS:assets},ports=await configuredPorts(env,request);
   if(env.HOSTED_PRIVATE_INBOX==='enabled'&&ports.contributions&&!ports.sendGitHub)ports.reviewSource=reviewSource;
   return createHostedRuntime(ports).fetch(request,env);
  }};
