@@ -1,0 +1,5 @@
+- [x] Inspect roadmap and existing local/hosted contribution-to-review behavior.
+- [x] Add explicit discard protection for selection/reload and in-flight edits.
+- [x] Verify real-browser cancel/discard/failure/race behavior on desktop/mobile.
+- [x] Run applicable source/type checks and independent bounded review.
+- [ ] Verify deploy triggers and publish isolated source checkpoint; leave production unchanged.
