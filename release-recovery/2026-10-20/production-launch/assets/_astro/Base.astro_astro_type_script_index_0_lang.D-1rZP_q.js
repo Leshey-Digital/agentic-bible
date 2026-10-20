@@ -1,0 +1,1 @@
+document.addEventListener(`keydown`,e=>{let t=e.target;if(e.key!==`/`||e.ctrlKey||e.metaKey||e.altKey||t.isContentEditable||/INPUT|TEXTAREA|SELECT/.test(t.tagName))return;e.preventDefault();let n=document.querySelector(`#search-input`);n?n.focus():window.location.assign((document.body.dataset.wikiSnapshotBase??`/`)+`search/#focus`)});

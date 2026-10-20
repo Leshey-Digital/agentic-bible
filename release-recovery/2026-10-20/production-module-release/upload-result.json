@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"operationId\": \"febe70aa-4040-476e-9b13-f7a554599e3e\",\n  \"candidate\": \"985cb80ecc4b413aae39f6ad560e896d2cdd704badfdc8a9eaa2144de36e789a\",\n  \"status\": 200,\n  \"success\": true,\n  \"errors\": [],\n  \"result\": {\n    \"id\": \"28c2c556-ab43-482a-98e7-7d2aa8d6965c\",\n    \"number\": 1,\n    \"startup_time_ms\": 3,\n    \"limits\": {\n      \"cpu_ms\": 10\n    },\n    \"compatibility_date\": \"2026-10-16\",\n    \"main_module\": \"worker.js\",\n    \"annotations\": {\n      \"workers/message\": \"Read-only wiki source8a38252 module-candidate:985cb80ecc4b413aae39f6ad560e896d2cdd704badfdc8a9eaa2144de36e789a operation:febe70aa-4040-476e-9b13-f7a554599e3e\",\n      \"workers/triggered_by\": \"create_version_api\"\n    },\n    \"usage_model\": \"standard\",\n    \"urls\": [],\n    \"source\": \"api\",\n    \"created_on\": \"2026-10-20T16:31:40.456192Z\"\n  }\n}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://agenticbible.si/</loc></url>
+  <url><loc>https://agenticbible.si/about/</loc></url>
+  <url><loc>https://agenticbible.si/topics/</loc></url>
+  <url><loc>https://agenticbible.si/topics/foundations/</loc></url>
+  <url><loc>https://agenticbible.si/topics/capabilities/</loc></url>
+  <url><loc>https://agenticbible.si/topics/protocols/</loc></url>
+  <url><loc>https://agenticbible.si/history/</loc></url>
+  <url><loc>https://agenticbible.si/articles/agent-budgets/</loc></url>
+  <url><loc>https://agenticbible.si/articles/agent-evaluation/</loc></url>
+  <url><loc>https://agenticbible.si/articles/agent-identity/</loc></url>
+  <url><loc>https://agenticbible.si/articles/agent-memory/</loc></url>
+  <url><loc>https://agenticbible.si/articles/agent-observability/</loc></url>
+  <url><loc>https://agenticbible.si/articles/agent-orchestration/</loc></url>
+  <url><loc>https://agenticbible.si/articles/agent-planning/</loc></url>
+  <url><loc>https://agenticbible.si/articles/agent-sandboxing/</loc></url>
+  <url><loc>https://agenticbible.si/articles/agent-to-agent-communication/</loc></url>
+  <url><loc>https://agenticbible.si/articles/ai-agent/</loc></url>
+  <url><loc>https://agenticbible.si/articles/computer-use-agents/</loc></url>
+  <url><loc>https://agenticbible.si/articles/context-engineering/</loc></url>
+  <url><loc>https://agenticbible.si/articles/durable-agent-execution/</loc></url>
+  <url><loc>https://agenticbible.si/articles/human-oversight/</loc></url>
+  <url><loc>https://agenticbible.si/articles/model-context-protocol/</loc></url>
+  <url><loc>https://agenticbible.si/articles/prompt-injection/</loc></url>
+  <url><loc>https://agenticbible.si/articles/retrieval-augmented-generation/</loc></url>
+  <url><loc>https://agenticbible.si/articles/structured-outputs/</loc></url>
+  <url><loc>https://agenticbible.si/articles/tool-permissions/</loc></url>
+  <url><loc>https://agenticbible.si/articles/tool-use/</loc></url>
+</urlset>

@@ -1,0 +1,3 @@
+import {defineConfig} from '@playwright/test';
+import root from '../../playwright.config.ts';
+export default defineConfig({...root,workers:1,use:{...root.use,baseURL:'http://127.0.0.1:8790'},webServer:undefined,testDir:'../../tests/browser',grep:/real Pagefind supports|read and search send no external|browser server serves|final six topics/,outputDir:'./browser-results',reporter:[['list'],['json',{outputFile:'.git/production-module-release/browser-report.json'}]]});

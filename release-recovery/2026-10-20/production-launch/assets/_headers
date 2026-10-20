@@ -1,0 +1,53 @@
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; img-src 'self' data:; connect-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'
+
+/admin*
+  X-Robots-Tag: noindex, nofollow
+
+/api*
+  X-Robots-Tag: noindex, nofollow
+
+/contribute*
+  X-Robots-Tag: noindex, nofollow
+
+/search*
+  X-Robots-Tag: noindex, nofollow
+
+/404*
+  X-Robots-Tag: noindex, nofollow
+
+/history/tool-use/*
+  X-Robots-Tag: noindex, nofollow
+
+/history/*/*
+  X-Robots-Tag: noindex, nofollow
+
+/review*
+  X-Robots-Tag: noindex, nofollow
+
+/local-publications*
+  X-Robots-Tag: noindex, nofollow
+
+/wiki-snapshots*
+  X-Robots-Tag: noindex, nofollow
+
+/fixtures*
+  X-Robots-Tag: noindex, nofollow
+
+/indexing-manifest.json
+  X-Robots-Tag: noindex, nofollow
+
+/source-catalog.json
+  X-Robots-Tag: noindex, nofollow
+
+/release-source.json
+  X-Robots-Tag: noindex, nofollow
+
+/release.json
+  X-Robots-Tag: noindex, nofollow
+
+/maintenance-history.json
+  X-Robots-Tag: noindex, nofollow

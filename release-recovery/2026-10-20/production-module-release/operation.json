@@ -1,0 +1,13 @@
+{
+  "operationId": "febe70aa-4040-476e-9b13-f7a554599e3e",
+  "candidate": "985cb80ecc4b413aae39f6ad560e896d2cdd704badfdc8a9eaa2144de36e789a",
+  "kind": "worker-data-module-version-upload",
+  "state": "upload-dispatched-outcome-pending",
+  "attempts": 1,
+  "payloadSha256": "0d2c9550a72062c4074a1c9461724ed0e4705995e1d54d8e9a5e510d135faf56",
+  "capsuleSha256": "cbe226a41d0f99e7fcfae9fd9ce39d6103236be6a07b6421b4f9f68d8f8c35a0",
+  "capsuleBytes": 783435,
+  "priorFailedOperation": "7f505e3f-809d-44c0-9c21-9336308ebd33",
+  "activation": false,
+  "attemptedAt": "2026-10-20T14:30:14.057903+00:00"
+}

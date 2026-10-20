@@ -1,0 +1,33 @@
+{
+  "candidateDigest": "765e1b85eadd8c744839e1288ad720129685aa68b6a696e4102ee87b6eab1fb1",
+  "operation": "7f505e3f-809d-44c0-9c21-9336308ebd33",
+  "session": {
+    "sessionStatus": 200,
+    "token": {
+      "claimsVerified": false,
+      "decoded": true,
+      "iat": 1792505780,
+      "nbf": 1792505780,
+      "exp": 1792509380,
+      "singleAssetUploadMode": false,
+      "audiencePresent": true,
+      "audienceShape": "string",
+      "expiredAtObservation": false,
+      "notYetValidAtObservation": false
+    },
+    "bucketCount": 3
+  },
+  "upload": {
+    "status": 401,
+    "contentType": "text/plain",
+    "body": {
+      "format": "non-json-redacted",
+      "truncated": false,
+      "bytesRead": 12,
+      "errorCodes": [],
+      "messageClasses": []
+    },
+    "cfRay": "a4d8a3c688c7061b-IAD"
+  },
+  "noVersionCreated": true
+}

@@ -1,0 +1,11 @@
+{
+  "operation": "7f505e3f-809d-44c0-9c21-9336308ebd33",
+  "digest": "765e1b85eadd8c744839e1288ad720129685aa68b6a696e4102ee87b6eab1fb1",
+  "codeSha256": "d66afc6d1e494cc5e76604e7f661ac07f3f8acd27aeffc7eedbc53a04499ee65",
+  "codeBytes": 784093,
+  "attempts": 1,
+  "status": "failed-asset-upload-http-401",
+  "attemptedAt": "2026-10-20T12:18:20.857412+00:00",
+  "providerResponse": "HTTP 401 from native Cloudflare asset upload; stopped before version creation and activation",
+  "retryAllowed": false
+}

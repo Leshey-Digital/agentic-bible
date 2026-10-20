@@ -1,0 +1,17 @@
+{
+  "parentOperation": "7f505e3f-809d-44c0-9c21-9336308ebd33",
+  "candidateDigest": "765e1b85eadd8c744839e1288ad720129685aa68b6a696e4102ee87b6eab1fb1",
+  "codeSha256": "bb83e8b9f10e1aaaef4d044ee6b4b42e07249b4d2dffff4ea4cc8d9d8b7f467b",
+  "codeBytes": 787725,
+  "status": "completed-http-401",
+  "attempts": 1,
+  "maxSessions": 1,
+  "maxBucketUploads": 1,
+  "versionCreation": false,
+  "activation": false,
+  "attemptedAt": "2026-10-20T14:16:02.438943+00:00",
+  "sessionStatus": 200,
+  "uploadStatus": 401,
+  "resultPath": "diagnostic-result.json",
+  "retryAllowed": false
+}

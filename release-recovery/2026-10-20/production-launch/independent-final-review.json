@@ -1,0 +1,16 @@
+{
+  "source": "8a38252384c6fe6024a75b462ad95294a131100c",
+  "candidateDigest": "765e1b85eadd8c744839e1288ad720129685aa68b6a696e4102ee87b6eab1fb1",
+  "uploadCodeDigest": "d66afc6d1e494cc5e76604e7f661ac07f3f8acd27aeffc7eedbc53a04499ee65",
+  "inventory": {"verified": true, "files": 82, "bytes": 1305825, "gitArticleHashes": 20},
+  "browserInitial": {"passed": 82, "failed": 8, "aggregateTimeouts": 6, "stagingOnlyMetadataAssertions": 2, "excludedNamedStagingHeaderInstances": 2},
+  "productionEquivalentBrowser": {"passed": 4, "failed": 0},
+  "singleSerialMobileFinalSixJourney": {"passed": 1, "failed": 0, "testSeconds": 27.7, "unchangedTimeout": true},
+  "seoSerialRecheck": {"passed": 2, "failed": 0, "seconds": 50.2, "unchangedTimeoutsAndAssertions": true},
+  "browserVersion": "154.0.8037.57",
+  "originalFailuresPreserved": true,
+  "trackedFilesChangedByReviewer": false,
+  "providerMutationsByReviewer": 0,
+  "liveServingVerifiedByReviewer": false,
+  "remaining": "Parent-reported production asset upload HTTP401; no deployed production version. Initial aggregate timing failures retained without generalized root-cause attribution."
+}
