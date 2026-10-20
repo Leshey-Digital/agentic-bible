@@ -1,0 +1,6 @@
+- [x] Inspect roadmap and recovery→PR53→PR54 dependencies.
+- [x] Reproduce shipped private-inbox/public-intake configuration coupling.
+- [x] Implement exact off-by-default private opt-in with existing trust and D1 guards.
+- [ ] Verify focused end-to-end plus retained contribution/browser/type checks and independent review.
+- [ ] Prepare exact closed staging build manifest and runtime prerequisite inventory.
+- [ ] Publish one coherent integration checkpoint; no main merge or remote activation.

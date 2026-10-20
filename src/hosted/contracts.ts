@@ -29,6 +29,8 @@ export type RuntimeEnv={
   HOSTED_ADMIN_TRUST?:string;
   GITHUB_CONTENT_TOKEN?:string;
   /** Optional operator bindings. Example values are deliberately invalid/closed. */
+  /** Explicit private admin inbox opt-in; does not authorize public intake. */
+  HOSTED_PRIVATE_INBOX?:string;
   HOSTED_INTAKE_POLICY?:string;
   HOSTED_INTAKE_RATE_KEY?:string;
   INTEGRATION_VAULT_KEY?:string;
