@@ -27,8 +27,8 @@ function publicJevDecision(value:unknown){
 }
 // Ports are trusted server code, not environment flags, cookies or request fields.
 // Existing hosted correction ports use explicit server trust, D1 and secret bindings.
-// Integration settings require separate trusted server-code adapters; configuredPorts
-// never constructs them from bindings, request fields or local fixture identities.
+// Integration settings use explicit server trust, D1 and vault key bindings.
+// Request fields and local fixture identities cannot configure trusted adapters.
 export function createHostedRuntime(ports:Ports={}){
 const contributions=ports.contributions?createContributionHandler(ports.contributions,ports.sendGitHub,ports.reviewSource):undefined;
 const integrationSettings=ports.integrationSettings?createIntegrationSettingsContract(ports.integrationSettings):undefined;
@@ -162,4 +162,4 @@ async function inputJson(request:Request,maxBytes=8192){
   try{for(;;){const part=await reader.read();if(part.done)break;bytes+=part.value.length;if(bytes>maxBytes){void reader.cancel();throw new ProposalError('input_capacity');}chunks.push(part.value);}}finally{reader.releaseLock();}
   const body=new Uint8Array(bytes);let offset=0;for(const part of chunks){body.set(part,offset);offset+=part.length;}return JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(body));
 }
-export default {async fetch(request:Request,env:RuntimeEnv){return createHostedRuntime(await configuredPorts(env)).fetch(request,env);}};
+export default {async fetch(request:Request,env:RuntimeEnv){return createHostedRuntime(await configuredPorts(env,request)).fetch(request,env);}};
