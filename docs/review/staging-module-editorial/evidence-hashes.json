@@ -1,0 +1,22 @@
+[
+  {
+    "path": "/tmp/agentic-staging-module-tests.log",
+    "sha256": "e2e1fcfde11799e873af1add37c06b8431fc82ac5adb07f76e56bbd78d19e2a5"
+  },
+  {
+    "path": "/tmp/agentic-staging-module-tests-final.log",
+    "sha256": "5a15a1ddecb6e5c648530f00028782530035da46ec2598b3243c38207e876bd0"
+  },
+  {
+    "path": "/tmp/agentic-staging-module-retained.log",
+    "sha256": "503d2c3eab54cb16e0e8b60818799a2da9db5a999a19020f185e0290bdeb2b85"
+  },
+  {
+    "path": "/tmp/agentic-staging-module-check.log",
+    "sha256": "61db5b755c5b65bf93bb2a8ef889728cb89d7a2626f8880366fcb2536a2cc70e"
+  },
+  {
+    "path": "/tmp/agentic-staging-module-dryrun.log",
+    "sha256": "33c7bf690e791749601f4c737b6200d3713831acf96812d9edfb9be25e40bba0"
+  }
+]
