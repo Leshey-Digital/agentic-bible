@@ -21,3 +21,17 @@ Inference: reported Python-client1010 is consistent with the enabled Browser Int
 Missing evidence: retained CF-Ray response IDs and precise UTC times for denied requests, relayed through parent from verifier task01a159a2-4c2d-73bc-878c-b9f54e0a40c5. No fresh request is needed to recover existing headers. With these identifiers, inspect only matching security events; if connector lacks event access, the zone owner can inspect Security Events in Cloudflare dashboard by Ray ID/time and report the matching service/action. Do not disable Browser Integrity Check or add a bypass merely to make acceptance pass. Any necessary setting change needs a separate concrete decision after attribution.
 
 No credentials, client identities, IPs, security settings, tests, application code, or version changed during diagnosis. No rollback triggered: no critical application failure established. Full live article/search/history/robots/closed-write acceptance remains incomplete.
+
+## Confirmed event correlation
+
+A subsequent read-only POST /graphql query to firewallEventsAdaptive succeeded HTTP200 with no errors. It was restricted to this zone, hostname agenticbible.si, UTC window2026-10-20T16:41:20Z–16:41:40Z, userAgent Python-urllib/3.12, and the11 supplied verifier paths; limit30. Requested fields were only action,path,datetime,source,userAgent; no client IP, query string, cookies, or customer records were requested.
+
+Ten matching events were returned, all action=block,source=bic,userAgent=Python-urllib/3.12:
+- 16:41:28Z: /articles/model-context-protocol/, /articles/tool-use/, /articles/prompt-injection/, /search/
+- 16:41:29Z: /api/runtime/status, /release-source.json, /sitemap.xml, /api/contributions, /admin/, /robots.txt
+
+This confirms Browser Integrity Check attribution for those ten matching verifier requests. /history/ was not present in the adaptive result; its individual event remains unconfirmed. No missing-event conclusion or universal completeness claim is made. The actual event UA confirms the verifier's previously inferred default UA for these ten requests. Local file-write timestamps remain distinct from server timestamps. Successful homepage Ray a4d977e09f7fcc1a-ORD is not a denied-request identifier.
+
+Supported read contract: https://developers.cloudflare.com/analytics/graphql-api/tutorials/querying-firewall-events/
+
+Diagnosis is resolved for ten requests without changing settings or repeating blocked traffic. No application defect is established by these security blocks. Full ordinary-browser reader acceptance is still outstanding; no client-identity substitution or bypass was performed. No user security-setting action is required merely to explain these denials.
