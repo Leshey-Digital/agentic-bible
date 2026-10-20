@@ -1,0 +1,32 @@
+{
+  "state": "proposal-only-not-inserted",
+  "accountId": "c370be29e4065365de03bc8652da2cdc",
+  "databaseId": "1ca9a6f8-c0a9-4040-8a2f-e22d888a985a",
+  "databaseName": "agentic-bible-staging-editorial",
+  "submission": {
+    "id": "ce16ca08-cce3-59ee-9ae2-4a5b8cae07cc",
+    "request_key": "223ec5ec-ed06-5a63-9c0f-7142bccb9b07",
+    "fingerprint": "308f030adace410cd4079d415b1037b84727299e15d2c6da7aba0f9224827766",
+    "article_id": "tool-use",
+    "kind": "correction",
+    "message": "SYNTHETIC STAGING TRIAL — NOT A REAL CONTRIBUTION. For tool-use only: verify that an authorized editor can move this labelled fixture to follow-up, review the existing cited source, save a private note and read it back. Do not publish or create a GitHub draft.",
+    "source_url": "",
+    "status": "new",
+    "tags": "[]",
+    "version": 1,
+    "last_event_id": "6ae0ed1d-159d-50cb-97e8-f852f44c8b60",
+    "created_at": 1792523233000,
+    "updated_at": 1792523233000
+  },
+  "audit": {
+    "id": "6ae0ed1d-159d-50cb-97e8-f852f44c8b60",
+    "submission_id": "ce16ca08-cce3-59ee-9ae2-4a5b8cae07cc",
+    "actor": "synthetic-staging-fixture",
+    "action": "submitted",
+    "status": "new",
+    "tags": "[]",
+    "created_at": 1792523233000
+  },
+  "timestampMeaning": "Fixed synthetic fixture timestamp, not a claim about an actual user submission; record actual insertion time separately.",
+  "fingerprintClientHash": "69b3bc4ec0b4b3b157fc16d7b2efb15b49eca83bd101b2c96f5b18ef801a71b9"
+}

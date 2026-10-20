@@ -6,11 +6,11 @@ import {createApproval,listApprovals,revokeApproval} from './approvals.ts';
 import {sourcePreview} from './source.ts';
 import {createRestorationApproval,revokeRestorationApproval} from '../maintenance-history/restoration-approvals.ts';
 import {MaintenanceReviewError,verifiedCatalog,listMaintenanceReviews,saveMaintenanceReview} from '../maintenance-history/review.ts';
-import {maintenanceAdminHtml,maintenanceAdminCss,maintenanceAdminJs} from '../maintenance-history/admin.ts';
+import {maintenanceAdminPage,maintenanceAdminCss,maintenanceAdminJs} from '../maintenance-history/admin.ts';
 import {adminHtml,adminForInboxHtml,adminCss,adminJs} from './admin.ts';
 import {createContributionHandler,intakeConfigured} from './contributions.ts';
 import {adminTrust,verifySignedAdmin} from './identity.ts';
-import {contributionAdminHtml,contributionAdminCss,contributionAdminJs} from './contribution-admin.ts';
+import {contributionAdminPage,contributionAdminCss,contributionAdminJs} from './contribution-admin.ts';
 import {integrationAdminHtml,integrationAdminCss,integrationAdminJs} from '../integration-settings/admin.ts';
 import {createIntegrationSettingsContract} from '../integration-settings/contracts.ts';
 import {recordAbuseOutcome,type AbuseOutcome} from './privacy.ts';
@@ -81,7 +81,7 @@ return {async fetch(request:Request,env:RuntimeEnv):Promise<Response>{
       if(path.startsWith('/admin/contributions/')){
         const trust=adminTrust(ports.contributions?.trust);const admin=trust?await verifySignedAdmin(request,trust):null;if(!admin||request.headers.get('sec-fetch-site')==='cross-site')return json({error:'verified_admin_required'},403);
         if(request.method!=='GET'||url.search)return json({error:'invalid_request'},400);
-        const asset=path==='/admin/contributions/'?[contributionAdminHtml,'text/html; charset=utf-8']:path==='/admin/contributions/style.css'?[contributionAdminCss,'text/css; charset=utf-8']:path==='/admin/contributions/app.js'?[contributionAdminJs,'text/javascript; charset=utf-8']:null;return asset?new Response(asset[0],{headers:{...headers,'Content-Type':asset[1]}}):json({error:'not_found'},404);
+        const asset=path==='/admin/contributions/'?[contributionAdminPage(!!ports.sendGitHub),'text/html; charset=utf-8']:path==='/admin/contributions/style.css'?[contributionAdminCss,'text/css; charset=utf-8']:path==='/admin/contributions/app.js'?[contributionAdminJs,'text/javascript; charset=utf-8']:null;return asset?new Response(asset[0],{headers:{...headers,'Content-Type':asset[1]}}):json({error:'not_found'},404);
       }
       const response=await contributions(request,env.EDITORIAL_DB);
       if(path==='/api/submissions'&&request.method==='POST'){
@@ -96,9 +96,20 @@ return {async fetch(request:Request,env:RuntimeEnv):Promise<Response>{
     const maintenancePath=path==='/admin/'||path.startsWith('/admin/maintenance/')||path.startsWith('/api/admin/maintenance/');
     if(maintenancePath){
       if(url.origin!==origin)return json({error:'hosted_origin_required'},403);
-      if(!ports.maintenanceReview||!ports.verifyAdmin||!env.EDITORIAL_DB)return json({error:'maintenance_review_unconfigured'},503);
+      if(request.headers.get('sec-fetch-site')==='cross-site')return json({error:'verified_admin_required'},403);
+      if(!ports.verifyAdmin||!env.EDITORIAL_DB)return json({error:'maintenance_review_unconfigured'},503);
       const admin=await ports.verifyAdmin(request);if(!admin||admin.role!=='admin'||admin.csrfVerified!==true||!Number.isSafeInteger(admin.expiresAt)||admin.expiresAt<=Date.now()||!/^signed-admin:[a-f0-9]{64}$/.test(admin.subject))return json({error:'verified_admin_required'},403);
-      if(request.method==='GET'&&(path==='/admin/'||path.startsWith('/admin/maintenance/'))){const asset=path==='/admin/'||path==='/admin/maintenance/'?[maintenanceAdminHtml,'text/html; charset=utf-8']:path==='/admin/maintenance/style.css'?[maintenanceAdminCss,'text/css; charset=utf-8']:path==='/admin/maintenance/app.js'?[maintenanceAdminJs,'text/javascript; charset=utf-8']:null;return asset?new Response(asset[0],{headers:{...headers,'Content-Type':asset[1]}}):json({error:'not_found'},404);}
+      if(request.method==='GET'&&(path==='/admin/'||path.startsWith('/admin/maintenance/'))){
+        if(path==='/admin/'&&ports.contributions)return new Response(null,{status:302,headers:{...headers,Location:'/admin/contributions/'}});
+        if(path==='/admin/'||path==='/admin/maintenance/'){
+          let available=false;
+          if(ports.maintenanceReview)try{available=(await verifiedCatalog(env.ASSETS)).catalog.history.some(entry=>entry.current);}catch(error){if(!(error instanceof MaintenanceReviewError))throw error;}
+          return new Response(maintenanceAdminPage({inbox:!!ports.contributions,github:!!ports.hostedApprovals,unavailable:!available}),{headers:{...headers,'Content-Type':'text/html; charset=utf-8'}});
+        }
+        const asset=path==='/admin/maintenance/style.css'?[maintenanceAdminCss,'text/css; charset=utf-8']:path==='/admin/maintenance/app.js'?[maintenanceAdminJs,'text/javascript; charset=utf-8']:null;
+        return asset?new Response(asset[0],{headers:{...headers,'Content-Type':asset[1]}}):json({error:'not_found'},404);
+      }
+      if(!ports.maintenanceReview)return json({error:'maintenance_review_unconfigured'},503);
       if(!['/api/admin/maintenance/review','/api/admin/maintenance/restore-approval','/api/admin/maintenance/restore-revoke'].includes(path))return json({error:'not_found'},404);
       if(!['GET','POST'].includes(request.method))return json({error:'explicit_post_required'},405);
       if(request.method==='POST'&&(request.headers.get('origin')!==origin||request.headers.get('sec-fetch-site')==='cross-site'||request.headers.get('x-agentic-bible-request')!=='admin'))return json({error:'same_origin_required'},403);

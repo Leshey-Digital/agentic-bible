@@ -1,0 +1,18 @@
+{
+  "admin-capability-focused.log": {
+    "sha256": "a5b99760fe084bfc338a001385d7e3748d009d555ff7fb0fc4f762d215987157",
+    "bytes": 3399
+  },
+  "admin-capability-focused-corrected.log": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  "admin-capability-focused-final.log": {
+    "sha256": "9d44e3df861919f6f0f720c069504813a3bc631ddbaa927f537f68f3f43b0257",
+    "bytes": 690
+  },
+  "admin-capability-retained.log": {
+    "sha256": "b2696ebc99a2c4fb4ed89f3e00729748f6be5eb29a442b1b29c79f1e9e9f0698",
+    "bytes": 1123
+  }
+}
