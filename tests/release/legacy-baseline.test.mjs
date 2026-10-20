@@ -66,6 +66,9 @@ test('legacy baseline record rejects candidate markers, altered bindings and non
  const marked=structuredClone(valid);marked.version.candidateMessage='ab-candidate:'+'b'.repeat(64)+':'+randomUUID();assert.throws(()=>validateLegacyBaseline(marked),/baseline/);
  const secret=structuredClone(valid);secret.version.bindings.find(x=>x.type==='secret_text').text='never read or store secret values';assert.throws(()=>baselineDigest(secret),/baseline_version/);
  const wrongD1=structuredClone(valid);wrongD1.version.bindings.find(x=>x.type==='d1').id='f'.repeat(36);assert.throws(()=>baselineDigest(wrongD1),/baseline_version/);
+ const objectName=structuredClone(valid);objectName.version.bindings.find(x=>x.name==='ASSETS').name=['ASSETS'];assert.throws(()=>baselineDigest(objectName),/baseline_version/);
+ const objectType=structuredClone(valid);objectType.version.bindings.find(x=>x.name==='ASSETS').type=['assets'];assert.throws(()=>baselineDigest(objectType),/baseline_version/);
+ const objectD1Id=structuredClone(valid);objectD1Id.version.bindings.find(x=>x.type==='d1').id=[expectedStagingBindings.find(x=>x.type==='d1').id];assert.throws(()=>baselineDigest(objectD1Id),/baseline_version/);
 });
 
 test('stale expected-active and provider version ETag, creation, number or binding changes stop before activation',{timeout:30000},async()=>{

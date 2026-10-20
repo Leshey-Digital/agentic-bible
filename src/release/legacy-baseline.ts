@@ -43,7 +43,7 @@ const sha256=(value:unknown)=>typeof value==='string'&&/^[a-f0-9]{64}$/.test(val
 const createdOn=(value:unknown)=>typeof value==='string'&&/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/.test(value)&&Number.isFinite(Date.parse(value));
 const exactKeys=(value:any,keys:string[])=>!!value&&typeof value==='object'&&!Array.isArray(value)&&Object.keys(value).sort().join(',')===keys.slice().sort().join(',');
 const validSource=(value:unknown)=>typeof value==='string'&&['api','wrangler','terraform','dash','cf_cli','dash_template','integration','quick_editor','playground','workersci','unknown'].includes(value);
-const validBindings=(value:unknown)=>Array.isArray(value)&&value.every((binding:any)=>exactKeys(binding,binding?.type==='d1'?['name','type','id']:['name','type']));
+const validBindings=(value:unknown)=>Array.isArray(value)&&value.every((binding:any)=>typeof binding?.name==='string'&&typeof binding.type==='string'&&exactKeys(binding,binding.type==='d1'?['name','type','id']:['name','type'])&&(binding.type!=='d1'||typeof binding.id==='string'));
 
 export function validateLegacyBaseline(value:unknown):LegacyBaseline{
  const b=value as any;
