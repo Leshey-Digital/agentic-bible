@@ -28,3 +28,22 @@ Historical handoffs and qualification failures remain available unchanged for pr
 ## Fresh-container runtime update (2026-10-20)
 
 Focused supervisor and SEO CLI checks passed, followed by the build and all five affected regression files passing serially (21/21). No workerd processes or workerd zombies remained. The fresh container still uses non-reaping PID 1 (`tail -f /dev/null`), and its process count rose from 12 with one pre-existing zombie to 59 with 47 zombies named `git` or `esbuild`. Their ownership/session origin was not established. Hold full exact-source qualification until process residue is accounted for or a clean runtime with a reaping init is available. See [runtime evidence](review/wrangler-child-supervisor-runtime-20261020.md). Staging and deployment were not tested or changed.
+
+## Follow-up after baseline-schema recovery (2026-10-20)
+
+The legacy runtime schema correction was independently reviewed, focused
+baseline tests passed 8/8, the serial release regression suite passed 41/41,
+and `npm run check` reported zero diagnostics. These commands did not include
+the 59-step exact-source qualification.
+
+Before attempting that qualification, the current snapshot showed PID 1 still
+as `tail -f /dev/null`, 151 processes, `pids.current=181`, and 138 zombies
+(93 `esbuild`, 45 `git`). The container's process count and residue no longer
+meet the no-accumulation gate; process ancestry was not established. This is
+below the repository's unchanged 1,000-process safeguard, but does not satisfy
+the separate clean-runtime requirement. The full exact-source qualification
+was held and no new qualification receipt or inventory was created. Existing
+qualification receipts and inventories remain unchanged. Do not signal these
+processes or attempt the full run until a clean runtime with a reaping init is
+available and the process baseline is established. No staging request,
+deployment, production operation, or secret access occurred.

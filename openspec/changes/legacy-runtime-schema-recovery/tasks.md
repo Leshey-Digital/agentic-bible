@@ -5,5 +5,5 @@
 - [x] Add acceptance, changed-source, changed-shape, manifest-binding and baseline-tampering regressions.
 - [x] Run focused legacy baseline and release regression tests.
 - [x] Obtain independent review of the exact code and evidence-handling change.
-- [ ] Publish the recovery commit with a non-force push.
-- [ ] Keep the full 59-check qualification and live deployment unrun.
+- [x] Publish the recovery commit with a non-force push.
+- [x] Hold the full exact-source qualification because the documented process-residue gate is unmet; leave live deployment unrun.
