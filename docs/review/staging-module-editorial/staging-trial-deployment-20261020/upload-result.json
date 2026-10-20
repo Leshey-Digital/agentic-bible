@@ -1,0 +1,44 @@
+{
+  "operationId": "ea861401-b9ea-48d0-a396-7493a453502f",
+  "status": 200,
+  "success": true,
+  "errors": [],
+  "result": {
+    "id": "11e56042-5e04-4cd6-a136-f5d3f4abbe10",
+    "number": 6,
+    "annotations": {
+      "workers/message": "ab-staging-module:bb6663fabb4254766eec456d76dcc8833e68f3eda0e08c0814de56cc2b4fe7eb private-inbox:enabled operation:ea861401-b9ea-48d0-a396-7493a453502f",
+      "workers/triggered_by": "create_version_api"
+    },
+    "compatibility_date": "2026-10-16",
+    "compatibility_flags": [
+      "nodejs_compat"
+    ],
+    "main_module": "worker.js",
+    "bindings": [
+      {
+        "name": "EDITORIAL_DB",
+        "type": "d1",
+        "database_id": "1ca9a6f8-c0a9-4040-8a2f-e22d888a985a"
+      },
+      {
+        "name": "HOSTED_ADMIN_TRUST",
+        "type": "secret_text"
+      },
+      {
+        "name": "HOSTED_PRIVATE_INBOX",
+        "type": "plain_text",
+        "text": "enabled"
+      },
+      {
+        "name": "INTEGRATION_VAULT_KEY",
+        "type": "secret_text"
+      },
+      {
+        "name": "INTEGRATION_VAULT_KEY_ID",
+        "type": "secret_text"
+      }
+    ],
+    "startup_time_ms": 10
+  }
+}

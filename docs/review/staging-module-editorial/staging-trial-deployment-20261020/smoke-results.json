@@ -1,0 +1,104 @@
+[
+  {
+    "path": "/",
+    "curlExit": 0,
+    "status": 200,
+    "bytes": 20921,
+    "sha256": "7f8ece9711112563bc6c3fa1a5d44b66d81dc94e9fac4753bd829eaaaacaf1ca",
+    "noindex": "noindex, nofollow",
+    "contentType": "text/html; charset=utf-8",
+    "cfRay": "a4da35799fbe7ace-SJC",
+    "title": "The library \u00b7 Agentic Bible"
+  },
+  {
+    "path": "/articles/tool-use/",
+    "curlExit": 0,
+    "status": 200,
+    "bytes": 18743,
+    "sha256": "1056c019cdabbebab64e7166cb2d3c21bdabae711c329b82d26e45ef2838a0ad",
+    "noindex": "noindex, nofollow",
+    "contentType": "text/html; charset=utf-8",
+    "cfRay": "a4da357c780e15ef-SJC"
+  },
+  {
+    "path": "/search/",
+    "curlExit": 0,
+    "status": 200,
+    "bytes": 12325,
+    "sha256": "9cf92cb1345fa071d0b39b0f4d180d46dee108d4ca44d849c0c83633e7ead8a4",
+    "noindex": "noindex, nofollow",
+    "contentType": "text/html; charset=utf-8",
+    "cfRay": "a4da357e9a1a15ef-SJC"
+  },
+  {
+    "path": "/history/",
+    "curlExit": 0,
+    "status": 200,
+    "bytes": 3763,
+    "sha256": "8294323e38ec97dd78b2df9d0d087e200513c69f90392a818c832b155bc08906",
+    "noindex": "noindex, nofollow",
+    "contentType": "text/html; charset=utf-8",
+    "cfRay": "a4da357fcb3315ef-SJC"
+  },
+  {
+    "path": "/robots.txt",
+    "curlExit": 0,
+    "status": 200,
+    "bytes": 23,
+    "sha256": "16ceb5ee3e0dc13aa9adf31a3ebbe45a1d965b8c2b9f72eaf84e5911e140ed95",
+    "noindex": "noindex, nofollow",
+    "contentType": "text/plain; charset=utf-8",
+    "cfRay": "a4da3580ddb049ec-SJC"
+  },
+  {
+    "path": "/api/runtime/status",
+    "curlExit": 0,
+    "status": 200,
+    "bytes": 556,
+    "sha256": "07df2d52282da43bddeb5c938ebb56c4b8c9098bc1b20e1bcc5e20921aedb351",
+    "noindex": "noindex, nofollow",
+    "contentType": "application/json",
+    "cfRay": "a4da3581e83649ec-SJC",
+    "runtime": {
+      "schemaVersion": 1,
+      "contentAuthority": "github-build",
+      "releaseCommit": null,
+      "releaseVerified": false,
+      "releaseManifestVerified": false,
+      "publicIntake": false,
+      "integrationSettingsConfigured": true,
+      "contributionAdminConfigured": true,
+      "publicIntakeReason": "approved_terms_privacy_moderation_and_rate_identity_required",
+      "jevTransportAvailable": true,
+      "jevDispatchState": "not-mounted",
+      "jevDispatchConfigured": false,
+      "adminVerifierConfigured": true,
+      "adminApprovalsConfigured": false,
+      "gitHubProposalsConfigured": false,
+      "hostedCanonicalWrites": false,
+      "localFixtureIdentity": false
+    }
+  },
+  {
+    "path": "/api/submissions",
+    "curlExit": 0,
+    "status": 503,
+    "bytes": 66,
+    "sha256": "3f9bfc2d861bc1713726aa443ab4eebb45729b876e12604746c153e6ed6a2a66",
+    "noindex": "noindex, nofollow",
+    "contentType": "application/json",
+    "cfRay": "a4da35844d809464-SJC"
+  },
+  {
+    "path": "/admin/",
+    "curlExit": 0,
+    "status": 302,
+    "bytes": 143,
+    "sha256": "12755429beb15d5eb57eafa45b8dba326343dd099bf0552038694c3856e8860e",
+    "noindex": null,
+    "contentType": "text/html; charset=UTF-8",
+    "cfRay": "a4da35852fd549ec-SJC",
+    "redirectHost": "old-snow-1dd6.cloudflareaccess.com",
+    "redirectPath": "/cdn-cgi/access/login/staging.agenticbible.si"
+  }
+]

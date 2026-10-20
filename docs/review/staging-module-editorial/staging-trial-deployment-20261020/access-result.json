@@ -1,0 +1,20 @@
+{
+  "appId": "899e2890-cf6e-4902-b535-97855e22fefc",
+  "write": {
+    "status": 200,
+    "success": true,
+    "errors": []
+  },
+  "readback": {
+    "status": 200,
+    "success": true,
+    "duration": "1h"
+  },
+  "changedKeysExcludingUpdateTimestamp": [
+    "policies",
+    "session_duration"
+  ],
+  "policiesUnchanged": false,
+  "destinationsUnchanged": true,
+  "identitiesUnchanged": true
+}

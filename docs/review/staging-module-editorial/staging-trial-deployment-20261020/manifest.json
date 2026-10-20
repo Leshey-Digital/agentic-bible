@@ -1,0 +1,54 @@
+{
+  "originalLocalEvidenceHashes": {
+    "journal.json": "96160e77a865eb5f88984d79caa479a471f7bdf4817edb138328c9fcada9bcb3",
+    "metadata.json": "f5130d7a385e346c8a1ceac76235dc5165508c112f8ad6cf60d99a1db7cef0fc",
+    "smoke-results.json": "9a8b17891a0480705f43af6a3ad172b5daa3c804f6a2107c05beb2a94f861165",
+    "access-result.json": "79398943bae868cc404fbd7b35a7dd357959e41d29c6b554fbbaceb5cb30c991",
+    "access-policy-reconciliation.json": "ab5f47a44e3b03bfa6d59197d6594e997f5cb1d2956146baa6a355efcad6972e",
+    "upload-result.json": "c25dcf0db436b375e80cd309ec59578ecb814fd4964a8b5f7d9573f21f8ec511",
+    "activation-result.json": "3ef63422693b58a0f5bfb334b858c4a2603919c02f762c370c70b9b05fd5f3de",
+    "deployment-readback.json": "8076a56f1b1ac76217b6ec09c5d7c7d7f729c8ac42a3940ed01c4b3082d132a6"
+  },
+  "publishedFiles": {
+    "smoke-results.json": {
+      "sha256": "9a8b17891a0480705f43af6a3ad172b5daa3c804f6a2107c05beb2a94f861165",
+      "bytes": 3214
+    },
+    "access-policy-reconciliation.json": {
+      "sha256": "74fdb9324c82d9e8130ef7a0b85518308d1a09757c76fd512ece516d167d8c80",
+      "bytes": 247
+    },
+    "metadata-review.json": {
+      "sha256": "39a1c52d4e415d8bb84fe49f453624538283f16cb95e1cc2c804fd59306f2678",
+      "bytes": 1364
+    },
+    "metadata.json": {
+      "sha256": "f5130d7a385e346c8a1ceac76235dc5165508c112f8ad6cf60d99a1db7cef0fc",
+      "bytes": 978
+    },
+    "access-result.json": {
+      "sha256": "4c85269e66582325ef73fe2f780cbe40b94a8c12cf8e5ee31e3ec9da371721c3",
+      "bytes": 392
+    },
+    "upload-result.json": {
+      "sha256": "9194dfd575bdd2d2e08bab1ed592b9d24a1b76b7847a282f2a137436ca6780b9",
+      "bytes": 1147
+    },
+    "activation-result.json": {
+      "sha256": "f4370c7c0a6447e57619e7fa4764d013fb5d215e2fc1732f5671622e4550214e",
+      "bytes": 123
+    },
+    "README.md": {
+      "sha256": "fc0b53da88ae992749f3a18a7dc6084f73ff45a4f78e0565d006964aab6fe343",
+      "bytes": 3336
+    },
+    "journal.json": {
+      "sha256": "96160e77a865eb5f88984d79caa479a471f7bdf4817edb138328c9fcada9bcb3",
+      "bytes": 1447
+    },
+    "deployment-readback.json": {
+      "sha256": "2d12d7acac80847bcf1509b306a191cbff23b96202b258d94ae875f2ef049534",
+      "bytes": 468
+    }
+  }
+}

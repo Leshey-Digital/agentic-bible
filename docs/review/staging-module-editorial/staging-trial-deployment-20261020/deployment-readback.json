@@ -1,0 +1,22 @@
+{
+  "agentic-bible-staging": {
+    "status": 200,
+    "id": "cc3fd2aa-df84-44dc-8351-c1fabfba1368",
+    "versions": [
+      {
+        "version_id": "11e56042-5e04-4cd6-a136-f5d3f4abbe10",
+        "percentage": 100
+      }
+    ]
+  },
+  "agentic-bible-production": {
+    "status": 200,
+    "id": "e046cf4a-6f57-404d-a50a-504788058ee5",
+    "versions": [
+      {
+        "version_id": "28c2c556-ab43-482a-98e7-7d2aa8d6965c",
+        "percentage": 100
+      }
+    ]
+  }
+}

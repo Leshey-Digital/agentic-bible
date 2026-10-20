@@ -1,0 +1,33 @@
+{
+  "operationId": "ea861401-b9ea-48d0-a396-7493a453502f",
+  "state": "activated-smoke-verified-editor-trial-pending",
+  "uploadAttempts": 1,
+  "candidate": "bb6663fabb4254766eec456d76dcc8833e68f3eda0e08c0814de56cc2b4fe7eb",
+  "payloadSha256": "3bab30801e088133ec80a7d2cfb00a5432dec0fdcf4fb6232313ef61aad57acc",
+  "gzipSha256": "2c26fdeecec3057230bcd7c7a09a1c6e0ba51ca37cfce483d10e29958018b774",
+  "rollbackVersion": "5d532da5-b15c-4e64-8ae7-634f69831dcb",
+  "expectedDeployment": "548f69ec-060d-4c85-ba73-a6fc9ca06bbe",
+  "accessApp": "899e2890-cf6e-4902-b535-97855e22fefc",
+  "accessDelta": {
+    "session_duration": [
+      "8h",
+      "1h"
+    ]
+  },
+  "metadataDelta": "HOSTED_PRIVATE_INBOX plain_text enabled; annotation includes operation; module bytes unchanged",
+  "versionId": "11e56042-5e04-4cd6-a136-f5d3f4abbe10",
+  "deploymentId": "cc3fd2aa-df84-44dc-8351-c1fabfba1368",
+  "percentage": 100,
+  "accessDuration": "1h",
+  "accessPolicyReconciliation": "Only nested policy updated_at differs from unchanged submitted policy; see audit comparison",
+  "verifiedStaticPaths": [
+    "/",
+    "/articles/tool-use/",
+    "/search/",
+    "/history/",
+    "/robots.txt"
+  ],
+  "productionDeploymentUnchanged": "e046cf4a-6f57-404d-a50a-504788058ee5",
+  "completedAt": "2026-10-20T18:51:05.078423+00:00",
+  "remaining": "Authorized editor normal browser login and synthetic review note save/readback; no fixture seeded or private data written"
+}
