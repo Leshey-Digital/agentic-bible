@@ -1,0 +1,40 @@
+{
+  "status": 200,
+  "verified": true,
+  "moduleCount": 81,
+  "workerSha256": "c02ab0f388d08c60d23037abb44611ab07de4a9bd3327e83e054aa8d5f99ce50",
+  "id": "7bf23d96-ec17-4ed0-a676-a2bc8d5922ef",
+  "main_module": "worker.js",
+  "compatibility_date": "2026-10-16",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "annotations": {
+    "workers/message": "ab-staging-module:f6f7a6b39a1b8e72f67afb3fe67f3b6d778c9d31edfe2d408e6ac1934d145085 private-inbox:enabled admin-capability-navigation source:9efcb9e7247772286791be9e8fe5cd073f97ff94",
+    "workers/triggered_by": "create_version_api"
+  },
+  "bindings": [
+    {
+      "name": "EDITORIAL_DB",
+      "type": "d1",
+      "database_id": "1ca9a6f8-c0a9-4040-8a2f-e22d888a985a"
+    },
+    {
+      "name": "HOSTED_ADMIN_TRUST",
+      "type": "secret_text"
+    },
+    {
+      "name": "HOSTED_PRIVATE_INBOX",
+      "type": "plain_text",
+      "text": "enabled"
+    },
+    {
+      "name": "INTEGRATION_VAULT_KEY",
+      "type": "secret_text"
+    },
+    {
+      "name": "INTEGRATION_VAULT_KEY_ID",
+      "type": "secret_text"
+    }
+  ]
+}

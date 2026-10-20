@@ -1,0 +1,13 @@
+{
+  "operationId": "6bc94637-9ccb-451a-b306-7076d302f4ce",
+  "state": "activated-verified",
+  "uploadAttempts": 1,
+  "candidate": "f6f7a6b39a1b8e72f67afb3fe67f3b6d778c9d31edfe2d408e6ac1934d145085",
+  "payloadSha256": "6978a6ddec5e3e257f3028884d257e164b88ba8736eea91a84af6da7f01268ba",
+  "rollbackVersion": "11e56042-5e04-4cd6-a136-f5d3f4abbe10",
+  "expectedDeployment": "cc3fd2aa-df84-44dc-8351-c1fabfba1368",
+  "versionId": "7bf23d96-ec17-4ed0-a676-a2bc8d5922ef",
+  "deploymentId": "3c66f6b5-7835-40c9-9e55-00cc9cf60b40",
+  "percentage": 100,
+  "providerModuleHashesVerified": 81
+}

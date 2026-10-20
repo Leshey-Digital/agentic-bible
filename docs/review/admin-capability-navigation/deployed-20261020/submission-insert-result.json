@@ -1,0 +1,17 @@
+{
+  "startedAt": "2026-10-20T19:14:17.339Z",
+  "completedAt": "2026-10-20T19:14:18.773Z",
+  "write": {
+    "status": 200,
+    "success": true,
+    "errors": [],
+    "changes": 1
+  },
+  "read": {
+    "status": 200,
+    "success": true,
+    "matches": 1,
+    "exactFieldMatch": true
+  },
+  "submissionId": "ce16ca08-cce3-59ee-9ae2-4a5b8cae07cc"
+}

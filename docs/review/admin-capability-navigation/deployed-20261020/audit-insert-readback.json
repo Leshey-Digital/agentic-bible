@@ -1,0 +1,29 @@
+{
+  "startedAt": "2026-10-20T19:14:48.531Z",
+  "completedAt": "2026-10-20T19:14:51.284Z",
+  "write": {
+    "status": 200,
+    "success": true,
+    "errors": [],
+    "changes": 1
+  },
+  "readback": [
+    {
+      "table": "submissions",
+      "status": 200,
+      "success": true,
+      "matches": 1,
+      "exactFieldMatch": true
+    },
+    {
+      "table": "editorial_audit",
+      "status": 200,
+      "success": true,
+      "matches": 1,
+      "exactFieldMatch": true
+    }
+  ],
+  "submissionId": "ce16ca08-cce3-59ee-9ae2-4a5b8cae07cc",
+  "auditId": "6ae0ed1d-159d-50cb-97e8-f852f44c8b60",
+  "fixtureComplete": true
+}

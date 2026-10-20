@@ -1,0 +1,45 @@
+{
+  "operationId": "6bc94637-9ccb-451a-b306-7076d302f4ce",
+  "payloadSha256": "6978a6ddec5e3e257f3028884d257e164b88ba8736eea91a84af6da7f01268ba",
+  "status": 200,
+  "success": true,
+  "errors": [],
+  "result": {
+    "id": "7bf23d96-ec17-4ed0-a676-a2bc8d5922ef",
+    "number": 7,
+    "annotations": {
+      "workers/message": "ab-staging-module:f6f7a6b39a1b8e72f67afb3fe67f3b6d778c9d31edfe2d408e6ac1934d145085 private-inbox:enabled admin-capability-navigation source:9efcb9e7247772286791be9e8fe5cd073f97ff94",
+      "workers/triggered_by": "create_version_api"
+    },
+    "compatibility_date": "2026-10-16",
+    "compatibility_flags": [
+      "nodejs_compat"
+    ],
+    "main_module": "worker.js",
+    "bindings": [
+      {
+        "name": "EDITORIAL_DB",
+        "type": "d1",
+        "database_id": "1ca9a6f8-c0a9-4040-8a2f-e22d888a985a"
+      },
+      {
+        "name": "HOSTED_ADMIN_TRUST",
+        "type": "secret_text"
+      },
+      {
+        "name": "HOSTED_PRIVATE_INBOX",
+        "type": "plain_text",
+        "text": "enabled"
+      },
+      {
+        "name": "INTEGRATION_VAULT_KEY",
+        "type": "secret_text"
+      },
+      {
+        "name": "INTEGRATION_VAULT_KEY_ID",
+        "type": "secret_text"
+      }
+    ],
+    "startup_time_ms": 8
+  }
+}

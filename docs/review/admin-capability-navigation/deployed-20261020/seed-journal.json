@@ -1,0 +1,20 @@
+{
+  "state": "both-records-exactly-verified",
+  "fixtureSha256": "7ccc265dbcc527646f4c60d06b1d1c25125ad1ae0c844c3e3d0bd0db98a17b30",
+  "submissionId": "ce16ca08-cce3-59ee-9ae2-4a5b8cae07cc",
+  "auditId": "6ae0ed1d-159d-50cb-97e8-f852f44c8b60",
+  "databaseId": "1ca9a6f8-c0a9-4040-8a2f-e22d888a985a",
+  "preflightCount": 0,
+  "conflicts": 0,
+  "preflightCorrection": "Initial read-only multi-statement request with params returned400; corrected to separate read-only requests, no mutation occurred.",
+  "startedAt": "2026-10-20T19:14:00.299778+00:00",
+  "submissionInsertAttempts": 1,
+  "auditInsertAttempts": 1,
+  "submissionActualInsertionStartedAt": "2026-10-20T19:14:17.339Z",
+  "auditActualInsertionStartedAt": "2026-10-20T19:14:48.531Z",
+  "completedReadbackAt": "2026-10-20T19:14:51.284Z",
+  "submissionChanges": 1,
+  "auditChanges": 1,
+  "editorNoteWritten": false,
+  "cleanupPerformed": false
+}

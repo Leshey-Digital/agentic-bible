@@ -1,0 +1,11 @@
+# Staging navigation deployment and synthetic trial fixture
+
+Reviewed candidate `f6f7a6b39a1b8e72f67afb3fe67f3b6d778c9d31edfe2d408e6ac1934d145085` was uploaded once as inactive version `7bf23d96-ec17-4ed0-a676-a2bc8d5922ef` (#7). Before activation, the provider returned all 81 modules and each byte count/SHA256 matched the accepted manifest. Metadata retained the same D1, three inherited secrets and enabled private inbox. Deployment `3c66f6b5-7835-40c9-9e55-00cc9cf60b40` was read back at 100%. Prior v6 `11e56042-5e04-4cd6-a136-f5d3f4abbe10` remains rollback; no D1 downgrade.
+
+The parent approved the exact fixture proposal. Existing staging schema, zero-submission capacity, absence of matching IDs and absence of target-table triggers were confirmed. One guarded INSERT created submission `ce16ca08-cce3-59ee-9ae2-4a5b8cae07cc`; exact readback preceded the guarded audit INSERT `6ae0ed1d-159d-50cb-97e8-f852f44c8b60`. Each changed exactly one row; final readback matched every fixed field of both approved records. Real insertion times are recorded separately from the fixed synthetic timestamp. Initial read-only preflight syntax with parameters across multiple statements returned HTTP400 and was corrected to separate read-only queries; no mutation happened in that failed call.
+
+The fixture is tool-use, status new, version1, empty tags/source URL and explicitly labelled SYNTHETIC STAGING TRIAL — NOT A REAL CONTRIBUTION. No helper, session/rate cleanup, UPDATE, REPLACE, DELETE, new endpoint or editor impersonation was used. REST requests were not assumed transactional. No review note or draft was created by the connector.
+
+Normal signed browser entry: https://staging.agenticbible.si/admin/ ; inbox: https://staging.agenticbible.si/admin/contributions/ . Parent handles moving this fixture to follow-up and testing note save/readback. Authenticated acceptance of the new landing and actual note save/readback remain pending at this checkpoint.
+
+Non-mutating smoke confirmed home/runtime200/noindex, public submissions503 and anonymous admin302. Runtime keeps public intake, GitHub proposals, canonical writes and paid-AI dispatch disabled. Access remains1h. Production readback is unchanged at deployment e046cf4a-6f57-404d-a50a-504788058ee5 / version28c2c556-ab43-482a-98e7-7d2aa8d6965c. No production or security settings changed.
