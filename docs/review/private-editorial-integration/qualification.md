@@ -31,3 +31,5 @@ Before publication, remote main/recovery/PR53/PR54 heads matched the ancestry ta
 ## Isolated unchanged article rerun
 
 The complete existing all-articles.test.mjs ran alone with TAP reporting: 21/21 passed in 75.55 seconds, including MCP and all twenty article workflows. No code, test assertion or timeout changed between runs. The earlier initialization socket failure did not reproduce; its underlying cause remains unestablished, and the original broad 44/45 result remains a qualification limitation.
+
+Published as draft PR #55 targeting recovery/production-module-20261020. Remote head9f3a421f88769c9a72a4857629237b02625720a2 was verified by git ls-remote and the PR receipt; the exact-head workflow lookup returned no runs. PR55 and candidate pins remain frozen. This cleanup is preserved separately on a documentation branch.

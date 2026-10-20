@@ -3,6 +3,6 @@
 - [x] Implement exact off-by-default private opt-in with existing trust and D1 guards.
 - [x] Verify focused end-to-end plus retained contribution/browser/type checks and independent review.
 - [x] Prepare exact closed staging build manifest and runtime prerequisite inventory.
-- [ ] Publish one coherent integration checkpoint; no main merge or remote activation.
+- [x] Publish one coherent integration checkpoint; no main merge or remote activation.
 
 Broad result:44/45, retained initialization socket failure preserved; isolated unchanged all-article rerun21/21. Full release qualification remains outstanding.
