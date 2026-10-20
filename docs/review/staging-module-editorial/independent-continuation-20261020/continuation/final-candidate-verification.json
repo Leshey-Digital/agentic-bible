@@ -1,0 +1,11 @@
+{
+  "root": "/workspace/agentic-bible/.git/independent-continuation-912c75f-candidate",
+  "candidateDigest": "d1ca55f033c50eea40d4cddfb185c696550811846b763c5f1c331b243aa837fc",
+  "sourceCommit": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+  "sourceTree": "3dabf8729636ccec3a85b0f162e7d2f6cbfd4f3e",
+  "buildId": "cdaaa9d97354ec70fc85a09e783cba0f1bef0451ef951959dd9e8de4adbd9400",
+  "assets": 82,
+  "verified": true,
+  "deployed": false,
+  "kind": "new standard release candidate, not the frozen module package"
+}

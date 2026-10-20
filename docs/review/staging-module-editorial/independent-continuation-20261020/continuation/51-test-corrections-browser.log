@@ -1,0 +1,11 @@
+
+> agentic-bible@0.1.0 test:corrections:browser
+> PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright test --config playwright.corrections.config.ts
+
+
+Running 2 tests using 1 worker
+
+  ✓  1 [desktop] › tests/corrections-browser/flow.spec.mjs:15:1 › on-site correction becomes an explicitly reviewed attributed canonical note, searchable history and reversible snapshot (16.3s)
+  ✓  2 [mobile] › tests/corrections-browser/flow.spec.mjs:15:1 › on-site correction becomes an explicitly reviewed attributed canonical note, searchable history and reversible snapshot (17.4s)
+
+  2 passed (35.9s)

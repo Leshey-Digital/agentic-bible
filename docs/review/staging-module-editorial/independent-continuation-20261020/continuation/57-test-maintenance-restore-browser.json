@@ -1,0 +1,20 @@
+{
+  "label": "57-test-maintenance-restore-browser",
+  "command": [
+    "npm",
+    "run",
+    "test:maintenance-restore:browser"
+  ],
+  "startedAt": 1792520900.482913,
+  "durationSeconds": 25.77858018875122,
+  "exit": 0,
+  "deadlineSeconds": 600,
+  "timedOut": false,
+  "log": "57-test-maintenance-restore-browser.log",
+  "sha256": "23e987c1821ae10cb3ec0f3db2b0ad1055ccc3b8c1533a0b17de29183cbb3d98",
+  "bytes": 638,
+  "cleanup": "existing Linux subreaper supervisor exited after stop_group and adopted-child reaping",
+  "supervisorPid": 115905,
+  "sourceCommit": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+  "sourceStatus": ""
+}

@@ -1,0 +1,13 @@
+{
+  "frozenBytesVerifiedAgainstModuleManifest": true,
+  "source": "release-recovery/2026-10-20/production-launch/assets/pagefind",
+  "fragmentMetadataEqual": true,
+  "otherMetadataEqual": true,
+  "normalizedTermPostingsEqual": true,
+  "termCount": 1551,
+  "normalization": "Decode gzip CBOR after pagefind_dcd prefix; map cumulative delta page IDs to immutable fragment IDs; sort postings per term; compare positions and field weights unchanged.",
+  "canonicalNormalizedSha256": [
+    "4ca660eeb396ad0d9d101bd8af0f90e58a86c11505d4f60b79fe2c48c615f488",
+    "4ca660eeb396ad0d9d101bd8af0f90e58a86c11505d4f60b79fe2c48c615f488"
+  ]
+}

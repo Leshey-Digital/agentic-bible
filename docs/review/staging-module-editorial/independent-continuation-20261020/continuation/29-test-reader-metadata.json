@@ -1,0 +1,20 @@
+{
+  "label": "29-test-reader-metadata",
+  "command": [
+    "npm",
+    "run",
+    "test:reader-metadata"
+  ],
+  "startedAt": 1792520020.747489,
+  "durationSeconds": 0.36613941192626953,
+  "exit": 0,
+  "deadlineSeconds": 600,
+  "timedOut": false,
+  "log": "29-test-reader-metadata.log",
+  "sha256": "015cfe4d5cd4787db39dc64a5365bae17a71b2c8e67b6b65259d21ec90ccce89",
+  "bytes": 515,
+  "cleanup": "existing Linux subreaper supervisor exited after stop_group and adopted-child reaping",
+  "supervisorPid": 49254,
+  "sourceCommit": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+  "sourceStatus": ""
+}

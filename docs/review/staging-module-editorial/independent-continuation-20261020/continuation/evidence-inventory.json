@@ -1,0 +1,106 @@
+{
+  "17-hosted-serial.json": {
+    "bytes": 832,
+    "sha256": "74fa5a68fc5b82b092b6a6823a400635973b90d6cc8f438d0cd80e7622e95836"
+  },
+  "17-hosted-serial.log": {
+    "bytes": 2344,
+    "sha256": "97068fdf45d563e6a8eba766cbc33e36d80c19b6f97505f45e8a10f8714b7401"
+  },
+  "18-test-release.json": {
+    "bytes": 569,
+    "sha256": "d919bbaa0348196c86f5ceafc686ea04c110d29497a175ae5ee3e46b4e43f5fc"
+  },
+  "18-test-release.log": {
+    "bytes": 19220,
+    "sha256": "c29819cfdfed3f1479d730a7e2cc68f70ae1fdf4e0035515475dc151e4890221"
+  },
+  "SUMMARY.md": {
+    "bytes": 2782,
+    "sha256": "0411ee92a3a1e6c83b11116ada0d2915233d0fa18965ce6477a66924b50a77f5"
+  },
+  "evidence-plan.json": {
+    "bytes": 2390,
+    "sha256": "4f3457bab9b61beb2a9543af10f167f21b55f988467d59e641027104d4d530cf"
+  },
+  "original/assessment.md": {
+    "bytes": 4520,
+    "sha256": "7b3155b8465d477f659e1d8d2b6b241e9b0ac7afab481666d1ffc34e6c5b5d0b"
+  },
+  "original/hosted-failure.log": {
+    "bytes": 4082,
+    "sha256": "002ec02d274152e0faa63fa90d116ad81f559d9f418d9f49f9929f3d30639e0c"
+  },
+  "original/isolated-diagnostic.log": {
+    "bytes": 244,
+    "sha256": "efff5adbdd313505cf1b8612b0b02771a79606b202214af6cec3953da57985cb"
+  },
+  "original/manifest.json": {
+    "bytes": 862,
+    "sha256": "feaa92c84e2d30ac6ebcc12af09bf84c90ddb17a1eb8aaa08eff88ae521c0532"
+  },
+  "original/result.json": {
+    "bytes": 6778,
+    "sha256": "ddcb866e7643045a35783358c64e8bcc5c26017e9a6133227967e0d4abc3cd0b"
+  },
+  "prerequisite-build.json": {
+    "bytes": 566,
+    "sha256": "9b7f3d412dc3eaef625ffbf393b710e4e88f0c5b7137b8fbb6b160b7b540e898"
+  },
+  "prerequisite-build.log": {
+    "bytes": 4939,
+    "sha256": "63bd2047659c81509701748dceea1bbd1ea251de5f51c7ee3ce2e25a42a3810e"
+  },
+  "provenance.json": {
+    "bytes": 1164,
+    "sha256": "588938a1bd56798441ce13e98c2729db4221d260a685f7a52fefa8599ee37ec3"
+  },
+  "reconciled-plan.json": {
+    "bytes": 2562,
+    "sha256": "64236b36fe1cc71e9ddb62bf96aedd523e544ac7c591605627c1f293026d2986"
+  },
+  "reconstructed-static-comparison.json": {
+    "bytes": 21891,
+    "sha256": "df62a15e9c48a0fad547f6bd045411f257a4ccd6573896b5b2b839cea36f0e08"
+  },
+  "release-failure-diagnosis.json": {
+    "bytes": 1917,
+    "sha256": "2e6f73085d86ee893b7213a18a84c850074891f70432b4bf666e5f06ee86e079"
+  },
+  "remaining-console.log": {
+    "bytes": 545,
+    "sha256": "46aea81762c32315ea365af2c9ad4a24e09b276724042f49964b116199853823"
+  },
+  "remaining.py": {
+    "bytes": 934,
+    "sha256": "575fb3fae606d105e2f18c9b3cc8327625fcd56577d520699207cc3572e605b5"
+  },
+  "resource-observation.json": {
+    "bytes": 307,
+    "sha256": "1518df453fb8618587906caf2098a22d2788e7e84299c30694356fdaf2bb0b03"
+  },
+  "run.py": {
+    "bytes": 1784,
+    "sha256": "c971c672597d0feb9cfdf2e6c4cb55ff25f7aaa16ec72ac27ec4664acad8ec8a"
+  },
+  "setup-npm-ci-proxy.json": {
+    "bytes": 551,
+    "sha256": "ab77b176d3cb10b01e25629725cefcc24c92dd85810791c6087a017f4b8f6848"
+  },
+  "setup-npm-ci-proxy.log": {
+    "bytes": 26,
+    "sha256": "31ebad67128f9bf16c15943f93b1a5a348ae7035c428851fdf7781b350b7689c"
+  },
+  "setup-npm-ci.json": {
+    "bytes": 540,
+    "sha256": "0e009a3e60aa9d585587ab773d40e120a5f2a408bbb1e68da653c028b64f01fc"
+  },
+  "setup-npm-ci.log": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "terminal-summary.json": {
+    "bytes": 2600,
+    "sha256": "4082b0dddaf070edb381c12139ba8c37204a28141168598b42f28ef1a9a4a6d3"
+  }
+}

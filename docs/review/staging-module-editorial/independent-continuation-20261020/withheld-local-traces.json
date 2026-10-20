@@ -1,0 +1,68 @@
+[
+  {
+    "path": "49-failed-browser-traces/.last-run.json",
+    "sha256": "0efd991bd50d0fa33fb42bf1a0cb8896191491c62007575d2a720dd8c6cd254a",
+    "bytes": 194,
+    "reason": "Raw Playwright traces may contain synthetic signed authorization material; retained locally only."
+  },
+  {
+    "path": "49-failed-browser-traces/canonical-mobile.png",
+    "sha256": "323000a4df2da5871a563317118f1c4a7deb68acc874e62b8b1925bc496ef43a",
+    "bytes": 298435,
+    "reason": "Raw Playwright traces may contain synthetic signed authorization material; retained locally only."
+  },
+  {
+    "path": "49-failed-browser-traces/cold-search-cold-current-s-91e7d-n-Pagefind-worker-bootstrap/error-context.md",
+    "sha256": "f1399cdcf3c7a86a7c88486f25bbbb8f15ee2cbd8609c8021c37fcce59fd99a6",
+    "bytes": 3138,
+    "reason": "Raw Playwright traces may contain synthetic signed authorization material; retained locally only."
+  },
+  {
+    "path": "49-failed-browser-traces/cold-search-cold-current-s-91e7d-n-Pagefind-worker-bootstrap/trace.zip",
+    "sha256": "594cfbea83c4b7a371a52fb667f26fb862b5bfe10a147b5d479bfc4e22309a51",
+    "bytes": 4429,
+    "reason": "Raw Playwright traces may contain synthetic signed authorization material; retained locally only."
+  },
+  {
+    "path": "49-failed-browser-traces/upgrade-an-actual-pre-expa-df157-y-under-the-upgraded-reader/error-context.md",
+    "sha256": "f63589fe2ef4045b02ed3bcbfcfe4bb0a9371d96c703b4e21b66539b0ca52058",
+    "bytes": 8909,
+    "reason": "Raw Playwright traces may contain synthetic signed authorization material; retained locally only."
+  },
+  {
+    "path": "49-failed-browser-traces/upgrade-an-actual-pre-expa-df157-y-under-the-upgraded-reader/trace.zip",
+    "sha256": "9ac09ee2a9b0e8c0fe0ff6ae2307bafd1c9bd692b3686e52d286720935dfc457",
+    "bytes": 5872,
+    "reason": "Raw Playwright traces may contain synthetic signed authorization material; retained locally only."
+  },
+  {
+    "path": "49-failed-browser-traces/upgrade-retained-eight--an-2679f-istorical-topic-inventories/error-context.md",
+    "sha256": "1601683eb02cc81118d7c0bc90484367ae1bb49aadb915d06b95a7fa53d80301",
+    "bytes": 8909,
+    "reason": "Raw Playwright traces may contain synthetic signed authorization material; retained locally only."
+  },
+  {
+    "path": "49-failed-browser-traces/upgrade-retained-eight--an-2679f-istorical-topic-inventories/trace.zip",
+    "sha256": "4cb41838dc61b3e05fc1b880b0e1eeceaca0d4e75f24b3a916cf361521b06e31",
+    "bytes": 5872,
+    "reason": "Raw Playwright traces may contain synthetic signed authorization material; retained locally only."
+  },
+  {
+    "path": "50-failed-browser-traces/.last-run.json",
+    "sha256": "93e8d5d058a2876a1ef1f7363e0b850f9c5e18b64225c528e00920bf078c71e1",
+    "bytes": 96,
+    "reason": "Raw Playwright traces may contain synthetic signed authorization material; retained locally only."
+  },
+  {
+    "path": "50-failed-browser-traces/composition-charged-eviden-2136f-out-of-production-discovery/error-context.md",
+    "sha256": "a74c499946cdbbac3c844b178e6db8839c4d54d954bf8de53fe0c8cdcc806a74",
+    "bytes": 8394,
+    "reason": "Raw Playwright traces may contain synthetic signed authorization material; retained locally only."
+  },
+  {
+    "path": "50-failed-browser-traces/composition-charged-eviden-2136f-out-of-production-discovery/trace.zip",
+    "sha256": "f59943d7555a463ae3bbcd078d99390d81d0ff2a4b3390d193a253f4590de055",
+    "bytes": 9336,
+    "reason": "Raw Playwright traces may contain synthetic signed authorization material; retained locally only."
+  }
+]

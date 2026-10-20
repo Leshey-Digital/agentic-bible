@@ -1,0 +1,31 @@
+
+> agentic-bible@0.1.0 test:maintenance-currency
+> node --test tests/maintenance-currency/*.test.mjs
+
+✔ explicit exact USD policy rejects missing price/basis/unsafe integers and rounds each billed dimension up (2.345485ms)
+✔ multi-provider bundles require the matching explicit price card and preserve old single-provider behavior (586.308584ms)
+✔ shared actual D1 admits one concurrent owner, settles once, persists restart and prevents mixed-mode bypass (1101.605242ms)
+✔ day and month admission include configured baseline and simultaneous reservations; settled usage releases only known remainder (833.674358ms)
+✔ monthly policy rotation appends history, preserves old receipts, settles across expiry and enforces new period baselines (585.154775ms)
+✔ rotation cannot replace the active policy while a reservation is open or uncertain (584.210917ms)
+✔ ordinary admission and final dispatch both reject a forked currency-history root (506.575314ms)
+✔ dispatch re-reads the reservation after its awaited currency-history scan (495.35651ms)
+✔ old reservation and monthly rotation race has one durable policy winner (1095.498679ms)
+✔ run cap, expired price, backward clock and an unpriced existing store fail closed (976.141469ms)
+✔ unknown usage and over-reservation retain funds; known late settlement stays charged to its original period (2011.049926ms)
+✔ lost reservation reply never enables dispatch or a second charge; lost atomic settlement reply reconciles known usage (883.39008ms)
+✔ populated synthetic ledger upgrades additively without rewriting old costs or silently pricing prior work (696.951854ms)
+✔ actual pipeline settles controlled provider USD once before publication; interrupted shared D1 resumes through canonical Git and signed review (9386.651924ms)
+✔ unknown usage, rejection and timeout stay fully reserved and block retry after real D1 restart (8452.507109ms)
+✔ disabled currency, unknown provider price and missing usage basis stop pipeline before source/model calls (1367.534364ms)
+✔ dispatch refuses expiry after the actual D1 reservation commits, with zero provider calls and retained funds (2224.337237ms)
+✔ dispatch refuses midnight after the actual D1 reservation commits, with zero provider calls and retained funds (2131.788667ms)
+✔ dispatch refuses backward after the actual D1 reservation commits, with zero provider calls and retained funds (2183.787208ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 19
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 26177.307019

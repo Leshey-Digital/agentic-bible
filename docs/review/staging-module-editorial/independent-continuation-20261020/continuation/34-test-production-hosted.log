@@ -1,0 +1,57 @@
+
+> agentic-bible@0.1.0 test:production-hosted
+> node --test tests/production-hosted/*.test.mjs
+
+✔ signed actual review and immutable draft target ai-agent (1052.881854ms)
+✔ signed actual review and immutable draft target tool-use (867.775484ms)
+✔ signed actual review and immutable draft target model-context-protocol (939.169909ms)
+✔ signed actual review and immutable draft target agent-orchestration (856.34654ms)
+✔ signed actual review and immutable draft target agent-memory (722.698816ms)
+✔ signed actual review and immutable draft target retrieval-augmented-generation (801.952069ms)
+✔ signed actual review and immutable draft target agent-evaluation (854.174692ms)
+✔ signed actual review and immutable draft target prompt-injection (762.98597ms)
+✔ signed actual review and immutable draft target agent-planning (837.567087ms)
+✔ signed actual review and immutable draft target durable-agent-execution (813.385417ms)
+✔ signed actual review and immutable draft target tool-permissions (751.457904ms)
+✔ signed actual review and immutable draft target agent-sandboxing (783.678913ms)
+✔ signed actual review and immutable draft target agent-observability (880.039519ms)
+✔ signed actual review and immutable draft target human-oversight (854.116648ms)
+✔ signed actual review and immutable draft target context-engineering (815.524135ms)
+✔ signed actual review and immutable draft target structured-outputs (819.179544ms)
+✔ signed actual review and immutable draft target agent-identity (874.536876ms)
+✔ signed actual review and immutable draft target agent-to-agent-communication (1147.844071ms)
+✔ signed actual review and immutable draft target agent-budgets (929.619899ms)
+✔ signed actual review and immutable draft target computer-use-agents (709.493332ms)
+✔ versioned target and citation authority reject cross-article/path mixing without weakening legacy approval (432.229556ms)
+✔ held actual D1 reservation response rejects dismissed before /pulls (1373.093876ms)
+✔ held actual D1 reservation response rejects revision before /git/trees (1055.802165ms)
+✔ held actual D1 reservation response rejects revoked before /git/commits (935.392677ms)
+✔ held actual D1 reservation response rejects expired before /git/refs (856.507963ms)
+✔ editorial draft navigation at 1440px (1869.636358ms)
+✔ editorial draft navigation at 390px (1350.3507ms)
+✔ streamed body deadline, actual byte and UTF-8 bounds are independent of declared length (1009.181341ms)
+✔ only complete server policy shapes can nominate intake readiness (1.410546ms)
+✔ shared server/browser policy path guard rejects protocol-relative and normalization aliases (0.145008ms)
+✔ shipped runtime and missing approved policy keep public intake closed despite environment/session lookalikes (1013.390439ms)
+✔ actual default Worker composes validated bindings for submit, admin review, status and write-only Jev settings (810.615606ms)
+✔ actual Worker rejects malformed and partial trusted bindings without opening the affected route (2489.305271ms)
+✔ actual D1 intake covers all twenty article IDs; replay, restart, body/field/origin/markup and rate controls (1235.231745ms)
+✔ signed inbox role/CSRF guards, tags/disposition audit, actual reviewed note -> controlled GitHub draft, restart/replay and stale review (989.019414ms)
+✔ actual D1 capacity and review-transaction faults fail closed without partial note/audit authority (1163.756523ms)
+✔ mounted actual inbox closes new standalone legacy approvals while preserving old-format reads and replay (834.78655ms)
+✔ editorial status distinguishes a configured signed inbox from closed public policy and absent integrations (443.250462ms)
+✔ one persistent actual D1 store admits all twenty distinct article drafts, replays after restart, and closes atomic note/outbox capacity at64 (4266.172348ms)
+✔ explicit private inbox completes review and draft readback with public intake closed (1080.611098ms)
+✔ private inbox opt-in is exact and cannot replace trusted identity (2323.990084ms)
+✔ private inbox does not supply GitHub authority or bypass missing storage (547.477909ms)
+✔ review history readback and safe links at 1440px (986.851391ms)
+✔ review history readback and safe links at 390px (985.636168ms)
+✔ suggestion review to recorded draft survives restart; stale/revoked history is read-only and owner scoped (1617.060999ms)
+ℹ tests 45
+ℹ suites 0
+ℹ pass 45
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 18020.037621

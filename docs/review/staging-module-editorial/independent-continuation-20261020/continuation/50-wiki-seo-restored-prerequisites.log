@@ -1,0 +1,10 @@
+
+> agentic-bible@0.1.0 test:wiki-seo:browser
+> AGENTIC_BIBLE_DISCOVERY_MODE=production AGENTIC_BIBLE_CANONICAL_ORIGIN=https://agenticbible.si PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright test --config playwright.wiki-seo-integration.config.ts
+
+
+Running 1 test using 1 worker
+
+  ✓  1 tests/wiki-seo-integration-browser/composition.spec.mjs:13:1 › charged evidence activates faithful canonical reading/history/search while synthetic output stays out of production discovery (10.2s)
+
+  1 passed (11.4s)

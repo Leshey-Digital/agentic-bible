@@ -1,0 +1,360 @@
+{
+  "allPerCommandLogHashesVerified": true,
+  "allSourcesClean": true,
+  "allRecordedSupervisorsAbsent": true,
+  "runtimeProcesses": [],
+  "aggregateProcessCount": 14,
+  "zombies": 2,
+  "records": [
+    {
+      "receipt": "17-hosted-serial.json",
+      "logHashVerified": true,
+      "supervisorPresent": false,
+      "exit": 0,
+      "sourceClean": true
+    },
+    {
+      "receipt": "18-legacy-baseline-isolated.json",
+      "logHashVerified": true,
+      "supervisorPresent": false,
+      "exit": 0,
+      "sourceClean": true
+    },
+    {
+      "receipt": "18-test-release.json",
+      "logHashVerified": true,
+      "supervisorPresent": false,
+      "exit": 1,
+      "sourceClean": true
+    },
+    {
+      "receipt": "19-test-maintenance-sources.json",
+      "logHashVerified": true,
+      "supervisorPresent": false,
+      "exit": 0,
+      "sourceClean": true
+    },
+    {
+      "receipt": "20-test-maintenance.json",
+      "logHashVerified": true,
+      "supervisorPresent": false,
+      "exit": 0,
+      "sourceClean": true
+    },
+    {
+      "receipt": "21-test-maintenance-github.json",
+      "logHashVerified": true,
+      "supervisorPresent": false,
+      "exit": 0,
+      "sourceClean": true
+    },
+    {
+      "receipt": "22-test-maintenance-history.json",
+      "logHashVerified": true,
+      "supervisorPresent": false,
+      "exit": 0,
+      "sourceClean": true
+    },
+    {
+      "receipt": "23-test-maintenance-review.json",
+      "logHashVerified": true,
+      "supervisorPresent": false,
+      "exit": 0,
+      "sourceClean": true
+    },
+    {
+      "receipt": "24-test-maintenance-restore.json",
+      "logHashVerified": true,
+      "supervisorPresent": false,
+      "exit": 0,
+      "sourceClean": true
+    },
+    {
+      "receipt": "25-test-maintenance-base.json",
+      "logHashVerified": true,
+      "supervisorPresent": false,
+      "exit": 0,
+      "sourceClean": true
+    },
+    {
+      "receipt": "26-test-maintenance-pipeline.json",
+      "logHashVerified": true,
+      "supervisorPresent": false,
+      "exit": 0,
+      "sourceClean": true
+    },
+    {
+      "receipt": "27-test-maintenance-currency.json",
+      "logHashVerified": true,
+      "supervisorPresent": false,
+      "exit": 0,
+      "sourceClean": true
+    },
+    {
+      "receipt": "28-test-maintenance-review-monitor.json",
+      "logHashVerified": true,
+      "supervisorPresent": false,
+      "exit": 0,
+      "sourceClean": true
+    },
+    {
+      "receipt": "29-test-reader-metadata.json",
+      "logHashVerified": true,
+      "supervisorPresent": false,
+      "exit": 0,
+      "sourceClean": true
+    },
+    {
+      "receipt": "30-test-social-metadata.json",
+      "logHashVerified": true,
+      "supervisorPresent": false,
+      "exit": 0,
+      "sourceClean": true
+    },
+    {
+      "receipt": "31-test-content-readiness.json",
+      "logHashVerified": true,
+      "supervisorPresent": false,
+      "exit": 0,
+      "sourceClean": true
+    },
+    {
+      "receipt": "32-test-maintenance-quality.json",
+      "logHashVerified": true,
+      "supervisorPresent": false,
+      "exit": 0,
+      "sourceClean": true
+    },
+    {
+      "receipt": "33-test-controlled-fixtures.json",
+      "logHashVerified": true,
+      "supervisorPresent": false,
+      "exit": 0,
+      "sourceClean": true
+    },
+    {
+      "receipt": "34-test-production-hosted.json",
+      "logHashVerified": true,
+      "supervisorPresent": false,
+      "exit": 0,
+      "sourceClean": true
+    },
+    {
+      "receipt": "35-test-integration-vault.json",
+      "logHashVerified": true,
+      "supervisorPresent": false,
+      "exit": 0,
+      "sourceClean": true
+    },
+    {
+      "receipt": "36-test-maintenance-adapters.json",
+      "logHashVerified": true,
+      "supervisorPresent": false,
+      "exit": 0,
+      "sourceClean": true
+    },
+    {
+      "receipt": "37-test-history-target-pages.json",
+      "logHashVerified": true,
+      "supervisorPresent": false,
+      "exit": 0,
+      "sourceClean": true
+    },
+    {
+      "receipt": "38-test-production-config.json",
+      "logHashVerified": true,
+      "supervisorPresent": false,
+      "exit": 0,
+      "sourceClean": true
+    },
+    {
+      "receipt": "39-test-recovery.json",
+      "logHashVerified": true,
+      "supervisorPresent": false,
+      "exit": 0,
+      "sourceClean": true
+    },
+    {
+      "receipt": "40-staging-check.json",
+      "logHashVerified": true,
+      "supervisorPresent": false,
+      "exit": 0,
+      "sourceClean": true
+    },
+    {
+      "receipt": "41-runtime-check.json",
+      "logHashVerified": true,
+      "supervisorPresent": false,
+      "exit": 0,
+      "sourceClean": true
+    },
+    {
+      "receipt": "42-test-browser.json",
+      "logHashVerified": true,
+      "supervisorPresent": false,
+      "exit": 0,
+      "sourceClean": true
+    },
+    {
+      "receipt": "43-test-editorial-browser.json",
+      "logHashVerified": true,
+      "supervisorPresent": false,
+      "exit": 0,
+      "sourceClean": true
+    },
+    {
+      "receipt": "44-test-integration-browser.json",
+      "logHashVerified": true,
+      "supervisorPresent": false,
+      "exit": 0,
+      "sourceClean": true
+    },
+    {
+      "receipt": "45-test-monitoring-worker.json",
+      "logHashVerified": true,
+      "supervisorPresent": false,
+      "exit": 0,
+      "sourceClean": true
+    },
+    {
+      "receipt": "46-test-settings-worker.json",
+      "logHashVerified": true,
+      "supervisorPresent": false,
+      "exit": 0,
+      "sourceClean": true
+    },
+    {
+      "receipt": "47-test-publication-browser.json",
+      "logHashVerified": true,
+      "supervisorPresent": false,
+      "exit": 0,
+      "sourceClean": true
+    },
+    {
+      "receipt": "48-test-combined-browser.json",
+      "logHashVerified": true,
+      "supervisorPresent": false,
+      "exit": 0,
+      "sourceClean": true
+    },
+    {
+      "receipt": "49-test-wiki-bridge-browser.json",
+      "logHashVerified": true,
+      "supervisorPresent": false,
+      "exit": 1,
+      "sourceClean": true
+    },
+    {
+      "receipt": "49-wiki-bridge-missing-prerequisite-cases.json",
+      "logHashVerified": true,
+      "supervisorPresent": false,
+      "exit": 0,
+      "sourceClean": true
+    },
+    {
+      "receipt": "50-test-wiki-seo-browser.json",
+      "logHashVerified": true,
+      "supervisorPresent": false,
+      "exit": 1,
+      "sourceClean": true
+    },
+    {
+      "receipt": "50-wiki-seo-restored-prerequisites.json",
+      "logHashVerified": true,
+      "supervisorPresent": false,
+      "exit": 0,
+      "sourceClean": true
+    },
+    {
+      "receipt": "51-test-corrections-browser.json",
+      "logHashVerified": true,
+      "supervisorPresent": false,
+      "exit": 0,
+      "sourceClean": true
+    },
+    {
+      "receipt": "52-test-hosted-browser.json",
+      "logHashVerified": true,
+      "supervisorPresent": false,
+      "exit": 0,
+      "sourceClean": true
+    },
+    {
+      "receipt": "53-test-hosted-admin-browser.json",
+      "logHashVerified": true,
+      "supervisorPresent": false,
+      "exit": 0,
+      "sourceClean": true
+    },
+    {
+      "receipt": "54-test-maintenance-browser.json",
+      "logHashVerified": true,
+      "supervisorPresent": false,
+      "exit": 0,
+      "sourceClean": true
+    },
+    {
+      "receipt": "55-test-maintenance-collection-browser.json",
+      "logHashVerified": true,
+      "supervisorPresent": false,
+      "exit": 0,
+      "sourceClean": true
+    },
+    {
+      "receipt": "56-test-maintenance-history-browser.json",
+      "logHashVerified": true,
+      "supervisorPresent": false,
+      "exit": 0,
+      "sourceClean": true
+    },
+    {
+      "receipt": "57-test-maintenance-restore-browser.json",
+      "logHashVerified": true,
+      "supervisorPresent": false,
+      "exit": 0,
+      "sourceClean": true
+    },
+    {
+      "receipt": "58-release-prepare.json",
+      "logHashVerified": true,
+      "supervisorPresent": false,
+      "exit": 0,
+      "sourceClean": true
+    },
+    {
+      "receipt": "prerequisite-build.json",
+      "logHashVerified": true,
+      "supervisorPresent": false,
+      "exit": 0,
+      "sourceClean": true
+    },
+    {
+      "receipt": "prerequisite-historical-wiki-stores.json",
+      "logHashVerified": true,
+      "supervisorPresent": false,
+      "exit": 0,
+      "sourceClean": true
+    },
+    {
+      "receipt": "prerequisite-seo-canonical.json",
+      "logHashVerified": true,
+      "supervisorPresent": false,
+      "exit": 0,
+      "sourceClean": true
+    },
+    {
+      "receipt": "setup-npm-ci-proxy.json",
+      "logHashVerified": true,
+      "supervisorPresent": false,
+      "exit": 0,
+      "sourceClean": true
+    },
+    {
+      "receipt": "setup-npm-ci.json",
+      "logHashVerified": true,
+      "supervisorPresent": false,
+      "exit": 143,
+      "sourceClean": true
+    }
+  ]
+}

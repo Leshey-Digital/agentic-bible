@@ -1,0 +1,20 @@
+{
+  "label": "25-test-maintenance-base",
+  "command": [
+    "npm",
+    "run",
+    "test:maintenance-base"
+  ],
+  "startedAt": 1792519746.1682818,
+  "durationSeconds": 80.91265225410461,
+  "exit": 0,
+  "deadlineSeconds": 600,
+  "timedOut": false,
+  "log": "25-test-maintenance-base.log",
+  "sha256": "f94909400ad83b7926904bedae34bf93056dca10097e338807ec7706aa394114",
+  "bytes": 831,
+  "cleanup": "existing Linux subreaper supervisor exited after stop_group and adopted-child reaping",
+  "supervisorPid": 22259,
+  "sourceCommit": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+  "sourceStatus": ""
+}

@@ -1,0 +1,35 @@
+
+> agentic-bible@0.1.0 test:wiki-seo:browser
+> AGENTIC_BIBLE_DISCOVERY_MODE=production AGENTIC_BIBLE_CANONICAL_ORIGIN=https://agenticbible.si PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright test --config playwright.wiki-seo-integration.config.ts
+
+
+Running 1 test using 1 worker
+
+  ✘  1 tests/wiki-seo-integration-browser/composition.spec.mjs:13:1 › charged evidence activates faithful canonical reading/history/search while synthetic output stays out of production discovery (205ms)
+
+
+  1) tests/wiki-seo-integration-browser/composition.spec.mjs:13:1 › charged evidence activates faithful canonical reading/history/search while synthetic output stays out of production discovery 
+
+    Error: ENOENT: no such file or directory, open '/workspace/agentic-bible/.git/seo-canonical-manifest.json'
+
+      14 |   expect(process.env.AGENTIC_BIBLE_DISCOVERY_MODE).toBe('production');expect(process.env.AGENTIC_BIBLE_CANONICAL_ORIGIN).toBe('https://agenticbible.si');
+      15 |   expect(readingArticleIds).toHaveLength(20);
+    > 16 |   const production=JSON.parse(readFileSync(join(git,'seo-canonical-manifest.json'),'utf8')),xml=readFileSync(join(git,'seo-canonical-sitemap.xml'),'utf8');expect(production.mode).toBe('canonical');expect(production.origin).toBe('https://agenticbible.si');expect(production.entries.map(e=>e.articleId).sort()).toEqual([...readingArticleIds].sort());for(const e of production.entries)expect(xml).toContain(`<loc>${e.url}</loc>`);const sitemapPaths=[...xml.matchAll(/<loc>https:\/\/agenticbible\.si([^<]*)<\/loc>/g)].map(([,path])=>path);expect(sitemapPaths).toContain('/history/');expect(sitemapPaths.filter(path=>path.startsWith('/history/'))).toEqual(['/history/']);expect(sitemapPaths.some(path=>/staging|admin|search|fixtures|wiki-snapshots/.test(path))).toBe(false);expect(xml).not.toContain('staging.agenticbible.si');
+         |                               ^
+      17 |   const original=inventory('src/content/articles'),dist=inventory('dist'),name='wiki-bridge-test-seo-composition',observations='wiki-observations-test-seo-composition';clean(name);clean(observations);expect((await prepareWikiEvidence(observations)).fetches).toBe(2);
+      18 |   let sourceFetches=0,local=await localObservations(observations,false,()=>{sourceFetches++;throw Error('source fetch forbidden');});const charged=await accounting(local.db);let bridge=new WikiBridge(name);const server=wikiServer(bridge);await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const origin=`http://127.0.0.1:${server.address().port}`,outside=[],errors=[];page.on('request',r=>{if(new URL(r.url()).origin!==origin)outside.push(r.url());});page.on('pageerror',e=>errors.push(e.message));
+      19 |   const search=async(site,term,count)=>{await page.goto(`${origin}/wiki-snapshots/${site}/search/`);await page.locator('#search-input').fill(term);await page.locator('#search-form button[type=submit]').click();await expect(page.locator('#search-status')).toHaveText(`${count} ${count===1?'entry':'entries'} found for “${term}”.`);await expect(page.locator('#search-results>li')).toHaveCount(count);};
+        at /workspace/agentic-bible/tests/wiki-seo-integration-browser/composition.spec.mjs:16:31
+
+    Error Context: test-results/wiki-seo-integration/composition-charged-eviden-2136f-out-of-production-discovery/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/wiki-seo-integration/composition-charged-eviden-2136f-out-of-production-discovery/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/wiki-seo-integration/composition-charged-eviden-2136f-out-of-production-discovery/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    tests/wiki-seo-integration-browser/composition.spec.mjs:13:1 › charged evidence activates faithful canonical reading/history/search while synthetic output stays out of production discovery 

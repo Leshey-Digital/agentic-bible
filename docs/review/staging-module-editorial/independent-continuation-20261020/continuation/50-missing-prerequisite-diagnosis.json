@@ -1,0 +1,11 @@
+{
+  "missing": [
+    ".git/seo-canonical-manifest.json",
+    ".git/seo-canonical-sitemap.xml"
+  ],
+  "producer": "tests/seo/build.test.mjs",
+  "historicalStep": "test:seo:build",
+  "failure": "ENOENT before composition assertions",
+  "priorSupervisorAbsent": true,
+  "noFixtureRecordsOverwritten": true
+}

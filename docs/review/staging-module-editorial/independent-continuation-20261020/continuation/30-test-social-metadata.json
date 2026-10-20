@@ -1,0 +1,20 @@
+{
+  "label": "30-test-social-metadata",
+  "command": [
+    "npm",
+    "run",
+    "test:social-metadata"
+  ],
+  "startedAt": 1792520021.1538348,
+  "durationSeconds": 0.3157334327697754,
+  "exit": 0,
+  "deadlineSeconds": 600,
+  "timedOut": false,
+  "log": "30-test-social-metadata.log",
+  "sha256": "14f36764e032a6825fdfc7dbe70228e5f95a9db0f979a4081303ac77b9c6db47",
+  "bytes": 280,
+  "cleanup": "existing Linux subreaper supervisor exited after stop_group and adopted-child reaping",
+  "supervisorPid": 49333,
+  "sourceCommit": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+  "sourceStatus": ""
+}

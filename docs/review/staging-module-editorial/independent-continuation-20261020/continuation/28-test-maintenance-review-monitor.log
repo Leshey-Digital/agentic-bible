@@ -1,0 +1,19 @@
+
+> agentic-bible@0.1.0 test:maintenance-review-monitor
+> node --test tests/maintenance-pipeline/monitor.test.mjs
+
+✔ review monitor churn preserves bounded storage authority and accounting (8796.018212ms)
+✔ review monitor capacity-bytes preserves bounded storage authority and accounting (4323.311107ms)
+✔ review monitor capacity-count preserves bounded storage authority and accounting (4477.03665ms)
+✔ review monitor symlink preserves bounded storage authority and accounting (4219.137312ms)
+✔ review monitor diagnostic-symlink preserves bounded storage authority and accounting (5186.804328ms)
+✔ review monitor directory-replaced preserves bounded storage authority and accounting (6057.251883ms)
+✔ review monitor root-disappearance preserves bounded storage authority and accounting (4990.41133ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 38502.586468

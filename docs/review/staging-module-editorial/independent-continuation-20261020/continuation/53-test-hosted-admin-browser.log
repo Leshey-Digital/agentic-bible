@@ -1,0 +1,39 @@
+
+> agentic-bible@0.1.0 test:hosted-admin:browser
+> PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright test --config playwright.hosted-admin.config.ts && npm run test:production-hosted:browser
+
+
+Running 16 tests using 1 worker
+
+  ✓   1 [desktop] › tests/hosted-admin-browser/admin.spec.mjs:3:1 › signed gateway assertion supports actual Worker admin review, saved retry and revocation (1.9s)
+  ✓   2 [desktop] › tests/hosted-admin-browser/admin.spec.mjs:16:1 › an older committed approval response preserves newer draft text, citation and selection (1.0s)
+  ✓   3 [desktop] › tests/hosted-admin-browser/admin.spec.mjs:28:1 › saved-list failure has contextual retry without erasing an unsaved draft (1.3s)
+  ✓   4 [desktop] › tests/hosted-admin-browser/admin.spec.mjs:36:1 › source and uncertain approval failures explain recovery and preserve the same draft (1.6s)
+  ✓   5 [desktop] › tests/hosted-admin-browser/admin.spec.mjs:46:1 › a failed list refresh cannot turn a confirmed save or revocation into an uncertain write (1.1s)
+  ✓   6 [desktop] › tests/hosted-admin-browser/admin.spec.mjs:56:1 › a delayed older list cannot replace a newer saved approval or its confirmation (816ms)
+  ✓   7 [desktop] › tests/hosted-admin-browser/admin.spec.mjs:63:1 › an older completed proposal response cannot overwrite a confirmed revocation after list failure (1.9s)
+  ✓   8 [desktop] › tests/hosted-admin-browser/admin.spec.mjs:74:1 › revocation follows an approval across replacement by an older list response (2.0s)
+  ✓   9 [mobile] › tests/hosted-admin-browser/admin.spec.mjs:3:1 › signed gateway assertion supports actual Worker admin review, saved retry and revocation (1.9s)
+  ✓  10 [mobile] › tests/hosted-admin-browser/admin.spec.mjs:16:1 › an older committed approval response preserves newer draft text, citation and selection (970ms)
+  ✓  11 [mobile] › tests/hosted-admin-browser/admin.spec.mjs:28:1 › saved-list failure has contextual retry without erasing an unsaved draft (1.4s)
+  ✓  12 [mobile] › tests/hosted-admin-browser/admin.spec.mjs:36:1 › source and uncertain approval failures explain recovery and preserve the same draft (1.8s)
+  ✓  13 [mobile] › tests/hosted-admin-browser/admin.spec.mjs:46:1 › a failed list refresh cannot turn a confirmed save or revocation into an uncertain write (1.3s)
+  ✓  14 [mobile] › tests/hosted-admin-browser/admin.spec.mjs:56:1 › a delayed older list cannot replace a newer saved approval or its confirmation (853ms)
+  ✓  15 [mobile] › tests/hosted-admin-browser/admin.spec.mjs:63:1 › an older completed proposal response cannot overwrite a confirmed revocation after list failure (1.9s)
+  ✓  16 [mobile] › tests/hosted-admin-browser/admin.spec.mjs:74:1 › revocation follows an approval across replacement by an older list response (2.3s)
+
+  16 passed (26.6s)
+
+> agentic-bible@0.1.0 test:production-hosted:browser
+> node --test tests/production-hosted/browser.mjs
+
+✔ signed hosted inbox and write-only integration UI at 1280 (5282.679312ms)
+✔ signed hosted inbox and write-only integration UI at 390 (5079.151494ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 11035.671301

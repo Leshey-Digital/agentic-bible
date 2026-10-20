@@ -1,0 +1,8 @@
+{
+  "state": "running remaining 40 commands after single authorized isolated retry",
+  "originalTerminalSummary": "terminal-summary.json retained as historical stop record",
+  "failedReleaseCommand": "18-test-release.json remains exit 1 with 40 successes and 1 failure",
+  "isolatedCase": "18-legacy-baseline-isolated.json passed once, original assertions and timeout",
+  "staticDifferenceClassification": "static-difference-classification.json",
+  "fullRunnerReceipt": "not created; no relabelling"
+}

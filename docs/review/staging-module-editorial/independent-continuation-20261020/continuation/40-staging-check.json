@@ -1,0 +1,20 @@
+{
+  "label": "40-staging-check",
+  "command": [
+    "npm",
+    "run",
+    "staging:check"
+  ],
+  "startedAt": 1792520372.505458,
+  "durationSeconds": 1.0168371200561523,
+  "exit": 0,
+  "deadlineSeconds": 600,
+  "timedOut": false,
+  "log": "40-staging-check.log",
+  "sha256": "a0db4f6ead71b6c90ca79a5a55aefe14f9a74036dddb74ecee29e8f0c8f51266",
+  "bytes": 486,
+  "cleanup": "existing Linux subreaper supervisor exited after stop_group and adopted-child reaping",
+  "supervisorPid": 100799,
+  "sourceCommit": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+  "sourceStatus": ""
+}

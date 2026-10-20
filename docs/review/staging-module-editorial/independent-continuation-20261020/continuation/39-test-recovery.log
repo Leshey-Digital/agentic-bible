@@ -1,0 +1,30 @@
+
+> agentic-bible@0.1.0 test:recovery
+> node --test tests/recovery/*.test.mjs
+
+✔ backup verifies complete inventory and restores exact bytes into a new tree (15.060326ms)
+✔ rejects tampered, omitted and extra files before creating a restore destination (2.864577ms)
+✔ rejects traversal paths and never overwrites an existing destination (2.810416ms)
+✔ refuses symlinks during capture (1.878591ms)
+✔ rejects oversized regular files before reading them into the recovery bundle (1.848216ms)
+✔ configuration keeps the adapter disabled until explicit opt-in and required bindings exist (1.017093ms)
+✔ encrypted offsite object authenticates, verifies, and restores the source bundle (16.694199ms)
+✔ rejects modified ciphertext, wrong keys and objects outside the configured prefix (2.528611ms)
+✔ uses a provisional seven-day UTC retention window and removes only expired managed keys (1.341632ms)
+✔ D1 recovery captures complete typed schema/data and restores into a new D1 database across restart (898.125375ms)
+✔ one D1 batch gives a point-in-time snapshot while concurrent atomic writers mutate paired tables (739.828394ms)
+✔ corrupt, truncated, oversized and schema-drift exports fail closed without modifying destination (587.38233ms)
+✔ D1 atomic restore failure rolls back schema and data; existing destinations are protected (594.1094ms)
+✔ restore rechecks that the destination is empty inside its atomic batch (569.2469ms)
+✔ capture rejects view-only databases and import rejects a rehashed artifact above the table cap (533.856251ms)
+✔ capture never emits an export that exceeds the conservative 100-statement restore ceiling (1595.78231ms)
+✔ capture rejects oversized table data from in-transaction size aggregates before returning its rows (329.776409ms)
+✔ schema/data omissions and column tampering fail inventory checks even when an unkeyed digest is recomputed (582.503149ms)
+ℹ tests 18
+ℹ suites 0
+ℹ pass 18
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 6779.400429

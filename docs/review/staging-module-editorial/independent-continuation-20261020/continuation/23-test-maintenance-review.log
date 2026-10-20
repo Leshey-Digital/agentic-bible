@@ -1,0 +1,22 @@
+
+> agentic-bible@0.1.0 test:maintenance-review
+> node --test tests/maintenance-history/review.test.mjs tests/maintenance-history/quoted-url.test.mjs
+
+✔ actual canonical writer preserves quoted source URLs without added backslashes or Markdown images through the locked Astro Markdown pipeline (4597.188053ms)
+✔ signed assertion, origin, CSRF, method and capacity boundaries precede immutable review admission (10506.65062ms)
+✔ actual writer receipts bind review, exact replay, restart and opaque reviewer attribution without changing Git/flags (630.860383ms)
+✔ stale revision/catalog/version, request-key collisions and foreign-owner replay cannot admit a decision (340.749384ms)
+✔ concurrent version admission is atomic; revert requests require a retained earlier receipt and leave article unchanged (366.654277ms)
+✔ old exact replay survives a newer verified build while new actions on its old receipt are stale (659.926638ms)
+✔ catalog binding and audit corruption fail closed; missing compiled binding/trust never enable review (962.505962ms)
+✔ finite per-receipt audit and linear body diff preserve text without interpreting Markdown/HTML (447.786843ms)
+✔ global retained audit capacity stops new admission but permits exact replay (800.252707ms)
+✔ controlled history build rejects missing source pin, unsupported selector and production discovery (1.264025ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 15158.343034

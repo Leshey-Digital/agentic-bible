@@ -1,0 +1,11 @@
+
+> agentic-bible@0.1.0 runtime:check
+> node scripts/assert-staging-discovery.mjs && XDG_CONFIG_HOME=.git/runtime-config XDG_CACHE_HOME=.git/runtime-cache WRANGLER_SEND_METRICS=false WRANGLER_HIDE_BANNER=true wrangler deploy --dry-run --config wrangler.runtime.staging.jsonc
+
+✨ Read 115 files from the assets directory /workspace/agentic-bible/dist
+Total Upload: 218.67 KiB / gzip: 52.83 KiB
+Your Worker has access to the following bindings:
+Binding            Resource      
+env.ASSETS         Assets        
+
+--dry-run: exiting now.

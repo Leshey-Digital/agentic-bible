@@ -1,0 +1,19 @@
+{
+  "label": "setup-npm-ci-proxy",
+  "command": [
+    "npm",
+    "ci"
+  ],
+  "startedAt": 1792519241.7699168,
+  "durationSeconds": 6.433953285217285,
+  "exit": 0,
+  "deadlineSeconds": 600,
+  "timedOut": false,
+  "log": "setup-npm-ci-proxy.log",
+  "sha256": "31ebad67128f9bf16c15943f93b1a5a348ae7035c428851fdf7781b350b7689c",
+  "bytes": 26,
+  "cleanup": "existing Linux subreaper supervisor exited after stop_group and adopted-child reaping",
+  "supervisorPid": 903,
+  "sourceCommit": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+  "sourceStatus": ""
+}

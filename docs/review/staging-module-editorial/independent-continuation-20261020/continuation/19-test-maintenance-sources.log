@@ -1,0 +1,25 @@
+
+> agentic-bible@0.1.0 test:maintenance-sources
+> node --test tests/maintenance-sources/*.test.mjs
+
+✔ captured charged original bodies feed automatic fake-provider wiki publication, flags and restart replay (3824.616034ms)
+✔ disabled, invalid selection and missing collection accounting stop before transport (400.607307ms)
+✔ unsupported MIME, unsafe/oversized/malformed/empty bodies and redirects never become evidence or auto-retry (3182.300082ms)
+✔ 304 monitoring success cannot manufacture a newly charged original 200 body (569.574445ms)
+✔ concurrent same-key collection dispatches once and foreign source/citation reuse cannot overwrite it (532.434631ms)
+✔ sixteen retained collections survive restart; storage and HTTP budget stop before another request (3223.107391ms)
+✔ prepared bodies recover across restart before/after HTTP completion without a second request (1420.370291ms)
+✔ pre-journal interruption and expired prepared lease retain ambiguity without redispatch (1151.668099ms)
+✔ tampered bodies/journals, symlinks and orphan partial files cannot be accepted or trigger repair fetches (1726.250256ms)
+✔ stalled and late source responses are cancelled, stay charged and never auto-retry (4826.826059ms)
+✔ full filesystem retention fails before charging or dispatching another HTTP request (357.144702ms)
+✔ HTTP completion response lost after actual D1 commit recovers from the prepared journal (715.358653ms)
+✔ prepared recovery refuses missing or inconsistent charges without changing HTTP authority (1400.295035ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 23816.881054

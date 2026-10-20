@@ -1,0 +1,24 @@
+
+> agentic-bible@0.1.0 test:maintenance-pipeline
+> node --test tests/maintenance-pipeline/pipeline.test.mjs
+
+✔ disabled activation and invalid ports have zero SQL/source/provider effects (2.024872ms)
+✔ one controlled operating run reaches actual signed review with automatic publication and no human decision (7527.222977ms)
+✔ source, generation, canonical and sealed-review phase interruptions resume without duplicate charged work (31924.081664ms)
+✔ lost canonical and review replies reconcile once; completed replay never reactivates an older catalog (8419.852936ms)
+✔ concurrent admission has one owner and an incomplete job blocks a different event (7563.586302ms)
+✔ a superseded canonical commit never activates an older review catalog (12810.44537ms)
+✔ unconfirmed provider and review dispatch are not automatically resent (11031.283171ms)
+✔ forged terminal canonical receipt is rejected even with recomputed journal and receipt hashes (7439.944362ms)
+✔ actual SIGKILL after durable collection resumes the shared D1 journal without another source request (8715.853334ms)
+✔ pipeline row and attempt limits fail closed before captured work (2946.911088ms)
+✔ pipeline continues from a separately approved restored canonical base and preserves earlier review/source history (21873.087077ms)
+✔ a lost durable phase-update reply is read back without repeating any effect (7598.57604ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 128270.041649

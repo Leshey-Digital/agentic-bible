@@ -1,0 +1,20 @@
+{
+  "label": "27-test-maintenance-currency",
+  "command": [
+    "npm",
+    "run",
+    "test:maintenance-currency"
+  ],
+  "startedAt": 1792519955.613569,
+  "durationSeconds": 26.363550186157227,
+  "exit": 0,
+  "deadlineSeconds": 600,
+  "timedOut": false,
+  "log": "27-test-maintenance-currency.log",
+  "sha256": "3cabf0d551899ee89951bc7c5be3010a03c7bd83b2537ae2c510f4066b7be519",
+  "bytes": 2554,
+  "cleanup": "existing Linux subreaper supervisor exited after stop_group and adopted-child reaping",
+  "supervisorPid": 43679,
+  "sourceCommit": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+  "sourceStatus": ""
+}

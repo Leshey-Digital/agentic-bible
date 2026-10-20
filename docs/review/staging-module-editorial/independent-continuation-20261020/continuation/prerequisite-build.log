@@ -1,0 +1,82 @@
+
+> agentic-bible@0.1.0 build
+> ASTRO_TELEMETRY_DISABLED=1 astro build && pagefind --site dist --glob 'articles/**/*.html'
+
+[2m18:01:03[22m [34m[content][39m Syncing content
+[2m18:01:03[22m [34m[content][39m Synced content
+[2m18:01:03[22m [34m[types][39m Generated [2m499ms[22m
+[2m18:01:03[22m [34m[build][39m output: [34m"static"[39m
+[2m18:01:03[22m [34m[build][39m mode: [34m"static"[39m
+[2m18:01:03[22m [34m[build][39m directory: [34m/workspace/agentic-bible/dist/[39m
+[2m18:01:03[22m [34m[build][39m Collecting build info...
+[2m18:01:03[22m [34m[build][39m [32m✓ Completed in 541ms.[39m
+[2m18:01:03[22m [34m[build][39m Building static entrypoints...
+[2m18:01:03[22m [34m[vite][39m [32m✓ built in 185ms[39m
+[2m18:01:03[22m [34m[vite][39m [32m✓ built in 21ms[39m
+[2m18:01:03[22m [34m[build][39m Rearranging server assets...
+
+[42m[30m generating static routes [39m[49m
+[2m18:01:03[22m   [34m├─[39m [2m/404.html[22m [2m(+22ms)[22m 
+[2m18:01:03[22m   [34m├─[39m [2m/about/index.html[22m [2m(+3ms)[22m 
+[2m18:01:03[22m   [34m├─[39m [2m/articles/ai-agent/index.html[22m [2m(+16ms)[22m 
+[2m18:01:03[22m   [34m├─[39m [2m/articles/tool-use/index.html[22m [2m(+10ms)[22m 
+[2m18:01:03[22m   [34m├─[39m [2m/articles/model-context-protocol/index.html[22m [2m(+10ms)[22m 
+[2m18:01:03[22m   [34m├─[39m [2m/articles/agent-orchestration/index.html[22m [2m(+15ms)[22m 
+[2m18:01:04[22m   [34m├─[39m [2m/articles/agent-memory/index.html[22m [2m(+10ms)[22m 
+[2m18:01:04[22m   [34m├─[39m [2m/articles/retrieval-augmented-generation/index.html[22m [2m(+10ms)[22m 
+[2m18:01:04[22m   [34m├─[39m [2m/articles/agent-evaluation/index.html[22m [2m(+9ms)[22m 
+[2m18:01:04[22m   [34m├─[39m [2m/articles/prompt-injection/index.html[22m [2m(+11ms)[22m 
+[2m18:01:04[22m   [34m├─[39m [2m/articles/agent-planning/index.html[22m [2m(+11ms)[22m 
+[2m18:01:04[22m   [34m├─[39m [2m/articles/durable-agent-execution/index.html[22m [2m(+9ms)[22m 
+[2m18:01:04[22m   [34m├─[39m [2m/articles/tool-permissions/index.html[22m [2m(+9ms)[22m 
+[2m18:01:04[22m   [34m├─[39m [2m/articles/agent-sandboxing/index.html[22m [2m(+9ms)[22m 
+[2m18:01:04[22m   [34m├─[39m [2m/articles/agent-observability/index.html[22m [2m(+9ms)[22m 
+[2m18:01:04[22m   [34m├─[39m [2m/articles/human-oversight/index.html[22m [2m(+8ms)[22m 
+[2m18:01:04[22m   [34m├─[39m [2m/articles/context-engineering/index.html[22m [2m(+9ms)[22m 
+[2m18:01:04[22m   [34m├─[39m [2m/articles/structured-outputs/index.html[22m [2m(+9ms)[22m 
+[2m18:01:04[22m   [34m├─[39m [2m/articles/agent-identity/index.html[22m [2m(+9ms)[22m 
+[2m18:01:04[22m   [34m├─[39m [2m/articles/agent-to-agent-communication/index.html[22m [2m(+9ms)[22m 
+[2m18:01:04[22m   [34m├─[39m [2m/articles/agent-budgets/index.html[22m [2m(+9ms)[22m 
+[2m18:01:04[22m   [34m├─[39m [2m/articles/computer-use-agents/index.html[22m [2m(+13ms)[22m 
+[2m18:01:04[22m   [34m├─[39m [2m/contribute/index.html[22m [2m(+1ms)[22m 
+[2m18:01:04[22m   [34m├─[39m [2m/history/index.html[22m [2m(+2ms)[22m 
+[2m18:01:04[22m   [34m├─[39m [2m/indexing-manifest.json[22m [2m(+1ms)[22m 
+[2m18:01:04[22m   [34m├─[39m [2m/maintenance-history.json[22m [2m(+1ms)[22m 
+[2m18:01:04[22m   [34m├─[39m [2m/review/index.html[22m [2m(+2ms)[22m 
+[2m18:01:04[22m   [34m├─[39m [2m/search/index.html[22m [2m(+2ms)[22m 
+[2m18:01:04[22m   [34m├─[39m [2m/source-catalog.json[22m [2m(+6ms)[22m 
+[2m18:01:04[22m   [34m├─[39m [2m/topics/foundations/index.html[22m [2m(+2ms)[22m 
+[2m18:01:04[22m   [34m├─[39m [2m/topics/capabilities/index.html[22m [2m(+1ms)[22m 
+[2m18:01:04[22m   [34m├─[39m [2m/topics/protocols/index.html[22m [2m(+1ms)[22m 
+[2m18:01:04[22m   [34m├─[39m [2m/topics/index.html[22m [2m(+1ms)[22m 
+[2m18:01:04[22m   [34m├─[39m [2m/index.html[22m [2m(+2ms)[22m 
+[2m18:01:04[22m [32m✓ Completed in 276ms.
+[39m
+[2m18:01:04[22m [34m[build][39m [32m✓ Completed in 515ms.[39m
+[2m18:01:04[22m [34m[build][39m 31 page(s) built in [1m1.06s[22m
+[2m18:01:04[22m [34m[build][39m [1mComplete![22m
+
+Running Pagefind v1.5.2 (Extended)
+Running from: "/workspace/agentic-bible"
+Source:       "dist"
+Output:       "dist/pagefind"
+
+[Walking source directory]
+Found 20 files matching articles/**/*.html
+
+[Parsing files]
+Found a data-pagefind-body element on the site.
+↳ Ignoring pages without this tag.
+
+[Reading languages]
+Discovered 1 language: en
+
+[Building search indexes]
+Total: 
+  Indexed 1 language
+  Indexed 20 pages
+  Indexed 1551 words
+  Indexed 0 filters
+  Indexed 0 sorts
+
+Finished in 0.040 seconds

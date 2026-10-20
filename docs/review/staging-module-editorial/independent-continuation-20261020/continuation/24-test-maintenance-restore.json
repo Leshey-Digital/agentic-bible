@@ -1,0 +1,20 @@
+{
+  "label": "24-test-maintenance-restore",
+  "command": [
+    "npm",
+    "run",
+    "test:maintenance-restore"
+  ],
+  "startedAt": 1792519699.0502512,
+  "durationSeconds": 47.08052706718445,
+  "exit": 0,
+  "deadlineSeconds": 600,
+  "timedOut": false,
+  "log": "24-test-maintenance-restore.log",
+  "sha256": "b6c6d813092dec8b7b8b3e5a03b55707cd206b8cc02715bb6cf838c0fd8b8129",
+  "bytes": 2259,
+  "cleanup": "existing Linux subreaper supervisor exited after stop_group and adopted-child reaping",
+  "supervisorPid": 16605,
+  "sourceCommit": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+  "sourceStatus": ""
+}

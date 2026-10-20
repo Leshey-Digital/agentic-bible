@@ -1,0 +1,20 @@
+{
+  "label": "36-test-maintenance-adapters",
+  "command": [
+    "npm",
+    "run",
+    "test:maintenance-adapters"
+  ],
+  "startedAt": 1792520324.3475206,
+  "durationSeconds": 6.744931697845459,
+  "exit": 0,
+  "deadlineSeconds": 600,
+  "timedOut": false,
+  "log": "36-test-maintenance-adapters.log",
+  "sha256": "853bf5a149aba89478e974a105d553a0593f2beaeee5982cee4eaadf42bc6efc",
+  "bytes": 3709,
+  "cleanup": "existing Linux subreaper supervisor exited after stop_group and adopted-child reaping",
+  "supervisorPid": 94285,
+  "sourceCommit": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+  "sourceStatus": ""
+}

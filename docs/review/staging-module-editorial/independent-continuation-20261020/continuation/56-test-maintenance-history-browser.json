@@ -1,0 +1,20 @@
+{
+  "label": "56-test-maintenance-history-browser",
+  "command": [
+    "npm",
+    "run",
+    "test:maintenance-history:browser"
+  ],
+  "startedAt": 1792520867.5929034,
+  "durationSeconds": 32.85020089149475,
+  "exit": 0,
+  "deadlineSeconds": 600,
+  "timedOut": false,
+  "log": "56-test-maintenance-history-browser.log",
+  "sha256": "c3b3c380d533d9b0fcc091abf76319ee6807db5be5bfd31e553c7748bc5f1a14",
+  "bytes": 2473,
+  "cleanup": "existing Linux subreaper supervisor exited after stop_group and adopted-child reaping",
+  "supervisorPid": 114268,
+  "sourceCommit": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+  "sourceStatus": ""
+}

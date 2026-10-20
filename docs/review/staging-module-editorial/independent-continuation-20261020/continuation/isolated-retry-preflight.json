@@ -1,0 +1,20 @@
+{
+  "time": 1792519471.8983161,
+  "priorSupervisors": [
+    {
+      "receipt": "17-hosted-serial.json",
+      "supervisorPid": 1150,
+      "present": false,
+      "exit": 0
+    },
+    {
+      "receipt": "18-test-release.json",
+      "supervisorPid": 1509,
+      "present": false,
+      "exit": 1
+    }
+  ],
+  "currentRuntimeProcessRows": [],
+  "cacheSharing": "all seven recorded release fixtures resolve node_modules/.vite/deps to same directory; Astro create-vite.js:127 explicitly assigns that cache path",
+  "retry": "one unchanged failed test only; original failed command and 40 successes preserved"
+}

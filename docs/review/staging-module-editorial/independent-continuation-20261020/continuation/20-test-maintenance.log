@@ -1,0 +1,22 @@
+
+> agentic-bible@0.1.0 test:maintenance
+> node --import ./tests/support/network-diagnostics.mjs --test tests/maintenance/*.test.mjs
+
+✔ charged sources automatically become a fake-provider local wiki with post-publication flags; restart replays without generation (3166.981222ms)
+✔ disabled policy, bad source bytes, stale evidence and accounting failure stop before provider dispatch (671.287807ms)
+✔ unsupported provider claims and usage cannot publish or automatically regenerate (2010.746062ms)
+✔ actual D1 reserves once under concurrency and retains request/day/month charges (689.253976ms)
+✔ timeout remains charged and blocks automatic retry/new generation; saved proposals recover without another call (5664.616124ms)
+✔ actual D1 enforces simulated run/day/month cost caps before any provider call (644.709366ms)
+✔ activation before a lost completion resumes the same receipt without another model call or activation (3005.449658ms)
+✔ deterministic fake honors the requested output-token ceiling before returning a proposal (0.529888ms)
+✔ bounded provider cancels a rejected response body (1.205236ms)
+✔ bounded provider discards a response arriving after its deadline (2001.842855ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 18301.247987

@@ -1,0 +1,19 @@
+{
+  "label": "setup-npm-ci",
+  "command": [
+    "npm",
+    "ci"
+  ],
+  "startedAt": 1792519164.2086787,
+  "durationSeconds": 71.31854581832886,
+  "exit": 143,
+  "deadlineSeconds": 600,
+  "timedOut": false,
+  "log": "setup-npm-ci.log",
+  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "bytes": 0,
+  "cleanup": "existing Linux subreaper supervisor exited after stop_group and adopted-child reaping",
+  "supervisorPid": 779,
+  "sourceCommit": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+  "sourceStatus": ""
+}

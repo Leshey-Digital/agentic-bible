@@ -1,0 +1,10 @@
+
+> agentic-bible@0.1.0 test:combined:browser
+> PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright test --config playwright.combined.config.ts
+
+
+Running 1 test using 1 worker
+
+  ✓  1 tests/combined-browser/collection-publication.spec.ts:14:1 › controlled HTTP collection and separately supplied revisions retain distinct provenance through restart, replay and rollback (4.6s)
+
+  1 passed (5.7s)

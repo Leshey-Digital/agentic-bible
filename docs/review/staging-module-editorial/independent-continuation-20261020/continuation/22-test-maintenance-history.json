@@ -1,0 +1,20 @@
+{
+  "label": "22-test-maintenance-history",
+  "command": [
+    "npm",
+    "run",
+    "test:maintenance-history"
+  ],
+  "startedAt": 1792519655.6814008,
+  "durationSeconds": 27.949665069580078,
+  "exit": 0,
+  "deadlineSeconds": 600,
+  "timedOut": false,
+  "log": "22-test-maintenance-history.log",
+  "sha256": "682a89b4fe3d9cd1f9abdcb32d9a4df6d1a5357f443e9bc72258fc49082bfaaf",
+  "bytes": 683,
+  "cleanup": "existing Linux subreaper supervisor exited after stop_group and adopted-child reaping",
+  "supervisorPid": 13320,
+  "sourceCommit": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+  "sourceStatus": ""
+}

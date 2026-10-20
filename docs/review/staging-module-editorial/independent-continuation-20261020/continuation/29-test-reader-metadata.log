@@ -1,0 +1,15 @@
+
+> agentic-bible@0.1.0 test:reader-metadata
+> node --test tests/reader-metadata/*.test.mjs
+
+✔ source revision follows actual Markdown commits and respects an historical source pin (31.381576ms)
+✔ revision metadata falls back to unknown when the pin or lineage is unavailable (1.070594ms)
+✔ shallow Git history and an explicit missing source pin never claim a latest source change (61.375009ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 173.559514

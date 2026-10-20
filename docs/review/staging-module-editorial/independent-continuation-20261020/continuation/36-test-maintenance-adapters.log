@@ -1,0 +1,46 @@
+
+> agentic-bible@0.1.0 test:maintenance-adapters
+> node --test tests/maintenance-adapters/*.test.mjs
+
+✔ pins the upper bound to the documented Cloudflare model and context limit (0.689108ms)
+✔ reserves UTF-8 bytes plus a BOS token for raw prompts, including Unicode (0.263186ms)
+✔ refuses chat-templated mode because official docs publish no framing ceiling (0.514615ms)
+✔ fails closed for empty, malformed, or over-context prompts (1.099417ms)
+✔ pinned Workers AI usage parser requires its typed token fields and a consistent total (1.65889ms)
+✔ Workers AI adapter pins the documented model contract and settles upper-bound reservation (762.780376ms)
+✔ disabled or missing input-bound configuration makes zero binding calls (440.117498ms)
+✔ bad or missing usage after dispatch retains maximum reservation and replay does not call binding (734.622341ms)
+✔ prompt bytes and configured caps are bounded before provider dispatch (360.714488ms)
+✔ literal original bytes, normalized evidence and UTF-8 source spans have distinct reproducible hashes (25.923807ms)
+✔ profile registry is compiled, bounded to known official URLs and cannot assert origin independence (3.120532ms)
+✔ leading UTF-8 BOM is rejected before decoding can shift original byte spans (1.197585ms)
+✔ unsupported JSON/plain profiles, ambiguous HTML and identity/structure failures fail closed (1.194009ms)
+✔ candidate changes to raw bytes, text, hashes, spans, identity and lineage cannot revalidate (5.013405ms)
+✔ Jev uses actual D1 maximum reservations, model-specific pricing and validated usage settlement (732.208775ms)
+✔ oversize Jev request and missing monetary authority fail before transport (432.660079ms)
+✔ invalid reported usage remains fully reserved and cannot be retried (754.726744ms)
+✔ controlled Jev protocol uses documented endpoint/schema, pinned model and fixed advisory question (21.821795ms)
+✔ missing, disabled, invalid and boolean-only configuration invokes neither charge authority nor transport (1.091535ms)
+✔ prose generation is unsupported with zero charge or transport dispatch even when configured (0.237538ms)
+✔ untrusted callers cannot replace questions or endpoint; request UTF-8 bytes are bounded before charge (0.472092ms)
+✔ charge denial, no dispatch, missing settlement and duplicate dispatch fail closed with no retry (2.641501ms)
+✔ only the callback validated response can become a result (0.575888ms)
+✔ transport errors are redacted and each failure dispatches only once (4.312038ms)
+✔ wrong content type, redirect marker and response origin are rejected (1.24773ms)
+✔ stream and content-length limits cancel the body; malformed JSON/UTF-8 fails safely (2.458084ms)
+✔ answer/model/usage schema is exact and probabilities are finite (10.635307ms)
+✔ deadline bounds stalled authority, dispatch and streamed body, and closes late dispatch (46.175216ms)
+✔ pre-abort dispatches zero; in-flight cancellation aborts transport and does not retry (0.892515ms)
+✔ late noncooperative transport completion after deadline cancels its body without consuming it (14.931812ms)
+✔ configuration snapshot cannot be enabled by mutating the original options (0.220031ms)
+✔ native Worker acquisition preserves charged original bytes and receipt verification across D1 restart (5879.767461ms)
+✔ quality consumer preserves original bytes and exact raw/profile/extracted identity with unknown lineage (7.948869ms)
+✔ quality consumer rejects fixture-like text substitution, profile/hash/span tampering and caller origin assertions (5.877807ms)
+ℹ tests 34
+ℹ suites 0
+ℹ pass 34
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 6588.437508

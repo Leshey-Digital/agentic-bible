@@ -1,0 +1,13 @@
+
+> agentic-bible@0.1.0 test:maintenance-restore:browser
+> PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright test --config playwright.maintenance-restore.config.ts
+
+
+Running 2 tests using 1 worker
+
+
+  ✓  1 [desktop] › tests/maintenance-restore-browser/restoration.spec.mjs:3:1 › explicit approved local restoration rebuilds canonical article/history while retaining signed audit and old records (6.5s)
+
+  ✓  2 [mobile] › tests/maintenance-restore-browser/restoration.spec.mjs:3:1 › explicit approved local restoration rebuilds canonical article/history while retaining signed audit and old records (6.3s)
+
+  2 passed (25.1s)

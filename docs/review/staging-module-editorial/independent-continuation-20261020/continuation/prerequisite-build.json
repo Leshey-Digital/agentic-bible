@@ -1,0 +1,20 @@
+{
+  "label": "prerequisite-build",
+  "command": [
+    "npm",
+    "run",
+    "build"
+  ],
+  "startedAt": 1792519262.035144,
+  "durationSeconds": 2.275653839111328,
+  "exit": 0,
+  "deadlineSeconds": 600,
+  "timedOut": false,
+  "log": "prerequisite-build.log",
+  "sha256": "63bd2047659c81509701748dceea1bbd1ea251de5f51c7ee3ce2e25a42a3810e",
+  "bytes": 4939,
+  "cleanup": "existing Linux subreaper supervisor exited after stop_group and adopted-child reaping",
+  "supervisorPid": 969,
+  "sourceCommit": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+  "sourceStatus": ""
+}

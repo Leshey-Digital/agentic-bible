@@ -1,0 +1,390 @@
+{
+  "state": "independent-continuation-complete-with-preserved-failures-and-targeted-recoveries",
+  "originalRunState": "failed; unchanged",
+  "sourceCommit": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+  "sourceTree": "3dabf8729636ccec3a85b0f162e7d2f6cbfd4f3e",
+  "sourceClean": true,
+  "historicalPassedSteps": 17,
+  "independentHosted": {
+    "testsPassed": 19,
+    "fileConcurrency": 1,
+    "receipt": "17-hosted-serial.json"
+  },
+  "previouslyUnrunCommands": 41,
+  "nowUnrunCommands": 0,
+  "outcomes": [
+    {
+      "manifestIndex": 18,
+      "step": "test:release",
+      "originalContinuationReceipt": "18-test-release.json",
+      "originalExit": 1,
+      "durationSeconds": 33.89406728744507,
+      "outcome": "40 cases passed in failed command; sole failed case passed unchanged once in isolation; command remains failed",
+      "followup": "18-legacy-baseline-isolated.json"
+    },
+    {
+      "manifestIndex": 19,
+      "step": "test:maintenance-sources",
+      "originalContinuationReceipt": "19-test-maintenance-sources.json",
+      "originalExit": 0,
+      "durationSeconds": 24.045259952545166,
+      "outcome": "passed"
+    },
+    {
+      "manifestIndex": 20,
+      "step": "test:maintenance",
+      "originalContinuationReceipt": "20-test-maintenance.json",
+      "originalExit": 0,
+      "durationSeconds": 18.453015327453613,
+      "outcome": "passed"
+    },
+    {
+      "manifestIndex": 21,
+      "step": "test:maintenance-github",
+      "originalContinuationReceipt": "21-test-maintenance-github.json",
+      "originalExit": 0,
+      "durationSeconds": 105.50095796585083,
+      "outcome": "passed"
+    },
+    {
+      "manifestIndex": 22,
+      "step": "test:maintenance-history",
+      "originalContinuationReceipt": "22-test-maintenance-history.json",
+      "originalExit": 0,
+      "durationSeconds": 27.949665069580078,
+      "outcome": "passed"
+    },
+    {
+      "manifestIndex": 23,
+      "step": "test:maintenance-review",
+      "originalContinuationReceipt": "23-test-maintenance-review.json",
+      "originalExit": 0,
+      "durationSeconds": 15.339465618133545,
+      "outcome": "passed"
+    },
+    {
+      "manifestIndex": 24,
+      "step": "test:maintenance-restore",
+      "originalContinuationReceipt": "24-test-maintenance-restore.json",
+      "originalExit": 0,
+      "durationSeconds": 47.08052706718445,
+      "outcome": "passed"
+    },
+    {
+      "manifestIndex": 25,
+      "step": "test:maintenance-base",
+      "originalContinuationReceipt": "25-test-maintenance-base.json",
+      "originalExit": 0,
+      "durationSeconds": 80.91265225410461,
+      "outcome": "passed"
+    },
+    {
+      "manifestIndex": 26,
+      "step": "test:maintenance-pipeline",
+      "originalContinuationReceipt": "26-test-maintenance-pipeline.json",
+      "originalExit": 0,
+      "durationSeconds": 128.4471571445465,
+      "outcome": "passed"
+    },
+    {
+      "manifestIndex": 27,
+      "step": "test:maintenance-currency",
+      "originalContinuationReceipt": "27-test-maintenance-currency.json",
+      "originalExit": 0,
+      "durationSeconds": 26.363550186157227,
+      "outcome": "passed"
+    },
+    {
+      "manifestIndex": 28,
+      "step": "test:maintenance-review-monitor",
+      "originalContinuationReceipt": "28-test-maintenance-review-monitor.json",
+      "originalExit": 0,
+      "durationSeconds": 38.687220096588135,
+      "outcome": "passed"
+    },
+    {
+      "manifestIndex": 29,
+      "step": "test:reader-metadata",
+      "originalContinuationReceipt": "29-test-reader-metadata.json",
+      "originalExit": 0,
+      "durationSeconds": 0.36613941192626953,
+      "outcome": "passed"
+    },
+    {
+      "manifestIndex": 30,
+      "step": "test:social-metadata",
+      "originalContinuationReceipt": "30-test-social-metadata.json",
+      "originalExit": 0,
+      "durationSeconds": 0.3157334327697754,
+      "outcome": "passed"
+    },
+    {
+      "manifestIndex": 31,
+      "step": "test:content-readiness",
+      "originalContinuationReceipt": "31-test-content-readiness.json",
+      "originalExit": 0,
+      "durationSeconds": 0.315746545791626,
+      "outcome": "passed"
+    },
+    {
+      "manifestIndex": 32,
+      "step": "test:maintenance-quality",
+      "originalContinuationReceipt": "32-test-maintenance-quality.json",
+      "originalExit": 0,
+      "durationSeconds": 276.2360234260559,
+      "outcome": "passed"
+    },
+    {
+      "manifestIndex": 33,
+      "step": "test:controlled-fixtures",
+      "originalContinuationReceipt": "33-test-controlled-fixtures.json",
+      "originalExit": 0,
+      "durationSeconds": 0.819068193435669,
+      "outcome": "passed"
+    },
+    {
+      "manifestIndex": 34,
+      "step": "test:production-hosted",
+      "originalContinuationReceipt": "34-test-production-hosted.json",
+      "originalExit": 0,
+      "durationSeconds": 18.206313133239746,
+      "outcome": "passed"
+    },
+    {
+      "manifestIndex": 35,
+      "step": "test:integration-vault",
+      "originalContinuationReceipt": "35-test-integration-vault.json",
+      "originalExit": 0,
+      "durationSeconds": 7.006151437759399,
+      "outcome": "passed"
+    },
+    {
+      "manifestIndex": 36,
+      "step": "test:maintenance-adapters",
+      "originalContinuationReceipt": "36-test-maintenance-adapters.json",
+      "originalExit": 0,
+      "durationSeconds": 6.744931697845459,
+      "outcome": "passed"
+    },
+    {
+      "manifestIndex": 37,
+      "step": "test:history-target-pages",
+      "originalContinuationReceipt": "37-test-history-target-pages.json",
+      "originalExit": 0,
+      "durationSeconds": 34.08982563018799,
+      "outcome": "passed"
+    },
+    {
+      "manifestIndex": 38,
+      "step": "test:production-config",
+      "originalContinuationReceipt": "38-test-production-config.json",
+      "originalExit": 0,
+      "durationSeconds": 0.21527814865112305,
+      "outcome": "passed"
+    },
+    {
+      "manifestIndex": 39,
+      "step": "test:recovery",
+      "originalContinuationReceipt": "39-test-recovery.json",
+      "originalExit": 0,
+      "durationSeconds": 6.949667930603027,
+      "outcome": "passed"
+    },
+    {
+      "manifestIndex": 40,
+      "step": "staging:check",
+      "originalContinuationReceipt": "40-staging-check.json",
+      "originalExit": 0,
+      "durationSeconds": 1.0168371200561523,
+      "outcome": "passed"
+    },
+    {
+      "manifestIndex": 41,
+      "step": "runtime:check",
+      "originalContinuationReceipt": "41-runtime-check.json",
+      "originalExit": 0,
+      "durationSeconds": 1.017280101776123,
+      "outcome": "passed"
+    },
+    {
+      "manifestIndex": 42,
+      "step": "test:browser",
+      "originalContinuationReceipt": "42-test-browser.json",
+      "originalExit": 0,
+      "durationSeconds": 87.00325012207031,
+      "outcome": "passed"
+    },
+    {
+      "manifestIndex": 43,
+      "step": "test:editorial:browser",
+      "originalContinuationReceipt": "43-test-editorial-browser.json",
+      "originalExit": 0,
+      "durationSeconds": 38.78461766242981,
+      "outcome": "passed"
+    },
+    {
+      "manifestIndex": 44,
+      "step": "test:integration:browser",
+      "originalContinuationReceipt": "44-test-integration-browser.json",
+      "originalExit": 0,
+      "durationSeconds": 14.178258180618286,
+      "outcome": "passed"
+    },
+    {
+      "manifestIndex": 45,
+      "step": "test:monitoring:worker",
+      "originalContinuationReceipt": "45-test-monitoring-worker.json",
+      "originalExit": 0,
+      "durationSeconds": 31.745437622070312,
+      "outcome": "passed"
+    },
+    {
+      "manifestIndex": 46,
+      "step": "test:settings:worker",
+      "originalContinuationReceipt": "46-test-settings-worker.json",
+      "originalExit": 0,
+      "durationSeconds": 42.07743859291077,
+      "outcome": "passed"
+    },
+    {
+      "manifestIndex": 47,
+      "step": "test:publication:browser",
+      "originalContinuationReceipt": "47-test-publication-browser.json",
+      "originalExit": 0,
+      "durationSeconds": 7.657127380371094,
+      "outcome": "passed"
+    },
+    {
+      "manifestIndex": 48,
+      "step": "test:combined:browser",
+      "originalContinuationReceipt": "48-test-combined-browser.json",
+      "originalExit": 0,
+      "durationSeconds": 6.397422552108765,
+      "outcome": "passed"
+    },
+    {
+      "manifestIndex": 49,
+      "step": "test:wiki-bridge:browser",
+      "originalContinuationReceipt": "49-test-wiki-bridge-browser.json",
+      "originalExit": 1,
+      "durationSeconds": 21.865849256515503,
+      "outcome": "1 case passed; 3 ENOENT setup failures passed after absent historical stores were regenerated",
+      "followup": "49-wiki-bridge-missing-prerequisite-cases.json",
+      "setup": "prerequisite-historical-wiki-stores.json"
+    },
+    {
+      "manifestIndex": 50,
+      "step": "test:wiki-seo:browser",
+      "originalContinuationReceipt": "50-test-wiki-seo-browser.json",
+      "originalExit": 1,
+      "durationSeconds": 2.2416625022888184,
+      "outcome": "ENOENT setup failure; same command passed once after absent canonical SEO records were regenerated",
+      "followup": "50-wiki-seo-restored-prerequisites.json",
+      "setup": "prerequisite-seo-canonical.json"
+    },
+    {
+      "manifestIndex": 51,
+      "step": "test:corrections:browser",
+      "originalContinuationReceipt": "51-test-corrections-browser.json",
+      "originalExit": 0,
+      "durationSeconds": 36.629215240478516,
+      "outcome": "passed"
+    },
+    {
+      "manifestIndex": 52,
+      "step": "test:hosted:browser",
+      "originalContinuationReceipt": "52-test-hosted-browser.json",
+      "originalExit": 0,
+      "durationSeconds": 8.4529550075531,
+      "outcome": "passed"
+    },
+    {
+      "manifestIndex": 53,
+      "step": "test:hosted-admin:browser",
+      "originalContinuationReceipt": "53-test-hosted-admin-browser.json",
+      "originalExit": 0,
+      "durationSeconds": 38.375372648239136,
+      "outcome": "passed"
+    },
+    {
+      "manifestIndex": 54,
+      "step": "test:maintenance:browser",
+      "originalContinuationReceipt": "54-test-maintenance-browser.json",
+      "originalExit": 0,
+      "durationSeconds": 6.705822706222534,
+      "outcome": "passed"
+    },
+    {
+      "manifestIndex": 55,
+      "step": "test:maintenance-collection:browser",
+      "originalContinuationReceipt": "55-test-maintenance-collection-browser.json",
+      "originalExit": 0,
+      "durationSeconds": 6.960806608200073,
+      "outcome": "passed"
+    },
+    {
+      "manifestIndex": 56,
+      "step": "test:maintenance-history:browser",
+      "originalContinuationReceipt": "56-test-maintenance-history-browser.json",
+      "originalExit": 0,
+      "durationSeconds": 32.85020089149475,
+      "outcome": "passed"
+    },
+    {
+      "manifestIndex": 57,
+      "step": "test:maintenance-restore:browser",
+      "originalContinuationReceipt": "57-test-maintenance-restore-browser.json",
+      "originalExit": 0,
+      "durationSeconds": 25.77858018875122,
+      "outcome": "passed"
+    },
+    {
+      "manifestIndex": 58,
+      "step": "release:prepare",
+      "originalContinuationReceipt": "58-release-prepare.json",
+      "originalExit": 0,
+      "durationSeconds": 6.33273458480835,
+      "outcome": "passed"
+    }
+  ],
+  "fullCommandPassesAmong41IncludingSuccessfulSeoRerun": 39,
+  "commandsWithCaseCoverageFromSeparateRuns": [
+    "test:release",
+    "test:wiki-bridge:browser"
+  ],
+  "qualificationRunnerPass": false,
+  "qualificationReceiptCreated": false,
+  "candidate": {
+    "root": "/workspace/agentic-bible/.git/independent-continuation-912c75f-candidate",
+    "candidateDigest": "d1ca55f033c50eea40d4cddfb185c696550811846b763c5f1c331b243aa837fc",
+    "sourceCommit": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+    "sourceTree": "3dabf8729636ccec3a85b0f162e7d2f6cbfd4f3e",
+    "buildId": "cdaaa9d97354ec70fc85a09e783cba0f1bef0451ef951959dd9e8de4adbd9400",
+    "assets": 82,
+    "verified": true,
+    "deployed": false,
+    "kind": "new standard release candidate, not the frozen module package"
+  },
+  "candidateArchive": {
+    "path": "/workspace/agentic-bible-candidate-912c75f.tar.gz",
+    "sha256": "531a85cd413a4a18f2e62d44db52b496fa1795b7ba52fbb78955b117bd8b0f83"
+  },
+  "frozenModuleManifestHashVerified": true,
+  "frozenModulePackageByteIdentityVerified": false,
+  "staticDifferences": {
+    "sourceProvenanceOnly": 21,
+    "pagefindDocumentOrderingOnly": 4,
+    "contentDifferenceDetected": false
+  },
+  "changes": {
+    "sourceOrTestPatches": false,
+    "deployment": false,
+    "cloudProviderWrites": false,
+    "credentialOrSecurityChanges": false
+  },
+  "remainingLimitations": [
+    "No successful original-runner qualification receipt; combined evidence is independently labelled only.",
+    "New verified standard ASSETS release candidate is distinct from reviewed frozen module-served candidate; no package byteidentity claim.",
+    "No live Access/D1/private-editorial or deployment acceptance performed."
+  ]
+}

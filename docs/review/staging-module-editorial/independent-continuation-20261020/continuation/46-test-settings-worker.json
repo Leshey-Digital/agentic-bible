@@ -1,0 +1,20 @@
+{
+  "label": "46-test-settings-worker",
+  "command": [
+    "npm",
+    "run",
+    "test:settings:worker"
+  ],
+  "startedAt": 1792520546.4940438,
+  "durationSeconds": 42.07743859291077,
+  "exit": 0,
+  "deadlineSeconds": 600,
+  "timedOut": false,
+  "log": "46-test-settings-worker.log",
+  "sha256": "20cbbf6bd4043ca11f25ecd9aa592127d66cc5f6c54463e6c2ccf9b62180b927",
+  "bytes": 334,
+  "cleanup": "existing Linux subreaper supervisor exited after stop_group and adopted-child reaping",
+  "supervisorPid": 107514,
+  "sourceCommit": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+  "sourceStatus": ""
+}

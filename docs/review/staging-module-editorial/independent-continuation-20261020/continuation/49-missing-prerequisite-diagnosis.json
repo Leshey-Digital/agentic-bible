@@ -1,0 +1,13 @@
+{
+  "failureType": "missing generated prerequisite, before assertions",
+  "missingRecords": [
+    "wiki-bridge-upgrade-record.json",
+    "wiki-historical-eight-fourteen.json"
+  ],
+  "producer": "tests/wiki-bridge/upgrade.test.mjs",
+  "producerHistoricalQualificationStep": "test:wiki-bridge:serial (historical step 16)",
+  "allOwnedUpgradeFixtureTargetsAbsent": true,
+  "priorSuiteSupervisorAbsent": true,
+  "originalFailurePreserved": true,
+  "plan": "Regenerate absent prerequisites with unchanged exact-source producer, then only three previously setup-failed browser cases; no journal reset, no fake fixture, no source/test patch."
+}

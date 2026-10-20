@@ -1,0 +1,17 @@
+
+> agentic-bible@0.1.0 test:maintenance-base
+> node --test tests/maintenance-base/integration.test.mjs
+
+✔ restored canonical receipt becomes the next automatic parent and exact public release source (20291.801319ms)
+✔ a stale canonical pin or untested canonical code stops before generation or a new charge (10593.40308ms)
+✔ durable proposal and lost canonical response recover against the original base without generation or dispatch duplication (18995.790702ms)
+✔ canonical movement during generation and before the writer cannot silently rebase the event (15080.029651ms)
+✔ a self-consistent forged canonical-base reference fails writer verification and strict history reconstruction (15367.649118ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 80746.060027

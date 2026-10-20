@@ -1,0 +1,20 @@
+{
+  "label": "19-test-maintenance-sources",
+  "command": [
+    "npm",
+    "run",
+    "test:maintenance-sources"
+  ],
+  "startedAt": 1792519507.5662048,
+  "durationSeconds": 24.045259952545166,
+  "exit": 0,
+  "deadlineSeconds": 600,
+  "timedOut": false,
+  "log": "19-test-maintenance-sources.log",
+  "sha256": "89e0a842e791a4e284d8cd12f50eb436fd6c6f02861e901b1bcba8fe6204ee03",
+  "bytes": 1677,
+  "cleanup": "existing Linux subreaper supervisor exited after stop_group and adopted-child reaping",
+  "supervisorPid": 5549,
+  "sourceCommit": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+  "sourceStatus": ""
+}

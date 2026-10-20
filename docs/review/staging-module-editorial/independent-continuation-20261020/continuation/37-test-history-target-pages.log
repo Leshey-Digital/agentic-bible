@@ -1,0 +1,15 @@
+
+> agentic-bible@0.1.0 test:history-target-pages
+> node --test tests/history-target-pages/*.test.mjs
+
+✔ an edition with no maintenance receipts renders an explicit empty History and review state (2511.623277ms)
+✔ two native article heads build into article-aware history, review, and noindex detail routes (21430.815581ms)
+✔ an MCP restoration renders a real detail link for MCP and preserves the Tool use head (33424.751426ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 33908.62228

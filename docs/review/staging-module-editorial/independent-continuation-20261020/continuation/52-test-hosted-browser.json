@@ -1,0 +1,20 @@
+{
+  "label": "52-test-hosted-browser",
+  "command": [
+    "npm",
+    "run",
+    "test:hosted:browser"
+  ],
+  "startedAt": 1792520806.9328682,
+  "durationSeconds": 8.4529550075531,
+  "exit": 0,
+  "deadlineSeconds": 600,
+  "timedOut": false,
+  "log": "52-test-hosted-browser.log",
+  "sha256": "33efe8536bb802580c1ae0caebe24c0950a99faf42ab0cf62cf669cacaf25bd5",
+  "bytes": 545,
+  "cleanup": "existing Linux subreaper supervisor exited after stop_group and adopted-child reaping",
+  "supervisorPid": 111752,
+  "sourceCommit": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+  "sourceStatus": ""
+}

@@ -1,0 +1,10 @@
+
+> agentic-bible@0.1.0 test:integration:browser
+> PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright test --config playwright.integration.config.ts
+
+
+Running 1 test using 1 worker
+
+  ✓  1 tests/integration-browser/journey.spec.ts:8:1 › one human can recover a contribution, review it, publish fixture metadata and configure inert measurement independently (3.8s)
+
+  1 passed (13.5s)

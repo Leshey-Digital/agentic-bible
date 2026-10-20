@@ -1,0 +1,5 @@
+
+> agentic-bible@0.1.0 release:prepare
+> node scripts/release-candidate.mjs /workspace/agentic-bible/.git/independent-continuation-912c75f-candidate
+
+{"output":"/workspace/agentic-bible/.git/independent-continuation-912c75f-candidate","candidateDigest":"d1ca55f033c50eea40d4cddfb185c696550811846b763c5f1c331b243aa837fc","sourceCommit":"912c75fddc54f223f5d2997596b9cc224ad4b830","buildId":"cdaaa9d97354ec70fc85a09e783cba0f1bef0451ef951959dd9e8de4adbd9400","assets":82,"dryRun":true,"deployed":false}

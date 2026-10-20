@@ -1,0 +1,11 @@
+
+> agentic-bible@0.1.0 test:maintenance:browser
+> PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright test --config playwright.maintenance.config.ts
+
+
+Running 2 tests using 1 worker
+
+  ✓  1 [desktop] › tests/maintenance-browser/reading.spec.mjs:6:1 › automatically published fake-provider excerpts connect actual reading, search, evidence, history and post-publication flags (2.1s)
+  ✓  2 [mobile] › tests/maintenance-browser/reading.spec.mjs:6:1 › automatically published fake-provider excerpts connect actual reading, search, evidence, history and post-publication flags (2.4s)
+
+  2 passed (6.1s)

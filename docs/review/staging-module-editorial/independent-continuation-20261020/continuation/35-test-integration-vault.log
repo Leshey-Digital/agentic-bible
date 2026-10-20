@@ -1,0 +1,21 @@
+
+> agentic-bible@0.1.0 test:integration-vault
+> node --test tests/integration-vault/*.test.mjs
+
+✔ atomic Jev vault upgrade preserves existing opaque ciphertext and crash lock; failure rolls back (3.613936ms)
+✔ encrypted actual D1 persists masked ownership/replay/rotation across Worker restart and authenticates metadata (684.948586ms)
+✔ encrypted Jev resolver releases only the exact signed owner credential and fails closed on corrupt ciphertext (349.123757ms)
+✔ actual D1 atomic replacement rolls back metadata/secret/audit on commit fault and retained crash lock stays closed (851.319193ms)
+✔ scoped connection test uses one fixed read request; bounded responses/errors and lifetime budget survive rotation/restart (752.127367ms)
+✔ durable lock serializes current revision, credential resolution and operation start against concurrent rotation (589.977051ms)
+✔ interrupted actual workerd transaction retains a durable closed lock without partial metadata mutation (603.883008ms)
+✔ native response deadline aborts a slow scoped read without automatic retry and retains the charged test (1530.69877ms)
+✔ Jev credentials remain independently encrypted across migration/restart; connection checks never dispatch (639.640469ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 6818.760028

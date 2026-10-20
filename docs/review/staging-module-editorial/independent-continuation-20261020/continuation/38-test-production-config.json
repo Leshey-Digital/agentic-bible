@@ -1,0 +1,20 @@
+{
+  "label": "38-test-production-config",
+  "command": [
+    "npm",
+    "run",
+    "test:production-config"
+  ],
+  "startedAt": 1792520365.261861,
+  "durationSeconds": 0.21527814865112305,
+  "exit": 0,
+  "deadlineSeconds": 600,
+  "timedOut": false,
+  "log": "38-test-production-config.log",
+  "sha256": "db5352346dd5b823d783d8514fc19089c94e9df475fcee2244d4b4683df1d10f",
+  "bytes": 727,
+  "cleanup": "existing Linux subreaper supervisor exited after stop_group and adopted-child reaping",
+  "supervisorPid": 100594,
+  "sourceCommit": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+  "sourceStatus": ""
+}

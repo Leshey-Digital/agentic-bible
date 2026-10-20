@@ -1,0 +1,23 @@
+{
+  "label": "prerequisite-historical-wiki-stores",
+  "command": [
+    "node",
+    "--import",
+    "./tests/support/network-diagnostics.mjs",
+    "--test",
+    "--test-concurrency=1",
+    "tests/wiki-bridge/upgrade.test.mjs"
+  ],
+  "startedAt": 1792520674.903521,
+  "durationSeconds": 17.554157257080078,
+  "exit": 0,
+  "deadlineSeconds": 600,
+  "timedOut": false,
+  "log": "prerequisite-historical-wiki-stores.log",
+  "sha256": "dad87e4ea5d43a924e46087589ebf1868a0615619ec3b60defdf4eebede6e672",
+  "bytes": 402,
+  "cleanup": "existing Linux subreaper supervisor exited after stop_group and adopted-child reaping",
+  "supervisorPid": 109416,
+  "sourceCommit": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+  "sourceStatus": ""
+}

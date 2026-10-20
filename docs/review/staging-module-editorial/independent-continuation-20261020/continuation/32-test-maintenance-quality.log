@@ -1,0 +1,39 @@
+
+> agentic-bible@0.1.0 test:maintenance-quality
+> node --test --test-concurrency=1 tests/maintenance-quality/*.test.mjs
+
+✔ actual original HTML/D1 capture feeds Evidence2; unknown original lineage durably denies and replays without another request (2526.98058ms)
+✔ the same acquired profile with explicit trusted controlled original assignment reaches canonical Git, flagged review and exact restart replay (9761.579511ms)
+✔ quality defaults closed; validated new identities require a trusted allow and do not expand canonical targets (390.450136ms)
+✔ actual D1 allow replay survives restart, binds candidate/source/manifest and freezes audit (631.065777ms)
+✔ unknown support, fake citations, filler, unsafe/spam/duplicate variants all durably deny (582.864137ms)
+✔ syndication lineage is transitive across domains and one authentic origin is allowed when policy permits (1.014739ms)
+✔ concurrent actual D1 assessment dispatches once; missing completion never redispatches (582.926637ms)
+✔ forged lineage/claim binding and bounded verifier errors retain uncertain no-retry audit (390.206879ms)
+✔ actual SIGKILL after durable quality dispatch preserves held authority after workerd/D1 restart (1278.378275ms)
+✔ canonical history capacity counts automatic and restoration paths and preserves the legacy sixteen-record default (1.809947ms)
+✔ an independently completed new target without canonical-base metadata cannot dispatch a sixty-fifth canonical record (4242.615312ms)
+✔ actual D1 metadata capacity is sixty-four only for the trusted quality profile; legacy admission remains sixteen (1713.964499ms)
+✔ generic target commands require trusted quality even through direct producer/bridge calls (1137.187319ms)
+✔ one owned canonical repo updates two independent article heads, retaining all twenty identities and original repository bytes (15498.350811ms)
+✔ signed restoration selects the same article across multiple current heads, recovers one lost write, and rebuilds retained history (32659.147607ms)
+✔ an identical canonical candidate is a durable known denial even when a controlled verifier reports every semantic check passed (8865.829834ms)
+✔ a quality-required canonical target cannot silently return to the legacy controlled publication profile (7499.755308ms)
+✔ trusted quality admission drives a new local identity through publication, metadata, revision, rollback and replay (884.457055ms)
+✔ quality verifier uncertainty and malformed new identity have no publication effect (300.816226ms)
+✔ bounded local collection publishes arbitrary supplied IDs past the compiled twenty and retains rollback history (2650.581436ms)
+✔ quality dispatcher rejects unconfigured admission before collection or generation (1115.869601ms)
+✔ source collection -> charged proposal -> semantic unknown denies publication and preserves all charges across restart (3112.335757ms)
+✔ trusted controlled assessment allows automatic canonical commit/history/flagged review, exact replay and no real article edits (7975.37864ms)
+✔ legacy predecessor admission inherits quality through schema1 restorations and otherwise preserves legacy chains (8.752801ms)
+✔ predecessor journal integrity rejects foreign targets, receipt or hash-link changes, cycles and an overlong retained chain (5.018053ms)
+✔ twenty actual quality-admitted producers and guarded writers share canonical Git/D1 across bounded batches and one final signed review build (157791.87532ms)
+✔ fixed writer rejects omitted quality/base ports before fresh or retained-intent dispatch and keeps original charges (11030.932499ms)
+ℹ tests 27
+ℹ suites 0
+ℹ pass 27
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 276069.723731

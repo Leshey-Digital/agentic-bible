@@ -1,0 +1,18 @@
+{
+  "sourceCommit": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+  "sourceTree": "3dabf8729636ccec3a85b0f162e7d2f6cbfd4f3e",
+  "recoveryAncestor": "8a38252384c6fe6024a75b462ad95294a131100c",
+  "recoveryIsAncestor": true,
+  "node": "v24.19.0",
+  "npm": "11.9.0",
+  "chromium": "Chromium 154.0.8037.57 built on Debian GNU/Linux 13 (trixie)",
+  "hashes": {
+    "package-lock.json": "1054e37ef96929c79ab0cc99239145bb95118698607eda80c8bd5805b0216e06",
+    "package.json": "5ada617c15d9de77fe079813d837755b77a14255f71b0d08f4074bc4b6775d91",
+    "src/release/qualification.ts": "8e936073f9edd8cb9d82057a5a28c1e88a8fc382c6e91337971944e6027d66b5",
+    "tests/support/process-supervisor.py": "ef51e671115dc72019295c912000d415afd0d56b59df816d34a2a19355a84637",
+    "tests/support/process-supervisor.mjs": "12ce78a439e3a73fd04caab88df37119221b1a1b3f249fa250acd867e4b35eae"
+  },
+  "qualificationManifestDigest": "09a679d464243208a3ad5d0b7c882d4e02949f1a67cf09e9adc6cd1ae2d4a50c",
+  "originalEvidence": "Hashes and sanitized hosted/diagnostic logs recovered from f640cc7; original successful step logs are represented by published digests, not imported as new check receipts."
+}

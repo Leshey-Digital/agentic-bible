@@ -1,0 +1,26 @@
+{
+  "label": "17-hosted-serial",
+  "command": [
+    "node",
+    "--test",
+    "--test-concurrency=1",
+    "tests/hosted/configuration.test.mjs",
+    "tests/hosted/connected.test.mjs",
+    "tests/hosted/jev-configuration.test.mjs",
+    "tests/hosted/jev-dispatch.test.mjs",
+    "tests/hosted/jev-runtime.test.mjs",
+    "tests/hosted/native.test.mjs"
+  ],
+  "startedAt": 1792519278.6753914,
+  "durationSeconds": 15.372318029403687,
+  "exit": 0,
+  "deadlineSeconds": 600,
+  "timedOut": false,
+  "log": "17-hosted-serial.log",
+  "sha256": "97068fdf45d563e6a8eba766cbc33e36d80c19b6f97505f45e8a10f8714b7401",
+  "bytes": 2344,
+  "cleanup": "existing Linux subreaper supervisor exited after stop_group and adopted-child reaping",
+  "supervisorPid": 1150,
+  "sourceCommit": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+  "sourceStatus": ""
+}

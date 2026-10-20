@@ -1,0 +1,20 @@
+{
+  "label": "21-test-maintenance-github",
+  "command": [
+    "npm",
+    "run",
+    "test:maintenance-github"
+  ],
+  "startedAt": 1792519550.1412818,
+  "durationSeconds": 105.50095796585083,
+  "exit": 0,
+  "deadlineSeconds": 600,
+  "timedOut": false,
+  "log": "21-test-maintenance-github.log",
+  "sha256": "5f4d6bf2b001ab65daa3ebb339783f18aab13e5016c14414f9d16c8c1a1c6c3e",
+  "bytes": 1920,
+  "cleanup": "existing Linux subreaper supervisor exited after stop_group and adopted-child reaping",
+  "supervisorPid": 6361,
+  "sourceCommit": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+  "sourceStatus": ""
+}

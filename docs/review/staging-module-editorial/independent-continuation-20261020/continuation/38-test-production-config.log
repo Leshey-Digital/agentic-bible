@@ -1,0 +1,18 @@
+
+> agentic-bible@0.1.0 test:production-config
+> node --test tests/production-config/*.test.mjs
+
+✔ accepts a complete explicit production descriptor without needing secret values (1.238297ms)
+✔ rejects absent, staging, malformed, or alternate production origin/mode (0.380013ms)
+✔ rejects missing or wrongly typed D1 binding (0.460875ms)
+✔ requires server-side admin trust and GitHub token references and rejects client exposure (0.36489ms)
+✔ rejects missing, local, wildcard-like, or malformed admin trust identity (0.469938ms)
+✔ rejects unsafe production discovery and indexing controls (0.291599ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 54.925475

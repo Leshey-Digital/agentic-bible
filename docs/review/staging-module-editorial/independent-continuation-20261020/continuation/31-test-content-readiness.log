@@ -1,0 +1,14 @@
+
+> agentic-bible@0.1.0 test:content-readiness
+> python3 tests/content-readiness/examples_test.py
+
+test_contract_rejects_missing_extra_empty_and_out_of_range_values (__main__.ArticleExamples.test_contract_rejects_missing_extra_empty_and_out_of_range_values) ... ok
+test_factual_failure_still_passes_schema (__main__.ArticleExamples.test_factual_failure_still_passes_schema) ... ok
+test_generic_tool_request_and_alternative_replies_correlate (__main__.ArticleExamples.test_generic_tool_request_and_alternative_replies_correlate) ... ok
+test_literal_parsing_and_schema_contrasts (__main__.ArticleExamples.test_literal_parsing_and_schema_contrasts) ... ok
+test_schema_is_valid_draft_2020_12 (__main__.ArticleExamples.test_schema_is_valid_draft_2020_12) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.002s
+
+OK

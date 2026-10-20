@@ -1,0 +1,7 @@
+{
+  "environment": "clean continuation environment only",
+  "time": 1792519296.946459,
+  "processCount": 14,
+  "zombieCount": 2,
+  "note": "First aggregate observation after dependency setup/prerequisite build and during owned hosted test; not a pre-run baseline. No original-environment process access."
+}

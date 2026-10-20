@@ -1,0 +1,20 @@
+{
+  "label": "28-test-maintenance-review-monitor",
+  "command": [
+    "npm",
+    "run",
+    "test:maintenance-review-monitor"
+  ],
+  "startedAt": 1792519982.0178277,
+  "durationSeconds": 38.687220096588135,
+  "exit": 0,
+  "deadlineSeconds": 600,
+  "timedOut": false,
+  "log": "28-test-maintenance-review-monitor.log",
+  "sha256": "19ec71cd07840f984979963438232c3192a6b640330f0eef71f5e28961cd6c07",
+  "bytes": 932,
+  "cleanup": "existing Linux subreaper supervisor exited after stop_group and adopted-child reaping",
+  "supervisorPid": 46412,
+  "sourceCommit": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+  "sourceStatus": ""
+}

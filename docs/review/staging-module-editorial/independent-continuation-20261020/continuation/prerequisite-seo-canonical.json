@@ -1,0 +1,20 @@
+{
+  "label": "prerequisite-seo-canonical",
+  "command": [
+    "node",
+    "--test",
+    "tests/seo/build.test.mjs"
+  ],
+  "startedAt": 1792520737.893715,
+  "durationSeconds": 11.36976671218872,
+  "exit": 0,
+  "deadlineSeconds": 600,
+  "timedOut": false,
+  "log": "prerequisite-seo-canonical.log",
+  "sha256": "d2576bb1a961987463604b2fbb7f1ce5b68d8df97c826277f95f8fe0672c1ad7",
+  "bytes": 379,
+  "cleanup": "existing Linux subreaper supervisor exited after stop_group and adopted-child reaping",
+  "supervisorPid": 110318,
+  "sourceCommit": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+  "sourceStatus": ""
+}

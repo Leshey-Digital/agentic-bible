@@ -1,0 +1,55 @@
+{
+  "failure": "ENOTEMPTY deleting shared node_modules/.vite/deps during fixture build",
+  "failingTest": "tests/release/legacy-baseline.test.mjs:60",
+  "failedFixture": ".git/release-git-fixture-g9Gw6g",
+  "cacheAliases": [
+    {
+      "path": ".git/release-git-fixture-g9Gw6g/node_modules",
+      "isSymlink": true,
+      "resolved": "/workspace/agentic-bible/node_modules",
+      "cacheResolved": "/workspace/agentic-bible/node_modules/.vite/deps"
+    },
+    {
+      "path": "node_modules",
+      "isSymlink": false,
+      "resolved": "/workspace/agentic-bible/node_modules",
+      "cacheResolved": "/workspace/agentic-bible/node_modules/.vite/deps"
+    }
+  ],
+  "releaseFixtures": [
+    {
+      "fixture": ".git/release-git-fixture-0d6A3t",
+      "sharedNodeModules": true
+    },
+    {
+      "fixture": ".git/release-git-fixture-3WGkxz",
+      "sharedNodeModules": true
+    },
+    {
+      "fixture": ".git/release-git-fixture-F4VN9S",
+      "sharedNodeModules": true
+    },
+    {
+      "fixture": ".git/release-git-fixture-Tg0qKC",
+      "sharedNodeModules": true
+    },
+    {
+      "fixture": ".git/release-git-fixture-cdknEX",
+      "sharedNodeModules": true
+    },
+    {
+      "fixture": ".git/release-git-fixture-g9Gw6g",
+      "sharedNodeModules": true
+    },
+    {
+      "fixture": ".git/release-git-fixture-zkq8u6",
+      "sharedNodeModules": true
+    }
+  ],
+  "diagnosis": "Release fixtures symlink the same node_modules; Astro config does not override vite.cacheDir; default Node file concurrency permits concurrent builds. Shared-cache mutation is a supported explanation for this observed ENOTEMPTY; exact competing writer was not traced. No evidence of assertion mismatch or changed deadline.",
+  "terminalProcesses": {
+    "count": 14,
+    "zombies": 2
+  },
+  "cleanup": "Owned suite supervisor exited after process-group cleanup and adopted-child reaping; no signals sent to unrelated processes."
+}

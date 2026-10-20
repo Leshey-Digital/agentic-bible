@@ -1,0 +1,20 @@
+{
+  "label": "35-test-integration-vault",
+  "command": [
+    "npm",
+    "run",
+    "test:integration-vault"
+  ],
+  "startedAt": 1792520317.2968743,
+  "durationSeconds": 7.006151437759399,
+  "exit": 0,
+  "deadlineSeconds": 600,
+  "timedOut": false,
+  "log": "35-test-integration-vault.log",
+  "sha256": "14d6b835385dbde0577a62df8f5d34c7f68556bd293f8da4509f11a961486f63",
+  "bytes": 1361,
+  "cleanup": "existing Linux subreaper supervisor exited after stop_group and adopted-child reaping",
+  "supervisorPid": 94132,
+  "sourceCommit": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+  "sourceStatus": ""
+}

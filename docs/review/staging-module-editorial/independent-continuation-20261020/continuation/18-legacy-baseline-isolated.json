@@ -1,0 +1,21 @@
+{
+  "label": "18-legacy-baseline-isolated",
+  "command": [
+    "node",
+    "--test",
+    "--test-name-pattern=^guarded legacy rollback restores the exact reviewed baseline without upload and replays its separate journal$",
+    "tests/release/legacy-baseline.test.mjs"
+  ],
+  "startedAt": 1792519471.9393687,
+  "durationSeconds": 8.497743129730225,
+  "exit": 0,
+  "deadlineSeconds": 600,
+  "timedOut": false,
+  "log": "18-legacy-baseline-isolated.log",
+  "sha256": "aa8c349273a9daecf595a57f400e63537ae5978ec9f2f98b493408bafa3c18e4",
+  "bytes": 245,
+  "cleanup": "existing Linux subreaper supervisor exited after stop_group and adopted-child reaping",
+  "supervisorPid": 4957,
+  "sourceCommit": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+  "sourceStatus": ""
+}

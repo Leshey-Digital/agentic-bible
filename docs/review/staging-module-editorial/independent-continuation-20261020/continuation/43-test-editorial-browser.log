@@ -1,0 +1,36 @@
+
+> agentic-bible@0.1.0 test:editorial:browser
+> PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright test --config playwright.editorial.config.ts
+
+
+Running 25 tests using 1 worker
+
+  ✓   1 tests/editorial-browser/batch.spec.ts:8:1 › lost schedule/process responses replay exact receipts without selecting or charging another batch (1.1s)
+  ✓   2 tests/editorial-browser/batch.spec.ts:44:1 › concurrent identical process commands execute one frozen pass and preserve the daily reservation budget (525ms)
+  ✓   3 tests/editorial-browser/flow.spec.ts:58:1 › local submission persists through refresh and becomes a tagged, audited inbox disposition (2.7s)
+  ✓   4 tests/editorial-browser/flow.spec.ts:95:1 › validation and network interruption retain the draft and allow safe retry (650ms)
+  ✓   5 tests/editorial-browser/flow.spec.ts:114:1 › anonymous, forged, reader and logged-out sessions cannot access the admin API (755ms)
+  ✓   6 tests/editorial-browser/flow.spec.ts:128:1 › actual D1 handles simultaneous duplicate saves, stale updates, CSRF and malicious intake (660ms)
+  ✓   7 tests/editorial-browser/flow.spec.ts:155:1 › a committed response preserves newer draft fields and their fresh reference through reload (1.1s)
+  ✓   8 tests/editorial-browser/flow.spec.ts:191:1 › a lost committed response and edited replay conflict have nondestructive recovery across reloads (1.8s)
+  ✓   9 tests/editorial-browser/flow.spec.ts:245:1 › clearing and starting a draft during a pending save preserves the new draft reference (809ms)
+  ✓  10 tests/editorial-browser/flow.spec.ts:277:1 › an unchanged retry after a lost committed response and reload reuses one record and audit event (1.0s)
+  ✓  11 tests/editorial-browser/flow.spec.ts:312:1 › reloading before a pending save responds retains newer fields for conflict recovery (1.3s)
+  ✓  12 tests/editorial-browser/flow.spec.ts:357:1 › clearing without replacement during a pending save stays cleared after completion and navigation (1.1s)
+  ✓  13 tests/editorial-browser/flow.spec.ts:392:1 › inbox empty and sign-in states remain accessible; rate limit stops further writes (1.3s)
+Monitoring mobile geometry: {"immediate":{"viewport":390,"scrollWidth":390,"clientWidth":390,"mobile":true,"grid":"344px","overflow":[]},"afterPaint":{"viewport":390,"scrollWidth":390,"clientWidth":390,"mobile":true,"grid":"344px","overflow":[]}}
+  ✓  14 tests/editorial-browser/monitor.spec.ts:10:1 › source change automatically publishes a fixture revision, flags it afterward and supports review/revert/restore (3.2s)
+Monitoring stylesheet readiness: {"pending":{"viewport":390,"scrollWidth":785,"stylesheetLoaded":false},"loaded":{"viewport":390,"scrollWidth":390,"stylesheetLoaded":true},"nativeClickResolvedBeforeStyles":true,"guardWaitedForStyles":true,"strictWidthBoundary":true}
+  ✓  15 tests/editorial-browser/monitor.spec.ts:43:1 › native monitoring navigation waits for a delayed stylesheet before strict mobile layout checks (773ms)
+  ✓  16 tests/editorial-browser/monitor.spec.ts:57:1 › monitor APIs reject anonymous/reader/CSRF/arbitrary URL requests and preserve duplicate-run idempotency (744ms)
+  ✓  17 tests/editorial-browser/monitor.spec.ts:76:1 › concurrent jobs cannot overspend the persisted daily fixture request budget (1.0s)
+  ✓  18 tests/editorial-browser/published-intake.spec.ts:5:3 › canonical article choices and recovered drafts stay consistent at 1440px (602ms)
+  ✓  19 tests/editorial-browser/published-intake.spec.ts:5:3 › canonical article choices and recovered drafts stay consistent at 390px (587ms)
+  ✓  20 tests/editorial-browser/settings-receipts.spec.ts:12:1 › lost no-op response replays byte-for-byte after reload and a later settings change (610ms)
+  ✓  21 tests/editorial-browser/settings-receipts.spec.ts:30:1 › actual D1 serializes identical no-ops and a no-op versus changed write sharing one key (440ms)
+  ✓  22 tests/editorial-browser/settings.spec.ts:22:1 › admin edits providers independently, preserves valid stale/invalid input and sees audited privacy defaults (2.6s)
+  ✓  23 tests/editorial-browser/settings.spec.ts:49:1 › actual public HTML omits disabled IDs and emits only inert policy on eligible pages with no tracking network (1.5s)
+  ✓  24 tests/editorial-browser/settings.spec.ts:64:1 › actual settings endpoints reject anonymous, reader, CSRF, cross-origin, scripts, secret fields and ad activation (635ms)
+  ✓  25 tests/editorial-browser/settings.spec.ts:79:1 › actual D1 serializes concurrent settings updates and replay audit without overwriting another section (501ms)
+
+  25 passed (38.1s)

@@ -1,0 +1,357 @@
+{
+  "sourceFilesModified": false,
+  "frozenFilesModified": false,
+  "packageByteIdentityClaimed": false,
+  "sourceProvenanceOnly": 21,
+  "searchIndexOrderingOnly": 4,
+  "timeDifferencesDetected": 0,
+  "articleContentDifferencesDetected": 0,
+  "evidenceLimit": "Frozen original module Worker bytes still absent; this analysis only classifies the 25 ordinary-build static differences.",
+  "files": [
+    {
+      "path": "articles/agent-budgets/index.html",
+      "frozenSha256": "78979acd0e09aba3bb89c7af6c18cc4d92bb6d41e7dc60e9166d8c3e1bb25031",
+      "reconstructedSha256": "b0e16df6b284843fea2c64752ecf3e6a22efe50a012dec95b77847c0569d948d",
+      "matches": false,
+      "classification": "source-provenance only",
+      "substitutions": {
+        "sourceCommit": {
+          "from": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+          "to": "b81e2093e80cb8dc31b56fcb14f969dad124bdfa",
+          "occurrences": 2
+        }
+      },
+      "frozenHashMatchedAfterOnlyTheseSubstitutions": true
+    },
+    {
+      "path": "articles/agent-evaluation/index.html",
+      "frozenSha256": "f8f228f483aee9009b4e2a19fe6339912d639722347ca06dab19f4c939fa5e4c",
+      "reconstructedSha256": "a86731fae0e58bfb3ec1715d1a7870b07be9f4f7bed7da27e63f7d25b1ee4ade",
+      "matches": false,
+      "classification": "source-provenance only",
+      "substitutions": {
+        "sourceCommit": {
+          "from": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+          "to": "b81e2093e80cb8dc31b56fcb14f969dad124bdfa",
+          "occurrences": 2
+        }
+      },
+      "frozenHashMatchedAfterOnlyTheseSubstitutions": true
+    },
+    {
+      "path": "articles/agent-identity/index.html",
+      "frozenSha256": "7195b4f03011e39da9d07e42e3468d6984b38d92cef7ebbeca0b78836cf45d38",
+      "reconstructedSha256": "2116da61463518fe77425da8c88d40a42396ce45289d9e965e219b7c65bd7a8a",
+      "matches": false,
+      "classification": "source-provenance only",
+      "substitutions": {
+        "sourceCommit": {
+          "from": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+          "to": "b81e2093e80cb8dc31b56fcb14f969dad124bdfa",
+          "occurrences": 2
+        }
+      },
+      "frozenHashMatchedAfterOnlyTheseSubstitutions": true
+    },
+    {
+      "path": "articles/agent-memory/index.html",
+      "frozenSha256": "cee487795ca4c422e0c6890bde40a95809527a59db8f72c75bc9206c1cc144f4",
+      "reconstructedSha256": "7fca1a6d668207ddf8e7a05ab7e7512682122c9758898d38197a39d91785fa08",
+      "matches": false,
+      "classification": "source-provenance only",
+      "substitutions": {
+        "sourceCommit": {
+          "from": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+          "to": "b81e2093e80cb8dc31b56fcb14f969dad124bdfa",
+          "occurrences": 2
+        }
+      },
+      "frozenHashMatchedAfterOnlyTheseSubstitutions": true
+    },
+    {
+      "path": "articles/agent-observability/index.html",
+      "frozenSha256": "6b4f11cb91c3c14ca09033e20f77578f89bd9d37f150c744ab5aea8be6eea142",
+      "reconstructedSha256": "860a8ce1024c9a311fda4d34a96acfb56f5fa1287d57867e476c0b9e41ed805a",
+      "matches": false,
+      "classification": "source-provenance only",
+      "substitutions": {
+        "sourceCommit": {
+          "from": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+          "to": "b81e2093e80cb8dc31b56fcb14f969dad124bdfa",
+          "occurrences": 2
+        }
+      },
+      "frozenHashMatchedAfterOnlyTheseSubstitutions": true
+    },
+    {
+      "path": "articles/agent-orchestration/index.html",
+      "frozenSha256": "c4fbf242fb9ad3565a048e8541c724386f0c0ca21c5a82e26f3642368de45167",
+      "reconstructedSha256": "e72b5bb9fb5ae87fd49da76037549dff9b826b890f8bc325ac49138eef708d16",
+      "matches": false,
+      "classification": "source-provenance only",
+      "substitutions": {
+        "sourceCommit": {
+          "from": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+          "to": "b81e2093e80cb8dc31b56fcb14f969dad124bdfa",
+          "occurrences": 2
+        }
+      },
+      "frozenHashMatchedAfterOnlyTheseSubstitutions": true
+    },
+    {
+      "path": "articles/agent-planning/index.html",
+      "frozenSha256": "a1f979917acf559b7ac044e30547feff050d71c5c3d63b3f7bb4afcd04f7d9db",
+      "reconstructedSha256": "41ed5e826480bff46c899b97450bdc289f6160cae3d2c33c978dfeaa773f3682",
+      "matches": false,
+      "classification": "source-provenance only",
+      "substitutions": {
+        "sourceCommit": {
+          "from": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+          "to": "b81e2093e80cb8dc31b56fcb14f969dad124bdfa",
+          "occurrences": 2
+        }
+      },
+      "frozenHashMatchedAfterOnlyTheseSubstitutions": true
+    },
+    {
+      "path": "articles/agent-sandboxing/index.html",
+      "frozenSha256": "8c4ea26b05ee1c224aa7bc8d0a20011126d35ad3c947821f4fa8c4117b00f56e",
+      "reconstructedSha256": "a135d3e7a3140e40a7c94144db2c3f2f2937c96b42d42f210f96a7cdd5fda932",
+      "matches": false,
+      "classification": "source-provenance only",
+      "substitutions": {
+        "sourceCommit": {
+          "from": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+          "to": "b81e2093e80cb8dc31b56fcb14f969dad124bdfa",
+          "occurrences": 2
+        }
+      },
+      "frozenHashMatchedAfterOnlyTheseSubstitutions": true
+    },
+    {
+      "path": "articles/agent-to-agent-communication/index.html",
+      "frozenSha256": "df4f1c6c7edd21ce4cc4c2c67ee0251503dd28f537a07ca36db564bc1817a84d",
+      "reconstructedSha256": "97a259333b25969874c4e922420666f0c575055d849e68099d03a7ed9bb02d23",
+      "matches": false,
+      "classification": "source-provenance only",
+      "substitutions": {
+        "sourceCommit": {
+          "from": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+          "to": "b81e2093e80cb8dc31b56fcb14f969dad124bdfa",
+          "occurrences": 2
+        }
+      },
+      "frozenHashMatchedAfterOnlyTheseSubstitutions": true
+    },
+    {
+      "path": "articles/ai-agent/index.html",
+      "frozenSha256": "38718eec692d15016aa5d7a5e68fcbf0368038cc5152ac1a1576621b474338dd",
+      "reconstructedSha256": "42ec8bf2ef343fef6daa82abe3e6b4e1c4abde3982ad83b0ab9c12ef722def06",
+      "matches": false,
+      "classification": "source-provenance only",
+      "substitutions": {
+        "sourceCommit": {
+          "from": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+          "to": "b81e2093e80cb8dc31b56fcb14f969dad124bdfa",
+          "occurrences": 2
+        }
+      },
+      "frozenHashMatchedAfterOnlyTheseSubstitutions": true
+    },
+    {
+      "path": "articles/computer-use-agents/index.html",
+      "frozenSha256": "001ec4d7f1c7f3478ff8460003a2df53dd7994eced59dae51e055a2a8f279956",
+      "reconstructedSha256": "9f76b21a47d9c1e21d442bc98f0efacd694f5c873588339ce02815f0cc0af959",
+      "matches": false,
+      "classification": "source-provenance only",
+      "substitutions": {
+        "sourceCommit": {
+          "from": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+          "to": "b81e2093e80cb8dc31b56fcb14f969dad124bdfa",
+          "occurrences": 2
+        }
+      },
+      "frozenHashMatchedAfterOnlyTheseSubstitutions": true
+    },
+    {
+      "path": "articles/context-engineering/index.html",
+      "frozenSha256": "5ac3dbdb151f852c16bf2a9b7b586d2b66cbc0e04a1295d90a37c3e12d8422f3",
+      "reconstructedSha256": "9d4660189684bde64ff46b9197ce33e62b527e0f84dee5ebe9d3da9100a34dd1",
+      "matches": false,
+      "classification": "source-provenance only",
+      "substitutions": {
+        "sourceCommit": {
+          "from": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+          "to": "b81e2093e80cb8dc31b56fcb14f969dad124bdfa",
+          "occurrences": 2
+        }
+      },
+      "frozenHashMatchedAfterOnlyTheseSubstitutions": true
+    },
+    {
+      "path": "articles/durable-agent-execution/index.html",
+      "frozenSha256": "780a21ad21da73c5accac298d5929e8ceced72cf6d6fcf2282f6439a69e55040",
+      "reconstructedSha256": "339874d09309f64d5556cfc15cdc3d10a469fd4a402afb9aea4f66cc43bb50a3",
+      "matches": false,
+      "classification": "source-provenance only",
+      "substitutions": {
+        "sourceCommit": {
+          "from": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+          "to": "b81e2093e80cb8dc31b56fcb14f969dad124bdfa",
+          "occurrences": 2
+        }
+      },
+      "frozenHashMatchedAfterOnlyTheseSubstitutions": true
+    },
+    {
+      "path": "articles/human-oversight/index.html",
+      "frozenSha256": "e38e3225a72a93c70110946ebd14210b3fdb5e7347274466846968fb561c2e3b",
+      "reconstructedSha256": "902d2ae175b3be7da17fe6e1525a74a0b1f91219731b0d38931402acd7e805ba",
+      "matches": false,
+      "classification": "source-provenance only",
+      "substitutions": {
+        "sourceCommit": {
+          "from": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+          "to": "b81e2093e80cb8dc31b56fcb14f969dad124bdfa",
+          "occurrences": 2
+        }
+      },
+      "frozenHashMatchedAfterOnlyTheseSubstitutions": true
+    },
+    {
+      "path": "articles/model-context-protocol/index.html",
+      "frozenSha256": "4d997885d04269e9ab8d57306f04da6918d95aefda3b60aba48c9cae9eba4ec2",
+      "reconstructedSha256": "bbe4aaf8be0c0801c074e3fde90284028c52c8da6a6c21f76457a170c5a3e5a7",
+      "matches": false,
+      "classification": "source-provenance only",
+      "substitutions": {
+        "sourceCommit": {
+          "from": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+          "to": "b81e2093e80cb8dc31b56fcb14f969dad124bdfa",
+          "occurrences": 2
+        }
+      },
+      "frozenHashMatchedAfterOnlyTheseSubstitutions": true
+    },
+    {
+      "path": "articles/prompt-injection/index.html",
+      "frozenSha256": "5c5d78294d87024dddea123b59ee2a3b6b5783e58012f93bf47220012b37f844",
+      "reconstructedSha256": "e53c2f41f806695be2ddf743d74129ac1ee6b8c6b2ce51af2a1a75a758d41541",
+      "matches": false,
+      "classification": "source-provenance only",
+      "substitutions": {
+        "sourceCommit": {
+          "from": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+          "to": "b81e2093e80cb8dc31b56fcb14f969dad124bdfa",
+          "occurrences": 2
+        }
+      },
+      "frozenHashMatchedAfterOnlyTheseSubstitutions": true
+    },
+    {
+      "path": "articles/retrieval-augmented-generation/index.html",
+      "frozenSha256": "f4c6f2f028612726bb79d7dc491e9687b181fd06803c1dde938f9309125cf047",
+      "reconstructedSha256": "0eadfa94206970e90d1404f849e95d051c87ae2188f6d6dc210d967bc176478e",
+      "matches": false,
+      "classification": "source-provenance only",
+      "substitutions": {
+        "sourceCommit": {
+          "from": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+          "to": "b81e2093e80cb8dc31b56fcb14f969dad124bdfa",
+          "occurrences": 2
+        }
+      },
+      "frozenHashMatchedAfterOnlyTheseSubstitutions": true
+    },
+    {
+      "path": "articles/structured-outputs/index.html",
+      "frozenSha256": "f6e6672f383cd951114417b915911a14245dde8f2dcc865dc80672de667a0689",
+      "reconstructedSha256": "2e24a1000e1d63bec11255368981d07bdc407ec0954edf4dbb7f87eedcbc60fe",
+      "matches": false,
+      "classification": "source-provenance only",
+      "substitutions": {
+        "sourceCommit": {
+          "from": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+          "to": "b81e2093e80cb8dc31b56fcb14f969dad124bdfa",
+          "occurrences": 2
+        }
+      },
+      "frozenHashMatchedAfterOnlyTheseSubstitutions": true
+    },
+    {
+      "path": "articles/tool-permissions/index.html",
+      "frozenSha256": "0c478b9dac3a99a68149d6e2fcaa5b3aeb10db9b2ab62785b1588683ed9e7a9d",
+      "reconstructedSha256": "ca493040afcbc1f8b62f9aa6047d631536355bc1f09635d807802a6c0fddc7ca",
+      "matches": false,
+      "classification": "source-provenance only",
+      "substitutions": {
+        "sourceCommit": {
+          "from": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+          "to": "b81e2093e80cb8dc31b56fcb14f969dad124bdfa",
+          "occurrences": 2
+        }
+      },
+      "frozenHashMatchedAfterOnlyTheseSubstitutions": true
+    },
+    {
+      "path": "articles/tool-use/index.html",
+      "frozenSha256": "1056c019cdabbebab64e7166cb2d3c21bdabae711c329b82d26e45ef2838a0ad",
+      "reconstructedSha256": "fad3a9e2a0c1f83f4928cb9f4a3bd3535e87f58d8c97db9dd1e0fab1898aeef5",
+      "matches": false,
+      "classification": "source-provenance only",
+      "substitutions": {
+        "sourceCommit": {
+          "from": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+          "to": "b81e2093e80cb8dc31b56fcb14f969dad124bdfa",
+          "occurrences": 2
+        }
+      },
+      "frozenHashMatchedAfterOnlyTheseSubstitutions": true
+    },
+    {
+      "path": "pagefind/index/en_708815b.pf_index",
+      "frozenSha256": "acea79a23243e840173b2839c9618773cbe4cf757bc2b0ba03ef9353600a4f43",
+      "reconstructedSha256": null,
+      "matches": false,
+      "classification": "Pagefind document ordering / derived shard and metadata hashes",
+      "verifiedFrozenBytes": "release-recovery/2026-10-20/production-launch/assets/pagefind/index/en_708815b.pf_index",
+      "semanticEvidence": "pagefind-semantic-comparison.json"
+    },
+    {
+      "path": "pagefind/index/en_a3d517c.pf_index",
+      "frozenSha256": "d7f5e9b2550b6b1ac68f269e6aa8d426f978b52fc9af734edb5263838bffe0bf",
+      "reconstructedSha256": null,
+      "matches": false,
+      "classification": "Pagefind document ordering / derived shard and metadata hashes",
+      "verifiedFrozenBytes": "release-recovery/2026-10-20/production-launch/assets/pagefind/index/en_a3d517c.pf_index",
+      "semanticEvidence": "pagefind-semantic-comparison.json"
+    },
+    {
+      "path": "pagefind/pagefind-entry.json",
+      "frozenSha256": "34815758abdfb06620072f6784c07936a7718e52f40b5e2214a1cec0e28f8724",
+      "reconstructedSha256": "fc398c8ca9259c73c1cff96106199b6219c4f41f03e5844af77c66ab4f7b94bb",
+      "matches": false,
+      "classification": "Pagefind document ordering / derived shard and metadata hashes",
+      "verifiedFrozenBytes": "release-recovery/2026-10-20/production-launch/assets/pagefind/pagefind-entry.json",
+      "semanticEvidence": "pagefind-semantic-comparison.json"
+    },
+    {
+      "path": "pagefind/pagefind.en_83825bc69a.pf_meta",
+      "frozenSha256": "bf69fd4fe229474ef472d1d0302589fed55f0570d558fc6ff948a0eb36e55aa9",
+      "reconstructedSha256": null,
+      "matches": false,
+      "classification": "Pagefind document ordering / derived shard and metadata hashes",
+      "verifiedFrozenBytes": "release-recovery/2026-10-20/production-launch/assets/pagefind/pagefind.en_83825bc69a.pf_meta",
+      "semanticEvidence": "pagefind-semantic-comparison.json"
+    },
+    {
+      "path": "release-source.json",
+      "frozenSha256": "189ba92b36c675932e1227bc6d71492cfac353d8ac92ef7e69bff81b20910951",
+      "reconstructedSha256": "4e7ef0083b351c511d1a21a3da3753a570de9603bbfc0485564b5b3227952c05",
+      "matches": false,
+      "classification": "source commit/tree provenance only",
+      "frozenHashMatchedAfterOnlyTheseSubstitutions": true,
+      "oldTree": "082f17aa7098eef6d76211c81fd54db01ea0dd6c"
+    }
+  ]
+}

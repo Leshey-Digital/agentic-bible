@@ -1,0 +1,20 @@
+{
+  "label": "41-runtime-check",
+  "command": [
+    "npm",
+    "run",
+    "runtime:check"
+  ],
+  "startedAt": 1792520373.5641575,
+  "durationSeconds": 1.017280101776123,
+  "exit": 0,
+  "deadlineSeconds": 600,
+  "timedOut": false,
+  "log": "41-runtime-check.log",
+  "sha256": "44c02b6b575156cf6537d9dbd9dbb4e58c5af0d88997db6d54d178b11281d6d1",
+  "bytes": 536,
+  "cleanup": "existing Linux subreaper supervisor exited after stop_group and adopted-child reaping",
+  "supervisorPid": 100855,
+  "sourceCommit": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+  "sourceStatus": ""
+}

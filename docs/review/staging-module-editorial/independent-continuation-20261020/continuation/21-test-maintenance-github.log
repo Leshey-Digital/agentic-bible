@@ -1,0 +1,26 @@
+
+> agentic-bible@0.1.0 test:maintenance-github
+> node --test tests/maintenance-github/writer.test.mjs
+
+✔ captured evidence automatically advances canonical Markdown, immutable history and review pointer in one real Git commit (4176.113802ms)
+✔ disabled/missing ports and incomplete, stale, tampered or forged authority stop before GitHub (11620.137563ms)
+✔ sequential revisions preserve prior history and completed replay never restores an older tip (6599.610752ms)
+✔ lost GraphQL response reconciles history after restart and a later unrelated commit without another mutation (4146.302744ms)
+✔ competing writes and rollback to an ancestor both reject the expected-head mutation atomically (7867.658009ms)
+✔ concurrent same-event callers have one owner, and pre-dispatch ambiguity never redispatches (7630.630077ms)
+✔ D1 completion response loss replays the durable historical receipt without GitHub requests (4018.595446ms)
+✔ outbox capacity, request budget, stale baseline and tampered intent fail closed without overwriting (17271.121296ms)
+✔ unexpected provider changes are detected after the real commit and never confirmed or force-rolled back (3875.820095ms)
+✔ rolled-back local candidates cannot start a new write; completed receipts remain historical without restoring anything (11450.151481ms)
+✔ oversized and late responses remain charged and bounded before a later explicit safe read retry (6155.983275ms)
+✔ a mutation applied after the client deadline reconciles exactly once without redispatch (6073.064146ms)
+✔ the committed canonical tree builds actual twenty-entry Astro/Pagefind output with flags and pinned Git history (5974.028887ms)
+✔ untested canonical application changes are conflicts while unrelated preexisting edits remain intact (8050.00144ms)
+ℹ tests 14
+ℹ suites 0
+ℹ pass 14
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 105303.510467

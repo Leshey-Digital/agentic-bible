@@ -1,0 +1,22 @@
+{
+  "label": "58-release-prepare",
+  "command": [
+    "npm",
+    "run",
+    "release:prepare",
+    "--",
+    "/workspace/agentic-bible/.git/independent-continuation-912c75f-candidate"
+  ],
+  "startedAt": 1792520926.3072915,
+  "durationSeconds": 6.33273458480835,
+  "exit": 0,
+  "deadlineSeconds": 300,
+  "timedOut": false,
+  "log": "58-release-prepare.log",
+  "sha256": "e810afa77a16b39a36baf889dc8714fd85bd18414187457ef8ef5d8d54ee1545",
+  "bytes": 499,
+  "cleanup": "existing Linux subreaper supervisor exited after stop_group and adopted-child reaping",
+  "supervisorPid": 118039,
+  "sourceCommit": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+  "sourceStatus": ""
+}

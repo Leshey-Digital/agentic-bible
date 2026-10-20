@@ -1,0 +1,25 @@
+
+> agentic-bible@0.1.0 test:maintenance-history:browser
+> PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright test --config playwright.maintenance-history.config.ts
+
+
+Running 12 tests using 1 worker
+
+  ✓   1 [desktop] › tests/maintenance-history-browser/history.spec.mjs:7:1 › static history, readable text changes and review flags work without JavaScript (3.1s)
+
+  ✓   2 [desktop] › tests/maintenance-history-browser/history.spec.mjs:8:1 › signed admin saves review and guarded revert request with refreshable append-only audit (1.6s)
+  ✓   3 [desktop] › tests/maintenance-history-browser/history.spec.mjs:9:1 › lost completed response retries the same request once and stale audit preserves the note for reconfirmation (1.1s)
+  ✓   4 [desktop] › tests/maintenance-history-browser/history.spec.mjs:10:1 › delayed durable decision preserves a newer draft; failed follow-up read preserves confirmed save (911ms)
+  ✓   5 [desktop] › tests/maintenance-history-browser/history.spec.mjs:11:1 › unauthenticated workspace and foreign-origin mutation stay closed; keyboard and narrow layouts remain usable (833ms)
+
+  ✓   6 [desktop] › tests/maintenance-history-browser/history.spec.mjs:13:1 › stale audit reload releases its lock after a durable save, failed follow-up read and stale next save (1.9s)
+  ✓   7 [mobile] › tests/maintenance-history-browser/history.spec.mjs:7:1 › static history, readable text changes and review flags work without JavaScript (3.4s)
+
+  ✓   8 [mobile] › tests/maintenance-history-browser/history.spec.mjs:8:1 › signed admin saves review and guarded revert request with refreshable append-only audit (1.9s)
+  ✓   9 [mobile] › tests/maintenance-history-browser/history.spec.mjs:9:1 › lost completed response retries the same request once and stale audit preserves the note for reconfirmation (1.2s)
+  ✓  10 [mobile] › tests/maintenance-history-browser/history.spec.mjs:10:1 › delayed durable decision preserves a newer draft; failed follow-up read preserves confirmed save (853ms)
+  ✓  11 [mobile] › tests/maintenance-history-browser/history.spec.mjs:11:1 › unauthenticated workspace and foreign-origin mutation stay closed; keyboard and narrow layouts remain usable (888ms)
+
+  ✓  12 [mobile] › tests/maintenance-history-browser/history.spec.mjs:13:1 › stale audit reload releases its lock after a durable save, failed follow-up read and stale next save (1.9s)
+
+  12 passed (32.1s)

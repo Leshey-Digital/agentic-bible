@@ -1,0 +1,27 @@
+✔ server-only credential injection rejects foreign destinations, unsafe methods and client headers; incomplete configuration stays closed (22.933543ms)
+✔ shipped Worker verifies real signed identity, persists an approval and proposes a recoverable GitHub draft (2909.689986ms)
+✔ signed identity rejects wrong claims, algorithms, keys, expiry, forgery and CSRF before D1 or GitHub (437.877144ms)
+✔ immutable hosted approval collisions, ownership, revocation and source budgets remain bounded after restart (1164.952418ms)
+✔ configuredPorts mounts only an explicitly complete, but disabled, owner-bound Jev port (3.362176ms)
+✔ Jev orchestration fails closed without dependencies or explicit enablement and never reads a credential during status setup (1.636897ms)
+✔ enabled Jev orchestration remains unconfigured when any charged-execution dependency is absent (0.186671ms)
+✔ complete Jev orchestration is configured but secret-resolution errors are redacted before provider transport (0.367513ms)
+✔ owner-bound resolution rejects malformed or cross-owner identity before reading credentials or contacting transport (0.309577ms)
+✔ Jev runtime route requires a valid signed admin and a configured server port before any transport or charge (28.842769ms)
+✔ signed same-origin Jev evaluation reaches only the injected fake transport and returns advisory output (7.127121ms)
+✔ one failed synthetic Jev dispatch is redacted and never automatically retried (1.231626ms)
+✔ shipped hosted runtime serves assets and never enables fixture identities or write ports (6.205623ms)
+✔ actual Workers/D1 proposes one pinned GitHub change and replays after restart without reactivation (2437.466803ms)
+✔ ambiguous ref/PR effects and D1 completion faults resume without duplicate visible proposals (2936.85993ms)
+✔ authorization, changed/revoked approvals, stale Git bases and foreign branches fail closed (335.432046ms)
+✔ D1 concurrency, capacity, request budget and late Git movement remain bounded (431.267589ms)
+✔ source hashes, response ceilings and native fetch deadlines reject before Git mutations (2354.868856ms)
+✔ approval revocation during GitHub effects cannot confirm a proposal (368.169004ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 19
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 15275.733202

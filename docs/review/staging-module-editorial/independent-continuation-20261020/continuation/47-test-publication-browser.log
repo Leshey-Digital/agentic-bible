@@ -1,0 +1,10 @@
+
+> agentic-bible@0.1.0 test:publication:browser
+> PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright test --config playwright.publication.config.ts
+
+
+Running 1 test using 1 worker
+
+  ✓  1 tests/publication-browser/publication.spec.ts:15:1 › real rendered HTML, pinned Pagefind, readable history, post-publication flags and rollback stay coherent (5.7s)
+
+  1 passed (7.0s)

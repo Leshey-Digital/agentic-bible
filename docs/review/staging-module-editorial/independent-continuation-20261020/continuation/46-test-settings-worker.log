@@ -1,0 +1,13 @@
+
+> agentic-bible@0.1.0 test:settings:worker
+> node --test tests/settings-worker/*.test.mjs
+
+✔ actual Worker/D1 no-op receipts survive restart, failures, capacity and expiry without changing history (41854.949748ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 41908.734611

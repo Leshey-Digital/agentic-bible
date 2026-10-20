@@ -1,0 +1,13 @@
+
+> agentic-bible@0.1.0 test:wiki-bridge:browser
+> PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright test --config playwright.wiki-bridge.config.ts tests/wiki-bridge-browser/cold-search.spec.mjs tests/wiki-bridge-browser/upgrade.spec.mjs
+
+
+Running 3 tests using 1 worker
+
+Cold snapshot search: {"articles":20,"elapsedMs":255,"workerAttempts":0,"warnings":[],"resources":[{"path":"/wiki-snapshots/34c8918774a9e39efcc235fa7afeb48d8abeab7a6732ff9fc84bdd6077fe7d53/pagefind/pagefind.js","duration":10,"responseEnd":238.9000000001397},{"path":"/wiki-snapshots/34c8918774a9e39efcc235fa7afeb48d8abeab7a6732ff9fc84bdd6077fe7d53/pagefind/pagefind-entry.json","duration":6.800000000046566,"responseEnd":254.80000000004657},{"path":"/wiki-snapshots/34c8918774a9e39efcc235fa7afeb48d8abeab7a6732ff9fc84bdd6077fe7d53/pagefind/pagefind.en_82b9ee73a8.pf_meta","duration":6,"responseEnd":262.20000000018626},{"path":"/wiki-snapshots/34c8918774a9e39efcc235fa7afeb48d8abeab7a6732ff9fc84bdd6077fe7d53/pagefind/wasm.en.pagefind","duration":10.400000000139698,"responseEnd":266.9000000001397},{"path":"/wiki-snapshots/34c8918774a9e39efcc235fa7afeb48d8abeab7a6732ff9fc84bdd6077fe7d53/pagefind/index/en_d632856.pf_index","duration":5.399999999906868,"responseEnd":314.80000000004657},{"path":"/wiki-snapshots/34c8918774a9e39efcc235fa7afeb48d8abeab7a6732ff9fc84bdd6077fe7d53/pagefind/fragment/en_7278a8d.pf_fragment","duration":8.800000000046566,"responseEnd":337.4000000001397}]}
+  ✓  1 tests/wiki-bridge-browser/cold-search.spec.mjs:8:1 › cold current-snapshot search does not depend on Pagefind worker bootstrap (558ms)
+  ✓  2 tests/wiki-bridge-browser/upgrade.spec.mjs:11:1 › an actual pre-expansion store retains current/history Pagefind and exact replay under the upgraded reader (5.2s)
+  ✓  3 tests/wiki-bridge-browser/upgrade.spec.mjs:42:1 › retained eight- and fourteen-entry Pagefind indexes keep their own historical topic inventories (1.3s)
+
+  3 passed (8.3s)

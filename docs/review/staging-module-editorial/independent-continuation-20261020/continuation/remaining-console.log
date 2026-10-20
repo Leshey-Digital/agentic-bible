@@ -1,0 +1,2 @@
+START 18 test:release
+{"label": "18-test-release", "command": ["npm", "run", "test:release"], "startedAt": 1792519310.059239, "durationSeconds": 33.89406728744507, "exit": 1, "deadlineSeconds": 600, "timedOut": false, "log": "18-test-release.log", "sha256": "c29819cfdfed3f1479d730a7e2cc68f70ae1fdf4e0035515475dc151e4890221", "bytes": 19220, "cleanup": "existing Linux subreaper supervisor exited after stop_group and adopted-child reaping", "supervisorPid": 1509, "sourceCommit": "912c75fddc54f223f5d2997596b9cc224ad4b830", "sourceStatus": ""}

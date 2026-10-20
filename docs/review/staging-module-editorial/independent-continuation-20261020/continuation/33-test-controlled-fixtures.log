@@ -1,0 +1,14 @@
+
+> agentic-bible@0.1.0 test:controlled-fixtures
+> node --test tests/controlled-fixtures/*.test.mjs
+
+✔ all repository migrations retain complete triggers and match SQLite whole-file application (569.603043ms)
+✔ fresh controlled inputs bind this source edition without rebasing retained inputs or template bytes (2.779058ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 626.964421

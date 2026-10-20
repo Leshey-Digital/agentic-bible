@@ -1,0 +1,20 @@
+{
+  "label": "39-test-recovery",
+  "command": [
+    "npm",
+    "run",
+    "test:recovery"
+  ],
+  "startedAt": 1792520365.5166137,
+  "durationSeconds": 6.949667930603027,
+  "exit": 0,
+  "deadlineSeconds": 600,
+  "timedOut": false,
+  "log": "39-test-recovery.log",
+  "sha256": "b0cd34a52333dd3de05b53188216ffe69055b84e0500fad7f5b72a7d340c751a",
+  "bytes": 2038,
+  "cleanup": "existing Linux subreaper supervisor exited after stop_group and adopted-child reaping",
+  "supervisorPid": 100629,
+  "sourceCommit": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+  "sourceStatus": ""
+}

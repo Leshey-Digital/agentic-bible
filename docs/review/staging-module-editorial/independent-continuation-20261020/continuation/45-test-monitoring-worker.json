@@ -1,0 +1,20 @@
+{
+  "label": "45-test-monitoring-worker",
+  "command": [
+    "npm",
+    "run",
+    "test:monitoring:worker"
+  ],
+  "startedAt": 1792520514.7094047,
+  "durationSeconds": 31.745437622070312,
+  "exit": 0,
+  "deadlineSeconds": 600,
+  "timedOut": false,
+  "log": "45-test-monitoring-worker.log",
+  "sha256": "b0367d89c4c4b4a0a37f1742f9613d5876a0ff9dd7016ff20fa1e433da0716b9",
+  "bytes": 318,
+  "cleanup": "existing Linux subreaper supervisor exited after stop_group and adopted-child reaping",
+  "supervisorPid": 106912,
+  "sourceCommit": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+  "sourceStatus": ""
+}

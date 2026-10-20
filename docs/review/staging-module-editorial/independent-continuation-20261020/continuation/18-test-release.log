@@ -1,0 +1,122 @@
+
+> agentic-bible@0.1.0 test:release
+> node --test tests/release/*.test.mjs
+
+✔ Cloudflare adapter binds GET/activation to one account/Worker, omits force and rejects split traffic (61.233323ms)
+✔ GitHub release reads require successful main-push CI, exact workflow and one immutable artifact (2.91978ms)
+✔ retired Actions entrypoint cannot be enabled by former workflow variables (45.096435ms)
+✔ version reconciliation validates all matches, respects durable selection and stays bounded (10.278981ms)
+✔ actual connector capsule rehashes exact bytes, preserves only named external secrets and creates an undeployed version (5816.286344ms)
+✔ compressed payload digest fails closed before upload mutations and stale expected-active is rejected (921.607757ms)
+✔ capsule rejects missing, extra, wrong-type and wrong-resource preconfigured bindings before asset upload (1083.432371ms)
+✔ control capsules omit arbitrary annotations, binding values and tokens (2.105693ms)
+{"state":"connector-request","requestPath":"/workspace/agentic-bible/.git/release-git-fixture-3WGkxz/.git/bridge-1f16904e-b8ad-4a2b-a81f-dffdf817abe7/b9d87cbb-dbba-4e17-a662-ff3d1620411f.request.json","requestDigest":"0a410c14842ac209edad9f01afcc4ea433808d0d2bb4a195f8023e5980cbf32c","codeBytes":915378,"kind":"upload"}
+✔ asset authorization rejection stays token-free, performs no retry and never creates a version (588.729579ms)
+✔ canonical source read retains the executor proxy without inheriting application credentials (86.934949ms)
+✔ file bridge binds live lease, code digest and responses; stale/code-edited requests fail closed (501.5678ms)
+✔ pinned Wrangler upload preflight rejects extra or misbound settings before starting the uploader (10724.007432ms)
+▶ pinned Wrangler retries ambiguous creates; SIGKILL and same-UUID replay reconcile duplicates safely
+  ✔ drop (1989.814196ms)
+  ✔ drop successful CLI return (1390.252757ms)
+  ✔ 500 (2014.337311ms)
+  ✔ 500 successful CLI return (1605.726867ms)
+✔ pinned Wrangler retries ambiguous creates; SIGKILL and same-UUID replay reconcile duplicates safely (11345.276991ms)
+ENOTEMPTY: directory not empty, rmdir '/workspace/agentic-bible/.git/release-git-fixture-g9Gw6g/node_modules/.vite/deps'
+  Stack trace:
+
+✖ guarded legacy rollback restores the exact reviewed baseline without upload and replays its separate journal (2297.6473ms)
+✔ legacy baseline record rejects candidate markers, altered bindings and non-canonical evidence (17753.617223ms)
+✔ legacy runtime acceptance is exact, versioned and pinned to the real b41a422 source shape (3.685204ms)
+✔ tampering with a legacy runtime build pin breaks its observed manifest binding before provider reads (22.02236ms)
+✔ stale expected-active and provider version ETag, creation, number or binding changes stop before activation (245.354096ms)
+✔ changed restored asset bytes or runtime policy leaves the legacy rollback journal unverified (171.397082ms)
+✔ legacy baseline digest, reviewer pin and owner guards reject before provider reads (17.110457ms)
+✔ Cloudflare connector and control capsule re-fetch exact legacy identity and bindings before deployment (7.383848ms)
+{"state":"connector-request","requestPath":"/workspace/agentic-bible/.git/release-git-fixture-zkq8u6/.git/controlled-bridge-c385afea-bd5e-4240-8054-d14d3ebd729f/17cf679a-855f-498a-899b-4add531e33c8.request.json","requestDigest":"1bcbfe129ab12603781b895ce6623ca6cde9481fff5c08d7a25564b8be810897","codeBytes":5534,"kind":"control"}
+✔ local qualification binds every pinned constituent log and exact candidate; review pins reject edited records (4136.25923ms)
+✔ schema-2 qualification receipts remain verifiable after serial-suite qualification is introduced (18.09476ms)
+✔ qualification refuses changed validation inventory, missing checks, or stale suite-manifest digest (15.060568ms)
+✔ existing schema-1 qualification receipts remain verifiable without inheriting new checks (12.909315ms)
+✔ upload plan preserves exact module/header bytes and special-file separation (11.466221ms)
+{"state":"connector-request","requestPath":"/workspace/agentic-bible/.git/release-git-fixture-zkq8u6/.git/controlled-bridge-c385afea-bd5e-4240-8054-d14d3ebd729f/51e93a69-eded-4aa1-80b2-c06378caf6f3.request.json","requestDigest":"ee76cec0c6a1db5d52400bd744aed28e1d7bd0bda09fda1a22ef5c4fdb9a23bc","codeBytes":5556,"kind":"control"}
+{"state":"connector-request","requestPath":"/workspace/agentic-bible/.git/release-git-fixture-zkq8u6/.git/controlled-bridge-c385afea-bd5e-4240-8054-d14d3ebd729f/a22a4989-970e-44ab-9975-7d5c0cc6b42c.request.json","requestDigest":"b16e57d24d21bbb00736acfc6fefd61ff35cc592b384c7e751efad717102d513","codeBytes":915358,"kind":"upload"}
+{"state":"connector-request","requestPath":"/workspace/agentic-bible/.git/release-git-fixture-zkq8u6/.git/controlled-bridge-60aee122-d4c0-4e9c-a7b7-6d1b4c8d0b18/fd10e46f-cbd6-4a54-929e-a77732916c66.request.json","requestDigest":"a6b4f9debb628dc15dfe5fb74fa1f00a62b2c226ba97a0cf60a16a8d4e7dfc4b","codeBytes":5534,"kind":"control"}
+{"state":"connector-request","requestPath":"/workspace/agentic-bible/.git/release-git-fixture-zkq8u6/.git/controlled-bridge-60aee122-d4c0-4e9c-a7b7-6d1b4c8d0b18/94a784d0-e3bb-4e65-bba9-9f01e98c8d0d.request.json","requestDigest":"19d8d29e0fe17595688d4ad30ec099ce818ef9b4be60a3680d9a07d40136c92c","codeBytes":5556,"kind":"control"}
+{"state":"connector-request","requestPath":"/workspace/agentic-bible/.git/release-git-fixture-zkq8u6/.git/controlled-bridge-60aee122-d4c0-4e9c-a7b7-6d1b4c8d0b18/9e2b4520-0141-4f5e-a0a1-3038f73719a9.request.json","requestDigest":"b8a5ad80eaf8ce31d90d492443e0ae6ac122abd6303865b2c4b03f790fd39fc6","codeBytes":5568,"kind":"control"}
+{"state":"connector-request","requestPath":"/workspace/agentic-bible/.git/release-git-fixture-zkq8u6/.git/controlled-bridge-60aee122-d4c0-4e9c-a7b7-6d1b4c8d0b18/75b2c774-d836-4b15-a4a6-31d5e1b85e81.request.json","requestDigest":"b560eacdbc700e20c8465f28d2f09cfce6a70dd4973d1d5fefc150c9f15b5b83","codeBytes":5568,"kind":"control"}
+{"state":"connector-request","requestPath":"/workspace/agentic-bible/.git/release-git-fixture-zkq8u6/.git/controlled-bridge-60aee122-d4c0-4e9c-a7b7-6d1b4c8d0b18/6a19cae0-ac60-4221-8f10-113333443a88.request.json","requestDigest":"41165deb8ebf90debec62a26dd9603eed8ece64246da80a1093f20b2301acb9e","codeBytes":5534,"kind":"control"}
+{"state":"connector-request","requestPath":"/workspace/agentic-bible/.git/release-git-fixture-zkq8u6/.git/controlled-bridge-60aee122-d4c0-4e9c-a7b7-6d1b4c8d0b18/0b49164c-8a97-447a-b0a5-74ebaf12f7e7.request.json","requestDigest":"a2da87ffc737dd6ddc808256f507a5ad4a19b05973673789cdca34159a9832c4","codeBytes":5801,"kind":"control"}
+{"state":"connector-request","requestPath":"/workspace/agentic-bible/.git/release-git-fixture-zkq8u6/.git/controlled-bridge-9b832216-ae8c-44eb-84ab-d04c7ecd9515/1dcfd40a-36e0-4ee6-9b24-f0bf71a9fc2d.request.json","requestDigest":"aa76265ab194c7c7f7e55bd9a921659de4f4644dc40aca0674a1db55cb08425b","codeBytes":5534,"kind":"control"}
+{"state":"connector-request","requestPath":"/workspace/agentic-bible/.git/release-git-fixture-zkq8u6/.git/controlled-bridge-9b832216-ae8c-44eb-84ab-d04c7ecd9515/8d50c268-1bf0-4779-bf02-cbc147a6d22b.request.json","requestDigest":"62499e194449ac750b8b12416890937a6349e869bfded39d6882a4cf8233e4c1","codeBytes":5556,"kind":"control"}
+{"state":"connector-request","requestPath":"/workspace/agentic-bible/.git/release-git-fixture-zkq8u6/.git/controlled-bridge-9b832216-ae8c-44eb-84ab-d04c7ecd9515/a2bb2242-90d5-45e2-96fc-3cd23843243d.request.json","requestDigest":"a21c8e61a42abd394dfe409d506a170d5ba959d56a53544bf50af04f30284a99","codeBytes":5568,"kind":"control"}
+{"state":"connector-request","requestPath":"/workspace/agentic-bible/.git/release-git-fixture-zkq8u6/.git/controlled-bridge-9b832216-ae8c-44eb-84ab-d04c7ecd9515/dc823486-42a9-4296-9a56-c422f7488173.request.json","requestDigest":"1711c03e44a4e0083500f37df85222fad83d06925c2af1f5c461e8a52391f40a","codeBytes":5568,"kind":"control"}
+{"state":"connector-request","requestPath":"/workspace/agentic-bible/.git/release-git-fixture-zkq8u6/.git/controlled-bridge-9b832216-ae8c-44eb-84ab-d04c7ecd9515/5b4be5a4-fe5e-4d49-90b0-5f9e57cc6162.request.json","requestDigest":"321c4f05bafb8b34069f8dafa868ebea6cf8fda9a8f51c2682c30b6aa3e5a82b","codeBytes":5534,"kind":"control"}
+{"state":"connector-request","requestPath":"/workspace/agentic-bible/.git/release-git-fixture-zkq8u6/.git/controlled-bridge-9b832216-ae8c-44eb-84ab-d04c7ecd9515/83a1bc54-a284-4b32-8ae9-f8625f952a8e.request.json","requestDigest":"b22db303f0d2ff42a790e3b4077db3bb459e275d5a89a34dadde787fe5625b4a","codeBytes":5534,"kind":"control"}
+{"state":"connector-request","requestPath":"/workspace/agentic-bible/.git/release-git-fixture-zkq8u6/.git/controlled-bridge-9b832216-ae8c-44eb-84ab-d04c7ecd9515/5ea68e28-ca4b-439e-8072-0a13d6b90e23.request.json","requestDigest":"b09cc5ec1cbabf577a3992240edeb5548f0c03556fd8ad1e604c7095a99b80dc","codeBytes":5534,"kind":"control"}
+{"state":"connector-request","requestPath":"/workspace/agentic-bible/.git/release-git-fixture-zkq8u6/.git/controlled-bridge-9edecaf0-35ae-458b-a13d-870092cadeef/10b29595-0272-44f4-8ac2-c58aee8ef13a.request.json","requestDigest":"47a8529ab46b76398185f75f360e296742e8e0f0156b7fae8b87b9770568f1fa","codeBytes":5568,"kind":"control"}
+{"state":"connector-request","requestPath":"/workspace/agentic-bible/.git/release-git-fixture-zkq8u6/.git/controlled-bridge-9edecaf0-35ae-458b-a13d-870092cadeef/0233ba3c-7ba0-43ca-b6e9-c45589b98b9b.request.json","requestDigest":"831f189a0bdf6c3cd4a267a5d7ef01e6c8e132f425c1e9d6c609a9ee218cfe10","codeBytes":5590,"kind":"control"}
+{"state":"connector-request","requestPath":"/workspace/agentic-bible/.git/release-git-fixture-zkq8u6/.git/controlled-bridge-9edecaf0-35ae-458b-a13d-870092cadeef/574234d6-ee91-498e-b505-4f924a0bfdc6.request.json","requestDigest":"b6c3dec5c084dc732d00a8347f20eef435142ef2e661359fa3747a5363af3252","codeBytes":916234,"kind":"upload"}
+{"state":"connector-request","requestPath":"/workspace/agentic-bible/.git/release-git-fixture-zkq8u6/.git/controlled-bridge-9edecaf0-35ae-458b-a13d-870092cadeef/931a74eb-96d6-4e4d-b352-e240bf801d52.request.json","requestDigest":"c549e5222e004f7fb54d2f80d37ae434f7c1fc6ff4a384f33724c5985717f345","codeBytes":5590,"kind":"control"}
+{"state":"connector-request","requestPath":"/workspace/agentic-bible/.git/release-git-fixture-zkq8u6/.git/controlled-bridge-9edecaf0-35ae-458b-a13d-870092cadeef/a08bcc4c-e0aa-4295-a7f1-cfa5c9aa026b.request.json","requestDigest":"9ff62586a682e1dcbd89b71d22c5d1ec1f1fae71989a08ab475a8a500e0c4d4a","codeBytes":5602,"kind":"control"}
+{"state":"connector-request","requestPath":"/workspace/agentic-bible/.git/release-git-fixture-zkq8u6/.git/controlled-bridge-9edecaf0-35ae-458b-a13d-870092cadeef/af5ef4ce-ca2f-4cc6-a430-4d181c248da6.request.json","requestDigest":"f8f82f3c965340f4a01ced7ebf8786b316d332df34bacfa3b646e2c909401acd","codeBytes":5602,"kind":"control"}
+{"state":"connector-request","requestPath":"/workspace/agentic-bible/.git/release-git-fixture-zkq8u6/.git/controlled-bridge-9edecaf0-35ae-458b-a13d-870092cadeef/959ca867-703e-4af2-ac0f-97bb738733ea.request.json","requestDigest":"754a09b35ddc61c0bf5863e24693c5e9d4a1e936612455a2d98757c655e54137","codeBytes":5568,"kind":"control"}
+{"state":"connector-request","requestPath":"/workspace/agentic-bible/.git/release-git-fixture-zkq8u6/.git/controlled-bridge-9edecaf0-35ae-458b-a13d-870092cadeef/ccf510ba-8f53-454c-8d8a-cf689115b008.request.json","requestDigest":"a749b0dcd1c22fc21ad3816a3b96a5c7080b8b0299092c6cfd7e48095d0ab560","codeBytes":5835,"kind":"control"}
+{"state":"connector-request","requestPath":"/workspace/agentic-bible/.git/release-git-fixture-zkq8u6/.git/controlled-bridge-9edecaf0-35ae-458b-a13d-870092cadeef/684704fd-f870-4660-b127-82a676408a2c.request.json","requestDigest":"a798ce99cdb0ffc301e3d7c05c9a40d2f22d824fae47771511a6c298592016cb","codeBytes":5568,"kind":"control"}
+{"state":"connector-request","requestPath":"/workspace/agentic-bible/.git/release-git-fixture-zkq8u6/.git/controlled-bridge-9edecaf0-35ae-458b-a13d-870092cadeef/396622e0-e761-434b-9220-a042222e83d2.request.json","requestDigest":"909e3d9e1c46fe0f98871995a2079bd55a592cc83a445291b6ef73c3fb3d9eb0","codeBytes":5568,"kind":"control"}
+{"state":"connector-request","requestPath":"/workspace/agentic-bible/.git/release-git-fixture-zkq8u6/.git/controlled-bridge-280f33f8-3f95-40e9-a6c2-80cd29cf24ea/a257e82a-f312-4fdc-9071-971d2dccb8be.request.json","requestDigest":"5b36349e8a4bdd0efd6639bf9166ea90e807764a3be5563a48e599e378035dc6","codeBytes":5568,"kind":"control"}
+{"state":"connector-request","requestPath":"/workspace/agentic-bible/.git/release-git-fixture-zkq8u6/.git/controlled-bridge-280f33f8-3f95-40e9-a6c2-80cd29cf24ea/d4b307f6-b2bb-46c6-8f93-f01d4017bed8.request.json","requestDigest":"8e3412db6ef34fceacf248dc54c36fdc32392dd38ffed6a34476d99db5cad414","codeBytes":5602,"kind":"control"}
+{"state":"connector-request","requestPath":"/workspace/agentic-bible/.git/release-git-fixture-zkq8u6/.git/controlled-bridge-280f33f8-3f95-40e9-a6c2-80cd29cf24ea/6186c975-6953-40d5-a0bd-6ecdc6c22122.request.json","requestDigest":"bad0b0e64aa50a98ede55677f42546ce31e6a01502c3e505bc133f268615ee09","codeBytes":5568,"kind":"control"}
+{"state":"connector-request","requestPath":"/workspace/agentic-bible/.git/release-git-fixture-zkq8u6/.git/controlled-bridge-280f33f8-3f95-40e9-a6c2-80cd29cf24ea/5ed40b22-2e4d-4fa2-b7c9-cf5997dcae77.request.json","requestDigest":"efb4a5fab4e6ff4d08945054d51d72d2d6cf31344c33663f5addce8b564a8532","codeBytes":5835,"kind":"control"}
+{"state":"connector-request","requestPath":"/workspace/agentic-bible/.git/release-git-fixture-zkq8u6/.git/controlled-bridge-280f33f8-3f95-40e9-a6c2-80cd29cf24ea/ab78bd9c-8dc5-44da-b9b5-06d7b60e6f00.request.json","requestDigest":"448f3a025ba50f59acf39d785592c68c39fefe0f11892d5dc64fd56e2ebbeb27","codeBytes":5568,"kind":"control"}
+{"state":"connector-request","requestPath":"/workspace/agentic-bible/.git/release-git-fixture-zkq8u6/.git/controlled-bridge-280f33f8-3f95-40e9-a6c2-80cd29cf24ea/53866e44-5010-4285-a894-ca2c5ce177ed.request.json","requestDigest":"31af88e03a82e8eead76a38b7568181ec84fa7beef214bc4e91e8fb5769c5488","codeBytes":5568,"kind":"control"}
+✔ direct qualified create/activation response loss, historical replay and rollback retain exact artifacts (15087.970341ms)
+{"state":"connector-request","requestPath":"/workspace/agentic-bible/.git/release-git-fixture-zkq8u6/.git/controlled-bridge-4fdd44cf-5508-4b7b-9073-9d123044d5f3/195d57cf-43c1-4c4e-a15b-96d8537ba308.request.json","requestDigest":"f7b0e9cf53bdea6a262cf81dda0ac7081cbbada86b02c0d29d2b0c24a6c479ef","codeBytes":5534,"kind":"control"}
+{"state":"connector-request","requestPath":"/workspace/agentic-bible/.git/release-git-fixture-zkq8u6/.git/controlled-bridge-4fdd44cf-5508-4b7b-9073-9d123044d5f3/a2b5d1be-2db9-47dd-9f10-0433c25e69ed.request.json","requestDigest":"05b4ee2290644739eef1fde818ed39865e11ff3a62e99074ddd5c3ba515e409a","codeBytes":5556,"kind":"control"}
+{"state":"connector-request","requestPath":"/workspace/agentic-bible/.git/release-git-fixture-zkq8u6/.git/controlled-bridge-4fdd44cf-5508-4b7b-9073-9d123044d5f3/b21d134d-c3d8-4a80-9f82-4e9f1b83db60.request.json","requestDigest":"287a78d27081e94ed27ea48d2851b2c393229bb7e07d9c6fdf5bce9771c7da7f","codeBytes":916302,"kind":"upload"}
+{"state":"connector-request","requestPath":"/workspace/agentic-bible/.git/release-git-fixture-zkq8u6/.git/controlled-bridge-2b0a0244-f92e-4ee1-b153-7668ad67d8f8/d0b29898-04d6-44fb-9461-d3ce5a573c15.request.json","requestDigest":"f963dad5ea05a3652e262a616b42b40381b371c0d15577e22803f2ebdf291a15","codeBytes":5534,"kind":"control"}
+{"state":"connector-request","requestPath":"/workspace/agentic-bible/.git/release-git-fixture-zkq8u6/.git/controlled-bridge-2b0a0244-f92e-4ee1-b153-7668ad67d8f8/713fbe4c-7dc2-4ffd-81e2-21b727a4ea7c.request.json","requestDigest":"df8906658c5246c04c883d49e6f9b4737e9ce094e7f61af5e5426c5477d9bd0b","codeBytes":5556,"kind":"control"}
+START test:docs
+✔ review mismatch, unknown asset buckets and changed main stop before version creation (4499.670616ms)
+✔ real failed qualification command cannot mint a success record or run later stages (65.659375ms)
+✔ native exclusive writer lock rejects concurrency, survives unsafe paths and releases after SIGKILL (116.671414ms)
+✔ local live entrypoint stays closed and every historical check remains runnable without Actions (113.73525ms)
+✔ interrupted real qualification stops its owned child group, retains current logs and cannot seal success (236.559248ms)
+✔ actual local Git builds pin both revisions, package reproducibly and serve complete assets through native Workers (9541.371234ms)
+✔ dirty and forged source pins fail; synthetic copies do not claim Git history (138.463599ms)
+✔ release activation, lost response recovery, second revision and rollback reuse exact prior artifacts (1447.923087ms)
+✔ owner/reviewed-qualification/source/current-version guards reject before privileged effects (41.33118ms)
+✔ artifact tampering, symlinks and served-byte corruption fail closed without blind rollback (36.732981ms)
+ℹ tests 41
+ℹ suites 0
+ℹ pass 40
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 33688.21779
+
+✖ failing tests:
+
+test at tests/release/legacy-baseline.test.mjs:60:1
+✖ guarded legacy rollback restores the exact reviewed baseline without upload and replays its separate journal (2297.6473ms)
+  Error: Command failed: npm run build
+  ENOTEMPTY: directory not empty, rmdir '/workspace/agentic-bible/.git/release-git-fixture-g9Gw6g/node_modules/.vite/deps'
+    Stack trace:
+  
+  
+      at genericNodeError (node:internal/errors:985:15)
+      at wrappedFn (node:internal/errors:539:14)
+      at checkExecSyncError (node:child_process:942:11)
+      at execFileSync (node:child_process:978:15)
+      at Object.revision (file:///workspace/agentic-bible/tests/release/fixture.mjs:6:318)
+      at artifacts (file:///workspace/agentic-bible/tests/release/legacy-baseline.test.mjs:19:54)
+      at async TestContext.<anonymous> (file:///workspace/agentic-bible/tests/release/legacy-baseline.test.mjs:61:49)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    status: 1,
+    signal: null,
+    output: [ null, <Buffer 0a 3e 20 61 67 65 6e 74 69 63 2d 62 69 62 6c 65 40 30 2e 31 2e 30 20 62 75 69 6c 64 0a 3e 20 41 53 54 52 4f 5f 54 45 4c 45 4d 45 54 52 59 5f 44 49 53 ... 148 more bytes>, <Buffer 45 4e 4f 54 45 4d 50 54 59 3a 20 64 69 72 65 63 74 6f 72 79 20 6e 6f 74 20 65 6d 70 74 79 2c 20 72 6d 64 69 72 20 27 2f 77 6f 72 6b 73 70 61 63 65 2f ... 87 more bytes> ],
+    pid: 1644,
+    stdout: <Buffer 0a 3e 20 61 67 65 6e 74 69 63 2d 62 69 62 6c 65 40 30 2e 31 2e 30 20 62 75 69 6c 64 0a 3e 20 41 53 54 52 4f 5f 54 45 4c 45 4d 45 54 52 59 5f 44 49 53 ... 148 more bytes>,
+    stderr: <Buffer 45 4e 4f 54 45 4d 50 54 59 3a 20 64 69 72 65 63 74 6f 72 79 20 6e 6f 74 20 65 6d 70 74 79 2c 20 72 6d 64 69 72 20 27 2f 77 6f 72 6b 73 70 61 63 65 2f ... 87 more bytes>
+  }

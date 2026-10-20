@@ -1,0 +1,20 @@
+{
+  "label": "49-test-wiki-bridge-browser",
+  "command": [
+    "npm",
+    "run",
+    "test:wiki-bridge:browser"
+  ],
+  "startedAt": 1792520602.7505531,
+  "durationSeconds": 21.865849256515503,
+  "exit": 1,
+  "deadlineSeconds": 600,
+  "timedOut": false,
+  "log": "49-test-wiki-bridge-browser.log",
+  "sha256": "f8eb560483eb27778e009184ea9b0abfeac07f69e8bd68880d5b84c6a5c8f167",
+  "bytes": 7885,
+  "cleanup": "existing Linux subreaper supervisor exited after stop_group and adopted-child reaping",
+  "supervisorPid": 108678,
+  "sourceCommit": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+  "sourceStatus": ""
+}

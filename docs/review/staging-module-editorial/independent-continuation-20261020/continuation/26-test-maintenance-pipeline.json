@@ -1,0 +1,20 @@
+{
+  "label": "26-test-maintenance-pipeline",
+  "command": [
+    "npm",
+    "run",
+    "test:maintenance-pipeline"
+  ],
+  "startedAt": 1792519827.121768,
+  "durationSeconds": 128.4471571445465,
+  "exit": 0,
+  "deadlineSeconds": 600,
+  "timedOut": false,
+  "log": "26-test-maintenance-pipeline.log",
+  "sha256": "63c10f1fd52d5d71e1eddf20d15efae18d3e950cbedeead6f3c7cdfd8f996450",
+  "bytes": 1531,
+  "cleanup": "existing Linux subreaper supervisor exited after stop_group and adopted-child reaping",
+  "supervisorPid": 30837,
+  "sourceCommit": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+  "sourceStatus": ""
+}

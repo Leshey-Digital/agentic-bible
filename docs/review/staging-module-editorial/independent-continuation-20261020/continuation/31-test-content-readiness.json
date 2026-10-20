@@ -1,0 +1,20 @@
+{
+  "label": "31-test-content-readiness",
+  "command": [
+    "npm",
+    "run",
+    "test:content-readiness"
+  ],
+  "startedAt": 1792520021.5194328,
+  "durationSeconds": 0.315746545791626,
+  "exit": 0,
+  "deadlineSeconds": 600,
+  "timedOut": false,
+  "log": "31-test-content-readiness.log",
+  "sha256": "aab36ea996955d414785db5405b72610ef5e202b63ccab89e7f9c810358de38b",
+  "bytes": 854,
+  "cleanup": "existing Linux subreaper supervisor exited after stop_group and adopted-child reaping",
+  "supervisorPid": 49368,
+  "sourceCommit": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+  "sourceStatus": ""
+}

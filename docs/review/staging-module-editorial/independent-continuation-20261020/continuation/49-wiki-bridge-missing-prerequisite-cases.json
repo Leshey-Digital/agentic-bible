@@ -1,0 +1,23 @@
+{
+  "label": "49-wiki-bridge-missing-prerequisite-cases",
+  "command": [
+    "npm",
+    "run",
+    "test:wiki-bridge:browser",
+    "--",
+    "tests/wiki-bridge-browser/cold-search.spec.mjs",
+    "tests/wiki-bridge-browser/upgrade.spec.mjs"
+  ],
+  "startedAt": 1792520696.5553465,
+  "durationSeconds": 8.918546199798584,
+  "exit": 0,
+  "deadlineSeconds": 600,
+  "timedOut": false,
+  "log": "49-wiki-bridge-missing-prerequisite-cases.log",
+  "sha256": "4cdea696d416fc66931402d1c9766625bb7059e9dfb4ed10302e75d1dc4c77c9",
+  "bytes": 1960,
+  "cleanup": "existing Linux subreaper supervisor exited after stop_group and adopted-child reaping",
+  "supervisorPid": 109869,
+  "sourceCommit": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+  "sourceStatus": ""
+}

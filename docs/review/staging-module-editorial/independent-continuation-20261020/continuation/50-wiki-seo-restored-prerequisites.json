@@ -1,0 +1,20 @@
+{
+  "label": "50-wiki-seo-restored-prerequisites",
+  "command": [
+    "npm",
+    "run",
+    "test:wiki-seo:browser"
+  ],
+  "startedAt": 1792520753.0785618,
+  "durationSeconds": 11.97239637374878,
+  "exit": 0,
+  "deadlineSeconds": 600,
+  "timedOut": false,
+  "log": "50-wiki-seo-restored-prerequisites.log",
+  "sha256": "e2bb90193a87581c69a338a858abb989c9738e7f2e880a54ac76d628c0ec13fe",
+  "bytes": 511,
+  "cleanup": "existing Linux subreaper supervisor exited after stop_group and adopted-child reaping",
+  "supervisorPid": 110657,
+  "sourceCommit": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+  "sourceStatus": ""
+}

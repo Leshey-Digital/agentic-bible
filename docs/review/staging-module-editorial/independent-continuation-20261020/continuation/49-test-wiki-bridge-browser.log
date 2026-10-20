@@ -1,0 +1,87 @@
+
+> agentic-bible@0.1.0 test:wiki-bridge:browser
+> PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright test --config playwright.wiki-bridge.config.ts
+
+
+Running 4 tests using 1 worker
+
+  ✓  1 tests/wiki-bridge-browser/canonical.spec.mjs:14:1 › canonical wiki, citations, catalog, retained history and real Pagefind activate and roll back together (17.3s)
+  ✘  2 tests/wiki-bridge-browser/cold-search.spec.mjs:8:1 › cold current-snapshot search does not depend on Pagefind worker bootstrap (132ms)
+  ✘  3 tests/wiki-bridge-browser/upgrade.spec.mjs:11:1 › an actual pre-expansion store retains current/history Pagefind and exact replay under the upgraded reader (185ms)
+  ✘  4 tests/wiki-bridge-browser/upgrade.spec.mjs:42:1 › retained eight- and fourteen-entry Pagefind indexes keep their own historical topic inventories (201ms)
+
+
+  1) tests/wiki-bridge-browser/cold-search.spec.mjs:8:1 › cold current-snapshot search does not depend on Pagefind worker bootstrap 
+
+    Error: ENOENT: no such file or directory, open '/workspace/agentic-bible/.git/wiki-bridge-upgrade-record.json'
+
+       7 |
+       8 | test('cold current-snapshot search does not depend on Pagefind worker bootstrap',{timeout:30000},async({page})=>{
+    >  9 |   const data=JSON.parse(readFileSync(join(git,'wiki-bridge-upgrade-record.json'),'utf8')),bridge=new WikiBridge(data.freshName),server=wikiServer(bridge),warnings=[];
+         |                         ^
+      10 |   await new Promise(done=>server.listen(0,'127.0.0.1',done));const origin=`http://127.0.0.1:${server.address().port}`;
+      11 |   // A Worker can construct but never become ready. Pagefind 1.5.2 otherwise waits
+      12 |   // five seconds, then repeats initialization on the main thread for this tiny index.
+        at /workspace/agentic-bible/tests/wiki-bridge-browser/cold-search.spec.mjs:9:25
+
+    Error Context: test-results/wiki-bridge/cold-search-cold-current-s-91e7d-n-Pagefind-worker-bootstrap/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/wiki-bridge/cold-search-cold-current-s-91e7d-n-Pagefind-worker-bootstrap/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/wiki-bridge/cold-search-cold-current-s-91e7d-n-Pagefind-worker-bootstrap/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) tests/wiki-bridge-browser/upgrade.spec.mjs:11:1 › an actual pre-expansion store retains current/history Pagefind and exact replay under the upgraded reader 
+
+    Error: ENOENT: no such file or directory, open '/workspace/agentic-bible/.git/wiki-bridge-upgrade-record.json'
+
+      10 | import {git,accounting} from '../wiki-bridge/helpers.mjs';
+      11 | test('an actual pre-expansion store retains current/history Pagefind and exact replay under the upgraded reader',async({page})=>{
+    > 12 |   const data=JSON.parse(readFileSync(join(git,'wiki-bridge-upgrade-record.json'),'utf8')),bridge=new WikiBridge(data.name),fresh=new WikiBridge(data.freshName),servers=[],origins=new Set(),outside=[],errors=[];
+         |                         ^
+      13 |   let fetches=0;const local=await localObservations(data.observations,false,()=>{fetches++;throw Error('upgrade source fetch forbidden');});
+      14 |   const original=inventory('src/content/articles'),dist=inventory('dist'),sites=inventory(join(bridge.root,'sites'));
+      15 |   const start=async store=>{const server=wikiServer(store);await new Promise(done=>server.listen(0,'127.0.0.1',done));servers.push(server);const origin=`http://127.0.0.1:${server.address().port}`;origins.add(origin);return origin;};
+        at /workspace/agentic-bible/tests/wiki-bridge-browser/upgrade.spec.mjs:12:25
+
+    Error Context: test-results/wiki-bridge/upgrade-an-actual-pre-expa-df157-y-under-the-upgraded-reader/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/wiki-bridge/upgrade-an-actual-pre-expa-df157-y-under-the-upgraded-reader/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/wiki-bridge/upgrade-an-actual-pre-expa-df157-y-under-the-upgraded-reader/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) tests/wiki-bridge-browser/upgrade.spec.mjs:42:1 › retained eight- and fourteen-entry Pagefind indexes keep their own historical topic inventories 
+
+    Error: ENOENT: no such file or directory, open '/workspace/agentic-bible/.git/wiki-historical-eight-fourteen.json'
+
+      41 |
+      42 | test('retained eight- and fourteen-entry Pagefind indexes keep their own historical topic inventories',async({page})=>{
+    > 43 |   const proofs=JSON.parse(readFileSync(join(git,'wiki-historical-eight-fourteen.json'),'utf8'));const servers=[];
+         |                           ^
+      44 |   try{for(const proof of proofs){const bridge=new WikiBridge(proof.name),before=inventory(join(bridge.root,'sites')),server=wikiServer(bridge);await new Promise(done=>server.listen(0,'127.0.0.1',done));servers.push(server);const origin=`http://127.0.0.1:${server.address().port}`;
+      45 |     expect((await(await page.request.get(origin+'/source-catalog.json')).json()).articles).toHaveLength(proof.articles);
+      46 |     for(const [query,count]of [['MemGPT',1],['Tree of Thoughts',proof.articles===14?1:0]]){await page.goto(`${origin}/wiki-snapshots/${proof.site.id}/search/`);await page.locator('#search-input').fill('"'+query+'"');await page.locator('#search-form button[type=submit]').click();await expect(page.locator('#search-status')).toContainText(`${count} ${count===1?'entry':'entries'} found`);await expect(page.locator('#search-results>li')).toHaveCount(count);}
+        at /workspace/agentic-bible/tests/wiki-bridge-browser/upgrade.spec.mjs:43:27
+
+    Error Context: test-results/wiki-bridge/upgrade-retained-eight--an-2679f-istorical-topic-inventories/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/wiki-bridge/upgrade-retained-eight--an-2679f-istorical-topic-inventories/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/wiki-bridge/upgrade-retained-eight--an-2679f-istorical-topic-inventories/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3 failed
+    tests/wiki-bridge-browser/cold-search.spec.mjs:8:1 › cold current-snapshot search does not depend on Pagefind worker bootstrap 
+    tests/wiki-bridge-browser/upgrade.spec.mjs:11:1 › an actual pre-expansion store retains current/history Pagefind and exact replay under the upgraded reader 
+    tests/wiki-bridge-browser/upgrade.spec.mjs:42:1 › retained eight- and fourteen-entry Pagefind indexes keep their own historical topic inventories 
+  1 passed (21.2s)

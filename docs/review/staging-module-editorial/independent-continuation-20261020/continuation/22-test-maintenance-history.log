@@ -1,0 +1,16 @@
+
+> agentic-bible@0.1.0 test:maintenance-history
+> node --test tests/maintenance-history/history.test.mjs
+
+✔ disabled mode performs no Git access; empty controlled source remains empty and missing objects stop (528.551707ms)
+✔ actual writer receipts reconstruct exactly and project newest-first history/current flags without private accounting (6786.162676ms)
+✔ rewritten immutable history and conflicting current pointer or Markdown are rejected (11953.520754ms)
+✔ partial projections and Git symlink modes never become a hosted history view (8115.808228ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 27798.297327

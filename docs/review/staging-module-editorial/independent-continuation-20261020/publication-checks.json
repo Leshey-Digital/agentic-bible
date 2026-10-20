@@ -1,0 +1,48 @@
+{
+  "testedSourceCommit": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+  "testedSourceTree": "3dabf8729636ccec3a85b0f162e7d2f6cbfd4f3e",
+  "evidenceBranchBase": "f640cc7ee3fb278502816e0a2b0c844095bebe0c",
+  "remoteMainObserved": "8a38252384c6fe6024a75b462ad95294a131100c",
+  "sourceTriggerCheck": {
+    "mainExecutableWorkflows": [],
+    "testedCommitExecutableWorkflows": [],
+    "evidenceBranchExecutableWorkflows": [],
+    "method": "git ls-remote for current main; git ls-tree of exact Git objects; .github contains only pull_request_template.md"
+  },
+  "providerTriggerEvidence": {
+    "parentConfirmed": "No executable Actions workflow or Worker build triggers exist.",
+    "checkedInOriginalEvidence": "docs/review/staging-module-editorial/qualification.md reports official staging and production build trigger lists empty before source publication",
+    "freshCloudflareRead": false,
+    "reason": "User explicitly prohibits Cloudflare calls"
+  },
+  "workflowApiRead": {
+    "action": "GET /repos/Leshey-Digital/agentic-bible/actions/workflows",
+    "state": "failed/Forbidden",
+    "retried": false,
+    "fallback": "No API bypass; executable trigger absence checked through canonical Git source and supplied parent evidence"
+  },
+  "secretScan": {
+    "patterns": [
+      "private-key",
+      "github-token",
+      "jwt",
+      "aws-access-id",
+      "credential-url",
+      "bearer-value",
+      "credential-assignment"
+    ],
+    "findings": [],
+    "rawTracesWithheld": true,
+    "limits": "Pattern scan plus review of log and manifest publication selection; not a claim to prove every possible secret encoding absent."
+  },
+  "allPublishedPerCommandLogHashesVerified": true,
+  "runtimeAndTestSourceDiffBetweenFrozenImplementationAndTestedCommit": false,
+  "applicationTestMainChanges": false,
+  "newTestsRunForPublication": false,
+  "cloudflareCalls": false,
+  "whitespaceCheck": {
+    "result": "trailing whitespace findings in retained raw log output only",
+    "decision": "preserve original log bytes and hashes; no whitespace normalization",
+    "sourceCodeChanges": false
+  }
+}

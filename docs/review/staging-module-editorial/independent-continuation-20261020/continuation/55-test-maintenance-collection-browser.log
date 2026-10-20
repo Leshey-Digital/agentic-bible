@@ -1,0 +1,11 @@
+
+> agentic-bible@0.1.0 test:maintenance-collection:browser
+> PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright test --config playwright.maintenance-collection.config.ts
+
+
+Running 2 tests using 1 worker
+
+  ✓  1 [desktop] › tests/maintenance-collection-browser/reading.spec.mjs:6:1 › captured original source bodies connect automatic wiki reading, real search, evidence, history and review flags (2.3s)
+  ✓  2 [mobile] › tests/maintenance-collection-browser/reading.spec.mjs:6:1 › captured original source bodies connect automatic wiki reading, real search, evidence, history and review flags (2.5s)
+
+  2 passed (6.3s)

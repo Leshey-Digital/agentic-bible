@@ -1,0 +1,20 @@
+{
+  "label": "33-test-controlled-fixtures",
+  "command": [
+    "npm",
+    "run",
+    "test:controlled-fixtures"
+  ],
+  "startedAt": 1792520298.1561725,
+  "durationSeconds": 0.819068193435669,
+  "exit": 0,
+  "deadlineSeconds": 600,
+  "timedOut": false,
+  "log": "33-test-controlled-fixtures.log",
+  "sha256": "5e15d8d74921d8e1897f455c76b692a9fc83718f546b0d92547fb66ca017181f",
+  "bytes": 442,
+  "cleanup": "existing Linux subreaper supervisor exited after stop_group and adopted-child reaping",
+  "supervisorPid": 92894,
+  "sourceCommit": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+  "sourceStatus": ""
+}
