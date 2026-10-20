@@ -49,7 +49,7 @@ test('Linux test supervisor reaps only its Wrangler-owned subtree on normal comp
     }finally{
       for(const child of supervisors)if(child.exitCode===null&&child.signalCode===null)await stopSupervised(child);
       if(unrelated&&unrelated.exitCode===null&&unrelated.signalCode===null){
-        const exited=new Promise(resolve=>unrelated.once('close',resolve));unrelated.kill('SIGTERM');await exited;
+        const exited=new Promise(resolve=>unrelated.once('close',resolve));unrelated.kill('SIGKILL');await exited;
       }
       rmSync(root,{recursive:true,force:true});
     }
