@@ -1,0 +1,201 @@
+{
+  "state": "failed",
+  "qualificationSource": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+  "passedSteps": [
+    "test:docs",
+    "check",
+    "build",
+    "test",
+    "test:editorial",
+    "test:monitoring",
+    "test:settings",
+    "test:integration-settings",
+    "test:hosted-integration-settings",
+    "test:integration",
+    "test:http-sources",
+    "test:http-worker",
+    "test:publication",
+    "test:seo",
+    "test:seo:build",
+    "test:wiki-bridge:serial",
+    "test:corrections"
+  ],
+  "passedStepCount": 17,
+  "failedStep": "test:hosted",
+  "failedStepCases": {
+    "pass": 13,
+    "fail": 2,
+    "cancelled": 4
+  },
+  "remainingStepsNotRun": 41,
+  "successReceiptExists": false,
+  "runnerLogSha256": "abf11927b0a4e5afbdfb95476ba002669f0b7c7d5d09a1932512cd349970a9b1",
+  "logs": [
+    {
+      "path": "original-run/logs/00.log",
+      "sha256": "3316afd5a6554b12e5ca7a6321de5c3b3ae4f14561b475c19ded3e0f8f79488f",
+      "bytes": 282
+    },
+    {
+      "path": "original-run/logs/01.log",
+      "sha256": "0d017664035ed1487981442a678b0cd5ed45bf7400dbfc5d7c2461b4405df413",
+      "bytes": 514
+    },
+    {
+      "path": "original-run/logs/02.log",
+      "sha256": "98210dc110ead1ba4146771e76033794d77573d3cb0bf13ebbc572f6869de812",
+      "bytes": 4997
+    },
+    {
+      "path": "original-run/logs/03.log",
+      "sha256": "16420be2a663d0719abd93e8a6b9a52a4ea0c29ef586effd7041d1a84eeb9692",
+      "bytes": 1388
+    },
+    {
+      "path": "original-run/logs/04.log",
+      "sha256": "846903fb22360ee0fd62d14509ed57a493cdadab0e7ad2c6f206b3143c8839a0",
+      "bytes": 1684
+    },
+    {
+      "path": "original-run/logs/05.log",
+      "sha256": "91184460530f353537d7f3e07ee0706bb4e8e29e5cedda42cf9f88a570a595c0",
+      "bytes": 3176
+    },
+    {
+      "path": "original-run/logs/06.log",
+      "sha256": "a1204f7bcb637cbe4d8f1e7c59bcda1698978ddd7cbb700229e39f78ad61b8b0",
+      "bytes": 2171
+    },
+    {
+      "path": "original-run/logs/07.log",
+      "sha256": "97d82cb9f4e3b0ea445ff71ff3822f33ad4ca54102de8e582f7eab88cbcafc3a",
+      "bytes": 2006
+    },
+    {
+      "path": "original-run/logs/08.log",
+      "sha256": "b470448d66786990ca788fa37860f9af25add7338ae4f407b4ccb05bd6cade46",
+      "bytes": 900
+    },
+    {
+      "path": "original-run/logs/09.log",
+      "sha256": "5272063b1be027765cacd3e0751da13baf608a200cf90f343b55cef09106fbb4",
+      "bytes": 595
+    },
+    {
+      "path": "original-run/logs/10.log",
+      "sha256": "639a3547105b4531b5e64ff072809e7090f093264106037d16360b69e46a8eeb",
+      "bytes": 1741
+    },
+    {
+      "path": "original-run/logs/11.log",
+      "sha256": "9317a6d6e02ec7a5137fbd3a60a77746110efafac68c14f21ab128fa408e2dd6",
+      "bytes": 444
+    },
+    {
+      "path": "original-run/logs/12.log",
+      "sha256": "ba86a7106deda5d719ebd3d1e988eaba7b89bb4d656d6a0ccffdb37ef5d176d6",
+      "bytes": 1983
+    },
+    {
+      "path": "original-run/logs/13.log",
+      "sha256": "58edbce91b3f689c613071b67aaf8d55ba6715c5bc0b808605b1701107374003",
+      "bytes": 1112
+    },
+    {
+      "path": "original-run/logs/14.log",
+      "sha256": "aa041ec9b87ac9b83c975587e58692642c24568e9e0c5e3ba971d05f6507880d",
+      "bytes": 458
+    },
+    {
+      "path": "original-run/logs/15.log",
+      "sha256": "da2c31df253221532dac287a106eeb6f5a1bff57b258441a6ab2ac5f1ce18ca3",
+      "bytes": 2823
+    },
+    {
+      "path": "original-run/logs/16.log",
+      "sha256": "bbe7b56b1ee31dfd8c0f9cb5cbe5ad480d8f02461a610cb2794ba69e3d35e6e5",
+      "bytes": 1086
+    },
+    {
+      "path": "original-run/logs/17.log",
+      "sha256": "5fb16ccae534d5e6a602b9b35e25ae24a2c1507062d085d9130a9947d8ebaf13",
+      "bytes": 4150
+    }
+  ],
+  "failure": "two controlled proposed-source build 30000ms deadlines; four test-level timeouts; no assertion mismatch reported",
+  "attribution": "parallel build contention plausible but not established; no OOM recorded",
+  "rerun": "no whole qualification rerun; one unchanged focused diagnostic separately recorded",
+  "isolatedDiagnostic": {
+    "command": "node --test --test-name-pattern='shipped Worker verifies real signed identity' tests/hosted/connected.test.mjs",
+    "passed": 1,
+    "failed": 0,
+    "caseDurationMs": 9535.922406,
+    "totalDurationMs": 10971.065511,
+    "logSha256": "efff5adbdd313505cf1b8612b0b02771a79606b202214af6cec3953da57985cb",
+    "interpretation": "Failure did not reproduce in isolation; root cause remains unproven. Does not supersede failed qualification."
+  },
+  "originalRunId": "db3491bb-a6c6-4b67-9262-17175228f56b",
+  "passedCommands": [
+    "npm run test:docs",
+    "npm run check",
+    "npm run build",
+    "npm test",
+    "npm run test:editorial",
+    "npm run test:monitoring",
+    "npm run test:settings",
+    "npm run test:integration-settings",
+    "npm run test:hosted-integration-settings",
+    "npm run test:integration",
+    "npm run test:http-sources",
+    "npm run test:http-worker",
+    "npm run test:publication",
+    "npm run test:seo",
+    "npm run test:seo:build",
+    "npm run test:wiki-bridge:serial",
+    "npm run test:corrections"
+  ],
+  "unrunCommands": [
+    "npm run test:release",
+    "npm run test:maintenance-sources",
+    "npm run test:maintenance",
+    "npm run test:maintenance-github",
+    "npm run test:maintenance-history",
+    "npm run test:maintenance-review",
+    "npm run test:maintenance-restore",
+    "npm run test:maintenance-base",
+    "npm run test:maintenance-pipeline",
+    "npm run test:maintenance-currency",
+    "npm run test:maintenance-review-monitor",
+    "npm run test:reader-metadata",
+    "npm run test:social-metadata",
+    "npm run test:content-readiness",
+    "npm run test:maintenance-quality",
+    "npm run test:controlled-fixtures",
+    "npm run test:production-hosted",
+    "npm run test:integration-vault",
+    "npm run test:maintenance-adapters",
+    "npm run test:history-target-pages",
+    "npm run test:production-config",
+    "npm run test:recovery",
+    "npm run staging:check",
+    "npm run runtime:check",
+    "npm run test:browser",
+    "npm run test:editorial:browser",
+    "npm run test:integration:browser",
+    "npm run test:monitoring:worker",
+    "npm run test:settings:worker",
+    "npm run test:publication:browser",
+    "npm run test:combined:browser",
+    "npm run test:wiki-bridge:browser",
+    "npm run test:wiki-seo:browser",
+    "npm run test:corrections:browser",
+    "npm run test:hosted:browser",
+    "npm run test:hosted-admin:browser",
+    "npm run test:maintenance:browser",
+    "npm run test:maintenance-collection:browser",
+    "npm run test:maintenance-history:browser",
+    "npm run test:maintenance-restore:browser",
+    "npm run release:prepare -- <original-run-output>/candidate"
+  ],
+  "continuation": "not started; future independent evidence must be separately labelled"
+}

@@ -1,0 +1,9 @@
+✔ shipped Worker verifies real signed identity, persists an approval and proposes a recoverable GitHub draft (9535.922406ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 10971.065511
