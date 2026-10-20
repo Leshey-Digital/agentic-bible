@@ -9,10 +9,12 @@ Changed behavior: explicit native discard confirmation for unsaved disposition/t
 Validation:
 - Real Chromium desktop1440px/mobile390px checks2/2 passed. They exercise cancel/no detail request, accepted discard, failed detail read, in-flight edits, held detail→held review→detail completion, saved-review navigation and saved tag formatting. Controlled responses exercise actual shipped HTML/JS but do not claim new backend/live-provider acceptance.
 - Astro/TypeScript check:195files,0errors/0warnings/0hints.
-- Markdown validation:422files,393relative links passed before this report; final docs check recorded in handoff.
+- Markdown validation:423files,396relative links passed including this report.
 - Independent bounded review accepted source SHA-256 d3e934cb8480a328176b8ffc6799f610e6eb28ef78e4841e2732e7fe3a24bb52. Reviewer reproduced the tag false positive and detail-read/review-write race, then verified both fixes; actual-JavaScript race probe passed. No remaining blocking findings in that scope.
 - Full qualification/build/deployment and broad backend suites were not rerun: this isolated client navigation change is not a release candidate. Historical test failures and production acceptance limits remain preserved on the recovery ancestor.
 
 Push preflight: no tracked GitHub Actions workflows; fresh Cloudflare reads show zero build triggers on both Agentic Bible Workers. Earlier account Pages inventory is empty. GitHub hook API remains unavailable in this executor; no known deploy-on-push path is configured. No merge or deployment requested.
 
 Change record: [proposal](../../openspec/changes/editorial-draft-navigation/proposal.md), [acceptance delta](../../openspec/changes/editorial-draft-navigation/spec-delta.md), [tasks](../../openspec/changes/editorial-draft-navigation/tasks.md).
+
+Published draft: https://github.com/Leshey-Digital/agentic-bible/pull/53. Source checkpoint e782b785a64b102fc3adb7b5e5b9ce7805707a0c was remotely verified.
