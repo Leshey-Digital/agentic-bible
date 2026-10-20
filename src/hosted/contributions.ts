@@ -5,6 +5,7 @@ import {InputError,RateLimitError,ReplayConflictError,CapacityError,submissionIn
 import {adminTrust,hostedOrigin,verifySignedAdmin} from './identity.ts';
 import {sourcePreview} from './source.ts';
 import {uuid,type Ports} from './contracts.ts';
+import {submissionHistory} from './submission-history.ts';
 import {createSubmissionReview} from './submission-reviews.ts';
 import {listAbuseOutcomes} from './privacy.ts';
 
@@ -59,9 +60,9 @@ export function createContributionHandler(adapters:ContributionAdapters,send?:Po
         const status=url.searchParams.get('status')??'new';if(!(dispositions as readonly string[]).includes(status))fail('invalid_request');
         const result=await store.list(status as Disposition,url.searchParams.get('before')??undefined);fresh();return json(result);
       }
-      const match=/^\/api\/admin\/submissions\/([a-f0-9-]{36})(\/(?:review|source))?$/.exec(url.pathname);
+      const match=/^\/api\/admin\/submissions\/([a-f0-9-]{36})(\/(?:review|source|reviews))?$/.exec(url.pathname);
       if(!match||!uuid(match[1])||url.search)fail('not_found',404);
-      const id=match[1];if(match[2]==='/source'){if(request.method!=='GET')fail('method_not_allowed',405);if(!send)fail('source_adapter_unconfigured',503);const item=await store.get(id);if(!item)fail('not_found',404);const preview=await sourcePreview(db,send,item.articleId);fresh();return json(preview);}
+      const id=match[1];if(match[2]==='/reviews'){if(request.method!=='GET')fail('method_not_allowed',405);if(!await store.get(id))fail('not_found',404);const history=await submissionHistory(db,id,admin);fresh();return json(history);}if(match[2]==='/source'){if(request.method!=='GET')fail('method_not_allowed',405);if(!send)fail('source_adapter_unconfigured',503);const item=await store.get(id);if(!item)fail('not_found',404);const preview=await sourcePreview(db,send,item.articleId);fresh();return json(preview);}
       if(match[2]){if(request.method!=='POST')fail('explicit_post_required',405);const value=await contributionJson(request);fresh();return json(await createSubmissionReview(db,id,value,admin));}
       if(request.method==='GET'){const item=await store.get(id);if(!item)fail('not_found',404);const audit=await store.audit(id);fresh();return json({item,audit});}
       if(request.method!=='PATCH')fail('method_not_allowed',405);
