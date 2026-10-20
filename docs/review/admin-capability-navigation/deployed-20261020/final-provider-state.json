@@ -1,0 +1,16 @@
+{
+  "production": {
+    "status": 200,
+    "deploymentId": "e046cf4a-6f57-404d-a50a-504788058ee5",
+    "versions": [
+      {
+        "version_id": "28c2c556-ab43-482a-98e7-7d2aa8d6965c",
+        "percentage": 100
+      }
+    ]
+  },
+  "access": {
+    "status": 200,
+    "duration": "1h"
+  }
+}

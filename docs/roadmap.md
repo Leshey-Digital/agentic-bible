@@ -38,3 +38,9 @@ No milestone promises rankings, indexing, AI citations, traffic, or revenue.
 - Validated analytics-provider IDs; no arbitrary script setting.
 - Authenticated server-side write-only API key setup, masked status, least-privilege connection tests, budget controls and redacted audit events.
 - Decide specific admin identity and credential provisioning, code/content licenses and numeric Jev allocation before enabling those integrations.
+
+
+## Dated private-editor milestone — 2026-10-20
+
+- [x] Real authenticated staging editor reached the private inbox, reviewed pinned tool-use source, saved a labelled synthetic note and verified persistence after full reload. This is parent-reported browser evidence; see [acceptance](review/admin-capability-navigation/deployed-20261020/browser-acceptance.md).
+- Next bounded milestone identified, not started: [recoverable GitHub draft integration](review/admin-capability-navigation/next-milestone.md). Runtime GitHub authority remains a separate decision. Public intake, paid AI and production changes are not enabled by this milestone.

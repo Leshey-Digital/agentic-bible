@@ -48,6 +48,7 @@ export async function configuredPorts(env:RuntimeEnv):Promise<Ports>{
   const trust=adminTrust(env.HOSTED_ADMIN_TRUST),send=credentialTransport(env.GITHUB_CONTENT_TOKEN);if(!trust||!env.EDITORIAL_DB)return {};
   const review=historyBindingConfigured()?{maintenanceReview:true as const}:{};
   const ports:Ports={...review,verifyAdmin:request=>verifySignedAdmin(request,trust)};
+  if(env.HOSTED_PRIVATE_INBOX==='enabled')ports.contributions={trust:env.HOSTED_ADMIN_TRUST};
   if(send)Object.assign(ports,{approvedNote:(id:string,admin:import('./contracts.ts').VerifiedAdmin)=>lookupApproval(env.EDITORIAL_DB!,id,admin),sendGitHub:send,hostedApprovals:true as const});
   const intakePolicy=policy(env.HOSTED_INTAKE_POLICY),rateBytes=keyBytes(env.HOSTED_INTAKE_RATE_KEY);
   if(intakePolicy&&rateBytes){const rateKey=await crypto.subtle.importKey('raw',keyMaterial(rateBytes),{name:'HMAC',hash:'SHA-256'},false,['sign']);const candidate={trust:env.HOSTED_ADMIN_TRUST,policy:intakePolicy,clientKey:createHmacClientKey(rateKey)};if(intakeConfigured(candidate))ports.contributions=candidate;}

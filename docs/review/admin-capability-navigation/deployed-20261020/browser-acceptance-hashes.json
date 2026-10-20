@@ -1,0 +1,10 @@
+{
+  "browser-acceptance.json": {
+    "sha256": "78928e64ac55e5c807bd316e2ab1991046baca01ffc0e0b0ffeffe6b1fe3a039",
+    "bytes": 2053
+  },
+  "browser-acceptance.md": {
+    "sha256": "8d7c1c7cc6cc44423f0755bbd9954793ce3b0a194386820ef7971e5f82fa3b8d",
+    "bytes": 1965
+  }
+}

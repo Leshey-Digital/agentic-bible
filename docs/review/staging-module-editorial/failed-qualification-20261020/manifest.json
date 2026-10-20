@@ -1,0 +1,23 @@
+{
+  "sourceCommit": "912c75fddc54f223f5d2997596b9cc224ad4b830",
+  "originalRunId": "db3491bb-a6c6-4b67-9262-17175228f56b",
+  "sanitization": "Repository absolute paths replaced; process IDs/inventory omitted; no tokens, credentials or secret values included. Original local evidence unchanged.",
+  "files": {
+    "hosted-failure.log": {
+      "bytes": 4082,
+      "sha256": "002ec02d274152e0faa63fa90d116ad81f559d9f418d9f49f9929f3d30639e0c"
+    },
+    "isolated-diagnostic.log": {
+      "bytes": 244,
+      "sha256": "efff5adbdd313505cf1b8612b0b02771a79606b202214af6cec3953da57985cb"
+    },
+    "result.json": {
+      "bytes": 6778,
+      "sha256": "ddcb866e7643045a35783358c64e8bcc5c26017e9a6133227967e0d4abc3cd0b"
+    },
+    "assessment.md": {
+      "bytes": 4520,
+      "sha256": "7b3155b8465d477f659e1d8d2b6b241e9b0ac7afab481666d1ffc34e6c5b5d0b"
+    }
+  }
+}

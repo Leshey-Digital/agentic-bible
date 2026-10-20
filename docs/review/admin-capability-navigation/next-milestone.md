@@ -1,0 +1,9 @@
+# Next roadmap milestone — identified, not started
+
+The completed milestone is authenticated private suggestion review and persistent saved-note history. The roadmap's vertical slice next calls for a source/edit proposal to advance to a reviewed revision; the existing hosted code already contains controlled GitHub draft/replay/history behavior. The next bounded integration milestone is therefore **one synthetic saved correction becoming a recoverable GitHub draft proposal**, followed by UI history/readback, without merging or publishing an article.
+
+Already implemented locally: approved-note/source pins, restricted GitHub adapter, draft proposal and uncertain-outcome recovery, ownership/revocation checks and draft history. Missing live prerequisite: separately scoped runtime GitHub authority; the current staging worker intentionally has none. Existing connector access is not a runtime credential and must not be repurposed. No credential creation, security change, provider enablement or new code is part of this evidence turn.
+
+Acceptance boundary for a later approved task: use the same unmistakably synthetic fixture and authorized editor; revalidate GitHub main/source pins rather than treating the bundled review snapshot as fresh remote authority; either produce one bounded draft with durable matching history or fail closed on stale source/authority. Demonstrate reload/replay without duplicate drafts and keep the article unmerged/unpublished. Do not mutate the saved note or silently rebase it to force acceptance. Public intake and paid AI stay disabled; production remains separate.
+
+Before implementation or runtime changes, reconcile existing adapter tests and the exact credential/permission decision. This is a roadmap continuation, not authority to enable GitHub now. Later automatic publication remains governed by the founder's policy and technical/source validation, not a newly invented universal human prepublication gate.

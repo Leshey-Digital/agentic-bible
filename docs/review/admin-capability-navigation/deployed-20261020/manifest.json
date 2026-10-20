@@ -1,0 +1,42 @@
+{
+  "smoke-results.json": {
+    "sha256": "4a38c93f8b330d4e4f61777c54ed47ae9de5bf7ae5d0705607649ea6da7ad565",
+    "bytes": 1538
+  },
+  "seed-journal.json": {
+    "sha256": "30c52c20db7918d4c6f65c283e170ad91279466a21b03d0c1f2b665c9ea10b80",
+    "bytes": 903
+  },
+  "operation.json": {
+    "sha256": "926da54afccaecf3030ca56cb3a1c009592dd5a00a981c388c1fa7726abf04c7",
+    "bytes": 583
+  },
+  "inactive-verification.json": {
+    "sha256": "243dcfbc4fc40d449f073da2afeef7f251dd52880ec36cddd815dab9544f7914",
+    "bytes": 1081
+  },
+  "submission-insert-result.json": {
+    "sha256": "7a55bce428376a2beead76304ac57911b149720fe94fbdab82f7a498734c5063",
+    "bytes": 345
+  },
+  "final-provider-state.json": {
+    "sha256": "04054c61076589730a03a77e3f85d7313e04ec0e1b645d1ede51f6c7c184f302",
+    "bytes": 292
+  },
+  "upload-result.json": {
+    "sha256": "11e0be7056afe5cc15ad8c9967f4082bd6a63cd574edbe791cfcde119b8ebfe6",
+    "bytes": 1262
+  },
+  "activation-result.json": {
+    "sha256": "ba957a88cd926acd437b72cf9065e6062892e8601c7d8de745c3f19089fbc5cc",
+    "bytes": 331
+  },
+  "README.md": {
+    "sha256": "982b6350d8c712ff962b1a01aa38dce28801b17b6ad605df763751368c19e9b4",
+    "bytes": 2353
+  },
+  "audit-insert-readback.json": {
+    "sha256": "e216ea3eac196f007f366c14e7b8f584e35d81cc81d6ec1e4530a4909e247282",
+    "bytes": 620
+  }
+}

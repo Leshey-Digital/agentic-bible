@@ -1,0 +1,37 @@
+{
+  "main_module": "worker.js",
+  "compatibility_date": "2026-10-16",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "bindings": [
+    {
+      "name": "EDITORIAL_DB",
+      "type": "d1",
+      "database_id": "1ca9a6f8-c0a9-4040-8a2f-e22d888a985a"
+    },
+    {
+      "name": "HOSTED_ADMIN_TRUST",
+      "type": "inherit",
+      "version_id": "11e56042-5e04-4cd6-a136-f5d3f4abbe10"
+    },
+    {
+      "name": "INTEGRATION_VAULT_KEY",
+      "type": "inherit",
+      "version_id": "11e56042-5e04-4cd6-a136-f5d3f4abbe10"
+    },
+    {
+      "name": "INTEGRATION_VAULT_KEY_ID",
+      "type": "inherit",
+      "version_id": "11e56042-5e04-4cd6-a136-f5d3f4abbe10"
+    },
+    {
+      "name": "HOSTED_PRIVATE_INBOX",
+      "type": "plain_text",
+      "text": "enabled"
+    }
+  ],
+  "annotations": {
+    "workers/message": "ab-staging-module:f6f7a6b39a1b8e72f67afb3fe67f3b6d778c9d31edfe2d408e6ac1934d145085 private-inbox:enabled admin-capability-navigation source:9efcb9e7247772286791be9e8fe5cd073f97ff94"
+  }
+}

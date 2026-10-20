@@ -1,0 +1,6 @@
+- [x] Check PR53 exact-head workflow status (no Actions runs; local qualification remains policy).
+- [x] Map existing submission, approval and proposal contracts and select bounded end-to-end milestone.
+- [x] Implement owner-scoped historical projection and inbox readback.
+- [x] Exercise native D1 end-to-end/restart, owner isolation, corrupt evidence and zero-side-effect reads.
+- [x] Exercise desktop/mobile history and existing draft-navigation regression.
+- [x] Complete independent risk review, type/docs checks and publish isolated checkpoint after trigger checks.

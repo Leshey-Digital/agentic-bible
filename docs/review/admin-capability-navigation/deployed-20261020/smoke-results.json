@@ -1,0 +1,53 @@
+[
+  {
+    "path": "/",
+    "status": 200,
+    "curlExit": 0,
+    "bytes": 20921,
+    "sha256": "7f8ece9711112563bc6c3fa1a5d44b66d81dc94e9fac4753bd829eaaaacaf1ca",
+    "noindex": "noindex, nofollow"
+  },
+  {
+    "path": "/api/runtime/status",
+    "status": 200,
+    "curlExit": 0,
+    "bytes": 556,
+    "sha256": "07df2d52282da43bddeb5c938ebb56c4b8c9098bc1b20e1bcc5e20921aedb351",
+    "noindex": "noindex, nofollow",
+    "runtime": {
+      "schemaVersion": 1,
+      "contentAuthority": "github-build",
+      "releaseCommit": null,
+      "releaseVerified": false,
+      "releaseManifestVerified": false,
+      "publicIntake": false,
+      "integrationSettingsConfigured": true,
+      "contributionAdminConfigured": true,
+      "publicIntakeReason": "approved_terms_privacy_moderation_and_rate_identity_required",
+      "jevTransportAvailable": true,
+      "jevDispatchState": "not-mounted",
+      "jevDispatchConfigured": false,
+      "adminVerifierConfigured": true,
+      "adminApprovalsConfigured": false,
+      "gitHubProposalsConfigured": false,
+      "hostedCanonicalWrites": false,
+      "localFixtureIdentity": false
+    }
+  },
+  {
+    "path": "/api/submissions",
+    "status": 503,
+    "curlExit": 0,
+    "bytes": 66,
+    "sha256": "3f9bfc2d861bc1713726aa443ab4eebb45729b876e12604746c153e6ed6a2a66",
+    "noindex": "noindex, nofollow"
+  },
+  {
+    "path": "/admin/",
+    "status": 302,
+    "curlExit": 0,
+    "bytes": 143,
+    "sha256": "12755429beb15d5eb57eafa45b8dba326343dd099bf0552038694c3856e8860e",
+    "noindex": null
+  }
+]

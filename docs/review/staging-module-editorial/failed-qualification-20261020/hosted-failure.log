@@ -1,0 +1,63 @@
+
+> agentic-bible@0.1.0 test:hosted
+> node --test tests/hosted/*.test.mjs
+
+✔ server-only credential injection rejects foreign destinations, unsafe methods and client headers; incomplete configuration stays closed (102.567488ms)
+✖ shipped Worker verifies real signed identity, persists an approval and proposes a recoverable GitHub draft (57688.557611ms)
+✖ signed identity rejects wrong claims, algorithms, keys, expiry, forgery and CSRF before D1 or GitHub (36035.133629ms)
+✖ immutable hosted approval collisions, ownership, revocation and source budgets remain bounded after restart (33564.160317ms)
+✔ configuredPorts mounts only an explicitly complete, but disabled, owner-bound Jev port (18.979183ms)
+✔ Jev orchestration fails closed without dependencies or explicit enablement and never reads a credential during status setup (5.514876ms)
+✔ enabled Jev orchestration remains unconfigured when any charged-execution dependency is absent (0.368286ms)
+✔ complete Jev orchestration is configured but secret-resolution errors are redacted before provider transport (0.992435ms)
+✔ owner-bound resolution rejects malformed or cross-owner identity before reading credentials or contacting transport (1.236695ms)
+✔ Jev runtime route requires a valid signed admin and a configured server port before any transport or charge (140.608681ms)
+✔ signed same-origin Jev evaluation reaches only the injected fake transport and returns advisory output (27.83602ms)
+✔ one failed synthetic Jev dispatch is redacted and never automatically retried (4.754548ms)
+✔ shipped hosted runtime serves assets and never enables fixture identities or write ports (13.732967ms)
+✖ actual Workers/D1 proposes one pinned GitHub change and replays after restart without reactivation (56680.824456ms)
+✖ ambiguous ref/PR effects and D1 completion faults resume without duplicate visible proposals (46000.798406ms)
+✖ authorization, changed/revoked approvals, stale Git bases and foreign branches fail closed (45845.622033ms)
+✔ D1 concurrency, capacity, request budget and late Git movement remain bounded (31723.417038ms)
+✔ source hashes, response ceilings and native fetch deadlines reject before Git mutations (3449.693829ms)
+✔ approval revocation during GitHub effects cannot confirm a proposal (1768.395197ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 13
+ℹ fail 2
+ℹ cancelled 4
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 192978.394166
+
+✖ failing tests:
+
+test at tests/hosted/connected.test.mjs:3:1
+✖ shipped Worker verifies real signed identity, persists an approval and proposes a recoverable GitHub draft (57688.557611ms)
+  Error: controlled proposed-source build deadline
+      at Timeout.<anonymous> (file://<repository>/tests/hosted/project-build.mjs:5:309)
+      at listOnTimeout (node:internal/timers:635:17)
+      at process.processTimers (node:internal/timers:571:7)
+
+test at tests/hosted/connected.test.mjs:11:1
+✖ signed identity rejects wrong claims, algorithms, keys, expiry, forgery and CSRF before D1 or GitHub (36035.133629ms)
+  'test timed out after 30000ms'
+
+test at tests/hosted/connected.test.mjs:17:1
+✖ immutable hosted approval collisions, ownership, revocation and source budgets remain bounded after restart (33564.160317ms)
+  'test timed out after 30000ms'
+
+test at tests/hosted/native.test.mjs:22:1
+✖ actual Workers/D1 proposes one pinned GitHub change and replays after restart without reactivation (56680.824456ms)
+  Error: controlled proposed-source build deadline
+      at Timeout.<anonymous> (file://<repository>/tests/hosted/project-build.mjs:5:309)
+      at listOnTimeout (node:internal/timers:635:17)
+      at process.processTimers (node:internal/timers:571:7)
+
+test at tests/hosted/native.test.mjs:28:1
+✖ ambiguous ref/PR effects and D1 completion faults resume without duplicate visible proposals (46000.798406ms)
+  'test timed out after 45000ms'
+
+test at tests/hosted/native.test.mjs:31:1
+✖ authorization, changed/revoked approvals, stale Git bases and foreign branches fail closed (45845.622033ms)
+  'test timed out after 45000ms'

@@ -1,0 +1,11 @@
+{
+  "status": 200,
+  "auditEvent": "74650ccb-4137-44f4-b5bd-3670edf635fa",
+  "submittedPolicyCount": 1,
+  "currentPolicyCount": 1,
+  "changedPolicyPaths": [
+    "policies/0/updated_at"
+  ],
+  "policySemanticsPreserved": true,
+  "duration": "1h"
+}

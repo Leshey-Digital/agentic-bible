@@ -1,0 +1,3 @@
+# Composition acceptance
+
+All frozen public content bytes and staging noindex survive module serving. Dynamic authenticated routes precede static fallback. Without credentials, exact private opt-in plus signed trust and D1 permits source review/save/readback from a pinned build snapshot; absent/invalid identity, stale submission revision, altered source pins and unknown citations reject writes. Draft creation explicitly remains unavailable and performs zero outbound requests. Public intake and paid/canonical writes remain disabled. Restart/replay preserves the saved note. Bundled source is never served as a public static file. No production release is implied.

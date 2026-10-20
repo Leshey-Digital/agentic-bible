@@ -1,0 +1,16 @@
+{
+  "status": 200,
+  "success": true,
+  "errors": [],
+  "deploymentId": "3c66f6b5-7835-40c9-9e55-00cc9cf60b40",
+  "readback": {
+    "status": 200,
+    "id": "3c66f6b5-7835-40c9-9e55-00cc9cf60b40",
+    "versions": [
+      {
+        "version_id": "7bf23d96-ec17-4ed0-a676-a2bc8d5922ef",
+        "percentage": 100
+      }
+    ]
+  }
+}
