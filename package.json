@@ -84,6 +84,7 @@
     "release:qualify": "node scripts/release-qualify.mjs",
     "release:qualification:verify": "node scripts/release-qualification-verify.mjs",
     "release:execute": "node scripts/release-local.mjs",
+    "release:legacy-baseline:record": "node scripts/release-legacy-baseline-record.mjs",
     "release:bridge:request": "node scripts/release-bridge-request.mjs",
     "release:bridge:respond": "node scripts/release-bridge-respond.mjs",
     "release:bridge:code-chunk": "node scripts/release-bridge-code-chunk.mjs",

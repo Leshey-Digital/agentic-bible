@@ -1,5 +1,6 @@
 import {readFileSync} from 'node:fs';import {join} from 'node:path';import {gzipSync} from 'node:zlib';
 import {verifyCandidate,canonical,digest} from './artifact.ts';import {directUploadPlan} from './direct.ts';import {releaseTarget} from './public.ts';
+import type {LegacyVersionSnapshot} from './legacy-baseline.ts';
 // Conservative local limit for the serialized connector execute arguments. The
 // connector does not publish a documented code-size limit; this is our budget.
 export const connectorExecuteArgumentBudgetBytes=1_900_000;
@@ -61,29 +62,37 @@ export function uploadConnectorCode(root:string,id:string,requestId:string,expec
  const code='async()=>{try{const b=s=>Uint8Array.from(atob(s),x=>x.charCodeAt(0)),r='+payloadBytes.length+',h='+JSON.stringify(payloadDigest)+',z=new Blob([b('+JSON.stringify(packedBase64)+')]).stream().pipeThrough(new DecompressionStream("gzip")).getReader(),parts=[];let n=0;for(;;){const x=await z.read();if(x.done)break;n+=x.value.length;if(n>r)throw Error("release_capsule_payload_capacity");parts.push(x.value);}if(n!==r)throw Error("release_capsule_payload_digest");const raw=new Uint8Array(n);let o=0;for(const x of parts){raw.set(x,o);o+=x.length;}const got=Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256",raw))).map(x=>x.toString(16).padStart(2,"0")).join("");if(got!==h)throw Error("release_capsule_payload_digest");const p=JSON.parse(new TextDecoder().decode(raw));for(const f of Object.values(p.files))f.content=p.inventory[f.path].content;for(const m of p.version.modules)if(m.name!=="worker.js")m.content_base64=p.inventory[m.name].content;return await ('+source+')(p,cloudflare);}catch(e){throw Error(/^release_[a-z_]+$/.test(String(e?.message))?e.message:"release_connector_upload_unconfirmed");}}';
  if(connectorExecuteArgumentBytes(code)>connectorExecuteArgumentBudgetBytes)throw Error('release_connector_capsule_capacity');return code;
 }
-async function controlCapsule(req:any,expectedActive:string|null|undefined,cloudflare:any){
+async function controlCapsule(req:any,expectedActive:string|null|undefined,legacyGuard:{baselineDigest:string;version:LegacyVersionSnapshot}|undefined,cloudflare:any){
  try{
+  const stable=(value:any)=>JSON.stringify(value,(_key,item)=>item&&typeof item==='object'&&!Array.isArray(item)?Object.fromEntries(Object.keys(item).sort().map(name=>[name,item[name]])):item);
   const base='/accounts/c370be29e4065365de03bc8652da2cdc/workers/scripts/agentic-bible-staging';
   if(req.method==='POST'){
    if(expectedActive===undefined||req.path!==base+'/deployments'||req.body?.strategy!=='percentage'||req.body.versions?.length!==1||req.body.versions[0].percentage!==100)throw Error('release_activation_input');
    const r=await cloudflare.request({method:'GET',path:base+'/deployments'});if(!r.success||r.status!==200)throw Error('release_connector_control_unconfirmed');const list=r.result.deployments??r.result;
    if(!Array.isArray(list)||list.length>100||list.length&&(list[0].strategy!=='percentage'||list[0].versions?.length!==1||list[0].versions[0].percentage!==100))throw Error('release_split_traffic_unsupported');
-   const current=list.length?list[0].versions[0].version_id:null,operation=req.body.annotations?.['workers/message'];if(!/^ab-release:[a-f0-9-]{36}:[a-f0-9]{64}$/.test(operation??''))throw Error('release_activation_input');
+   const current=list.length?list[0].versions[0].version_id:null,operation=req.body.annotations?.['workers/message'];if(legacyGuard?!new RegExp('^ab-legacy-rollback:[a-f0-9-]{36}:'+legacyGuard.baselineDigest+'$').test(operation??''):!/^ab-release:[a-f0-9-]{36}:[a-f0-9]{64}$/.test(operation??''))throw Error('release_activation_input');
    if(current===req.body.versions[0].version_id&&list[0]?.annotations?.['workers/message']===operation)return {status:200,success:true,result:{}};
    if(current!==expectedActive)throw Error('release_active_changed');
    const v=await cloudflare.request({method:'GET',path:base+'/versions/'+req.body.versions[0].version_id}),bindings=v.result?.resources?.bindings??v.result?.bindings,message=(v.result?.annotations??v.result?.metadata?.annotations??{})['workers/message'];
    const databaseId='1ca9a6f8-c0a9-4040-8a2f-e22d888a985a',secretNames=['HOSTED_ADMIN_TRUST','INTEGRATION_VAULT_KEY','INTEGRATION_VAULT_KEY_ID'],expected=[{name:'ASSETS',type:'assets'},{name:'EDITORIAL_DB',type:'d1',id:databaseId},...secretNames.map(name=>({name,type:'secret_text'}))];
    const same=Array.isArray(bindings)&&bindings.length===expected.length&&JSON.stringify(bindings.map((b:any)=>`${b.type}\u0000${b.name}\u0000${b.type==='d1'?b.id??'':''}`).sort())===JSON.stringify(expected.map((b:any)=>`${b.type}\u0000${b.name}\u0000${b.type==='d1'?b.id??'':''}`).sort());
-   if(!v.success||v.status!==200||!same||!String(message??'').startsWith('ab-candidate:'+operation.split(':')[2]+':'))throw Error('release_version_binding');
+   if(!v.success||v.status!==200||!same)throw Error('release_version_binding');
+   if(legacyGuard){
+    const b=legacyGuard.version,meta=v.result?.metadata??{},etag=v.result?.resources?.script?.etag??v.result?.etag;
+    const observed={versionId:v.result?.id,number:v.result?.number,createdOn:meta.created_on??v.result?.created_on,source:meta.source??v.result?.source,etag,candidateMessage:message===undefined||message===null||message===''?null:message,bindings:bindings.map((x:any)=>({name:x.name,type:x.type,...(x.type==='d1'?{id:x.id}:{})})).sort((x:any,y:any)=>x.name.localeCompare(y.name))};
+    const pinned={versionId:b.versionId,number:b.number,createdOn:b.createdOn,source:b.source,etag:b.etag,candidateMessage:b.candidateMessage,bindings:b.bindings.slice().sort((x:any,y:any)=>x.name.localeCompare(y.name))};
+    if(b.versionId!==req.body.versions[0].version_id||stable(observed)!==stable(pinned)||legacyGuard.baselineDigest!==operation.split(':')[2])throw Error('release_legacy_baseline_version_changed');
+   }else if(!String(message??'').startsWith('ab-candidate:'+operation.split(':')[2]+':'))throw Error('release_version_binding');
   }
   const r=await cloudflare.request(req);
-  const strip=(v:any)=>{const message=(v.annotations??v.metadata?.annotations??{})['workers/message']??'',databaseId='1ca9a6f8-c0a9-4040-8a2f-e22d888a985a',known=[{name:'ASSETS',type:'assets'},{name:'EDITORIAL_DB',type:'d1',id:databaseId},...['HOSTED_ADMIN_TRUST','INTEGRATION_VAULT_KEY','INTEGRATION_VAULT_KEY_ID'].map(name=>({name,type:'secret_text'}))];return {id:v.id,strategy:v.strategy,versions:v.versions,annotations:{'workers/message':/^(ab-candidate:[a-f0-9]{64}:[a-f0-9-]{36}|ab-release:[a-f0-9-]{36}:[a-f0-9]{64})$/.test(message)?message:''},resources:{bindings:(v.resources?.bindings??v.bindings??[]).map((b:any)=>known.some(expected=>expected.name===b.name&&expected.type===b.type&&(expected.type!=='d1'||expected.id===b.id))?{name:b.name,type:b.type,...(b.type==='d1'?{id:databaseId}:{})}:{name:'UNREVIEWED',type:'unreviewed'})}};};
+  const strip=(v:any)=>{const message=(v.annotations??v.metadata?.annotations??{})['workers/message']??'',databaseId='1ca9a6f8-c0a9-4040-8a2f-e22d888a985a',known=[{name:'ASSETS',type:'assets'},{name:'EDITORIAL_DB',type:'d1',id:databaseId},...['HOSTED_ADMIN_TRUST','INTEGRATION_VAULT_KEY','INTEGRATION_VAULT_KEY_ID'].map(name=>({name,type:'secret_text'}))];return {id:v.id,strategy:v.strategy,versions:v.versions,annotations:{'workers/message':/^(ab-candidate:[a-f0-9]{64}:[a-f0-9-]{36}|ab-release:[a-f0-9-]{36}:[a-f0-9]{64}|ab-legacy-rollback:[a-f0-9-]{36}:[a-f0-9]{64})$/.test(message)?message:''},...(Number.isSafeInteger(v.number)?{number:v.number}:{}),...(typeof v.metadata?.created_on==='string'?{created_on:v.metadata.created_on}:typeof v.created_on==='string'?{created_on:v.created_on}:{}),...(typeof v.metadata?.source==='string'?{source:v.metadata.source}:typeof v.source==='string'?{source:v.source}:{}),...(typeof v.resources?.script?.etag==='string'?{etag:v.resources.script.etag}:typeof v.etag==='string'?{etag:v.etag}:{}),resources:{bindings:(v.resources?.bindings??v.bindings??[]).map((b:any)=>known.some(expected=>expected.name===b.name&&expected.type===b.type&&(expected.type!=='d1'||expected.id===b.id))?{name:b.name,type:b.type,...(b.type==='d1'?{id:databaseId}:{})}:{name:'UNREVIEWED',type:'unreviewed'})}};};
   const x=r.result;return {status:r.status,success:r.success,result:Array.isArray(x)?x.map(strip):x?.items?{items:x.items.map(strip)}:x?.deployments?{deployments:x.deployments.map(strip)}:strip(x??{})};
  }catch(e){throw Error(/^release_[a-z_]+$/.test(String((e as Error)?.message))?(e as Error).message:'release_connector_control_unconfirmed');}
 }
-export function controlConnectorCode(path:string,body?:any,expectedActive?:string|null){
+export function controlConnectorCode(path:string,body?:any,expectedActive?:string|null,legacyGuard?:{baselineDigest:string;version:LegacyVersionSnapshot}){
  const prefix='/accounts/'+releaseTarget.account+'/workers/scripts/'+releaseTarget.worker;
  if(!(/^\/deployments$/.test(path)||/^\/versions\?per_page=100$/.test(path)||/^\/versions\/[a-f0-9-]{36}$/.test(path))||(body!==undefined&&path!=='/deployments'))throw Error('release_connector_target');
+ if(legacyGuard&&(path!=='/deployments'||body===undefined||expectedActive===undefined||expectedActive===null||!/^[a-f0-9]{64}$/.test(legacyGuard.baselineDigest)||legacyGuard.version.candidateMessage!==null))throw Error('release_legacy_activation_input');
  const [suffix,query]=path.split('?'),request={method:body===undefined?'GET':'POST',path:prefix+suffix,...(query?{query:{per_page:100}}:{}),...(body===undefined?{}:{body})};
- return 'async()=>await ('+controlCapsule.toString()+')('+JSON.stringify(request)+','+(expectedActive===undefined?'undefined':JSON.stringify(expectedActive))+',cloudflare)';
+ return 'async()=>await ('+controlCapsule.toString()+')('+JSON.stringify(request)+','+(expectedActive===undefined?'undefined':JSON.stringify(expectedActive))+','+(legacyGuard===undefined?'undefined':JSON.stringify(legacyGuard))+',cloudflare)';
 }

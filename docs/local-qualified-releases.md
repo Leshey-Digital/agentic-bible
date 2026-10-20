@@ -50,11 +50,31 @@ Rollback uses the retained prior qualified bundle, its independently reviewed pi
 npm run release:execute -- <prior-bundle> <prior-qualification-digest> <prior-candidate-digest> <prior-source-SHA> <new-request-UUID> <expected-active-UUID> rollback <prior-receipt-path>
 ```
 
-It reuses the immutable old provider version/assets, without rebuilding current main or reverting canonical Git/accounting. Receipt qualification/digest/source/target/version pins must match. Old Actions-only receipts do not silently acquire local qualification authority. Keep historical receipts; importing an old scheme requires a separately reviewed migration. The current named Worker has no deployed baseline, so no known-good live rollback target is claimed.
+It reuses the immutable old provider version/assets, without rebuilding current main or reverting canonical Git/accounting. Receipt qualification/digest/source/target/version pins must match. Old Actions-only receipts do not silently acquire local qualification authority. Keep historical receipts; importing an old scheme requires a separately reviewed migration. The current active pre-controller version has no qualified candidate receipt and cannot be passed to this ordinary rollback command.
+
+### Pre-controller legacy baseline
+
+The first qualified deployment may proceed against the exact currently active version using `deploy` and its expected-active version ID; it does not need a prior `verified-serving` receipt. The ordinary `rollback` action remains limited to previously qualified candidate receipts.
+
+For a pre-controller version without a candidate marker, capture a separate sanitized observation from read-only Cloudflare deployment/version metadata, public serving checks, and `/api/runtime/status`. Hash the complete public asset responses and retain only asset paths, byte counts and SHA-256 hashes. Include the fixed target, original 100% deployment ID/time/source, version ID/number/creation time/source/script ETag, an explicit null candidate marker, and the exact binding names/types/D1 ID. Never include secret values. The recorder validates the closed schema and writes an immutable local file:
+
+```sh
+npm run release:legacy-baseline:record -- <sanitized-observation-json>
+```
+
+An independent reviewer must accept the exact baseline digest as a separate pin. `rollback-legacy` takes that baseline file and digest in addition to the reviewed qualified bundle:
+
+```sh
+npm run release:execute -- <bundle> <qualification-digest> <candidate-digest> <source-SHA> <new-request-UUID> <expected-active-UUID> rollback-legacy <baseline-path> <baseline-digest>
+```
+
+This action rechecks that the expected active version is the reviewed candidate, re-fetches the legacy version metadata and exact bindings before activation, and repeats the legacy version and expected-active checks in the connector capsule immediately before the 100% deployment request. It journals under a distinct `legacy-baseline-rollback` kind and verifies the captured asset hashes, noindex headers and closed runtime state afterward. Its result is `legacy-baseline-restored`; it is not a candidate qualification or `verified-serving` receipt. It does not upload or rebuild the baseline version.
+
+If runtime or served-asset evidence cannot be read, do not create a usable baseline record or claim a verified legacy rollback target. The code-only implementation has not activated staging. The current pre-controller version's Cloudflare metadata and bindings are known, but executor and connected-route reads of the staging origin did not return runtime evidence; a complete baseline capture remains outstanding.
 
 ## Feasibility, cost and remaining live checks
 
-Read-only assessment verified the existing named Worker and disabled workers.dev/previews. Parent feasibility checks verified native fetch Authorization override, FormData/Blob/base64/WebCrypto and intact 2MiB input. The exposed `cloudflare.request` has no JWT-header override, so only native fetch carries session authorization. Actual session registration succeeded, while native asset upload returned HTTP 401. Final read-only observations found zero versions/deployments and no staging custom domain. Token authentication, initial deployment then hostname attachment, and live serving validation remain unresolved; no successful release is claimed.
+Read-only assessment verified the named Worker and exact active version/bindings; the active Worker has a pre-controller version with no candidate marker or qualified receipt. Native fetch and the connected read-only route did not return staging runtime data in this environment, so no legacy baseline record is claimed. Token authentication, live serving verification, and any deployment remain separate; no successful release is claimed.
 
 [Cloudflare's direct-upload protocol](https://developers.cloudflare.com/workers/static-assets/direct-upload/) and [official SDK example](https://github.com/cloudflare/cloudflare-typescript/blob/main/examples/workers/script-with-assets-upload.ts) support this staged approach. Account authentication remains inside the existing connector. No new token, password, GitHub environment or account security setup is requested.
 
