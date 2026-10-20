@@ -1,8 +1,9 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { spawn, spawnSync } from 'node:child_process';
+import { spawnSync } from 'node:child_process';
 import { rmSync, mkdirSync, openSync, closeSync } from 'node:fs';
 import { resolve } from 'node:path';
+import {spawnSupervised,stopSupervised} from '../support/process-supervisor.mjs';
 
 test('actual Worker/D1 receipts survive restart, failed completion and retention pressure', {timeout:300000}, async()=>{
   // Only this dedicated disposable directory is reset. Interactive/editorial browser state is untouched.
@@ -13,7 +14,7 @@ test('actual Worker/D1 receipts survive restart, failed completion and retention
   const log=openSync(resolve(state,'worker.log'),'a');let child;
   const origin='http://127.0.0.1:8788';
   async function start(){
-    child=spawn(process.execPath,[cli,'dev','--local',...common,'--ip','127.0.0.1','--port','8788'],{env,stdio:['ignore',log,log]});
+    child=spawnSupervised(process.execPath,[cli,'dev','--local',...common,'--ip','127.0.0.1','--port','8788'],{env,stdio:['ignore',log,log]});
     for(let i=0;i<200;i++){
       if(child.exitCode!==null)throw new Error('Local Worker exited before ready.');
       try{if((await fetch(origin+'/api/editorial/status')).ok)return;}catch{}
@@ -24,7 +25,7 @@ test('actual Worker/D1 receipts survive restart, failed completion and retention
   async function stop(){
     const current=child;child=undefined;
     if(current.exitCode!==null||current.signalCode!==null)return;
-    const exited=new Promise(resolve=>current.once('exit',resolve));current.kill('SIGTERM');await exited;
+    await stopSupervised(current,'SIGTERM');
   }
   function command(args){
     const result=spawnSync(process.execPath,[cli,...args,...common],{env,encoding:'utf8',timeout:60000});

@@ -1,9 +1,10 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import {spawn,spawnSync} from 'node:child_process';
+import {spawnSync} from 'node:child_process';
 import {closeSync,mkdirSync,openSync,readFileSync,rmSync,writeFileSync} from 'node:fs';
 import {resolve} from 'node:path';
 import {createServer} from 'node:net';
+import {spawnSupervised,stopSupervised} from '../support/process-supervisor.mjs';
 
 async function requireFreePort(){
   const server=createServer();
@@ -22,10 +23,10 @@ test('actual Worker/D1 no-op receipts survive restart, failures, capacity and ex
   const quote=value=>"'"+String(value).replaceAll("'","''")+"'";
   async function start(){
     await requireFreePort();
-    child=spawn(process.execPath,[cli,'dev','--local',...common,'--ip','127.0.0.1','--port','8788'],{env,stdio:['ignore',fd,fd]});
+    child=spawnSupervised(process.execPath,[cli,'dev','--local',...common,'--ip','127.0.0.1','--port','8788'],{env,stdio:['ignore',fd,fd]});
     for(let i=0;i<200;i++){if(child.exitCode!==null)throw new Error('Local Worker exited');try{if((await fetch(origin+'/api/editorial/status')).ok)return;}catch{}await new Promise(r=>setTimeout(r,200));}throw new Error('Worker startup timed out');
   }
-  async function stop(){const current=child;child=undefined;if(!current||current.exitCode!==null||current.signalCode!==null)return;const done=new Promise(r=>current.once('exit',r));current.kill('SIGTERM');await done;}
+  async function stop(){const current=child;child=undefined;if(!current)return;await stopSupervised(current,'SIGTERM');}
   const api=(path,options={})=>fetch(origin+path,{...options,headers:{Cookie:cookie,...options.headers}});
   const json=async path=>{const response=await api(path);assert.equal(response.status,200);return response.json();};
   const headers=()=>({Origin:origin,'Content-Type':'application/json','X-CSRF-Token':csrf});

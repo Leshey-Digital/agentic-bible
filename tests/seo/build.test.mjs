@@ -10,6 +10,7 @@ import {articleIds,publicRoutes} from '../../src/seo/policy.ts';
 import {git} from '../wiki-bridge/helpers.mjs';
 import {seoPreviewEnvironment} from './local-runtime.mjs';
 import {verifySeoCliIsolation} from './cli-isolation.mjs';
+import {spawnSupervised,stopSupervised} from '../support/process-supervisor.mjs';
 test('actual canonical, staging, synthetic and mixed builds produce coherent discovery without touching ordinary dist',{timeout:120000},async()=>{
   const original=inventory('src/content/articles'),dist=inventory('dist');const scratch=mkdtempSync(join(tmpdir(),'agentic-seo-build-')),root=join(scratch,'project');mkdirSync(root);
   for(const [path,bytes]of Object.entries(projectFiles(process.cwd()).files))write(join(root,path),bytes);symlinkSync(resolve('node_modules'),join(root,'node_modules'),'dir');
@@ -19,7 +20,7 @@ test('actual canonical, staging, synthetic and mixed builds produce coherent dis
   async function serve(output,canonical){
     await new Promise((done,failed)=>{const probe=createServer();probe.once('error',failed);probe.listen(8794,'127.0.0.1',()=>probe.close(done));});
     const config=join(scratch,'wrangler-seo-proof.json');writeFileSync(config,JSON.stringify({name:'agentic-bible-seo-proof',compatibility_date:'2026-10-16',workers_dev:false,preview_urls:false,send_metrics:false,assets:{directory:output,html_handling:'force-trailing-slash',not_found_handling:'404-page'}}));
-    const child=spawn(process.execPath,[resolve('node_modules/wrangler/bin/wrangler.js'),'dev','--local','--config',config,'--ip','127.0.0.1','--port','8794','--persist-to',join(root,'worker-state')],{cwd:root,env:seoPreviewEnvironment(resolve('.git/runtime-config'),resolve('.git/runtime-cache')),stdio:'ignore'});
+    const child=spawnSupervised(process.execPath,[resolve('node_modules/wrangler/bin/wrangler.js'),'dev','--local','--config',config,'--ip','127.0.0.1','--port','8794','--persist-to',join(root,'worker-state')],{cwd:root,env:seoPreviewEnvironment(resolve('.git/runtime-config'),resolve('.git/runtime-cache')),stdio:'ignore'});
     const origin='http://127.0.0.1:8794';try{
       let ready=false;for(let n=0;n<150;n++){if(child.exitCode!==null)throw Error('local static Worker exited');try{const response=await fetch(origin+'/articles/tool-use/');if(response.status===200){ready=true;assert.equal(response.headers.get('x-robots-tag'),canonical?null:'noindex, nofollow');break;}}catch(error){if(error?.code==='ERR_ASSERTION')throw error;}await new Promise(resolve=>setTimeout(resolve,100));}assert.equal(ready,true,'local static Worker startup');
       assert.deepEqual(await (await fetch(origin+'/indexing-manifest.json')).json(),manifest(output));
@@ -30,7 +31,7 @@ test('actual canonical, staging, synthetic and mixed builds produce coherent dis
       else{assert.doesNotMatch(historyHtml,/rel="canonical"/);assert.match(historyHtml,/name="robots" content="noindex, nofollow"/);}
       assert.equal((await fetch(origin+'/history/tool-use/archived-event/')).headers.get('x-robots-tag'),'noindex, nofollow');
       assert.match((await fetch(origin+'/articles/tool-use/')).headers.get('content-security-policy'),/default-src 'self'/);
-    }finally{if(child.exitCode===null&&child.signalCode===null){const stopped=new Promise(resolve=>child.once('exit',resolve));child.kill('SIGTERM');const timer=setTimeout(()=>child.kill('SIGKILL'),5000);await stopped;clearTimeout(timer);}}
+    }finally{await stopSupervised(child,'SIGTERM');}
   }
   try{
     const canonical=await build('canonical',{AGENTIC_BIBLE_DISCOVERY_MODE:'production',AGENTIC_BIBLE_CANONICAL_ORIGIN:'https://agenticbible.si'}),m=manifest(canonical);assert.deepEqual(m.entries.map(e=>e.articleId).sort(),[...articleIds].sort());
