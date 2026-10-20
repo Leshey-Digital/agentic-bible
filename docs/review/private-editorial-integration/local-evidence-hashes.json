@@ -1,0 +1,34 @@
+[
+  {
+    "path": "/tmp/agentic-private-inbox-before.log",
+    "sha256": "a6dd361a718b90e703693cbc334751a09102eb6b5a794915a6d510eb20d3ee33"
+  },
+  {
+    "path": "/tmp/agentic-private-inbox-final.log",
+    "sha256": "2609560b054a20ae4d52a46bffb5e1c417d9edb1f47eab95b65932cbc512cf0c"
+  },
+  {
+    "path": "/tmp/agentic-private-integration-suite.log",
+    "sha256": "4189d6007b226e9c8bacc02caa24aacd7c7e22daa3699c9820d659ecea52bd45"
+  },
+  {
+    "path": "/tmp/agentic-private-integration-check.log",
+    "sha256": "0e69359a991bac7421d4af6a5677d509a12d58e8b7db9055ed83023d5903f600"
+  },
+  {
+    "path": "/tmp/agentic-private-integration-build.log",
+    "sha256": "8f03fb75ffdfb7565f5a794ea8ddcedfc4135847cef1f90bd427fe74d32ef802"
+  },
+  {
+    "path": "/tmp/agentic-private-integration-dryrun.log",
+    "sha256": "1da13e5e8e7afbb92fb3316b66e7496a8169c7419ccb4fdd3529a0063b7f272a"
+  },
+  {
+    "path": "/tmp/agentic-private-integration-static.log",
+    "sha256": "1bc60699d24b21f67cbf5859afc406f4982b7b0cd6b27cfd7f5acd298008347c"
+  },
+  {
+    "path": "/tmp/agentic-private-integration-articles-isolated.log",
+    "sha256": "912b70e8de510ec53fc1a46f3aa80eac789a4cd9cbba4c259cbdac3d72d67f92"
+  }
+]
