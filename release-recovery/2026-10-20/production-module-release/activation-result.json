@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"status\": 200,\n  \"success\": true,\n  \"errors\": [],\n  \"result\": {\n    \"id\": \"e046cf4a-6f57-404d-a50a-504788058ee5\"\n  }\n}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}
