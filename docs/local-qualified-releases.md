@@ -62,6 +62,23 @@ For a pre-controller version without a candidate marker, capture a separate sani
 npm run release:legacy-baseline:record -- <sanitized-observation-json>
 ```
 
+The active pre-controller Worker is pinned to runtime source commit
+`b41a422881921638833f92b2361a70eb1647d01f` and emits runtime JSON schema 1:
+`schemaVersion`, `contentAuthority`, release-manifest fields including
+`releaseVerification`, `publicIntake`, admin configuration booleans,
+`hostedCanonicalWrites`, and `localFixtureIdentity`. The baseline record
+stores that exact body under its source-pinned runtime schema wrapper. It does
+not infer integration-settings or Jev state that this old Worker never emitted.
+
+The runtime's observed build ID begins `4cb050e4`; a local reconstruction from
+the same reported source commit produced `fbbea28d`. The build ID hashes
+source commit/tree, the generated public-asset inventory and the fixed target;
+the formula has no timestamp input. Therefore the local reconstruction is not
+evidence for the deployed asset inventory. Do not use its paths or hashes for a
+live baseline. Use only an asset inventory whose public response bytes match
+the observed runtime manifest/build identity. Until that inventory is obtained
+through an authorized public read path, do not record a usable baseline.
+
 An independent reviewer must accept the exact baseline digest as a separate pin. `rollback-legacy` takes that baseline file and digest in addition to the reviewed qualified bundle:
 
 ```sh

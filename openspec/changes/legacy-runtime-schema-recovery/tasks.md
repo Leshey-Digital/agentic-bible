@@ -1,0 +1,9 @@
+- [x] Inspect the actual `b41a422` runtime response implementation and pinned binding metadata.
+- [x] Reconcile the runtime-reported and locally reconstructed build ID; mark the reconstruction inventory unusable for live capture.
+- [x] Add a source-pinned, versioned legacy runtime schema and preserve the exact old response body.
+- [x] Keep exact version, ETag, binding, expected-active, review and journal guards unchanged.
+- [x] Add acceptance, changed-source, changed-shape, manifest-binding and baseline-tampering regressions.
+- [x] Run focused legacy baseline and release regression tests.
+- [x] Obtain independent review of the exact code and evidence-handling change.
+- [ ] Publish the recovery commit with a non-force push.
+- [ ] Keep the full 59-check qualification and live deployment unrun.

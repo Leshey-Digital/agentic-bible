@@ -18,14 +18,14 @@ export async function verifyLegacyServing(baseline:LegacyBaseline,ports:Pick<Por
  const {runtime,assets}=baseline;let count=0;const started=Date.now();
  for(const [path,file]of Object.entries(assets)){
   if(Date.now()-started>120000)throw Error('release_legacy_verification_deadline');
-  const response=await ports.read(publicPath(path,runtime.releaseBuildId));
+  const response=await ports.read(publicPath(path,runtime.body.releaseBuildId));
   if(response.status!==(path==='404.html'?404:200)||response.redirected||!response.headers.get('x-robots-tag')?.includes('noindex'))throw Error('release_legacy_served_status_or_policy');
   const reader=response.body?.getReader();if(!reader)throw Error('release_legacy_served_body');let total=0;const chunks:Uint8Array[]=[];
   try{for(;;){const part=await reader.read();if(part.done)break;total+=part.value.length;if(total>file.bytes){void reader.cancel();throw Error('release_legacy_served_capacity');}chunks.push(part.value);}}finally{reader.releaseLock();}
   if(total!==file.bytes||digest(Buffer.concat(chunks))!==file.sha256)throw Error('release_legacy_served_bytes_changed');count++;
  }
- const response=await ports.read('/api/runtime/status'),actual=await responseJson(response,4096),{status:expectedStatus,...expectedRuntime}=runtime;
- if(response.status!==expectedStatus||canonical(actual)!==canonical(expectedRuntime))throw Error('release_legacy_runtime_changed');
+ const response=await ports.read('/api/runtime/status'),actual=await responseJson(response,4096);
+ if(response.status!==runtime.status||canonical(actual)!==canonical(runtime.body))throw Error('release_legacy_runtime_changed');
  return count;
 }
 

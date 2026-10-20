@@ -6,10 +6,11 @@ import {join} from 'node:path';
 import {runInNewContext} from 'node:vm';
 import {fixture,git} from './fixture.mjs';
 import {canonical,digest} from '../../src/release/artifact.ts';
+import {releaseTarget} from '../../src/release/public.ts';
 import {qualificationSteps,validationSteps,qualificationManifestDigest} from '../../src/release/qualification.ts';
 import {expectedStagingBindings} from '../../src/release/bindings.ts';
 import {executeQualifiedLegacyRollback} from '../../src/release/local.ts';
-import {createLegacyBaseline,baselineDigest,validateLegacyBaseline} from '../../src/release/legacy-baseline.ts';
+import {createLegacyBaseline,baselineDigest,validateLegacyBaseline,legacyRuntimeSource} from '../../src/release/legacy-baseline.ts';
 import {cloudflarePorts} from '../../src/release/cloudflare.ts';
 import {controlConnectorCode} from '../../src/release/capsule.ts';
 
@@ -24,9 +25,10 @@ function qualification(candidate){
  const value={schemaVersion:3,mode:'saved-coding-environment',state:'qualified',repository:'Leshey-Digital/agentic-bible',sourceCommit:candidate.candidate.sourceCommit,sourceTree:candidate.candidate.sourceTree,candidateDigest:candidate.id,validationManifestDigest:qualificationManifestDigest,node:'24.19.0',npm:'11.9.0',chromium:'154.0.8037.57',startedAt:1,completedAt:2,checks};writeFileSync(join(root,'qualification.json'),canonical(value));const id=digest(canonical(value));writeFileSync(join(root,'qualification.sha256'),id+'\n');return {root,id};
 }
 function legacyBaseline(baseline){
- const createdOn='2026-10-19T15:08:26.091042Z',versionId=randomUUID(),runtime={status:200,releaseCommit:baseline.candidate.sourceCommit,releaseManifestVerified:true,releaseManifestSha256:baseline.candidate.manifestSha256,releaseBuildId:baseline.candidate.buildId,releaseVerified:false,adminVerifierConfigured:true,integrationSettingsConfigured:true,publicIntake:false,gitHubProposalsConfigured:false,hostedCanonicalWrites:false,jevDispatchState:'not-mounted',jevDispatchConfigured:false,localFixtureIdentity:false};
+ const createdOn='2026-10-19T15:08:26.091042Z',versionId=randomUUID(),releaseManifest={schemaVersion:1,sourceCommit:legacyRuntimeSource,sourceTree:baseline.candidate.sourceTree,buildId:'',assetsHash:'d'.repeat(64),target:releaseTarget};releaseManifest.buildId=digest(canonical({sourceCommit:releaseManifest.sourceCommit,sourceTree:releaseManifest.sourceTree,assetsHash:releaseManifest.assetsHash,target:releaseManifest.target}));const manifestBytes=Buffer.from(JSON.stringify(releaseManifest)+'\n'),runtime={schemaVersion:1,sourceCommit:legacyRuntimeSource,status:200,body:{schemaVersion:1,contentAuthority:'github-build',releaseCommit:legacyRuntimeSource,releaseVerified:false,releaseManifestVerified:true,releaseManifestSha256:digest(manifestBytes),releaseBuildId:releaseManifest.buildId,releaseVerification:'compiled-worker-manifest-binding',publicIntake:false,adminVerifierConfigured:true,adminApprovalsConfigured:false,gitHubProposalsConfigured:false,hostedCanonicalWrites:false,localFixtureIdentity:false}};
  const assets=Object.fromEntries(Object.entries(baseline.candidate.assets).filter(([path])=>!['_headers','_redirects'].includes(path)).map(([path,file])=>[path,{bytes:file.bytes,sha256:file.sha256}]));
- return createLegacyBaseline({originalDeployment:{id:randomUUID(),createdOn,source:'api',strategy:'percentage',versionId,percentage:100},version:{versionId,number:5,createdOn,source:'api',etag:'a'.repeat(64),candidateMessage:null,bindings:expectedStagingBindings.map(x=>({...x}))},assets,runtime},Date.now());
+ assets['release.json']={bytes:manifestBytes.length,sha256:digest(manifestBytes)};
+ return createLegacyBaseline({originalDeployment:{id:randomUUID(),createdOn,source:'api',strategy:'percentage',versionId,percentage:100},version:{versionId,number:5,createdOn,source:'api',etag:'a'.repeat(64),candidateMessage:null,bindings:expectedStagingBindings.map(x=>({...x}))},releaseManifest,assets,runtime},Date.now());
 }
 function portsFor(baseline,candidate,baselineCandidate,changes={}){
  const requestId=randomUUID(),activeVersion=randomUUID(),operation='ab-release:'+randomUUID()+':'+candidate.id,state={active:{versionId:activeVersion,operation},version:structuredClone(baseline.baseline.version),uploads:0,activations:0,legacyReads:0},roots=new Map([[baseline.baseline.version.versionId,baselineCandidate.root],[activeVersion,candidate.root]]);
@@ -42,9 +44,10 @@ function portsFor(baseline,candidate,baselineCandidate,changes={}){
   read:async path=>{
    const root=roots.get(state.active?.versionId);if(!root)throw Error('unknown controlled served version');
    if(path==='/api/runtime/status'){
-    const b=baseline.baseline.runtime;const {status:_status,...runtime}=b;return Response.json(runtime);
+    return Response.json(baseline.baseline.runtime.body);
    }
-    const manifest=baseline.baseline.runtime.releaseBuildId;const {publicPath}=await import('../../src/release/controller.ts');const target=Object.keys(baseline.baseline.assets).find(key=>publicPath(key,manifest)===path);if(!target)throw Error('unexpected controlled path');
+    const manifest=baseline.baseline.runtime.body.releaseBuildId;const {publicPath}=await import('../../src/release/controller.ts');const target=Object.keys(baseline.baseline.assets).find(key=>publicPath(key,manifest)===path);if(!target)throw Error('unexpected controlled path');
+   if(target==='release.json'){const m=baseline.baseline.releaseManifest;return new Response(Buffer.from(JSON.stringify({schemaVersion:m.schemaVersion,sourceCommit:m.sourceCommit,sourceTree:m.sourceTree,buildId:m.buildId,assetsHash:m.assetsHash,target:{account:m.target.account,worker:m.target.worker,origin:m.target.origin}})+'\n'),{status:200,headers:{'X-Robots-Tag':'noindex, nofollow'}});}
    return new Response(readFileSync(join(root,'assets',target)),{status:target==='404.html'?404:200,headers:{'X-Robots-Tag':'noindex, nofollow'}});
   },
  };
@@ -71,6 +74,30 @@ test('legacy baseline record rejects candidate markers, altered bindings and non
  const objectD1Id=structuredClone(valid);objectD1Id.version.bindings.find(x=>x.type==='d1').id=[expectedStagingBindings.find(x=>x.type==='d1').id];assert.throws(()=>baselineDigest(objectD1Id),/baseline_version/);
 });
 
+test('legacy runtime acceptance is exact, versioned and pinned to the real b41a422 source shape',async()=>{
+ const {baseline}=await artifacts(),valid=legacyBaseline(baseline).baseline;
+ assert.equal(valid.runtime.schemaVersion,1);assert.equal(valid.runtime.sourceCommit,'b41a422881921638833f92b2361a70eb1647d01f');
+ assert.notEqual(valid.runtime.body.releaseBuildId,baseline.candidate.buildId,'the observed legacy build pin is independent of a local candidate reconstruction');
+ assert.deepEqual(Object.keys(valid.runtime.body).sort(),['adminApprovalsConfigured','adminVerifierConfigured','contentAuthority','gitHubProposalsConfigured','hostedCanonicalWrites','localFixtureIdentity','publicIntake','releaseBuildId','releaseCommit','releaseManifestSha256','releaseManifestVerified','releaseVerification','releaseVerified','schemaVersion'].sort());
+ for(const change of [
+  value=>{value.runtime.sourceCommit='c'.repeat(40);},
+  value=>{value.runtime.body.releaseCommit='c'.repeat(40);},
+  value=>{value.runtime.body.integrationSettingsConfigured=true;},
+  value=>{delete value.runtime.body.releaseVerification;},
+  value=>{value.runtime.body.adminApprovalsConfigured=true;},
+ ]){
+  const altered=structuredClone(valid);change(altered);assert.throws(()=>validateLegacyBaseline(altered),/release_legacy_baseline_runtime/);
+ }
+ const alteredManifest=structuredClone(valid);alteredManifest.assets['release.json'].sha256='f'.repeat(64);assert.throws(()=>validateLegacyBaseline(alteredManifest),/release_legacy_baseline_manifest/);
+});
+
+test('tampering with a legacy runtime build pin breaks its observed manifest binding before provider reads',async()=>{
+ const {f,baseline:candidateBaseline,candidate}=await artifacts(),baseline=legacyBaseline(candidateBaseline),tampered=structuredClone(baseline.baseline);tampered.runtime.body.releaseBuildId='c'.repeat(64);
+ const q=qualification(candidate),path=writeBaseline(f,tampered),{ports,state,requestId,activeVersion}=portsFor(baseline,candidate,candidateBaseline);
+ await assert.rejects(executeQualifiedLegacyRollback(f.root,q.root,path,reviewFor(candidate,q,baseline),{ownerEnabled:true,exclusiveWriter:true,requestId,expectedActive:activeVersion},ports,join(f.root,'.git','legacy-runtime-tamper-'+randomUUID()+'.json')),/release_legacy_baseline_manifest/);
+ assert.equal(state.legacyReads,0);assert.equal(state.activations,0);
+});
+
 test('stale expected-active and provider version ETag, creation, number or binding changes stop before activation',{timeout:30000},async()=>{
  const {f,baseline:candidateBaseline,candidate}=await artifacts(),baseline=legacyBaseline(candidateBaseline),q=qualification(candidate),baselinePath=writeBaseline(f,baseline.baseline);
  for(const change of [
@@ -93,7 +120,7 @@ test('changed restored asset bytes or runtime policy leaves the legacy rollback 
   const {ports,state,requestId,activeVersion}=portsFor(baseline,candidate,candidateBaseline),journal=join(f.root,'.git','legacy-served-change-'+randomUUID()+'.json'),read=ports.read;
   ports.read=async path=>{
    if(mode==='asset'&&path==='/')return new Response('changed baseline bytes',{status:200,headers:{'X-Robots-Tag':'noindex, nofollow'}});
-   if(mode==='runtime'&&path==='/api/runtime/status'){const {status:_status,...runtime}=baseline.baseline.runtime;return Response.json({...runtime,publicIntake:true});}
+   if(mode==='runtime'&&path==='/api/runtime/status'){return Response.json({...baseline.baseline.runtime.body,publicIntake:true});}
    return read(path);
   };
   await assert.rejects(executeQualifiedLegacyRollback(f.root,q.root,baselinePath,reviewFor(candidate,q,baseline),{ownerEnabled:true,exclusiveWriter:true,requestId,expectedActive:activeVersion},ports,journal),mode==='asset'?/legacy_served_bytes_changed/:/legacy_runtime_changed/);
