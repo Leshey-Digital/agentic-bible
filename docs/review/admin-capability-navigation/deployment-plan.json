@@ -1,0 +1,28 @@
+{
+  "state": "prepared-not-submitted-parent-hold",
+  "sourceCommit": "9efcb9e7247772286791be9e8fe5cd073f97ff94",
+  "candidateSha256": "f6f7a6b39a1b8e72f67afb3fe67f3b6d778c9d31edfe2d408e6ac1934d145085",
+  "workerSha256": "c02ab0f388d08c60d23037abb44611ab07de4a9bd3327e83e054aa8d5f99ce50",
+  "unchangedDataModules": 80,
+  "configSha256": "ad6e0eedfd886e9b88858af7f0bbc1eae3ba7dbab221633b1414ebd351ca1735",
+  "payloadSha256": "6978a6ddec5e3e257f3028884d257e164b88ba8736eea91a84af6da7f01268ba",
+  "gzipSha256": "b8acf34a1cccf07f0d09a47cf402e91c89978a28f7358ba5c0ca78c0306413eb",
+  "gzipBytes": 726292,
+  "accountId": "c370be29e4065365de03bc8652da2cdc",
+  "worker": "agentic-bible-staging",
+  "workerId": "965881929566484ba4df809a33b3295b",
+  "expectedActiveVersion": "11e56042-5e04-4cd6-a136-f5d3f4abbe10",
+  "expectedDeployment": "cc3fd2aa-df84-44dc-8351-c1fabfba1368",
+  "rollbackVersion": "11e56042-5e04-4cd6-a136-f5d3f4abbe10",
+  "d1": "unchanged; no migrations or seed",
+  "access": "existing1h unchanged",
+  "privateInbox": "enabled unchanged",
+  "publicIntake": "disabled",
+  "githubDrafts": "disabled",
+  "paidAI": "disabled",
+  "intendedUploadQuery": {
+    "deploy": false
+  },
+  "activation": "held for parent review and active browser trial",
+  "rollback": "native retained version reactivation; no D1 rollback"
+}
