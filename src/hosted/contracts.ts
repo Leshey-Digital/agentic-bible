@@ -22,7 +22,8 @@ export type VerifiedAdmin={subject:string;role:'admin';expiresAt:number;csrfVeri
 export type ApprovedNoteV1={schemaVersion:1;mode:'verified-admin-github-proposal';approvalId:string;submissionId:string;submissionRevision:number;reviewerRef:string;approvedAt:number;baseCommit:string;baseMarkdownSha256:string;note:string;citationId:'openai'|'claude'|'mcp-tools'};
 export type ApprovedNoteV2=Omit<ApprovedNoteV1,'schemaVersion'|'citationId'> & {schemaVersion:2;articleId:HostedArticleId;contentPath:string;citationId:string};
 export type ApprovedNote=ApprovedNoteV1|ApprovedNoteV2;
-export type Ports={verifyAdmin?:(request:Request)=>Promise<VerifiedAdmin|null>;approvedNote?:(id:string,admin:VerifiedAdmin)=>Promise<ApprovedNote|null>;sendGitHub?:(request:Request)=>Promise<Response>;hostedApprovals?:true;maintenanceReview?:true;integrationSettings?:IntegrationAdapters;contributions?:ContributionAdapters;jevDispatch?:JevDispatchPort};
+export type ReviewSource={articleId:string;contentPath:string;baseCommit:string;baseMarkdownSha256:string;markdown:string;citations:string[];sourceAuthority?:'immutable-build';gitHubDraftAvailable?:boolean};
+export type Ports={reviewSource?:(articleId:string)=>Promise<ReviewSource>;verifyAdmin?:(request:Request)=>Promise<VerifiedAdmin|null>;approvedNote?:(id:string,admin:VerifiedAdmin)=>Promise<ApprovedNote|null>;sendGitHub?:(request:Request)=>Promise<Response>;hostedApprovals?:true;maintenanceReview?:true;integrationSettings?:IntegrationAdapters;contributions?:ContributionAdapters;jevDispatch?:JevDispatchPort};
 export type RuntimeEnv={
   ASSETS:{fetch(request:Request):Promise<Response>};
   EDITORIAL_DB?:SqlDatabase;

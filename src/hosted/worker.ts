@@ -30,7 +30,7 @@ function publicJevDecision(value:unknown){
 // Integration settings require separate trusted server-code adapters; configuredPorts
 // never constructs them from bindings, request fields or local fixture identities.
 export function createHostedRuntime(ports:Ports={}){
-const contributions=ports.contributions?createContributionHandler(ports.contributions,ports.sendGitHub):undefined;
+const contributions=ports.contributions?createContributionHandler(ports.contributions,ports.sendGitHub,ports.reviewSource):undefined;
 const integrationSettings=ports.integrationSettings?createIntegrationSettingsContract(ports.integrationSettings):undefined;
 const jevSettings=ports.integrationSettings?createIntegrationSettingsContract(ports.integrationSettings,'typesafe-jev'):undefined;
 return {async fetch(request:Request,env:RuntimeEnv):Promise<Response>{

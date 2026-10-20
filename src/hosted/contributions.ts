@@ -27,7 +27,7 @@ export async function contributionJson(request:Request):Promise<any>{
   try{return JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(body));}catch{fail('invalid_request');}
 }
 const exact=(value:any,keys:string[])=>value&&typeof value==='object'&&!Array.isArray(value)&&Object.keys(value).sort().join(',')===keys.sort().join(',');
-export function createContributionHandler(adapters:ContributionAdapters,send?:Ports['sendGitHub']){
+export function createContributionHandler(adapters:ContributionAdapters,send?:Ports['sendGitHub'],reviewSource?:Ports['reviewSource']){
   const trust=adminTrust(adapters.trust);
   return async(request:Request,db:SqlDatabase):Promise<Response>=>{
     try{
@@ -62,8 +62,8 @@ export function createContributionHandler(adapters:ContributionAdapters,send?:Po
       }
       const match=/^\/api\/admin\/submissions\/([a-f0-9-]{36})(\/(?:review|source|reviews))?$/.exec(url.pathname);
       if(!match||!uuid(match[1])||url.search)fail('not_found',404);
-      const id=match[1];if(match[2]==='/reviews'){if(request.method!=='GET')fail('method_not_allowed',405);if(!await store.get(id))fail('not_found',404);const history=await submissionHistory(db,id,admin);fresh();return json(history);}if(match[2]==='/source'){if(request.method!=='GET')fail('method_not_allowed',405);if(!send)fail('source_adapter_unconfigured',503);const item=await store.get(id);if(!item)fail('not_found',404);const preview=await sourcePreview(db,send,item.articleId);fresh();return json(preview);}
-      if(match[2]){if(request.method!=='POST')fail('explicit_post_required',405);const value=await contributionJson(request);fresh();return json(await createSubmissionReview(db,id,value,admin));}
+      const id=match[1];if(match[2]==='/reviews'){if(request.method!=='GET')fail('method_not_allowed',405);if(!await store.get(id))fail('not_found',404);const history=await submissionHistory(db,id,admin);fresh();return json(history);}if(match[2]==='/source'){if(request.method!=='GET')fail('method_not_allowed',405);if(!send&&!reviewSource)fail('source_adapter_unconfigured',503);const item=await store.get(id);if(!item)fail('not_found',404);const preview=send?await sourcePreview(db,send,item.articleId):await reviewSource!(item.articleId);fresh();return json(preview);}
+      if(match[2]){if(request.method!=='POST')fail('explicit_post_required',405);const value=await contributionJson(request);if(!send&&reviewSource){const item=await store.get(id);if(!item)fail('not_found',404);const source=await reviewSource(item.articleId);if(value?.baseCommit!==source.baseCommit||value?.baseMarkdownSha256!==source.baseMarkdownSha256||!source.citations.includes(value?.citationId))fail('build_review_source_mismatch',409);}fresh();return json({...await createSubmissionReview(db,id,value,admin),gitHubDraftAvailable:!!send});}
       if(request.method==='GET'){const item=await store.get(id);if(!item)fail('not_found',404);const audit=await store.audit(id);fresh();return json({item,audit});}
       if(request.method!=='PATCH')fail('method_not_allowed',405);
       const value=await contributionJson(request);if(!exact(value,['status','tags','version']))fail('invalid_request');const change=changeInput(value);fresh();
