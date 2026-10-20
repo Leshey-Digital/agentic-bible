@@ -1,5 +1,9 @@
-import {readFileSync} from 'node:fs';import {join} from 'node:path';
-import {verifyCandidate,canonical} from './artifact.ts';import {directUploadPlan} from './direct.ts';import {releaseTarget} from './public.ts';
+import {readFileSync} from 'node:fs';import {join} from 'node:path';import {gzipSync} from 'node:zlib';
+import {verifyCandidate,canonical,digest} from './artifact.ts';import {directUploadPlan} from './direct.ts';import {releaseTarget} from './public.ts';
+// Conservative local limit for the serialized connector execute arguments. The
+// connector does not publish a documented code-size limit; this is our budget.
+export const connectorExecuteArgumentBudgetBytes=1_900_000;
+export const connectorExecuteArgumentBytes=(code:string)=>Buffer.byteLength(JSON.stringify({account_id:releaseTarget.account,code}));
 // Serialized with no Node dependency. The tool's native fetch handles only the
 // short-lived asset JWT; account API authority stays in cloudflare.request().
 async function uploadCapsule(payload:any,cloudflare:any){
@@ -53,8 +57,9 @@ export function uploadConnectorCode(root:string,id:string,requestId:string,expec
  const compressedPlan={...plan,files:Object.fromEntries(Object.entries(plan.files).map(([hash,file])=>[hash,{contentType:file.contentType,path:Object.keys(plan.manifest).find(p=>plan.manifest[p].hash===hash)!.slice(1)}])),version:{...plan.version,modules:plan.version.modules.map(m=>m.name==='worker.js'?m:{...m,content_base64:undefined})}};
  const payload={...compressedPlan,inventory,candidateRaw:readFileSync(join(root,'candidate.json'),'utf8'),configRaw:readFileSync(join(root,'wrangler.json'),'utf8'),target:releaseTarget,candidateDigest:id,requestId,expectedActive};
  const source=uploadCapsule.toString().replace(/^async function uploadCapsule/,'async function');
- const code='async()=>{try{const p='+canonical(payload).trim()+';for(const f of Object.values(p.files))f.content=p.inventory[f.path].content;for(const m of p.version.modules)if(m.name!=="worker.js")m.content_base64=p.inventory[m.name].content;return await ('+source+')(p,cloudflare);}catch(e){throw Error(/^release_[a-z_]+$/.test(String(e?.message))?e.message:"release_connector_upload_unconfirmed");}}';
- if(Buffer.byteLength(code)>2*1024*1024-4096)throw Error('release_connector_capsule_capacity');return code;
+ const payloadBytes=Buffer.from(canonical(payload).trim(),'utf8'),packed=gzipSync(payloadBytes,{level:9,mtime:0}),payloadDigest=digest(payloadBytes),packedBase64=packed.toString('base64');
+ const code='async()=>{try{const b=s=>Uint8Array.from(atob(s),x=>x.charCodeAt(0)),r='+payloadBytes.length+',h='+JSON.stringify(payloadDigest)+',z=new Blob([b('+JSON.stringify(packedBase64)+')]).stream().pipeThrough(new DecompressionStream("gzip")).getReader(),parts=[];let n=0;for(;;){const x=await z.read();if(x.done)break;n+=x.value.length;if(n>r)throw Error("release_capsule_payload_capacity");parts.push(x.value);}if(n!==r)throw Error("release_capsule_payload_digest");const raw=new Uint8Array(n);let o=0;for(const x of parts){raw.set(x,o);o+=x.length;}const got=Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256",raw))).map(x=>x.toString(16).padStart(2,"0")).join("");if(got!==h)throw Error("release_capsule_payload_digest");const p=JSON.parse(new TextDecoder().decode(raw));for(const f of Object.values(p.files))f.content=p.inventory[f.path].content;for(const m of p.version.modules)if(m.name!=="worker.js")m.content_base64=p.inventory[m.name].content;return await ('+source+')(p,cloudflare);}catch(e){throw Error(/^release_[a-z_]+$/.test(String(e?.message))?e.message:"release_connector_upload_unconfirmed");}}';
+ if(connectorExecuteArgumentBytes(code)>connectorExecuteArgumentBudgetBytes)throw Error('release_connector_capsule_capacity');return code;
 }
 async function controlCapsule(req:any,expectedActive:string|null|undefined,cloudflare:any){
  try{
