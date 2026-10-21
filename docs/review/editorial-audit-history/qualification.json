@@ -1,0 +1,58 @@
+{
+  "sourceCommit": "ab83fc5a1848ff807194cb04009c2379d1651b73",
+  "baseCommit": "6a7abd905c4add3715b7bae2868128682746dc7c",
+  "branch": "feat/editorial-audit-history",
+  "milestone": "Complete private disposition and tag audit timeline",
+  "checks": {
+    "combinedAuditAndRetainedTriage": {
+      "passed": 6,
+      "failed": 0,
+      "exitCode": 0
+    },
+    "finalExpandedAudit": {
+      "passed": 3,
+      "failed": 0,
+      "exitCode": 0,
+      "coverage": "64 total events including63 timestamp ties,30/30/4pages; delayed older response after confirmed save and failed refresh at390/1280px"
+    },
+    "astro": {
+      "files": 198,
+      "errors": 0,
+      "warnings": 0,
+      "hints": 0,
+      "exitCode": 0
+    },
+    "docs": "passed"
+  },
+  "independentReview": {
+    "result": "accepted; no actionable findings",
+    "scope": "source and tests inspection; reviewer did not run tests"
+  },
+  "deployment": "not performed",
+  "providerCalls": "none",
+  "frozenVaultHead": "a9ec207f329fb1501d38eaf34b916a1c518ebd73",
+  "frozenVaultCandidateSha256": "469971787c190d40775c7e46f9a568b23e3bb9c7aa1a7763ca6be2f7c55243a9",
+  "notRun": [
+    "full release qualification",
+    "live browser acceptance"
+  ],
+  "publicationPreflight": "No executable GitHub workflows; isolated source branch. Last successful Cloudflare trigger reads were empty; current connector state not reprobed or claimed.",
+  "logHashes": {
+    "focused.log": {
+      "sha256": "a02022c498b40fe52140e81acc9b0ea4ba58047c19f02860766d0cb000c5e1dc",
+      "bytes": 693
+    },
+    "final-audit.log": {
+      "sha256": "1f4a571c28ba5b2d62c592e5da28217372c4cba812d0603b45518578f1e5598d",
+      "bytes": 398
+    },
+    "check.log": {
+      "sha256": "b991282cbd09a163fc470a15b7480d29ef26652ffa7ee73121d8a542f735b513",
+      "bytes": 335
+    },
+    "docs.log": {
+      "sha256": "9058f52814ecc1db4c36fd6209e1d240b93ab4f1263632c0d69e705c15dfdc90",
+      "bytes": 282
+    }
+  }
+}
