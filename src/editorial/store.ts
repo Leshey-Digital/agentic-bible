@@ -76,6 +76,22 @@ export class D1EditorialStore implements EditorialStore {
       .all<{ id: string; actor: string; action: string; status: string; tags: string; created_at: number }>();
     return result.results.map(row => ({ id: row.id, actor: row.actor, action: row.action, status: row.status, tags: JSON.parse(row.tags), createdAt: row.created_at }));
   }
+  async auditPage(submissionId: string, before?: string) {
+    let time = Number.MAX_SAFE_INTEGER; let id = 'zzzz';
+    if (before !== undefined) {
+      const match = /^(\d{13})~([a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12})$/.exec(before);
+      if (!match) throw new InputError({ cursor: 'Use the older-events button from the audit history.' }, 400);
+      time = Number(match[1]); id = match[2];
+    }
+    // Explicit projection excludes stored identity identifiers from this timeline.
+    const result = await this.db.prepare(`SELECT id, action, status, tags, created_at FROM editorial_audit
+      WHERE submission_id = ? AND (created_at < ? OR (created_at = ? AND id < ?))
+      ORDER BY created_at DESC, id DESC LIMIT 31`).bind(submissionId, time, time, id)
+      .all<{ id: string; action: string; status: string; tags: string; created_at: number }>();
+    const items = result.results.slice(0, 30).map(row => ({ id: row.id, action: row.action, status: row.status, tags: JSON.parse(row.tags) as string[], createdAt: row.created_at }));
+    const last = items.at(-1);
+    return { items, next: result.results.length > 30 && last ? `${last.createdAt}~${last.id}` : null };
+  }
   async update(id: string, change: Change, actor: string, now: number) {
     const eventId = crypto.randomUUID();
     const result = await this.db.batch([

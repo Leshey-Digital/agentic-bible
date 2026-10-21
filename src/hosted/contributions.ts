@@ -63,6 +63,14 @@ export function createContributionHandler(adapters:ContributionAdapters,send?:Po
         const status=url.searchParams.get('status')??'new';if(!(dispositions as readonly string[]).includes(status))fail('invalid_request');
         const result=await store.list(status as Disposition,url.searchParams.get('before')??undefined,{...(article?{articleId:article as typeof articleIds[number]}:{}),...(tag?{tag}:{})});fresh();return json(result);
       }
+      const auditMatch=/^\/api\/admin\/submissions\/([a-f0-9-]{36})\/audit$/.exec(url.pathname);
+      if(auditMatch){
+        if(!uuid(auditMatch[1]))fail('not_found',404);
+        if(request.method!=='GET')fail('method_not_allowed',405);
+        if([...url.searchParams.keys()].some(k=>k!=='before'||url.searchParams.getAll(k).length!==1))fail('invalid_request');
+        if(!await store.get(auditMatch[1]))fail('not_found',404);
+        const result=await store.auditPage(auditMatch[1],url.searchParams.get('before')??undefined);fresh();return json(result);
+      }
       const match=/^\/api\/admin\/submissions\/([a-f0-9-]{36})(\/(?:review|source|reviews))?$/.exec(url.pathname);
       if(!match||!uuid(match[1])||url.search)fail('not_found',404);
       const id=match[1];if(match[2]==='/reviews'){if(request.method!=='GET')fail('method_not_allowed',405);if(!await store.get(id))fail('not_found',404);const history=await submissionHistory(db,id,admin);fresh();return json(history);}if(match[2]==='/source'){if(request.method!=='GET')fail('method_not_allowed',405);if(!send&&!reviewSource)fail('source_adapter_unconfigured',503);const item=await store.get(id);if(!item)fail('not_found',404);const preview=send?await sourcePreview(db,send,item.articleId):await reviewSource!(item.articleId);fresh();return json(preview);}
