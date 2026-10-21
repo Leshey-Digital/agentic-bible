@@ -56,9 +56,12 @@ export function createContributionHandler(adapters:ContributionAdapters,send?:Po
       const admin=await verifySignedAdmin(request,trust);if(!admin)fail('verified_admin_required',403);
       const fresh=()=>{if(admin.expiresAt<=Date.now())fail('verified_admin_required',403);};
       if(url.pathname==='/api/admin/submissions'&&request.method==='GET'){
-        if([...url.searchParams.keys()].some(k=>!['status','before'].includes(k)))fail('invalid_request');
+        if([...url.searchParams.keys()].some(k=>!['status','before','article','tag'].includes(k)||url.searchParams.getAll(k).length!==1))fail('invalid_request');
+        const article=url.searchParams.get('article'),tag=url.searchParams.get('tag');
+        if(article!==null&&!(articleIds as readonly string[]).includes(article))fail('invalid_request');
+        if(tag!==null&&(tag!==tag.trim()||tag.length<1||tag.length>30||!/^[\p{L}\p{N} -]+$/u.test(tag)))fail('invalid_request');
         const status=url.searchParams.get('status')??'new';if(!(dispositions as readonly string[]).includes(status))fail('invalid_request');
-        const result=await store.list(status as Disposition,url.searchParams.get('before')??undefined);fresh();return json(result);
+        const result=await store.list(status as Disposition,url.searchParams.get('before')??undefined,{...(article?{articleId:article as typeof articleIds[number]}:{}),...(tag?{tag}:{})});fresh();return json(result);
       }
       const match=/^\/api\/admin\/submissions\/([a-f0-9-]{36})(\/(?:review|source|reviews))?$/.exec(url.pathname);
       if(!match||!uuid(match[1])||url.search)fail('not_found',404);

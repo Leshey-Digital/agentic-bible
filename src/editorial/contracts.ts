@@ -18,9 +18,10 @@ export type Submission = Omit<SubmissionInput, 'website' | 'requestKey'> & {
 export type AuditEntry = { id: string; actor: string; action: string; status: string; tags: string[]; createdAt: number };
 export type Session = { tokenHash: string; identity: string; role: 'admin' | 'reader'; csrf: string; expiresAt: number };
 export type Change = { status: Disposition; tags: string[]; version: number };
+export type InboxFilters = { articleId?: Submission['articleId']; tag?: string };
 export interface EditorialStore {
   submit(input: SubmissionInput, clientHash: string, now: number): Promise<{ id: string; duplicate: boolean }>;
-  list(status: Disposition, before?: string): Promise<{ items: Submission[]; next: string | null }>;
+  list(status: Disposition, before?: string, filters?: InboxFilters): Promise<{ items: Submission[]; next: string | null }>;
   get(id: string): Promise<Submission | null>;
   audit(id: string): Promise<AuditEntry[]>;
   update(id: string, change: Change, actor: string, now: number): Promise<boolean>;

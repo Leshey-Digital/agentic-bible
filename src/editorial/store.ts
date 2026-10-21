@@ -1,4 +1,4 @@
-import type { EditorialStore, SqlDatabase, Submission, SubmissionInput, Change, Disposition, Session, AuditEntry } from './contracts.ts';
+import type { EditorialStore, SqlDatabase, Submission, SubmissionInput, Change, Disposition, Session, AuditEntry, InboxFilters } from './contracts.ts';
 import { digest, submissionInput, InputError, RateLimitError, ReplayConflictError, CapacityError } from './validation.ts';
 
 interface Row {
@@ -52,7 +52,7 @@ export class D1EditorialStore implements EditorialStore {
     throw new Error('The submission was not committed.');
   }
 
-  async list(status: Disposition, before?: string) {
+  async list(status: Disposition, before?: string, filters: InboxFilters = {}) {
     let time = Number.MAX_SAFE_INTEGER; let id = 'zzzz';
     if (before) {
       const match = /^(\d{13})~([a-f0-9-]{36})$/.exec(before);
@@ -60,8 +60,10 @@ export class D1EditorialStore implements EditorialStore {
       time = Number(match[1]); id = match[2];
     }
     const result = await this.db.prepare(`SELECT * FROM submissions WHERE status = ?
+      AND (? IS NULL OR article_id = ?)
+      AND (? IS NULL OR EXISTS (SELECT 1 FROM json_each(submissions.tags) WHERE json_each.value = ?))
       AND (created_at < ? OR (created_at = ? AND id < ?)) ORDER BY created_at DESC, id DESC LIMIT 21`)
-      .bind(status, time, time, id).all<Row>();
+      .bind(status, filters.articleId ?? null, filters.articleId ?? null, filters.tag ?? null, filters.tag ?? null, time, time, id).all<Row>();
     const items = result.results.slice(0, 20).map(fromRow); const last = items.at(-1);
     return { items, next: result.results.length > 20 && last ? `${last.createdAt}~${last.id}` : null };
   }
