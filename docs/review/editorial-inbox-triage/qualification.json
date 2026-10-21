@@ -1,0 +1,53 @@
+{
+  "sourceCommit": "82d202217dad914860873b12c0291874f09d142f",
+  "baseCommit": "de6589f9c6a05a81f5ee622214eac1ecd227faf1",
+  "branch": "feat/editorial-inbox-triage",
+  "milestone": "Private editorial inbox article/exact-tag triage",
+  "focused": {
+    "passed": 5,
+    "failed": 0,
+    "command": "node --test --test-concurrency=1 tests/production-hosted/inbox-triage.test.mjs tests/production-hosted/draft-navigation.test.mjs",
+    "exitCode": 0
+  },
+  "typecheck": {
+    "files": 198,
+    "errors": 0,
+    "warnings": 0,
+    "hints": 0,
+    "exitCode": 0
+  },
+  "documentationCheck": "passed",
+  "review": {
+    "result": "accepted after P2 pagination cleanup fix",
+    "scope": "independent source inspection, no independent test execution"
+  },
+  "historicalEvidence": "Initial3/3 passed; independent review then identified stale-load pagination cleanup. Fixed with separate cleanup ownership and included held-list regression in final5/5. No old assertions/timeouts altered.",
+  "providerCalls": "none",
+  "deployment": "none",
+  "frozenPR56Head": "a9ec207f329fb1501d38eaf34b916a1c518ebd73",
+  "frozenPackageManifestSha256": "469971787c190d40775c7e46f9a568b23e3bb9c7aa1a7763ca6be2f7c55243a9",
+  "publicationPreflight": "No executable GitHub workflows. Last successful Cloudflare trigger read returned none for staging/production on2026-10-20; no fresh provider claim because connector unavailable and no repeated probes authorized. New isolated source branch only.",
+  "notRun": [
+    "full release qualification",
+    "live browser acceptance",
+    "provider verification"
+  ],
+  "logs": {
+    "focused.log": {
+      "sha256": "2096ed9e7280c367a63bcf80c000564c1cd05e9f0fa74bdda58d4b4a61892b3e",
+      "bytes": 412
+    },
+    "final.log": {
+      "sha256": "e7bc3af75197e1fa00377084e8fe2048ad15df4feefb342e63767342599a626d",
+      "bytes": 526
+    },
+    "check.log": {
+      "sha256": "f76e7fe5183cbfc120a0cbc797eef78d60c389fa8bde1c9b68f18a205d21d892",
+      "bytes": 335
+    },
+    "docs.log": {
+      "sha256": "892bdbccd3514276ec407f61c361992ba71dc6e25243a97589bed480efc79fe9",
+      "bytes": 282
+    }
+  }
+}
