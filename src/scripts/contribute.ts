@@ -11,7 +11,7 @@ const recoveryHelp = document.querySelector<HTMLElement>('#draft-recovery')!;
 const draftKey = 'agentic-bible:synthetic-suggestion:v1';
 const names = ['articleId', 'kind', 'message', 'sourceUrl', 'requestKey'] as const;
 const control = (name: string) => form.elements.namedItem(name) as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
-let sendLabel = 'Send local suggestion';
+let sendLabel = 'Send suggestion';
 let inboxDescription = 'It is available in the local editorial inbox.';
 let recoveryNeeded = false;
 let saving = false;
@@ -61,7 +61,8 @@ async function init() {
       return;
     }
     if (!state.enabled || state.mode !== 'local-synthetic-only') return;
-    fields.disabled = false;
+    fields.disabled = false; sendLabel = 'Send local suggestion'; send.textContent = sendLabel;
+    for (const item of document.querySelectorAll<HTMLElement>('[data-local-intake]')) item.hidden = false;
     document.querySelector<HTMLElement>('#editorial-inbox-link')!.hidden = false;
     message.textContent = 'Local synthetic preview only. Saved suggestions go to the local editorial inbox. No email is sent.';
   } catch { /* Public static deployments intentionally have no intake API. */ }
