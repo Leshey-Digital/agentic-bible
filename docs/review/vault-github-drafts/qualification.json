@@ -1,0 +1,83 @@
+{
+  "sourceCommit": "a705c46e657e2f2e49090482f5d089ad5bd2c431",
+  "baseCommit": "de6589f9c6a05a81f5ee622214eac1ecd227faf1",
+  "branch": "feat/vault-github-draft-transport",
+  "scope": "local disposable credentials and fake GitHub only",
+  "checks": {
+    "exactSourceTargeted": {
+      "passed": 6,
+      "failed": 0,
+      "exitCode": 0
+    },
+    "retainedVault": {
+      "passed": 9,
+      "failed": 0,
+      "exitCode": 0,
+      "note": "before new transport expiry integer guard; retained vault paths unchanged"
+    },
+    "astroCheck": {
+      "files": 199,
+      "errors": 0,
+      "warnings": 0,
+      "hints": 0,
+      "exitCode": 0
+    },
+    "docs": {
+      "exitCode": 0
+    }
+  },
+  "historicalFailures": [
+    {
+      "log": "astro-check.log",
+      "reason": "Direct Astro invocation omitted repository telemetry-disabled environment and failed before checks; corrected using npm run check."
+    },
+    {
+      "log": "check.log",
+      "reason": "Type check rejected broad fetch callback signature for Request-only vault sender; narrowed adapter type to actual Request interface. Corrected check passed."
+    }
+  ],
+  "independentReview": {
+    "reviewer": "vault_security_review",
+    "result": "accepted; no actionable findings",
+    "scope": "source and documentation inspection; did not independently run tests"
+  },
+  "notRun": [
+    "full release qualification",
+    "completed private-review browser trial",
+    "live provider/credential/deployment checks"
+  ],
+  "logHashes": {
+    "targeted-initial.log": {
+      "sha256": "b98365200559621acc7f19f9d94e8cb767d57d93efa3ea07ce38fc2b16619042",
+      "bytes": 773
+    },
+    "targeted-final.log": {
+      "sha256": "ed6bd55fbd355aec148d9ed7a9d57abd71565a60c8e2c9dd69742f34543be33b",
+      "bytes": 870
+    },
+    "exact-source.log": {
+      "sha256": "b2d72fdfbcb163cf26fc17df2ef3f503fad6823da7480c31d74841fcc9814827",
+      "bytes": 870
+    },
+    "vault-regression.log": {
+      "sha256": "6cf42e8fd7e1c0e11f4d8cda2f409c098e9f88f79f337cdb419bd98ab30f0de7",
+      "bytes": 1273
+    },
+    "astro-check.log": {
+      "sha256": "0da57cc12f77aa8ad55ff349dac3339963599fb2870320aca571dc3ea836da63",
+      "bytes": 660
+    },
+    "check.log": {
+      "sha256": "59ee8f76cec8065e9baa46fd02cf61aa89afaaf3bd020b7709b03fe775389b06",
+      "bytes": 1345
+    },
+    "check-corrected.log": {
+      "sha256": "1956769f184b6f76580ed7bcd98df781cbaabed88893cdac1a392156decdd567",
+      "bytes": 335
+    },
+    "docs.log": {
+      "sha256": "892bdbccd3514276ec407f61c361992ba71dc6e25243a97589bed480efc79fe9",
+      "bytes": 282
+    }
+  }
+}

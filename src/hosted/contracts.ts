@@ -23,12 +23,16 @@ export type ApprovedNoteV1={schemaVersion:1;mode:'verified-admin-github-proposal
 export type ApprovedNoteV2=Omit<ApprovedNoteV1,'schemaVersion'|'citationId'> & {schemaVersion:2;articleId:HostedArticleId;contentPath:string;citationId:string};
 export type ApprovedNote=ApprovedNoteV1|ApprovedNoteV2;
 export type ReviewSource={articleId:string;contentPath:string;baseCommit:string;baseMarkdownSha256:string;markdown:string;citations:string[];sourceAuthority?:'immutable-build';gitHubDraftAvailable?:boolean};
-export type Ports={reviewSource?:(articleId:string)=>Promise<ReviewSource>;verifyAdmin?:(request:Request)=>Promise<VerifiedAdmin|null>;approvedNote?:(id:string,admin:VerifiedAdmin)=>Promise<ApprovedNote|null>;sendGitHub?:(request:Request)=>Promise<Response>;hostedApprovals?:true;maintenanceReview?:true;integrationSettings?:IntegrationAdapters;contributions?:ContributionAdapters;jevDispatch?:JevDispatchPort};
+export type Ports={cloudflareDrafts?:import('./cloudflare-drafts.ts').CloudflareDraftAction;reviewSource?:(articleId:string)=>Promise<ReviewSource>;verifyAdmin?:(request:Request)=>Promise<VerifiedAdmin|null>;approvedNote?:(id:string,admin:VerifiedAdmin)=>Promise<ApprovedNote|null>;sendGitHub?:(request:Request,beforeDispatch?:()=>Promise<void>)=>Promise<Response>;hostedApprovals?:true;maintenanceReview?:true;integrationSettings?:IntegrationAdapters;contributions?:ContributionAdapters;jevDispatch?:JevDispatchPort};
 export type RuntimeEnv={
   ASSETS:{fetch(request:Request):Promise<Response>};
+  AI?:import('../maintenance-adapters/cloudflare-prose.ts').WorkersAiBinding;
+  CLOUDFLARE_DRAFT_POLICY?:string;
   EDITORIAL_DB?:SqlDatabase;
   HOSTED_ADMIN_TRUST?:string;
   GITHUB_CONTENT_TOKEN?:string;
+  /** vault explicitly opts in; binding/unset preserves legacy binding; other values close drafting. */
+  GITHUB_DRAFT_CREDENTIAL_SOURCE?:string;
   /** Optional operator bindings. Example values are deliberately invalid/closed. */
   /** Explicit private admin inbox opt-in; does not authorize public intake. */
   HOSTED_PRIVATE_INBOX?:string;

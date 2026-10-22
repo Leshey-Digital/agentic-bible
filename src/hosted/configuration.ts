@@ -1,5 +1,7 @@
-import {hostedTarget} from './targets.ts';
-import {repository,type Ports,type RuntimeEnv} from './contracts.ts';
+import {createCloudflareDraftAction} from './cloudflare-drafts.ts';
+import {credentialTransport} from './github-transport.ts';
+export {credentialTransport} from './github-transport.ts';
+import {type Ports,type RuntimeEnv} from './contracts.ts';
 import {adminTrust,verifySignedAdmin} from './identity.ts';
 import {historyBindingConfigured} from '../maintenance-history/review.ts';
 import {lookupApproval} from './approvals.ts';
@@ -10,16 +12,7 @@ import {createJevDispatchPort} from './jev-dispatch.ts';
 import {jevEndpoint,jevModels,type JevModel} from '../maintenance-adapters/jev.ts';
 import {currencyInput,type CurrencyPolicy} from '../wiki-bridge/maintenance-currency.ts';
 import type {JevTokenBounds} from '../maintenance-adapters/jev-currency.ts';
-export function credentialTransport(token:unknown,send:typeof fetch=fetch):Ports['sendGitHub']|undefined{
-  if(typeof token!=='string'||token.length<16||token.length>512||/\s|[\u0000-\u001f\u007f]/.test(token))return undefined;
-  return request=>{
-    const url=new URL(request.url),prefix='/repos/'+repository;
-    if(url.origin!=='https://api.github.com'||url.username||url.password||url.hash||!url.pathname.startsWith(prefix+'/')||request.redirect!=='manual'||(request.credentials!==undefined&&request.credentials!=='omit')||[...request.headers.keys()].some(name=>!['accept','content-type','user-agent','x-github-api-version'].includes(name)))throw Error('restricted GitHub transport');
-    const path=url.pathname.slice(prefix.length),get=request.method==='GET'&&(/^\/git\/ref\/heads\/(main|content-corrections\/[a-f0-9-]{36})$/.test(path)||/^\/git\/(commits|trees)\/[a-f0-9]{40}$/.test(path)||(/^\/contents\/src\/content\/articles\/([a-z0-9-]+)\.md$/.test(path)&&!!hostedTarget(/^\/contents\/src\/content\/articles\/([a-z0-9-]+)\.md$/.exec(path)![1]))||path==='/pulls'),post=request.method==='POST'&&['/git/trees','/git/commits','/git/refs','/pulls'].includes(path);
-    if(!get&&!post)throw Error('restricted GitHub transport');
-    const headers=new Headers(request.headers);headers.set('Authorization','Bearer '+token);return send(new Request(request,{headers,redirect:'manual',credentials:'omit',referrerPolicy:'no-referrer'}));
-  };
-}
+
 function policy(raw:unknown):IntakePolicy|undefined{
   if(typeof raw!=='string'||raw.length>2048)return;
   try{const v=JSON.parse(raw);if(!v||typeof v!=='object'||Array.isArray(v)||Object.keys(v).sort().join(',')!=='moderationReady,policyRevision,privacyPath,termsPath'||v.moderationReady!==true||typeof v.termsPath!=='string'||typeof v.privacyPath!=='string'||typeof v.policyRevision!=='string')return;return v as IntakePolicy;}catch{return;}
@@ -44,8 +37,8 @@ function jevTransport(url:string,init:RequestInit):Promise<Response>{
   if(url!==jevEndpoint||init.method!=='POST'||init.redirect!=='error'||init.credentials!=='omit'||init.cache!=='no-store'||init.referrerPolicy!=='no-referrer'||init.signal?.aborted)throw Error('jev_transport_rejected');
   return fetch(url,init);
 }
-export async function configuredPorts(env:RuntimeEnv):Promise<Ports>{
-  const trust=adminTrust(env.HOSTED_ADMIN_TRUST),send=credentialTransport(env.GITHUB_CONTENT_TOKEN);if(!trust||!env.EDITORIAL_DB)return {};
+export async function configuredPorts(env:RuntimeEnv,request?:Request,reviewSource?:Ports['reviewSource']):Promise<Ports>{
+  const trust=adminTrust(env.HOSTED_ADMIN_TRUST),send=(env.GITHUB_DRAFT_CREDENTIAL_SOURCE===undefined||env.GITHUB_DRAFT_CREDENTIAL_SOURCE==='binding')?credentialTransport(env.GITHUB_CONTENT_TOKEN):undefined;if(!trust||!env.EDITORIAL_DB)return {};
   const review=historyBindingConfigured()?{maintenanceReview:true as const}:{};
   const ports:Ports={...review,verifyAdmin:request=>verifySignedAdmin(request,trust)};
   if(env.HOSTED_PRIVATE_INBOX==='enabled')ports.contributions={trust:env.HOSTED_ADMIN_TRUST};
@@ -56,10 +49,27 @@ export async function configuredPorts(env:RuntimeEnv):Promise<Ports>{
   if(vaultBytes&&typeof keyId==='string'&&/^[a-zA-Z0-9._-]{1,64}$/.test(keyId)){
     try{const key=await crypto.subtle.importKey('raw',keyMaterial(vaultBytes),'AES-GCM',false,['encrypt','decrypt']);ports.integrationSettings=createEncryptedIntegrationAdapters({db:env.EDITORIAL_DB,key,keyId,trust:env.HOSTED_ADMIN_TRUST,send:request=>fetch(request),connectionEvidence:'unverified'});}catch{/* Invalid optional vault configuration leaves settings closed. */}
   }
+  // No fallback: vault selection plus a legacy binding is conflicting and closed.
+  if(env.GITHUB_DRAFT_CREDENTIAL_SOURCE==='vault'&&env.GITHUB_CONTENT_TOKEN===undefined&&request&&ports.integrationSettings?.gitHubTransport){
+    let selected:Promise<NonNullable<Ports['sendGitHub']>>|undefined;
+    const adapters=ports.integrationSettings;
+    const scoped:NonNullable<Ports['sendGitHub']>=async(outbound,beforeDispatch)=>{
+      selected??=(async()=>{const admin=await verifySignedAdmin(request,trust);if(!admin)throw Error('github_vault_unavailable');return adapters.gitHubTransport!(admin);})();
+      const transport=await selected;return transport(outbound,beforeDispatch);
+    };
+    Object.assign(ports,{approvedNote:(id:string,admin:import('./contracts.ts').VerifiedAdmin)=>lookupApproval(env.EDITORIAL_DB!,id,admin),sendGitHub:scoped,hostedApprovals:true as const});
+  }
   const jevConfig=jevRuntimePolicy(env.JEV_DISPATCH_POLICY),credential=ports.integrationSettings?.resolveJevCredential;
   if(jevConfig&&credential){
     const tokenBounds:JevTokenBounds={inputUpperBound:requestJson=>new TextEncoder().encode(requestJson).byteLength,outputUpperBound:()=>jevConfig.outputTokenUpperBound};
     ports.jevDispatch=createJevDispatchPort({enabled:jevConfig.enabled,credential,model:jevConfig.model,db:env.EDITORIAL_DB,currency:{enabled:true,policy:jevConfig.currency},tokenBounds,transport:jevTransport});
+  }
+  // No defaults infer spending authority. Configuration is trusted server metadata.
+  if(env.HOSTED_PRIVATE_INBOX==='enabled'&&ports.contributions&&reviewSource&&typeof env.CLOUDFLARE_DRAFT_POLICY==='string'&&env.CLOUDFLARE_DRAFT_POLICY.length<=8192){
+    try{const config=JSON.parse(env.CLOUDFLARE_DRAFT_POLICY);
+      if(config&&typeof config==='object'&&!Array.isArray(config)&&Object.keys(config).sort().join(',')==='currency,enabled,policy'&&typeof config.enabled==='boolean')
+        ports.cloudflareDrafts=createCloudflareDraftAction({enabled:config.enabled,trust:env.HOSTED_ADMIN_TRUST,db:env.EDITORIAL_DB,ai:env.AI,currency:{enabled:true,policy:config.currency},policy:config.policy,reviewSource});
+    }catch{/* Invalid policy keeps all inference closed. */}
   }
   return ports;
 }

@@ -1,5 +1,7 @@
 import {test} from 'node:test';import assert from 'node:assert/strict';
 import {createCloudflareProseAdapter,readCloudflareProseUsage,cloudflareProseModel,cloudflareProseLimits} from '../../src/maintenance-adapters/cloudflare-prose.ts';
+import {createCloudflareLlama32InputTokenUpperBound} from '../../src/maintenance-adapters/cloudflare-llama32-input-bound.ts';
+import {canonical,hash} from '../../src/publishing/contracts.ts';
 import {MaintenanceBudget} from '../../src/wiki-bridge/maintenance-budget.ts';
 import {demonstrationPolicy} from '../../src/wiki-bridge/maintenance-provider.ts';
 import {ledgerFixture,policy,control} from '../maintenance-currency/helpers.mjs';
@@ -8,7 +10,7 @@ const text='Controlled prose draft for editorial review only.';
 const usage={prompt_tokens:12,completion_tokens:12,total_tokens:24};
 const prosePolicy={...demonstrationPolicy,runCost:10240,dayCost:81920,monthCost:163840};
 function currencyPolicy(){const now=Date.now();return policy({price:{id:'cloudflare-llama32-1b-rate-v1',provider:'cloudflare-workers-ai',model:cloudflareProseModel,tokenizer:'cloudflare-reported-token-usage-v1',basis:'input-output-tokens',inputPerMillion:27000,outputPerMillion:201000,requestFee:0,validFrom:now-86400000,validUntil:now+86400000}});}
-function adapter(db,overrides={}){return createCloudflareProseAdapter({enabled:true,ai:{async run(){return {response:text,usage};}},db,currency:control(currencyPolicy()),policy:prosePolicy,inputTokenUpperBound:prompt=>new TextEncoder().encode(prompt).byteLength,...overrides});}
+function adapter(db,overrides={}){return createCloudflareProseAdapter({enabled:true,ai:{async run(){return {response:text,usage};}},db,currency:control(currencyPolicy()),policy:prosePolicy,inputTokenUpperBound:createCloudflareLlama32InputTokenUpperBound({rawPrompt:true}),...overrides});}
 
 test('pinned Workers AI usage parser requires its typed token fields and a consistent total',()=>{
  assert.deepEqual(readCloudflareProseUsage({usage}),{inputTokens:12,outputTokens:12});
@@ -21,9 +23,9 @@ test('pinned Workers AI usage parser requires its typed token fields and a consi
 });
 
 test('Workers AI adapter pins the documented model contract and settles upper-bound reservation',async()=>{
- const f=await ledgerFixture('cloudflare-prose-success');try{const p=currencyPolicy();let calls=0;const prose=adapter(f.db,{currency:control(p),ai:{async run(model,request){calls++;assert.equal(model,cloudflareProseModel);assert.deepEqual(Object.keys(request).sort(),['max_tokens','prompt']);assert.equal(request.max_tokens,prosePolicy.maxOutputTokens);return {response:text,usage};}}});
+ const f=await ledgerFixture('cloudflare-prose-success');try{const p=currencyPolicy();let calls=0;const prose=adapter(f.db,{currency:control(p),ai:{async run(model,request){calls++;assert.equal(model,cloudflareProseModel);assert.deepEqual(Object.keys(request).sort(),['max_tokens','prompt','raw']);assert.equal(request.max_tokens,prosePolicy.maxOutputTokens);assert.equal(request.raw,true);return {response:text,usage};}}});
   const result=await prose.generate('A short controlled prompt.');assert.equal(result.kind,'unverified-prose-draft');assert.equal(result.text,text);assert.equal(result.model,cloudflareProseModel);assert.deepEqual(result.usage,{inputTokens:12,outputTokens:12});assert.equal(calls,1);
-  const row=await new MaintenanceBudget(f.db,control(p)).job(result.eventId);assert.equal(row.state,'complete');assert.equal(row.currency_state,'settled');assert.equal(row.input_tokens,new TextEncoder().encode('A short controlled prompt.').byteLength);assert.ok(row.currency_actual<=row.currency_reserved);
+  const row=await new MaintenanceBudget(f.db,control(p)).job(result.eventId);assert.equal(row.state,'complete');assert.equal(row.currency_state,'settled');assert.equal(row.input_tokens,new TextEncoder().encode('A short controlled prompt.').byteLength+1);assert.equal(result.eventId,'cfa-'+hash(canonical({model:cloudflareProseModel,prompt:'A short controlled prompt.',max_tokens:prosePolicy.maxOutputTokens,raw:true})).slice(0,48));assert.ok(row.currency_actual<=row.currency_reserved);
   await assert.rejects(prose.generate('A short controlled prompt.'));assert.equal(calls,1);
  }finally{await f.close();}
 });
@@ -46,5 +48,46 @@ test('bad or missing usage after dispatch retains maximum reservation and replay
 test('prompt bytes and configured caps are bounded before provider dispatch',async()=>{
  const f=await ledgerFixture('cloudflare-prose-limits');try{let calls=0;const prose=adapter(f.db,{ai:{async run(){calls++;return {response:text,usage};}}});
   await assert.rejects(prose.generate('x'.repeat(cloudflareProseLimits.promptBytes+1)),{code:'cloudflare_prose_prompt_limit'});assert.equal(calls,0);
+ }finally{await f.close();}
+});
+
+
+test('usage above the raw prompt reservation retains the full hold and blocks further calls after restart',async()=>{
+ const f=await ledgerFixture('cloudflare-prose-raw-hold');try{let calls=0;const p=currencyPolicy();
+  const settings={currency:control(p),ai:{async run(_model,request){calls++;assert.equal(request.raw,true);return {response:text,usage:{prompt_tokens:3,completion_tokens:0,total_tokens:3}};}}};
+  const prose=adapter(f.db,settings);await assert.rejects(prose.generate('A'));
+  const row=await f.db.prepare("SELECT * FROM maintenance_proposals WHERE event_id LIKE 'cfa-%'").first();
+  assert.equal(row.input_tokens,2);assert.equal(row.state,'uncertain');assert.equal(row.currency_state,'uncertain');assert.equal(row.currency_actual,null);assert.ok(row.currency_reserved>0);assert.equal(calls,1);
+  await f.restart();const restarted=adapter(f.db,settings);await assert.rejects(restarted.generate('A'));await assert.rejects(restarted.generate('A different prompt'));assert.equal(calls,1);
+  const retained=await f.db.prepare('SELECT * FROM maintenance_proposals WHERE event_id=?').bind(row.event_id).first();assert.equal(retained.currency_reserved,row.currency_reserved);assert.equal(retained.currency_actual,null);
+ }finally{await f.close();}
+});
+
+
+test('monthly AI policy above the owner ceiling rejects before any reservation or binding call',async()=>{
+ const f=await ledgerFixture('cloudflare-prose-monthly-ceiling');try{let calls=0;const p={...currencyPolicy(),monthLimit:21_000_000};
+  const prose=adapter(f.db,{currency:control(p),ai:{async run(){calls++;return {response:text,usage};}}});
+  await assert.rejects(prose.generate('A short controlled prompt.'),{code:'maintenance_currency_monthly_ceiling'});
+  assert.equal(calls,0);assert.equal((await f.db.prepare('SELECT COUNT(*) n FROM maintenance_proposals').first()).n,0);assert.equal((await f.db.prepare('SELECT COUNT(*) n FROM maintenance_currency_policy').first()).n,0);
+ }finally{await f.close();}
+});
+
+
+test('raw output boundary and JSON escaping settle within separate persisted bounds',async()=>{
+ const f=await ledgerFixture('cloudflare-prose-output-boundary');try{
+  const p=currencyPolicy();let response='x'.repeat(cloudflareProseLimits.responseBytes),calls=0;
+  const ai={async run(){calls++;return {response,usage};}};
+  const prose=adapter(f.db,{currency:control(p),ai,policy:{...prosePolicy,dayRequests:4}});
+  for(const [index,value] of [response,'\\'.repeat(cloudflareProseLimits.responseBytes),'\u0001'.repeat(cloudflareProseLimits.responseBytes)].entries()){
+   response=value;const result=await prose.generate('Controlled prompt boundary '+index);
+   const row=await new MaintenanceBudget(f.db,control(p)).job(result.eventId);
+   assert.equal(row.state,'complete');assert.equal(row.currency_state,'settled');assert.equal(result.text,value);
+   assert.ok(Buffer.byteLength(row.response)<=4096);assert.ok(Buffer.byteLength(row.packet)<=49152);
+   const summary=JSON.parse(row.response),packet=JSON.parse(row.packet);
+   assert.equal(packet.schemaVersion,2);assert.equal(packet.response,value);assert.equal(summary.draftHash,hash(value));assert.equal(packet.draftHash,summary.draftHash);
+  }
+  assert.equal(calls,3);await f.restart();
+  const rows=(await f.db.prepare("SELECT * FROM maintenance_proposals WHERE event_id LIKE 'cfa-%'").all()).results;
+  assert.equal(rows.length,3);assert.ok(rows.every(row=>row.state==='complete'&&row.currency_state==='settled'));
  }finally{await f.close();}
 });

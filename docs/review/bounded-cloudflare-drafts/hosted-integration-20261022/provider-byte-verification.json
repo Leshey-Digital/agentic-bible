@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"version\": \"7eccb256-0659-43c4-b2e6-5f54ac652824\",\n  \"expectedModules\": 82,\n  \"actualModules\": 82,\n  \"mismatches\": [],\n  \"metadata\": {\n    \"main_module\": \"worker.js\",\n    \"compatibility_date\": \"2026-10-16\",\n    \"limits\": {\n      \"cpu_ms\": 10\n    },\n    \"annotations\": {\n      \"workers/message\": \"Read-only copy source:cd762a6d87e9abda2cb4a04f112d1ac439c61b2c candidate:312c04a1c89e41869bbd5bd15b5838f7d5c5b15fb5eae045dc7cb60fcec6d22d operation:306c5437-53f3-484f-ac13-4df821a8f525\",\n      \"workers/triggered_by\": \"create_version_api\"\n    }\n  },\n  \"checkedAt\": \"2026-10-22T17:20:32.384Z\"\n}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

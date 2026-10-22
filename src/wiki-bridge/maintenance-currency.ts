@@ -6,6 +6,9 @@ export type CurrencyPolicyV2={schemaVersion:2;unit:'MICRO_USD';account:string;ru
 export type CurrencyPolicy=CurrencyPolicyV1|CurrencyPolicyV2;
 export type CurrencyControl={enabled?:boolean;policy?:unknown};
 export type Usage={inputTokens:number;outputTokens:number};
+// Owner's outer additional monthly AI ceiling. Every priced adapter admits
+// through this shared policy; baseline usage remains included by the ledger.
+export const monthlyAiCeilingMicroUsd=20_000_000;
 const clock=(n:unknown):n is number=>Number.isSafeInteger(n)&&(n as number)>=0&&(n as number)<=253402300799999;
 const baseKeys=['schemaVersion','unit','account','runLimit','dayLimit','monthLimit','dayBaseline','monthBaseline'];
 const priceKeys=['id','provider','model','tokenizer','basis','inputPerMillion','outputPerMillion','requestFee'];
@@ -49,6 +52,7 @@ function basePolicy(p:CurrencyPolicy):Omit<CurrencyPolicyV1,'price'>|Omit<Curren
 function basePolicy(p:CurrencyPolicy){
  if(p.unit!=='MICRO_USD'||typeof p.account!=='string'||!/^[-a-z0-9]{3,64}$/.test(p.account))stop('maintenance_currency_policy');
  for(const n of [p.runLimit,p.dayLimit,p.monthLimit,p.dayBaseline,p.monthBaseline])if(!Number.isSafeInteger(n)||n<0||n>100000000)stop('maintenance_currency_policy');
+ if(p.monthLimit>monthlyAiCeilingMicroUsd)stop('maintenance_currency_monthly_ceiling');
  if(p.runLimit<1||p.dayLimit<p.runLimit||p.monthLimit<p.dayLimit||p.dayBaseline>p.dayLimit||p.monthBaseline>p.monthLimit)stop('maintenance_currency_policy');
  return {schemaVersion:p.schemaVersion,unit:p.unit,account:p.account,runLimit:p.runLimit,dayLimit:p.dayLimit,monthLimit:p.monthLimit,dayBaseline:p.dayBaseline,monthBaseline:p.monthBaseline};
 }

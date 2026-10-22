@@ -1,3 +1,4 @@
+import type {Ports,VerifiedAdmin} from '../hosted/contracts.ts';
 import {uuid} from '../hosted/contracts.ts';
 import {adminTrust,hostedOrigin,verifySignedAdmin} from '../hosted/identity.ts';
 import {validateIntegrationRecord} from './record.ts';
@@ -26,7 +27,7 @@ export type IntegrationStorage={
 export type IntegrationConnectionTest=(input:{integration:IntegrationId;revision:number;signal:AbortSignal})=>Promise<unknown>;
 // Test adapter resolves the exact credential revision through trusted storage. It must
 // honor abort, use a fixed scoped endpoint, cap transport work, and never retry/log secrets.
-export type IntegrationAdapters={connectionEvidence?:ConnectionEvidence;trust:unknown;storage:IntegrationStorage;testConnection:IntegrationConnectionTest;resolveJevCredential?:(ownerRef:string)=>Promise<string|null>};
+export type IntegrationAdapters={connectionEvidence?:ConnectionEvidence;trust:unknown;storage:IntegrationStorage;testConnection:IntegrationConnectionTest;gitHubTransport?:(admin:VerifiedAdmin)=>Promise<NonNullable<Ports['sendGitHub']>>;resolveJevCredential?:(ownerRef:string)=>Promise<string|null>};
 type Command={integration:IntegrationId;operation:Operation;revision:number;requestKey:string;secret?:string};
 const errors={invalid_request:400,body_too_large:413,body_timeout:408,unsupported_media_type:415,verified_admin_required:403,same_origin_required:403,not_configured:409,owner_required:403,stale_revision:409,request_replayed:409,capacity_reached:503,test_in_progress:409,contract_unavailable:503,connection_test_unsupported:409} as const;
 type ErrorCode=keyof typeof errors;
