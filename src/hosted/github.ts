@@ -27,7 +27,7 @@ export async function proposeGitHubCorrection(id:string,principal:VerifiedAdmin,
     if(Date.now()-started>=limits.invocationMs)reject('github_invocation_budget');
     const controller=new AbortController();let timer:ReturnType<typeof setTimeout>|undefined;
     try{return await Promise.race([(async()=>{
-      const response=await ports.sendGitHub!(new Request('https://api.github.com'+base+path,{method:body===undefined?'GET':'POST',headers:{Accept:'application/vnd.github+json','Content-Type':'application/json','User-Agent':'Agentic-Bible-Content-Proposals','X-GitHub-Api-Version':'2026-03-10'},body:body===undefined?undefined:canonical(body),redirect:'manual',credentials:'omit',signal:controller.signal}));
+      const response=await ports.sendGitHub!(new Request('https://api.github.com'+base+path,{method:body===undefined?'GET':'POST',headers:{Accept:'application/vnd.github+json','Content-Type':'application/json','User-Agent':'Agentic-Bible-Content-Proposals','X-GitHub-Api-Version':'2026-03-10'},body:body===undefined?undefined:canonical(body),redirect:'manual',credentials:'omit',signal:controller.signal}),body===undefined?undefined:recheckApproval);
       if(notFound&&response.status===404){void response.body?.cancel();return null;}
       if(response.redirected||![200,201].includes(response.status)||!response.headers.get('content-type')?.includes('application/json')){void response.body?.cancel();reject('github_response_rejected');}
       if(Number(response.headers.get('content-length'))>limits.responseBytes){void response.body?.cancel();reject('github_response_capacity');}
