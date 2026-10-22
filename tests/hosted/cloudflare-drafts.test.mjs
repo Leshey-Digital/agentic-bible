@@ -8,6 +8,7 @@ import {createCloudflareDraftAction} from '../../src/hosted/cloudflare-drafts.ts
 import {cloudflareProseModel} from '../../src/maintenance-adapters/cloudflare-prose.ts';
 import {document,mcp,urls} from '../maintenance-adapters/fixtures.mjs';
 import {digest} from '../../src/maintenance-adapters/profiles.ts';
+import {SourceAdapterError} from '../../src/maintenance-adapters/profiles.ts';
 import {ledgerFixture,policy,control} from '../maintenance-currency/helpers.mjs';
 import {demonstrationPolicy} from '../../src/wiki-bridge/maintenance-provider.ts';
 const origin='https://staging.agenticbible.si';
@@ -28,6 +29,23 @@ test('outer monthly cap and exhausted budget prevent AI dispatch',{timeout:30000
 test('unknown AI usage keeps the charged hold and blocks another generation',{timeout:30000},async()=>{let calls=0;const x=await fixture('uncertain',{ai:{run:async()=>{calls++;return {response:'Unknown bill',usage:{}};}}});try{await assert.rejects(x.action.prepare(await request(),input()));const first=await x.f.db.prepare('SELECT currency_reserved,currency_state FROM maintenance_proposals').first();assert.equal(first.currency_state,'uncertain');assert.ok(first.currency_reserved>0);await assert.rejects(x.action.prepare(await request(),input()));assert.equal(calls,1);}finally{await x.f.close();}});
 
 test('request cancellation during trusted source lookup stops acquisition and AI',{timeout:30000},async()=>{const x=await fixture('cancelled');try{const controller=new AbortController();const action=createCloudflareDraftAction({...x.options,reviewSource:async id=>{controller.abort();return x.options.reviewSource(id);}});await assert.rejects(action.prepare(await request({signal:controller.signal}),input()),{code:'verified_admin_required'});assert.equal(x.http,0);assert.equal(x.ai,0);}finally{await x.f.close();}});
+
+test('oversized source reports known pre-model failure and preserves terminal receipt without refetch',{timeout:30000},async()=>{
+ let fetches=0;const x=await fixture('source-overflow',{sourceSend:async()=>{fetches++;return new Response('bounded placeholder',{headers:{'Content-Type':'text/html','Content-Length':'32769'}});}});
+ try{const selected=input();await assert.rejects(x.action.prepare(await request(),selected),{code:'cloudflare_source_too_large',status:422});
+  const job=await x.f.db.prepare('SELECT state,attempts,result FROM http_check_jobs WHERE request_key=?').bind(selected.requestKey).first();assert.equal(job.state,'dead');assert.equal(job.attempts,1);assert.equal(JSON.parse(job.result).error.code,'body_too_large');
+  assert.equal((await x.f.db.prepare('SELECT COUNT(*) n FROM maintenance_proposals').first()).n,0);assert.equal(x.ai,0);
+  await assert.rejects(x.action.prepare(await request(),selected),{code:'cloudflare_source_attempt_recorded',status:409});assert.equal(fetches,1);assert.equal(x.ai,0);
+  assert.deepEqual(await x.f.db.prepare('SELECT state,attempts,result FROM http_check_jobs WHERE request_key=?').bind(selected.requestKey).first(),job);
+ }finally{await x.f.close();}
+});
+
+test('a source-shaped error after AI dispatch remains uncertain and retains its monetary hold',{timeout:30000},async()=>{
+ let calls=0;const x=await fixture('post-dispatch-error',{ai:{run:async()=>{calls++;throw new SourceAdapterError('body_too_large');}}});
+ try{await assert.rejects(x.action.prepare(await request(),input()),{code:'cloudflare_draft_unavailable',status:503});assert.equal(calls,1);
+  const row=await x.f.db.prepare('SELECT currency_state,currency_reserved FROM maintenance_proposals').first();assert.equal(row.currency_state,'uncertain');assert.ok(row.currency_reserved>0);
+ }finally{await x.f.close();}
+});
 
 test('composed signed Worker action acquires source, accounts AI, persists inbox and saves an explicit review note',{timeout:30000},async()=>{
  const markdown=readFileSync('src/content/articles/tool-use.md','utf8');

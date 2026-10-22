@@ -4,7 +4,7 @@ import {uuid} from './contracts.ts';
 import {adminTrust,hostedOrigin,verifySignedAdmin} from './identity.ts';
 import {hostedTarget,sourceCitations} from './targets.ts';
 import {acquireMaintenanceSource,verifyAcquiredSource} from '../maintenance-adapters/acquisition.ts';
-import {extractionProfile} from '../maintenance-adapters/profiles.ts';
+import {extractionProfile,SourceAdapterError} from '../maintenance-adapters/profiles.ts';
 import {createSourcedDraftPreparer} from '../maintenance-adapters/sourced-draft.ts';
 import {createCloudflareProseAdapter,cloudflareProseModel,type WorkersAiBinding} from '../maintenance-adapters/cloudflare-prose.ts';
 import {createCloudflareLlama32InputTokenUpperBound} from '../maintenance-adapters/cloudflare-llama32-input-bound.ts';
@@ -40,7 +40,18 @@ export function createCloudflareDraftAction(options:CloudflareDraftOptions={}){
    const front=/^---\n([^]*?)\n---\n/.exec(source.markdown)?.[1]??'';
    const declaration=front.split('\n  - id: ').slice(1).find(block=>block.split('\n')[0]===selected.citationId),urls=declaration?.match(/^    url: (\S+)$/gm)??[];
    if(urls.length!==1||urls[0].slice(9)!==profile.url)fail('draft_source_mismatch',409);
-   const packet=await acquireMaintenanceSource({sourceId:profile.sourceId,requestKey:selected.requestKey},{enabled:true,db:options.db!,send:(url,init)=>{fresh();return options.sourceSend?options.sourceSend(url,init):fetch(url,{...init,method:'GET',credentials:'omit',cache:'no-store'});}});fresh();
+   // Only errors from source acquisition can claim that no AI was invoked.
+   // Keep model/persistence errors outside this boundary and conservative.
+   let packet;
+   try{packet=await acquireMaintenanceSource({sourceId:profile.sourceId,requestKey:selected.requestKey},{enabled:true,db:options.db!,send:(url,init)=>{fresh();return options.sourceSend?options.sourceSend(url,init):fetch(url,{...init,method:'GET',credentials:'omit',cache:'no-store'});}});}
+   catch(error){
+    if(error instanceof SourceAdapterError){
+     if(['body_too_large','adapter_raw_limit'].includes(error.code))fail('cloudflare_source_too_large',422);
+     if(['adapter_evidence_limit','adapter_excerpt_limit'].includes(error.code))fail('cloudflare_source_evidence_limit',422);
+     if(error.code==='adapter_existing_attempt_no_refetch')fail('cloudflare_source_attempt_recorded',409);
+    }
+    throw error;
+   }fresh();
    const adapter=createCloudflareProseAdapter({enabled:true,db:options.db,policy,currency:{enabled:true,policy:currency},inputTokenUpperBound:createCloudflareLlama32InputTokenUpperBound({rawPrompt:true}),ai:{run:(model,value)=>{fresh();return options.ai!.run(model,value);}}});
    const preparer=createSourcedDraftPreparer({verifySource:async value=>{const result=await verifyAcquiredSource(value,{db:options.db!});fresh();return result;},generate:prompt=>{fresh();return adapter.generate(prompt);}});
    const draft=await preparer.prepare({articleId:target.articleId,baseCommit:source.baseCommit,baseMarkdownSha256:source.baseMarkdownSha256,markdown:source.markdown},[{citationId:selected.citationId,packet}]);fresh();return draft;
