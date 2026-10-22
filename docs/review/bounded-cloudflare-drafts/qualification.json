@@ -1,0 +1,40 @@
+{
+  "date": "2026-10-22",
+  "scope": "source-only composition; no deployment or inference",
+  "base": "d4a18038573b82bdf5c9c658afcd44cc00f7df8a",
+  "composedVaultHead": "a9ec207f329fb1501d38eaf34b916a1c518ebd73",
+  "copyCommit": "11aa25b387c3f0a81b69904d60f2528f79368581",
+  "hashes": {
+    "src/maintenance-adapters/cloudflare-prose.ts": "5387412f5e8f6f54f89b722d58878e43f7cc9526e1cd590a6fcdf02c1c8bb809",
+    "src/maintenance-adapters/sourced-draft.ts": "c6c3adae25ea843c9075f2414c574871aced74f21bb024155bd3be709e81fe8b",
+    "tests/maintenance-adapters/cloudflare-prose.test.mjs": "8554b43a3ae86e8b0a2e3260d429661539bc5508eee4ee355b3b4b13a2320f93",
+    "tests/maintenance-adapters/sourced-draft.test.mjs": "8326dd57e9a3b2d6f8fd45c4861ceaec8a5d7cc8024fd2a5c56eb07f6773c96d"
+  },
+  "checks": {
+    "cloudflareProse": "7/7 passed, writer-reported controlled provider/native ledger tests",
+    "sourcedDraft": "6/6 passed, writer-reported controlled source verifier and generator",
+    "astroCheck": "200 files, zero errors/warnings/hints, final source",
+    "build": "passed; 20 Pagefind entries",
+    "seo": "8/8 passed, local D1/outbox/policy",
+    "readerBrowser": "2/2 passed desktop/mobile existing article action journey",
+    "docs": "464 Markdown files,409 links passed before this evidence document",
+    "secretPatternScan": "no token/private-key matches in changed adapter/tests/change docs"
+  },
+  "independentReview": "source-grounded draft and public copy accepted; runtime composition not reviewed/implemented",
+  "historicalFailure": "Initial adapter supervision command exited143 without test output; corrected supervised invocation completed. No existing qualification receipt rewritten.",
+  "providerReadback": {
+    "productionVersion": "28c2c556-ab43-482a-98e7-7d2aa8d6965c",
+    "stagingVersion": "7bf23d96-ec17-4ed0-a676-a2bc8d5922ef",
+    "bothTrafficPercent": 100,
+    "workerBuildTriggers": {
+      "production": [],
+      "staging": []
+    }
+  },
+  "remaining": [
+    "Connect real acquired-source D1 verification and budgeted generator to authenticated explicit draft action; retain saved review provenance.",
+    "Verify account pricing, model/binding entitlement and unavoidable charges; configure conservative monthly headroom below $20 before paid inference. Current adapter remains pinned Llama3.2; Llama3.3 request/token-bound contract is not qualified.",
+    "Complete real authenticated draft/review/GitHub/publication/revert acceptance; no runtime token configured by this executor.",
+    "Qualify exact production copy-update package and perform native rollback-preserving release. No new production package uploaded."
+  ]
+}
