@@ -1,0 +1,32 @@
+{
+  "state": "proposed-not-executed-approval-required",
+  "accountId": "c370be29e4065365de03bc8652da2cdc",
+  "worker": "agentic-bible-production",
+  "method": "POST",
+  "path": "/accounts/c370be29e4065365de03bc8652da2cdc/workers/scripts/agentic-bible-production/deployments",
+  "expectedActiveDeployment": "e046cf4a-6f57-404d-a50a-504788058ee5",
+  "expectedActiveVersion": "28c2c556-ab43-482a-98e7-7d2aa8d6965c",
+  "body": {
+    "strategy": "percentage",
+    "versions": [
+      {
+        "version_id": "7eccb256-0659-43c4-b2e6-5f54ac652824",
+        "percentage": 100
+      }
+    ],
+    "annotations": {
+      "workers/message": "Reviewed copy-only release candidate312c04a1; rollback28c2c556"
+    }
+  },
+  "rollbackBody": {
+    "strategy": "percentage",
+    "versions": [
+      {
+        "version_id": "28c2c556-ab43-482a-98e7-7d2aa8d6965c",
+        "percentage": 100
+      }
+    ]
+  },
+  "preflight": "Recheck expected active deployment/version and uploaded metadata; stop on drift. No upload/domain/security/binding changes.",
+  "postActivation": "Read deployment then permitted ordinary-browser home/about/article/contribute/search/robots/sitemap checks; verify copy and closedwrites. No denied-client retries or BIC bypass."
+}

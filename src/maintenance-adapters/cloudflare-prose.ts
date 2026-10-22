@@ -39,7 +39,6 @@ export function createCloudflareProseAdapter(options:CloudflareProseOptions={}){
    if(!Number.isSafeInteger(timeout)||timeout<1||timeout>cloudflareProseLimits.timeoutMs)stop('cloudflare_prose_deadline');
    const bytes=new TextEncoder().encode(prompt??'').byteLength;if(typeof prompt!=='string'||bytes<1||bytes>cloudflareProseLimits.promptBytes)stop('cloudflare_prose_prompt_limit');
    const policy=policyInput(policyControl),currency=currencyInput(control);if(!currency)stop('cloudflare_prose_currency_unconfigured');
-   if(currency.monthLimit>20_000_000)stop('cloudflare_prose_monthly_ceiling');
    const price=currencyProvider(currency,'cloudflare-workers-ai','cloudflare-reported-token-usage-v1',cloudflareProseModel);if(!price)stop('cloudflare_prose_currency_unconfigured');
    const inputReservation=inputTokenUpperBound(prompt);if(!Number.isSafeInteger(inputReservation)||inputReservation<1||inputReservation>policy.maxInputTokens)stop('cloudflare_prose_prompt_reservation_limit');
    if(policy.maxOutputTokens>2048)stop('cloudflare_prose_output_reservation_limit');
@@ -60,7 +59,10 @@ export function createCloudflareProseAdapter(options:CloudflareProseOptions={}){
     const usage=readCloudflareProseUsage(value);if(usage.inputTokens<1||usage.inputTokens>policy.maxInputTokens||usage.outputTokens<0||usage.outputTokens>policy.maxOutputTokens)stop('cloudflare_prose_usage');
     const settledAt=(clock??Date.now)(),cost=currencyCost(currency,usage,price.id),receipt={schemaVersion:1,provider:'cloudflare-workers-ai',model:cloudflareProseModel,priceId:price.id,requestHash,usage,costUpperBoundMicroUsd:row.currency_reserved,costSettledMicroUsd:cost,draftHash:hash(value.response)};
     const draft:ProseDraft={kind:'unverified-prose-draft',model:cloudflareProseModel,text:value.response,usage,costUpperBoundMicroUsd:row.currency_reserved!,costSettledMicroUsd:cost,eventId:event};
-    await budget.ready(row,{response:value.response,usage,provider:'cloudflare-workers-ai',model:cloudflareProseModel},{kind:'cloudflare-prose-draft',...receipt},usage.inputTokens+usage.outputTokens,{usage,now:settledAt});
+    // The compact response column has a 4096-byte serialized limit. Keep
+    // full prose in the separately bounded packet (49152 bytes); even worst-
+    // case JSON escaping of 4096 raw bytes fits without enlarging ledger caps.
+    await budget.ready(row,{draftHash:receipt.draftHash,usage,provider:'cloudflare-workers-ai',model:cloudflareProseModel},{kind:'cloudflare-prose-draft',...receipt,schemaVersion:2,response:value.response},usage.inputTokens+usage.outputTokens,{usage,now:settledAt});
     const ready=await budget.job(event);if(!ready)stop('maintenance_accounting_unconfirmed');await budget.complete(ready,receipt);return draft;
    }catch(error){if(dispatched){try{await budget.rejected(row,true);}catch{/* Reservation remains the accounting authority. */}}else{try{await budget.rejected(row,false);}catch{/* Reservation remains the accounting authority. */}}throw error;
    }finally{clearTimeout(timer);controller.abort();}

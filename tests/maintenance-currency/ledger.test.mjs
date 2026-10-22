@@ -79,3 +79,19 @@ test('populated synthetic ledger upgrades additively without rewriting old costs
  const f=await ledgerFixture('upgrade',false);try{const b=new MaintenanceBudget(f.db),old=await reserve(b,'pre-upgrade');await b.rejected(old,false);const before=await b.job(old.event_id);for(const sql of readFileSync('migrations/0016_maintenance_currency.sql','utf8').replace(/--[^\n]*/g,'').split(';').filter(s=>s.trim()))await f.db.prepare(sql).run();await f.restart();const upgraded=new MaintenanceBudget(f.db),after=await upgraded.job(old.event_id);for(const key of Object.keys(before))assert.deepEqual(after[key],before[key]);assert.equal(after.currency_policy,null);assert.equal(after.currency_actual,null);const next=await reserve(upgraded,'legacy-after-upgrade');await upgraded.rejected(next,false);await assert.rejects(reserve(new MaintenanceBudget(f.db,control(policy())),'no-guessing'),{code:'maintenance_currency_schema_required'});assert.equal((await f.db.prepare('SELECT COUNT(*) n FROM maintenance_proposals').first()).n,2);
  }finally{await f.close();}
 });
+
+
+test('shared admission rejects above-owner monthly ceilings for single and multi-provider policies before storage',async()=>{
+ const f=await ledgerFixture('owner-ceiling');try{
+  const single=policy({monthLimit:20_000_001});
+  assert.throws(()=>new MaintenanceBudget(f.db,control(single)),{code:'maintenance_currency_monthly_ceiling'});
+  const {validFrom,validUntil,...price}=single.price;
+  const multi={schemaVersion:2,unit:single.unit,account:single.account,runLimit:single.runLimit,dayLimit:single.dayLimit,monthLimit:single.monthLimit,dayBaseline:single.dayBaseline,monthBaseline:single.monthBaseline,validFrom:Date.UTC(2026,9,1),validUntil:Date.UTC(2026,10,1),prices:[{...price,provider:'typesafe',model:'jev-v1.14.0',tokenizer:'typesafe-reported-token-usage-v1'}]};
+  assert.throws(()=>currencyInput(control(multi)),{code:'maintenance_currency_monthly_ceiling'});
+  assert.equal((await f.db.prepare('SELECT COUNT(*) n FROM maintenance_currency_policy').first()).n,0);
+  assert.equal((await f.db.prepare('SELECT COUNT(*) n FROM maintenance_proposals').first()).n,0);
+  const p=policy({monthLimit:20_000_000,monthBaseline:19_999_950});
+  await assert.rejects(reserve(new MaintenanceBudget(f.db,control(p)),'owner-baseline'),{code:'maintenance_budget_or_concurrency'});
+  assert.equal((await f.db.prepare('SELECT COUNT(*) n FROM maintenance_proposals').first()).n,0);
+ }finally{await f.close();}
+});

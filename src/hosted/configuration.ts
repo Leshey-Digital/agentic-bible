@@ -1,3 +1,4 @@
+import {createCloudflareDraftAction} from './cloudflare-drafts.ts';
 import {credentialTransport} from './github-transport.ts';
 export {credentialTransport} from './github-transport.ts';
 import {type Ports,type RuntimeEnv} from './contracts.ts';
@@ -36,7 +37,7 @@ function jevTransport(url:string,init:RequestInit):Promise<Response>{
   if(url!==jevEndpoint||init.method!=='POST'||init.redirect!=='error'||init.credentials!=='omit'||init.cache!=='no-store'||init.referrerPolicy!=='no-referrer'||init.signal?.aborted)throw Error('jev_transport_rejected');
   return fetch(url,init);
 }
-export async function configuredPorts(env:RuntimeEnv,request?:Request):Promise<Ports>{
+export async function configuredPorts(env:RuntimeEnv,request?:Request,reviewSource?:Ports['reviewSource']):Promise<Ports>{
   const trust=adminTrust(env.HOSTED_ADMIN_TRUST),send=(env.GITHUB_DRAFT_CREDENTIAL_SOURCE===undefined||env.GITHUB_DRAFT_CREDENTIAL_SOURCE==='binding')?credentialTransport(env.GITHUB_CONTENT_TOKEN):undefined;if(!trust||!env.EDITORIAL_DB)return {};
   const review=historyBindingConfigured()?{maintenanceReview:true as const}:{};
   const ports:Ports={...review,verifyAdmin:request=>verifySignedAdmin(request,trust)};
@@ -62,6 +63,13 @@ export async function configuredPorts(env:RuntimeEnv,request?:Request):Promise<P
   if(jevConfig&&credential){
     const tokenBounds:JevTokenBounds={inputUpperBound:requestJson=>new TextEncoder().encode(requestJson).byteLength,outputUpperBound:()=>jevConfig.outputTokenUpperBound};
     ports.jevDispatch=createJevDispatchPort({enabled:jevConfig.enabled,credential,model:jevConfig.model,db:env.EDITORIAL_DB,currency:{enabled:true,policy:jevConfig.currency},tokenBounds,transport:jevTransport});
+  }
+  // No defaults infer spending authority. Configuration is trusted server metadata.
+  if(env.HOSTED_PRIVATE_INBOX==='enabled'&&ports.contributions&&reviewSource&&typeof env.CLOUDFLARE_DRAFT_POLICY==='string'&&env.CLOUDFLARE_DRAFT_POLICY.length<=8192){
+    try{const config=JSON.parse(env.CLOUDFLARE_DRAFT_POLICY);
+      if(config&&typeof config==='object'&&!Array.isArray(config)&&Object.keys(config).sort().join(',')==='currency,enabled,policy'&&typeof config.enabled==='boolean')
+        ports.cloudflareDrafts=createCloudflareDraftAction({enabled:config.enabled,trust:env.HOSTED_ADMIN_TRUST,db:env.EDITORIAL_DB,ai:env.AI,currency:{enabled:true,policy:config.currency},policy:config.policy,reviewSource});
+    }catch{/* Invalid policy keeps all inference closed. */}
   }
   return ports;
 }

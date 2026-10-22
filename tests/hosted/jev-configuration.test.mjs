@@ -11,6 +11,7 @@ test('configuredPorts mounts only an explicitly complete, but disabled, owner-bo
   const ports=await configuredPorts(env());assert.equal(ports.jevDispatch?.state,'disabled');assert.equal(typeof ports.integrationSettings?.resolveJevCredential,'function');
   assert.equal((await configuredPorts(env({INTEGRATION_VAULT_KEY:undefined}))).jevDispatch,undefined);
   assert.equal((await configuredPorts(env({JEV_DISPATCH_POLICY:undefined}))).jevDispatch,undefined);
+  const excessive=policy();excessive.enabled=true;excessive.currency.monthLimit=21000000;assert.equal((await configuredPorts(env({JEV_DISPATCH_POLICY:JSON.stringify(excessive)}))).jevDispatch,undefined);
   const invalid=policy();invalid.model='caller-selectable';assert.equal((await configuredPorts(env({JEV_DISPATCH_POLICY:JSON.stringify(invalid)}))).jevDispatch,undefined);
   const wrongPrice=policy();wrongPrice.currency.price.model='jev-1.13.0';assert.equal((await configuredPorts(env({JEV_DISPATCH_POLICY:JSON.stringify(wrongPrice)}))).jevDispatch?.state,'unconfigured');
 });

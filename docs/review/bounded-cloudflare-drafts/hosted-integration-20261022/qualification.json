@@ -1,0 +1,43 @@
+{
+  "date": "2026-10-22",
+  "base": "3303c17e87fa4a8114adbdf28748f5fc43b640c7",
+  "scope": "authenticated registered-source to private reviewed-note local acceptance; no live inference or publication",
+  "sha256": {
+    "src/hosted/cloudflare-drafts.ts": "59114d21d6b55d7c83673bd029cc658188c5ab3492f35c164ea83f34e579865b",
+    "src/hosted/cloudflare-draft-inbox.ts": "dceaec48d1d786259e7b014dc4bd6e589e4d908209da76a5550c32e72138fb77",
+    "src/hosted/cloudflare-draft-admin.ts": "ab214caacc549545364c94e80789024df5a0c274ed0abeac32f895985d62fd0a",
+    "src/hosted/configuration.ts": "098db838c673c6f2981336aba10ee9e293315a298279dea5dc03409f329aa9fb",
+    "src/hosted/worker.ts": "fb775227018a368fb584b46bac3065a74b32251a05223c3a8493226183fa4032",
+    "src/wiki-bridge/maintenance-currency.ts": "3adc7cfc15f7527fe3eda489012a00fa5952eb73aad5dc73d6c1f3ce5c4481b0",
+    "src/maintenance-adapters/cloudflare-prose.ts": "3dd73e5c4f88ff9903d44a5d1fecc58fb219f7115528742c25f37c99ff4d4595"
+  },
+  "checks": {
+    "draftAction": "5/5 controlled source and AI, actual D1 receipts/accounting",
+    "draftInbox": "3/3 plus selected closed-inbox regression; signed route, saved replay, conflict, full capacity, explicit review",
+    "composedActualArticle": "1/1 actual6173-byte tool-use Markdown/buildReviewSource, fake HTTP/AI, actual D1, explicit reviewed note",
+    "restoration": "2/2 selected retained signed approval and atomic lineage restoration; controlled Git/D1, separate from AI path",
+    "sharedBudgetOriginal": "20/22; preserved failures: new boundary fixture needed capacity for three calls; existing Miniflare socket failure during setup",
+    "sharedBudgetContinuation": "2/2 focused; new fixture corrected, existing guard unchanged; original receipt not rewritten",
+    "retainedJev": "4/4 config/runtime",
+    "sharedConfig": "2/2 including private-inbox gating and Jev>20M closure",
+    "astro": "203 files zero diagnostics after type narrowing corrections"
+  },
+  "review": "Independent review found disabled-inbox spending gap; corrected action mounting and route guard; regression passed. No publication authority added.",
+  "limits": [
+    "Shared cap covers this owned D1 ledger and baseline, not unobserved account usage or separate ledgers.",
+    "All full-price reservations count; included account allocation is never subtracted.",
+    "Account plan, tax/fees and existing AI usage baseline still require verified non-secret billing evidence. Prior billing read403 has not been bypassed/retried.",
+    "Raw prose4096bytes stored in existing49152-byte packet; compact response stays within4096bytes.",
+    "Source acquisition remains registered-only bounded32KB strict HTML and8KB evidence; real-page acquisition/inference unqualified.",
+    "Unknown unsaved outcomes are not automatically retried; source/accounting evidence must be reconciled."
+  ],
+  "active": {
+    "production": "28c2c556-ab43-482a-98e7-7d2aa8d6965c",
+    "productionDeployment": "e046cf4a-6f57-404d-a50a-504788058ee5",
+    "uploadedInactiveCopy": "7eccb256-0659-43c4-b2e6-5f54ac652824",
+    "activation": "held by latest parent instruction; no attempt",
+    "staging": "7bf23d96-ec17-4ed0-a676-a2bc8d5922ef last verified earlier same day; no mutations"
+  },
+  "paidInferenceCalls": 0,
+  "credentialsConfigured": false
+}

@@ -1,0 +1,21 @@
+{
+  "operationId": "306c5437-53f3-484f-ac13-4df821a8f525",
+  "state": "uploaded-inactive-byte-verified-activation-held",
+  "attempts": 1,
+  "candidate": "312c04a1c89e41869bbd5bd15b5838f7d5c5b15fb5eae045dc7cb60fcec6d22d",
+  "source": "cd762a6d87e9abda2cb4a04f112d1ac439c61b2c",
+  "payloadSha256": "697dca1fa792a48f2907c4370fc6ddc2f8eb6ec701a5223347ee8683a99b8043",
+  "gzipSha256": "9b1cee9fb6c8f1f79183e7ed5d341d297366a8a755c64282a0208a48891b9006",
+  "gzipBytes": 586476,
+  "capsuleSha256": "efa94af702872ae7d825618dc1a627602cae235f4d987eae15b3e595a9898c5f",
+  "capsuleBytes": 783903,
+  "expectedActive": "28c2c556-ab43-482a-98e7-7d2aa8d6965c",
+  "expectedDeployment": "e046cf4a-6f57-404d-a50a-504788058ee5",
+  "rollbackVersion": "28c2c556-ab43-482a-98e7-7d2aa8d6965c",
+  "deploy": false,
+  "activationPrepared": false,
+  "attemptedAt": "2026-10-22T15:20:31.695658+00:00",
+  "uploadedVersion": "7eccb256-0659-43c4-b2e6-5f54ac652824",
+  "verifiedModules": 82,
+  "activationAttempts": 0
+}

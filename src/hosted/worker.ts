@@ -1,3 +1,6 @@
+import {CloudflareDraftError} from './cloudflare-drafts.ts';
+import {prepareDraftForInbox} from './cloudflare-draft-inbox.ts';
+import {draftAdminHtml,draftAdminJs} from './cloudflare-draft-admin.ts';
 import {ProposalError,uuid,type Ports,type RuntimeEnv} from './contracts.ts';
 import {proposeGitHubCorrection} from './github.ts';
 import {runtimeRelease} from '../release/public.ts';
@@ -39,7 +42,7 @@ return {async fetch(request:Request,env:RuntimeEnv):Promise<Response>{
     // Decode once only to reject aliases of the private settings namespace. Never
     // dispatch a decoded alias; malformed encodings retain existing route behavior.
     let decodedPath=path;try{decodedPath=decodeURIComponent(path);}catch{}
-    if(decodedPath!==path&&(decodedPath==='/api/submissions'||decodedPath.startsWith('/api/admin/jev/')||decodedPath.startsWith('/api/admin/submissions/')||decodedPath==='/api/admin/submissions'||decodedPath==='/api/admin/abuse-counters'||decodedPath.startsWith('/admin/contributions/')||decodedPath.startsWith('/admin/integrations/')||decodedPath==='/api/admin/settings'||decodedPath.startsWith('/api/admin/settings/')))return json({error:'hosted_admin_and_public_intake_not_configured'},503);
+    if(decodedPath!==path&&(decodedPath==='/api/submissions'||decodedPath.startsWith('/api/admin/drafts/')||decodedPath.startsWith('/admin/drafts/')||decodedPath.startsWith('/api/admin/jev/')||decodedPath.startsWith('/api/admin/submissions/')||decodedPath==='/api/admin/submissions'||decodedPath==='/api/admin/abuse-counters'||decodedPath.startsWith('/admin/contributions/')||decodedPath.startsWith('/admin/integrations/')||decodedPath==='/api/admin/settings'||decodedPath.startsWith('/api/admin/settings/')))return json({error:'hosted_admin_and_public_intake_not_configured'},503);
     if(path.startsWith('/admin/integrations/')){
       if(url.origin!==origin)return json({error:'hosted_origin_required'},403);
       if(!integrationSettings)return json({error:'integration_settings_unconfigured'},503);
@@ -56,6 +59,24 @@ return {async fetch(request:Request,env:RuntimeEnv):Promise<Response>{
       const response=await (path.endsWith('/typesafe-jev')?jevSettings!:integrationSettings)(request),secured=new Headers(response.headers);
       for(const [key,value] of Object.entries(headers))secured.set(key,value);
       return new Response(response.body,{status:response.status,headers:secured});
+    }
+    if(path==='/api/admin/drafts/cloudflare'||path.startsWith('/admin/drafts/')){
+      if(!ports.contributions)return json({error:'cloudflare_draft_unconfigured'},503);
+      if(url.origin!==origin||request.headers.get('sec-fetch-site')==='cross-site')return json({error:'same_origin_required'},403);
+      if(!ports.verifyAdmin||!env.EDITORIAL_DB)return json({error:'hosted_admin_identity_unconfigured'},503);
+      const admin=await ports.verifyAdmin(request);
+      if(!admin||admin.role!=='admin'||admin.csrfVerified!==true||!Number.isSafeInteger(admin.expiresAt)||admin.expiresAt<=Date.now()||!/^signed-admin:[a-f0-9]{64}$/.test(admin.subject))return json({error:'verified_admin_required'},403);
+      if(url.search)return json({error:'invalid_request'},400);
+      if(path.startsWith('/admin/drafts/')){
+        if(request.method!=='GET')return json({error:'method_not_allowed'},405);
+        const asset=path==='/admin/drafts/'?[draftAdminHtml,'text/html; charset=utf-8']:path==='/admin/drafts/app.js'?[draftAdminJs,'text/javascript; charset=utf-8']:null;
+        return asset?new Response(asset[0],{headers:{...headers,'Content-Type':asset[1]}}):json({error:'not_found'},404);
+      }
+      if(request.method!=='POST')return json({error:'explicit_post_required'},405);
+      if(request.headers.get('origin')!==origin||request.headers.get('x-agentic-bible-request')!=='admin')return json({error:'same_origin_required'},403);
+      if(!ports.cloudflareDrafts||ports.cloudflareDrafts.state!=='configured')return json({error:'cloudflare_draft_unconfigured'},503);
+      try{return json(await prepareDraftForInbox(ports.cloudflareDrafts,request,await inputJson(request,2048),env.EDITORIAL_DB,admin));}
+      catch(error){if(error instanceof CloudflareDraftError)return json({error:error.code,published:false},error.status);throw error;}
     }
     if(path==='/api/admin/jev/evaluate'){
       if(url.origin!==origin)return json({error:'hosted_origin_required'},403);

@@ -67,7 +67,27 @@ test('usage above the raw prompt reservation retains the full hold and blocks fu
 test('monthly AI policy above the owner ceiling rejects before any reservation or binding call',async()=>{
  const f=await ledgerFixture('cloudflare-prose-monthly-ceiling');try{let calls=0;const p={...currencyPolicy(),monthLimit:21_000_000};
   const prose=adapter(f.db,{currency:control(p),ai:{async run(){calls++;return {response:text,usage};}}});
-  await assert.rejects(prose.generate('A short controlled prompt.'),{code:'cloudflare_prose_monthly_ceiling'});
+  await assert.rejects(prose.generate('A short controlled prompt.'),{code:'maintenance_currency_monthly_ceiling'});
   assert.equal(calls,0);assert.equal((await f.db.prepare('SELECT COUNT(*) n FROM maintenance_proposals').first()).n,0);assert.equal((await f.db.prepare('SELECT COUNT(*) n FROM maintenance_currency_policy').first()).n,0);
+ }finally{await f.close();}
+});
+
+
+test('raw output boundary and JSON escaping settle within separate persisted bounds',async()=>{
+ const f=await ledgerFixture('cloudflare-prose-output-boundary');try{
+  const p=currencyPolicy();let response='x'.repeat(cloudflareProseLimits.responseBytes),calls=0;
+  const ai={async run(){calls++;return {response,usage};}};
+  const prose=adapter(f.db,{currency:control(p),ai,policy:{...prosePolicy,dayRequests:4}});
+  for(const [index,value] of [response,'\\'.repeat(cloudflareProseLimits.responseBytes),'\u0001'.repeat(cloudflareProseLimits.responseBytes)].entries()){
+   response=value;const result=await prose.generate('Controlled prompt boundary '+index);
+   const row=await new MaintenanceBudget(f.db,control(p)).job(result.eventId);
+   assert.equal(row.state,'complete');assert.equal(row.currency_state,'settled');assert.equal(result.text,value);
+   assert.ok(Buffer.byteLength(row.response)<=4096);assert.ok(Buffer.byteLength(row.packet)<=49152);
+   const summary=JSON.parse(row.response),packet=JSON.parse(row.packet);
+   assert.equal(packet.schemaVersion,2);assert.equal(packet.response,value);assert.equal(summary.draftHash,hash(value));assert.equal(packet.draftHash,summary.draftHash);
+  }
+  assert.equal(calls,3);await f.restart();
+  const rows=(await f.db.prepare("SELECT * FROM maintenance_proposals WHERE event_id LIKE 'cfa-%'").all()).results;
+  assert.equal(rows.length,3);assert.ok(rows.every(row=>row.state==='complete'&&row.currency_state==='settled'));
  }finally{await f.close();}
 });

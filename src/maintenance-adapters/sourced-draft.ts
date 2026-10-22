@@ -10,7 +10,7 @@ export type DraftSourceSelection={citationId:string;packet:AcquiredSource};
  * budgeted createCloudflareProseAdapter.generate. Neither port is request data. */
 export type SourcedDraftPorts={verifySource:(packet:AcquiredSource)=>Promise<AcquiredSource>;generate:(prompt:string)=>Promise<ProseDraft>};
 const bytes=(v:string)=>new TextEncoder().encode(v).byteLength;
-const fail=(code:string):never=>{throw new Error(code);};
+function fail(code:string):never{throw new Error(code);}
 const sha=(v:unknown)=>typeof v==='string'&&/^[a-f0-9]{64}$/.test(v);
 const uuid=(v:unknown)=>typeof v==='string'&&/^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/.test(v);
 
