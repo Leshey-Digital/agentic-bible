@@ -2,7 +2,7 @@ import type {SqlDatabase} from '../editorial/contracts.ts';
 import {HttpObservationStore} from '../monitoring/http-store.ts';
 import {createWorkersHttpPass} from '../monitoring/http-workers.ts';
 import {HttpError,type HttpResult,type WebFetch} from '../monitoring/http-core.ts';
-import {httpLimits} from '../monitoring/http-registry.ts';
+import {sourceBodyLimit} from '../monitoring/http-registry.ts';
 import {canonical,exact,extractionProfile,reject,SourceAdapterError} from './profiles.ts';
 import {extractMaintenanceSource,validateExtractedSource,type ExtractedSource} from './extraction.ts';
 
@@ -74,7 +74,8 @@ export async function acquireMaintenanceSource(value:unknown,context:Context):Pr
     const reader=response.body?.getReader();if(!reader)return response;
     const body=new ReadableStream<Uint8Array>({async pull(controller){
       try{const part=await reader.read();if(part.done){complete=true;controller.close();return;}
-        if(!(part.value instanceof Uint8Array)||length+part.value.byteLength>httpLimits.bodyBytes){void reader.cancel().catch(()=>{});throw new HttpError('body_too_large');}
+        if(!(part.value instanceof Uint8Array)){void reader.cancel().catch(()=>{});throw new HttpError('malformed_body');}
+        if(length+part.value.byteLength>sourceBodyLimit(input.sourceId)){void reader.cancel().catch(()=>{});throw new HttpError('body_too_large',false,{stage:'stream',limitBytes:sourceBodyLimit(input.sourceId),observedBytes:length+part.value.byteLength,complete:false});}
         length+=part.value.byteLength;chunks.push(Uint8Array.from(part.value));controller.enqueue(part.value);
       }catch(error){controller.error(error);}
     },cancel(){return reader.cancel();}});

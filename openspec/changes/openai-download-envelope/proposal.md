@@ -1,0 +1,13 @@
+# Bounded OpenAI HTML envelope
+
+The retained live request failed before extraction at the shared 32 KiB transport cap. Propose a compiled 1 MiB envelope for the existing OpenAI function-calling URL only. This is a finite engineering ceiling for documentation HTML/navigation/script overhead, not a measured page size or proof the actual source fits. Other sources remain at 32 KiB. Original bytes and hashes remain intact; no truncation or source switching.
+
+Keep 8 KiB extracted evidence, 256 spans, 4096 parser tokens, depth 64, existing model token/budget policy, 2 second timeout and request caps unchanged. Continue requesting identity encoding and rejecting compressed responses rather than decompressing unbounded data. Reject all redirects. Overflow records distinguish declared length from observed streamed lower bound and mark both incomplete; do not rewrite historical receipts.
+
+Local 403 retained headers say envoy, text/plain, content-length 16. Curl --fail did not retain its body. Those headers cannot distinguish an environment proxy from an origin-side proxy. No further request or route change is authorized here.
+
+No deployment or live qualification is included. Synthetic large documents validate mechanics only; actual source structure and evidence fit remain unknown.
+
+D1 migration 0026 is a deployment prerequisite: its atomic batch rebuilds only http_request_reservations, widening the finite recorded byte constraint while preserving historical rows/keys/outcomes and all other constraints. No remote migration is performed here. Retained older Worker can still write/read its <=32 KiB receipts; do not reverse the schema migration after larger receipts exist. Rollback means restore prior Worker and preserve the expanded receipt table, not delete larger records. Canonical acquired-file/wiki storage remains separately limited to 32 KiB; this patch does not establish publication compatibility for larger source documents.
+
+Validation: 18 HTTP/envelope/native acquisition checks passed, including populated actual-D1 migration, 512 KiB receipt verification, exact 1 MiB boundary, overflow cancellation, malformed/truncated content and compressed/redirect rejection. Nine authenticated hosted draft/source regressions passed with controlled inference only. Eleven extraction/sourced-draft checks passed in the initial run; three suites initially could not load due to a TypeScript parameter-property syntax unsupported by Node strip mode. That implementation error was corrected and only the affected suites rerun. Initial failure logs remain retained. Independent review found and resolved the D1 schema mismatch; no further source-only blocker identified. No live fetch, inference, deployment or remote migration occurred in this patch.

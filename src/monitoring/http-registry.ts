@@ -16,3 +16,8 @@ export function officialUrl(raw:unknown):URL|null {
   const url=new URL(raw);
   return url.protocol==='https:'&&!url.username&&!url.password&&!url.port&&!url.search&&!url.hash&&url.href===raw?url:null;
 }
+
+// Compiled document transport envelope, not an evidence or model-token allowance.
+// Only this registered HTML document receives the larger finite envelope.
+export const openaiDownloadProfile=Object.freeze({id:'openai-html-envelope-v1',sourceId:'s-90f2bf11e4fb71c8f42ae128',bodyBytes:1048576});
+export function sourceBodyLimit(id:unknown){return id===openaiDownloadProfile.sourceId?openaiDownloadProfile.bodyBytes:httpLimits.bodyBytes;}

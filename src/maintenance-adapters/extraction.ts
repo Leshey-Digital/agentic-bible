@@ -1,3 +1,4 @@
+import {sourceBodyLimit} from '../monitoring/http-registry.ts';
 import {canonical,digest,exact,extractionLimits,extractionProfile,reject,type SourceLineage} from './profiles.ts';
 
 export type EvidenceSpan={startByte:number;endByte:number;text:string};
@@ -43,7 +44,7 @@ function tag(token:string):Tag{
 // Every output span maps to the exact original UTF-8 text run before entity/space decoding.
 export async function extractMaintenanceSource(sourceId:unknown,input:Uint8Array,contentType:unknown):Promise<ExtractedSource>{
   const profile=extractionProfile(sourceId);if(!profile)reject('adapter_profile_not_registered');
-  if(!(input instanceof Uint8Array)||input.byteLength<1||input.byteLength>extractionLimits.rawBytes)reject('adapter_raw_limit');
+  if(!(input instanceof Uint8Array)||input.byteLength<1||input.byteLength>sourceBodyLimit(sourceId))reject('adapter_raw_limit');
   if(typeof contentType!=='string'||!/^text\/html(?:;\s*charset\s*=\s*(?:utf-8|"utf-8"))?$/i.test(contentType))reject('adapter_profile_content_type');
   const bytes=Uint8Array.from(input);let html:string;
   // TextDecoder strips a leading UTF-8 BOM by default. Reject it in the raw

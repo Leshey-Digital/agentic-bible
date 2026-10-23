@@ -1,6 +1,7 @@
+import {sourceBodyLimit} from '../monitoring/http-registry.ts';
 import {cloudflareProseLimits,cloudflareProseModel,type ProseDraft} from './cloudflare-prose.ts';
 import {validateExtractedSource} from './extraction.ts';
-import {canonical,digest,exact,extractionLimits} from './profiles.ts';
+import {canonical,digest,exact} from './profiles.ts';
 import type {AcquiredSource} from './acquisition.ts';
 import {hostedTarget,sourceCitations} from '../hosted/targets.ts';
 
@@ -24,7 +25,7 @@ export function createSourcedDraftPreparer(ports:SourcedDraftPorts){
   const target=hostedTarget(article.articleId);
   if(!target||typeof article.baseCommit!=='string'||!/^[a-f0-9]{40}$/.test(article.baseCommit)||!sha(article.baseMarkdownSha256)||typeof article.markdown!=='string'||!article.markdown.isWellFormed()||bytes(article.markdown)>65536)fail('draft_article_pin');
   if(!Array.isArray(selections)||selections.length<1||selections.length>2)fail('draft_source_limit');
-  for(const s of selections)if(!(s?.packet?.source?.raw?.bytes instanceof Uint8Array)||s.packet.source.raw.bytes.byteLength>extractionLimits.rawBytes)fail('draft_source_limit');
+  for(const s of selections)if(!(s?.packet?.source?.raw?.bytes instanceof Uint8Array)||s.packet.source.raw.bytes.byteLength>sourceBodyLimit(s.packet.source.sourceId))fail('draft_source_limit');
   // Snapshot before the first asynchronous trusted-port call; callers cannot
   // change a pin while a verification/generation request is pending.
   const pinned=structuredClone(article),chosen=structuredClone(selections),ids=sourceCitations(pinned.markdown),seen=new Set<string>(),sources=[];

@@ -1,9 +1,10 @@
-import {httpLimits,officialSource} from './http-registry.ts';
+import {httpLimits,officialSource,sourceBodyLimit} from './http-registry.ts';
 import type {Observation} from './contracts.ts';
 
 export type HttpLastGood={mode:'http';sourceId:string;hash:string;etag:string|null;lastModified:string|null;checkedAt:number};
-export type HttpResult={ok:true;state:HttpLastGood;observation:Observation}|{ok:false;state:HttpLastGood|null;error:{code:string;retryable:boolean}};
-export class HttpError extends Error {code:string;retryable:boolean;constructor(code:string,retryable=false){super(code);this.code=code;this.retryable=retryable;}}
+export type BodyOverflow={stage:'declared'|'stream';limitBytes:number;observedBytes:number;complete:false};
+export type HttpResult={ok:true;state:HttpLastGood;observation:Observation}|{ok:false;state:HttpLastGood|null;error:{code:string;retryable:boolean;bodyOverflow?:BodyOverflow}};
+export class HttpError extends Error {code:string;retryable:boolean;readonly bodyOverflow?:BodyOverflow;constructor(code:string,retryable=false,bodyOverflow?:BodyOverflow){super(code);this.code=code;this.retryable=retryable;this.bodyOverflow=bodyOverflow;}}
 export type WebFetch=(url:string,options:{headers:Headers;signal:AbortSignal;redirect:'manual'})=>Promise<Response>;
 type Dependencies={fetch:WebFetch;clock?:()=>number};
 function validator(value:unknown,kind:'etag'|'date'):string|null {
@@ -61,12 +62,12 @@ export function createHttpPass(dependencies:Dependencies) {
           if(!['text/html','text/plain','application/json'].includes(media)||parameters.length>1||parameters.some(value=>!/^charset\s*=\s*(?:utf-8|"utf-8")$/i.test(value)))throw new HttpError('unsupported_content_type');
           if(!['identity',''].includes((response.headers.get('Content-Encoding')??'').toLowerCase()))throw new HttpError('unsupported_content_encoding');
           const declared=response.headers.get('Content-Length');let expected:number|null=null;
-          if(declared!==null){if(!/^\d+$/.test(declared)||!Number.isSafeInteger(Number(declared)))throw new HttpError('invalid_content_length');expected=Number(declared);if(expected>httpLimits.bodyBytes)throw new HttpError('body_too_large');}
+          if(declared!==null){if(!/^\d+$/.test(declared)||!Number.isSafeInteger(Number(declared)))throw new HttpError('invalid_content_length');expected=Number(declared);if(expected>sourceBodyLimit(source.id))throw new HttpError('body_too_large',false,{stage:'declared',limitBytes:sourceBodyLimit(source.id),observedBytes:expected,complete:false});}
           const etag=validator(response.headers.get('ETag'),'etag');const lastModified=validator(response.headers.get('Last-Modified'),'date');
           const reader=response.body?.getReader();if(!reader)throw new HttpError('empty_body');
           const stop=()=>{void reader.cancel().catch(()=>{});};controller.signal.addEventListener('abort',stop,{once:true});
           const chunks:Uint8Array[]=[];let length=0;
-          try{while(true){assertActive();const {value,done}=await reader.read();assertActive();if(done)break;length+=value.byteLength;if(length>httpLimits.bodyBytes)throw new HttpError('body_too_large');chunks.push(value);}}
+          try{while(true){assertActive();const {value,done}=await reader.read();assertActive();if(done)break;length+=value.byteLength;if(length>sourceBodyLimit(source.id))throw new HttpError('body_too_large',false,{stage:'stream',limitBytes:sourceBodyLimit(source.id),observedBytes:length,complete:false});chunks.push(value);}}
           finally{controller.signal.removeEventListener('abort',stop);void reader.cancel().catch(()=>{});}
           if(!length)throw new HttpError('empty_body');if(expected!==null&&length!==expected)throw new HttpError('content_length_mismatch');
           const bytes=new Uint8Array(length);let offset=0;for(const chunk of chunks){bytes.set(chunk,offset);offset+=chunk.byteLength;}
@@ -76,7 +77,7 @@ export function createHttpPass(dependencies:Dependencies) {
           return {ok:true,state,observation:{kind:!lastGood?'baseline':hash===lastGood.hash?'unchanged':'changed',hash,etag,lastModified,bytes:length}};
         }finally{cancel(response);}
       })(),interrupted]);
-    }catch(error){return {ok:false,state:lastGood,error:{code:error instanceof HttpError?error.code:controller.signal.aborted?aborted().code:'http_network_failed',retryable:error instanceof HttpError?error.retryable:true}};}
+    }catch(error){return {ok:false,state:lastGood,error:{code:error instanceof HttpError?error.code:controller.signal.aborted?aborted().code:'http_network_failed',retryable:error instanceof HttpError?error.retryable:true,...(error instanceof HttpError&&error.bodyOverflow?{bodyOverflow:error.bodyOverflow}:{})}};}
     finally{clearTimeout(timer);signal?.removeEventListener('abort',abort);}
   }
   return Object.freeze({check,requestsUsed:()=>used});

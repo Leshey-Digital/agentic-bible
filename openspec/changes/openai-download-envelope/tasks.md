@@ -1,0 +1,5 @@
+- [x] Inspect retained failure and local denial without retry.
+- [x] Implement compiled per-source envelope and overflow telemetry.
+- [x] Run focused synthetic and native receipt regressions.
+- [x] Independent review; source checkpoint follows terminal typecheck.
+- [ ] Separately authorized actual-source qualification; not claimed by synthetic tests.
