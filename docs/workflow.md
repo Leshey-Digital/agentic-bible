@@ -24,6 +24,7 @@ Link the change from its issue and draft PR. On acceptance, update current specs
 Never include credentials, private chat transcripts, customer data, or unsupported completion claims.
 
 ## Release checklist
+- [ ] Apply [Google Search and public-content governance](google-search-governance.md): record target-specific content/technical evidence and unresolved blockers; distinguish pre-release checks from planned live verification.
 - [ ] Exact reviewed commit and artifact recorded; applicable tests pass.
 - [ ] License/submission/privacy requirements resolved for enabled features.
 - [ ] Deployment authorized for the named target; resource inventory verified. For the proposed staging slice, use only agentic-bible-staging / staging.agenticbible.si; leave apex and production unchanged.
