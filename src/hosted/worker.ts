@@ -60,7 +60,7 @@ return {async fetch(request:Request,env:RuntimeEnv):Promise<Response>{
       for(const [key,value] of Object.entries(headers))secured.set(key,value);
       return new Response(response.body,{status:response.status,headers:secured});
     }
-    if(path==='/api/admin/drafts/cloudflare'||path.startsWith('/admin/drafts/')){
+    if(path==='/api/admin/drafts/cloudflare'||path==='/api/admin/drafts/source'||path.startsWith('/admin/drafts/')){
       if(!ports.contributions)return json({error:'cloudflare_draft_unconfigured'},503);
       if(url.origin!==origin||request.headers.get('sec-fetch-site')==='cross-site')return json({error:'same_origin_required'},403);
       if(!ports.verifyAdmin||!env.EDITORIAL_DB)return json({error:'hosted_admin_identity_unconfigured'},503);
@@ -75,7 +75,7 @@ return {async fetch(request:Request,env:RuntimeEnv):Promise<Response>{
       if(request.method!=='POST')return json({error:'explicit_post_required'},405);
       if(request.headers.get('origin')!==origin||request.headers.get('x-agentic-bible-request')!=='admin')return json({error:'same_origin_required'},403);
       if(!ports.cloudflareDrafts||ports.cloudflareDrafts.state!=='configured')return json({error:'cloudflare_draft_unconfigured'},503);
-      try{return json(await prepareDraftForInbox(ports.cloudflareDrafts,request,await inputJson(request,2048),env.EDITORIAL_DB,admin));}
+      try{const input=await inputJson(request,2048);if(path==='/api/admin/drafts/source')return json(await ports.cloudflareDrafts.qualifySource(request,input));return json(await prepareDraftForInbox(ports.cloudflareDrafts,request,input,env.EDITORIAL_DB,admin));}
       catch(error){if(error instanceof CloudflareDraftError)return json({error:error.code,published:false},error.status);throw error;}
     }
     if(path==='/api/admin/jev/evaluate'){

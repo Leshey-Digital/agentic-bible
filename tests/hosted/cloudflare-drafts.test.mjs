@@ -6,7 +6,7 @@ import {createHostedRuntime} from '../../src/hosted/worker.ts';
 import {adminTrust,verifySignedAdmin} from '../../src/hosted/identity.ts';
 import {createCloudflareDraftAction} from '../../src/hosted/cloudflare-drafts.ts';
 import {cloudflareProseModel} from '../../src/maintenance-adapters/cloudflare-prose.ts';
-import {document,mcp,urls} from '../maintenance-adapters/fixtures.mjs';
+import {document,mcp,openai,urls} from '../maintenance-adapters/fixtures.mjs';
 import {digest} from '../../src/maintenance-adapters/profiles.ts';
 import {SourceAdapterError} from '../../src/maintenance-adapters/profiles.ts';
 import {ledgerFixture,policy,control} from '../maintenance-currency/helpers.mjs';
@@ -44,6 +44,22 @@ test('a source-shaped error after AI dispatch remains uncertain and retains its 
  let calls=0;const x=await fixture('post-dispatch-error',{ai:{run:async()=>{calls++;throw new SourceAdapterError('body_too_large');}}});
  try{await assert.rejects(x.action.prepare(await request(),input()),{code:'cloudflare_draft_unavailable',status:503});assert.equal(calls,1);
   const row=await x.f.db.prepare('SELECT currency_state,currency_reserved FROM maintenance_proposals').first();assert.equal(row.currency_state,'uncertain');assert.ok(row.currency_reserved>0);
+ }finally{await x.f.close();}
+});
+
+test('signed source-only Worker route returns verified bounded provenance with zero AI or inbox writes',{timeout:30000},async()=>{
+ const markdown=readFileSync('src/content/articles/tool-use.md','utf8'),reviewSource=buildReviewSource({commit:'a'.repeat(40),articles:{'tool-use':{markdown,sha256:await digest(markdown)}}});
+ let fetches=0,models=0;const x=await fixture('source-only',{reviewSource,sourceSend:async url=>{fetches++;assert.equal(url,urls[openai]);return new Response(document(openai),{headers:{'Content-Type':'text/html'}});},ai:{run:async()=>{models++;throw Error('AI must be unreachable');}}});
+ try{const runtime=createHostedRuntime({verifyAdmin:r=>verifySignedAdmin(r,adminTrust(JSON.stringify(trust))),contributions:{trust:JSON.stringify(trust)},reviewSource,cloudflareDrafts:x.action}),env={EDITORIAL_DB:x.f.db,ASSETS:{fetch:async()=>new Response('unused')}};
+  const selected={...input(),sourceId:openai,citationId:'openai'};
+  async function call(body=selected,{signed=true,originHeader=origin,method='POST'}={}){const headers=new Headers((await request()).headers);headers.set('Content-Type','application/json');headers.set('Origin',originHeader);if(!signed)headers.delete('cf-access-jwt-assertion');return runtime.fetch(new Request(origin+'/api/admin/drafts/source',{method,headers,...(method==='POST'?{body:JSON.stringify(body)}:{})}),env);}
+  for(const opts of [{signed:false},{originHeader:'https://foreign.invalid'}])assert.equal((await call(selected,opts)).status,403);
+  assert.equal((await call(selected,{method:'GET'})).status,405);
+  assert.equal((await call(input())).status,400);assert.equal(fetches,0);
+  const response=await call();assert.equal(response.status,200);assert.equal(response.headers.get('cache-control'),'no-store');const result=await response.json();assert.equal(result.aiInvoked,false);assert.equal(result.published,false);assert.equal(result.source.url,urls[openai]);assert.equal(result.source.raw.hash,await digest(document(openai)));assert.deepEqual(result.source.raw.bytes,[...new TextEncoder().encode(document(openai))]);assert.equal(result.receipt.requestKey,selected.requestKey);
+  assert.equal((await x.f.db.prepare('SELECT state FROM http_check_jobs').first()).state,'succeeded');assert.equal((await x.f.db.prepare('SELECT COUNT(*) n FROM maintenance_proposals').first()).n,0);assert.equal(models,0);assert.equal(fetches,1);
+  // Editorial tables intentionally do not exist: a hidden inbox write would fail.
+  assert.equal((await call()).status,409);assert.equal(fetches,1);assert.equal(models,0);
  }finally{await x.f.close();}
 });
 

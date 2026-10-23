@@ -23,7 +23,7 @@ export function createCloudflareDraftAction(options:CloudflareDraftOptions={}){
  try{currency=currencyInput(options.currency);policy=policyInput(options.policy);if(!currency||currency.monthLimit>20_000_000)throw Error();currencyProvider(currency,'cloudflare-workers-ai','cloudflare-reported-token-usage-v1',cloudflareProseModel);}catch{currency=undefined;policy=undefined;}
  const complete=!!trust&&!!currency&&!!policy&&typeof options.db?.prepare==='function'&&typeof options.ai?.run==='function'&&typeof options.reviewSource==='function';
  const state=!complete?'unconfigured' as const:options.enabled===true?'configured' as const:'disabled' as const;
- return Object.freeze({state,async prepare(request:Request,input:unknown){
+ async function acquire(request:Request,input:unknown){
   if(state!=='configured')fail('cloudflare_draft_'+state);
   if(request.method!=='POST')fail('explicit_post_required',405);
   if(new URL(request.url).origin!==hostedOrigin||request.headers.get('origin')!==hostedOrigin||request.headers.get('x-agentic-bible-request')!=='admin'||request.headers.get('sec-fetch-site')==='cross-site')fail('same_origin_required',403);
@@ -34,7 +34,6 @@ export function createCloudflareDraftAction(options:CloudflareDraftOptions={}){
   const target=hostedTarget(selected.articleId),profile=extractionProfile(selected.sourceId);
   if(!target||!profile||!uuid(selected.requestKey)||typeof selected.citationId!=='string')fail('invalid_request',400);
   try{
-   currencyTime(currency!,Date.now());
    const source=structuredClone(await options.reviewSource!(target.articleId));fresh();
    if(source.articleId!==target.articleId||source.contentPath!==target.contentPath||!sourceCitations(source.markdown).includes(selected.citationId))fail('draft_source_mismatch',409);
    const front=/^---\n([^]*?)\n---\n/.exec(source.markdown)?.[1]??'';
@@ -52,6 +51,25 @@ export function createCloudflareDraftAction(options:CloudflareDraftOptions={}){
     }
     throw error;
    }fresh();
+   return {target,selected,source,packet,fresh};
+  }catch(error){if(error instanceof CloudflareDraftError)throw error;return fail('cloudflare_source_unavailable');}
+ }
+ return Object.freeze({state,
+  async qualifySource(request:Request,input:unknown){
+   // Source-only qualification is deliberately restricted to the distinct
+   // registered OpenAI document. No model adapter or inbox writer is reachable.
+   if(!input||typeof input!=='object'||(input as CloudflareDraftInput).sourceId!=='s-90f2bf11e4fb71c8f42ae128')fail('invalid_request',400);
+   const {source,selected,packet,fresh}=await acquire(request,input);
+   const verified=await verifyAcquiredSource(packet,{db:options.db!});fresh();
+   return {kind:'source-only-qualification' as const,requestKey:selected.requestKey,articleId:source.articleId,citationId:selected.citationId,baseCommit:source.baseCommit,baseMarkdownSha256:source.baseMarkdownSha256,
+    source:{...verified.source,raw:{...verified.source.raw,bytes:Array.from(verified.source.raw.bytes)}},receipt:verified.receipt,
+    aiInvoked:false as const,approved:false as const,published:false as const};
+  },
+  async prepare(request:Request,input:unknown){
+   try{
+   if(state!=='configured')fail('cloudflare_draft_'+state);
+   currencyTime(currency!,Date.now());
+   const {target,selected,source,packet,fresh}=await acquire(request,input);
    const adapter=createCloudflareProseAdapter({enabled:true,db:options.db,policy,currency:{enabled:true,policy:currency},inputTokenUpperBound:createCloudflareLlama32InputTokenUpperBound({rawPrompt:true}),ai:{run:(model,value)=>{fresh();return options.ai!.run(model,value);}}});
    const preparer=createSourcedDraftPreparer({verifySource:async value=>{const result=await verifyAcquiredSource(value,{db:options.db!});fresh();return result;},generate:prompt=>{fresh();return adapter.generate(prompt);}});
    const draft=await preparer.prepare({articleId:target.articleId,baseCommit:source.baseCommit,baseMarkdownSha256:source.baseMarkdownSha256,markdown:source.markdown},[{citationId:selected.citationId,packet}]);fresh();return draft;

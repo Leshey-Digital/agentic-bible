@@ -1,0 +1,5 @@
+# Authenticated source-only qualification
+
+The local executor cannot currently reach the distinct registered OpenAI source. Existing deployed acquisition reached a different source previously, so local transport failure does not establish deployed transport failure. Add a minimal private POST using the same signed editor and source/citation validation as draft preparation, but returning a verified bounded source packet without constructing a model adapter or writing an inbox suggestion.
+
+The route is limited to the already-registered OpenAI function-calling document and an existing article citation. It retains the 32 KiB raw, 8 KiB evidence, two-second fetch and existing D1 request accounting limits. No arbitrary URL, proxy behavior, source-profile expansion, global limit increase, AI policy change, new secret or public route is introduced. Existing failed receipts remain immutable. Deployment is isolated staging under the existing authorized workflow; real invocation requires the parent's authenticated editor browser.
