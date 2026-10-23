@@ -18,17 +18,17 @@ function selection(value:unknown):Selection{
   return {sourceId:profile.sourceId,requestKey:value.requestKey};
 }
 function timestamp(clock:()=>number){const now=clock();if(!Number.isSafeInteger(now)||now<0||now>253402300799999)reject('adapter_invalid_clock');return now;}
-type ReceiptRow={source_id:string;state:string;attempts:number;result:string;finished_token:string;token:string;outcome:string;attempt:number;day:number;actual_bytes:number;budget_day:number;used:number;day_count:number};
+type ReceiptRow={source_id:string;state:string;attempts:number;result:string;finished_token:string;token:string;outcome:string;attempt:number;day:number;actual_bytes:number|null;actual_download_bytes?:number|null;budget_day:number;used:number;day_count:number};
 async function receiptFor(source:ExtractedSource,key:string,db:SqlDatabase,now:number,historicalReplay=false):Promise<AcquisitionReceipt>{
   let row:ReceiptRow|null;
-  try{row=await db.prepare(`SELECT j.source_id,j.state,j.attempts,j.result,j.finished_token,r.token,r.outcome,r.attempt,r.day,r.actual_bytes,b.day AS budget_day,b.used,
+  try{row=await db.prepare(`SELECT j.source_id,j.state,j.attempts,j.result,j.finished_token,r.token,r.outcome,r.attempt,r.day,r.*,b.day AS budget_day,b.used,
     (SELECT COUNT(*) FROM http_request_reservations charged WHERE charged.day=r.day) AS day_count
     FROM http_check_jobs j JOIN http_request_reservations r ON r.token=j.finished_token AND r.request_key=j.request_key JOIN http_request_budget b ON b.id=1 WHERE j.request_key=?`).bind(key).first<ReceiptRow>();}
   catch{return reject('adapter_accounting_unavailable');}
   if(!row||row.source_id!==source.sourceId||row.state!=='succeeded'||row.outcome!=='succeeded'||!uuid(row.token)||row.finished_token!==row.token||row.attempt!==row.attempts||!Number.isSafeInteger(row.attempt)||row.attempt<1||row.attempt>3||!Number.isSafeInteger(row.day)||row.day<0||!Number.isSafeInteger(row.budget_day)||row.budget_day<row.day||!Number.isSafeInteger(row.used)||row.used<0||row.used>20||!Number.isSafeInteger(row.day_count)||row.day_count<1||row.day_count>20||(row.budget_day===row.day&&row.used<row.day_count))reject('adapter_uncharged_body');
   let result:Extract<HttpResult,{ok:true}>&{status:string};
   try{result=JSON.parse(row.result);}catch{return reject('adapter_invalid_http_receipt');}
-  if(result?.status!=='succeeded'||result.ok!==true||result.state?.mode!=='http'||result.state.sourceId!==source.sourceId||result.state.hash!==source.raw.hash||result.observation?.hash!==source.raw.hash||!['baseline','changed','unchanged'].includes(result.observation.kind)||result.observation.bytes!==source.raw.bytes.byteLength||row.actual_bytes!==source.raw.bytes.byteLength)reject('adapter_http_receipt_mismatch');
+  if(result?.status!=='succeeded'||result.ok!==true||result.state?.mode!=='http'||result.state.sourceId!==source.sourceId||result.state.hash!==source.raw.hash||result.observation?.hash!==source.raw.hash||!['baseline','changed','unchanged'].includes(result.observation.kind)||result.observation.bytes!==source.raw.bytes.byteLength||(row.actual_download_bytes??row.actual_bytes)!==source.raw.bytes.byteLength)reject('adapter_http_receipt_mismatch');
   const observedAt=result.state.checkedAt;
   if(!Number.isSafeInteger(observedAt)||observedAt<0||observedAt>253402300799999)reject('adapter_stale_observation');
   if(!historicalReplay&&(observedAt>now||now-observedAt>86400000))reject('adapter_stale_observation');

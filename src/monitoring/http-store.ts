@@ -56,6 +56,11 @@ export class HttpObservationStore {
     const state=result.ok?'succeeded':retry?'retry':'dead';const due=now+1000*2**(lease.attempt-1);
     const receipt=JSON.stringify({status:state,...(retry?{retryAt:due}:{}),...result});
     if(receipt.length>2048)throw new HttpStoreError('http_receipt_too_large');
+    const reservation=await this.db.prepare('SELECT * FROM http_request_reservations WHERE token=?').bind(lease.token).first<Record<string,unknown>>();
+    const extended=!!reservation&&Object.hasOwn(reservation,'actual_download_bytes');
+    const downloadBytes=result.ok?result.observation.bytes:null;
+    if(downloadBytes!==null&&downloadBytes>32768&&!extended)throw new HttpStoreError('http_download_migration_required');
+    const legacyBytes=downloadBytes!==null&&downloadBytes<=32768?downloadBytes:null;
     const statements=[];
     if(result.ok){
       if(result.state.sourceId!==lease.sourceId||result.state.mode!=='http')throw new HttpStoreError('invalid_http_result');
@@ -67,9 +72,9 @@ export class HttpObservationStore {
       WHERE request_key=? AND state='running' AND lease_token=? AND lease_until>?
       ${result.ok?'AND EXISTS(SELECT 1 FROM http_source_state WHERE source_id=? AND last_token=?)':''}`)
       .bind(state,receipt,due,lease.token,lease.key,lease.token,now,...(result.ok?[lease.sourceId,lease.token]:[])),
-      this.db.prepare(`UPDATE http_request_reservations SET outcome=?,actual_bytes=? WHERE token=? AND outcome='reserved'
+      this.db.prepare(`UPDATE http_request_reservations SET outcome=?,actual_bytes=?${extended?',actual_download_bytes=?':''} WHERE token=? AND outcome='reserved'
         AND EXISTS(SELECT 1 FROM http_check_jobs WHERE request_key=? AND finished_token=?)`)
-        .bind(result.ok?'succeeded':'failed',result.ok?result.observation.bytes:null,lease.token,lease.key,lease.token));
+        .bind(result.ok?'succeeded':'failed',legacyBytes,...(extended?[downloadBytes]:[]),lease.token,lease.key,lease.token));
     const changes=await this.db.batch(statements);return changes[result.ok?1:0].meta.changes===1;
   }
   async status(key:string,now:number=Date.now()){

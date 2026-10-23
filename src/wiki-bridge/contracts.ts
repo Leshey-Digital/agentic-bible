@@ -46,7 +46,7 @@ export function bridgeInput(value:unknown):BridgeCommand{
   if(new Set(evidence.map(x=>x.citationId)).size!==evidence.length||new Set(evidence.map(x=>x.sourceId)).size!==evidence.length||new Set(evidence.map(x=>x.receiptKey)).size!==evidence.length)reject('duplicate_bridge_evidence');
   return {schemaVersion:value.schemaVersion as 1|2,kind:'apply',mode:'local-synthetic-only',eventId,originalMarkdownHash:value.originalMarkdownHash,expectedSite,expectedPublisher,revision,evidence};
 }
-type Row={source_id:string;state:string;attempts:number;result:string;finished_token:string;token:string;outcome:string;attempt:number;day:number;actual_bytes:number;budget_day:number;used:number;day_count:number};
+type Row={source_id:string;state:string;attempts:number;result:string;finished_token:string;token:string;outcome:string;attempt:number;day:number;actual_bytes:number|null;actual_download_bytes?:number|null;budget_day:number;used:number;day_count:number};
 export async function validateEvidence(command:Pick<Apply,'evidence'>,db:SqlDatabase,sourceDirectory:string){
   const bindings:Binding[]=[];const files:Record<string,Buffer>={};const extractions:Record<string,Awaited<ReturnType<typeof extractMaintenanceSource>>>={};
   // Read every bounded file before issuing any publisher/build/journal operation.
@@ -56,14 +56,14 @@ export async function validateEvidence(command:Pick<Apply,'evidence'>,db:SqlData
     try{new TextDecoder('utf-8',{fatal:true}).decode(bytes);}catch{reject('invalid_source_encoding');}files[evidence.bodyHash]=bytes;if(evidence.schemaVersion===2){const extracted=await extractMaintenanceSource(evidence.sourceId,bytes,evidence.contentType);if(extracted.raw.hash!==evidence.bodyHash||extracted.profileId!==evidence.profileId||extracted.evidence.hash!==evidence.extractedHash)reject('source_extraction_mismatch');extractions[evidence.bodyHash]=extracted;}
   }
   for(const evidence of command.evidence){
-    let row:Row|null;try{row=await db.prepare(`SELECT j.source_id,j.state,j.attempts,j.result,j.finished_token,r.token,r.outcome,r.attempt,r.day,r.actual_bytes,b.day AS budget_day,b.used,
+    let row:Row|null;try{row=await db.prepare(`SELECT j.source_id,j.state,j.attempts,j.result,j.finished_token,r.token,r.outcome,r.attempt,r.day,r.*,b.day AS budget_day,b.used,
       (SELECT COUNT(*) FROM http_request_reservations charged WHERE charged.day=r.day) AS day_count
       FROM http_check_jobs j JOIN http_request_reservations r ON r.token=j.finished_token AND r.request_key=j.request_key JOIN http_request_budget b ON b.id=1 WHERE j.request_key=?`).bind(evidence.receiptKey).first<Row>();}catch{return reject('evidence_accounting_unavailable');}
     if(!row||row.state!=='succeeded'||row.outcome!=='succeeded'||row.source_id!==evidence.sourceId||row.finished_token!==row.token||row.attempt!==row.attempts||row.attempt<1||row.attempt>3||!Number.isSafeInteger(row.day)||row.budget_day<row.day||row.used<0||row.used>20||row.day_count<1||row.day_count>20||(row.budget_day===row.day&&row.used<row.day_count))reject('uncharged_observation');
     let receipt;try{receipt=JSON.parse(row.result);}catch{return reject('invalid_observation_receipt');}
     if(receipt?.status!=='succeeded'||receipt.ok!==true||receipt.state?.mode!=='http'||receipt.state.sourceId!==evidence.sourceId||receipt.state.hash!==evidence.bodyHash||receipt.observation?.hash!==evidence.bodyHash||!Number.isSafeInteger(receipt.state.checkedAt)||receipt.state.checkedAt<0)reject('observation_hash_mismatch');
     if(!['baseline','changed','unchanged'].includes(receipt.observation.kind))reject('unsupported_304_evidence');
-    const bytes=files[evidence.bodyHash].length;if(row.actual_bytes!==bytes||receipt.observation.bytes!==bytes)reject('observation_length_mismatch');
+    const bytes=files[evidence.bodyHash].length;if((row.actual_download_bytes??row.actual_bytes)!==bytes||receipt.observation.bytes!==bytes)reject('observation_length_mismatch');
     if(evidence.schemaVersion===2)await verifyAcquiredSource({source:extractions[evidence.bodyHash],receipt:{requestKey:evidence.receiptKey,observedAt:receipt.state.checkedAt,reservationToken:row.token,day:row.day,attempt:row.attempt}},{db,historicalReplay:true});
     bindings.push({...evidence,bytes,observedAt:receipt.state.checkedAt,reservationToken:row.token,day:row.day,attempt:row.attempt});delete (bindings.at(-1) as Binding&{file?:string}).file;
   }

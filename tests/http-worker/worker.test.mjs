@@ -25,7 +25,7 @@ test('actual workerd/D1 HTTP observations survive restart with atomic budgets, r
   try{
     await start();
     // Apply the real migration stack, then assert the HTTP migration preserves populated prior data.
-    for(const name of readdirSync('migrations').filter(name=>name.endsWith('.sql')&&name!=='0005_http_observations.sql').sort()){
+    for(const name of readdirSync('migrations').filter(name=>name.endsWith('.sql')&&!['0005_http_observations.sql','0026_http_download_envelope.sql'].includes(name)).sort()){
       for(const statement of migrationStatements(readFileSync('migrations/'+name,'utf8')))await sql(statement);
     }
     await sql("INSERT INTO rate_windows(client_hash,window,count) VALUES('synthetic-http-upgrade',1,2)");
@@ -33,6 +33,8 @@ test('actual workerd/D1 HTTP observations survive restart with atomic budgets, r
     const before=Object.fromEntries(await Promise.all(tables.map(async table=>[table,await rows(table)])));
     for(const statement of migrationStatements(readFileSync('migrations/0005_http_observations.sql','utf8')))await sql(statement);
     for(const table of tables)assert.deepEqual(await rows(table),before[table]);
+    // The additive download column depends on the HTTP table created above.
+    for(const statement of migrationStatements(readFileSync('migrations/0026_http_download_envelope.sql','utf8')))await sql(statement);
     assert.deepEqual(await(await mf.dispatchFetch('http://localhost/probe')).json(),{unsupported:true,lookupCalled:false});assert.equal(calls.length,0);calls=[];
     for(const id of ['https://127.0.0.1/','https://169.254.169.254/',httpSources[0].url,'https://user:pass@developers.openai.com/'])assert.equal((await action(id,key())).status,503);
     assert.equal(calls.length,0);assert.equal((await rows('http_check_jobs')).length,0);
