@@ -5,3 +5,5 @@
 - Given a conditional unused Search feature, record not applicable with a reason.
 - Given deployment-only or future field evidence, retain its unverified state and planned follow-up rather than claiming success.
 - Governance adoption does not certify current pages or authorize deployment.
+
+- Direct implementation from planning through content/schema, URL/discovery, rendering/navigation and shared metadata defaults, using concrete Agentic Bible examples and focused development checks. These directions are not claims of existing capability or live acceptance. Release gates follow incremental verification.
