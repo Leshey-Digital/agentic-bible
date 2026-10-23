@@ -2,6 +2,8 @@
 
 Use a lightweight OpenSpec-style folder convention without requiring an external framework installation. [Current product specification](../openspec/specs/product.md) describes intended accepted product direction; implementation status must remain explicit.
 
+For public-content, route or template work, apply [SEO-by-design implementation guidance](google-search-governance.md#seo-by-design-implementation-instructions) during planning and development: record the reader need, URL/discovery decision, content/provenance model, shared rendering defaults and focused checks. Release gates confirm that work rather than introducing it at the end.
+
 For each material change create openspec/changes/<slug>/ with:
 - proposal.md: problem, outcome, scope/non-goals, options, dependencies, costs, risks and decisions needed.
 - tasks.md: checkable implementation/verification steps and actual status.
@@ -24,6 +26,7 @@ Link the change from its issue and draft PR. On acceptance, update current specs
 Never include credentials, private chat transcripts, customer data, or unsupported completion claims.
 
 ## Release checklist
+- [ ] Apply [Google Search and public-content governance](google-search-governance.md): record target-specific content/technical evidence and unresolved blockers; distinguish pre-release checks from planned live verification.
 - [ ] Exact reviewed commit and artifact recorded; applicable tests pass.
 - [ ] License/submission/privacy requirements resolved for enabled features.
 - [ ] Deployment authorized for the named target; resource inventory verified. For the proposed staging slice, use only agentic-bible-staging / staging.agenticbible.si; leave apex and production unchanged.

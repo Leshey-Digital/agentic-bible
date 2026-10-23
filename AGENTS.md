@@ -1,5 +1,7 @@
 # Agent instructions
 
+Apply [Google Search and public-content governance](docs/google-search-governance.md) to public content and releases. Distinguish Google eligibility/spam requirements from recommendations adopted as the owner quality baseline. Record passed, failed, unverified and not-applicable evidence; never infer certification from this policy.
+
 1. Read README, docs/decisions.md, and the affected specification before editing. Proposed choices are not implemented facts or founder approvals.
 2. Check the actual branch and remote state. Preserve unrelated work. Use a focused branch and draft PR; never force-push, merge, or deploy without applicable authorization.
 3. For behavior changes, write a small openspec/changes/<slug>/ proposal, tasks, and spec delta using docs/workflow.md. Update current specs when the accepted change lands.

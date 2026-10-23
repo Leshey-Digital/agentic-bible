@@ -15,3 +15,7 @@ The founder approved open-source direction and a $10 monthly operating target, M
 - Automatically publish valid articles and flag those needing human admin review afterward. Preserve evidence, correction history, audit identity and an emergency off switch. Policy implementation is pending; no GitHub protection rule or publishing pipeline is implied.
 
 Open-source intent does not select legal terms. Before public contributions: select separate code/content license treatment as appropriate, publish submission terms and attribution rules, choose moderation and private security contacts, and establish retention/deletion policy.
+
+## Public search and content quality
+
+The owner requires the [Google Search and public-content governance standard](docs/google-search-governance.md) throughout planning, publication, release and maintenance. Its evidence requirements apply to automatic and manual work. Adoption is a policy commitment, not certification of existing content or permission to deploy.
