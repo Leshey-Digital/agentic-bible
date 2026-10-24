@@ -1,0 +1,9 @@
+# Added private draft recovery requirements
+
+- A signed private inbox generation request claims its exact owner and selection before any source or model dispatch. A duplicate unsaved request requires explicit recovery and makes no new calls. The immutable validated prompt, article/source receipt pins, output-token bound and derived generation identity must be durable before inference.
+- Explicit POST `/api/admin/drafts/recover` accepts only the original request ID. Fresh signed-admin, same-origin and request-header checks apply; another owner receives no record. A read/GET never saves a draft.
+- Recovery uses only the server checkpoint and existing ready/complete, settled Cloudflare prose packet. Verify packet/response/request hashes, model, token bound, usage/cost, original immutable currency history, base Markdown and selected source/citation/receipt pins. A current expired policy or unconfigured AI port cannot prevent recovery of confirmed paid output. No active policy is renewed.
+- Missing/uncertain usage, unconfirmed output, malformed/tampered context, failed authority or stale authentication cannot produce a recovered inbox row or change spend. Recovery has no source/provider port and accepts no draft payload.
+- A failed inbox transaction is recoverable after real D1 restart. A lost committed response and simultaneous recovery return one submission with one audit event, without another source/model call or approval/publication.
+- The private editor shows and retains the original request ID across reload when storage is available and provides an explicit recovery control. Failure retains that ID; recovery does not automatically start a new draft.
+- Migration 0027 is required. Missing schema and the sixteen-row lifetime cap fail before fetching. Failed or interrupted claims remain retained; no cleanup/reset authority is added.

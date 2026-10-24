@@ -1,7 +1,7 @@
 import {inspectSourceAttempt} from './source-attempt.ts';
 import {CloudflareDraftError} from './cloudflare-drafts.ts';
-import {prepareDraftForInbox} from './cloudflare-draft-inbox.ts';
-import {draftAdminHtml,draftAdminJs,sourceAttemptJs} from './cloudflare-draft-admin.ts';
+import {prepareDraftForInbox,recoverDraftForInbox} from './cloudflare-draft-inbox.ts';
+import {draftAdminHtml,draftAdminJs,sourceAttemptJs,draftRecoveryJs} from './cloudflare-draft-admin.ts';
 import {ProposalError,uuid,type Ports,type RuntimeEnv} from './contracts.ts';
 import {proposeGitHubCorrection} from './github.ts';
 import {runtimeRelease} from '../release/public.ts';
@@ -61,7 +61,7 @@ return {async fetch(request:Request,env:RuntimeEnv):Promise<Response>{
       for(const [key,value] of Object.entries(headers))secured.set(key,value);
       return new Response(response.body,{status:response.status,headers:secured});
     }
-    if(path==='/api/admin/drafts/cloudflare'||path==='/api/admin/drafts/source'||path.startsWith('/api/admin/drafts/attempt/')||path.startsWith('/admin/drafts/')){
+    if(path==='/api/admin/drafts/recover'||path==='/api/admin/drafts/cloudflare'||path==='/api/admin/drafts/source'||path.startsWith('/api/admin/drafts/attempt/')||path.startsWith('/admin/drafts/')){
       if(!ports.contributions)return json({error:'cloudflare_draft_unconfigured'},503);
       if(url.origin!==origin||request.headers.get('sec-fetch-site')==='cross-site')return json({error:'same_origin_required'},403);
       if(!ports.verifyAdmin||!env.EDITORIAL_DB)return json({error:'hosted_admin_identity_unconfigured'},503);
@@ -70,7 +70,7 @@ return {async fetch(request:Request,env:RuntimeEnv):Promise<Response>{
       if(url.search)return json({error:'invalid_request'},400);
       if(path.startsWith('/admin/drafts/')){
         if(request.method!=='GET')return json({error:'method_not_allowed'},405);
-        const asset=path==='/admin/drafts/'?[draftAdminHtml,'text/html; charset=utf-8']:path==='/admin/drafts/app.js'?[draftAdminJs+sourceAttemptJs,'text/javascript; charset=utf-8']:null;
+        const asset=path==='/admin/drafts/'?[draftAdminHtml,'text/html; charset=utf-8']:path==='/admin/drafts/app.js'?[draftAdminJs+sourceAttemptJs+draftRecoveryJs,'text/javascript; charset=utf-8']:null;
         return asset?new Response(asset[0],{headers:{...headers,'Content-Type':asset[1]}}):json({error:'not_found'},404);
       }
       if(path.startsWith('/api/admin/drafts/attempt/')){
@@ -80,6 +80,10 @@ return {async fetch(request:Request,env:RuntimeEnv):Promise<Response>{
       }
       if(request.method!=='POST')return json({error:'explicit_post_required'},405);
       if(request.headers.get('origin')!==origin||request.headers.get('x-agentic-bible-request')!=='admin')return json({error:'same_origin_required'},403);
+      if(path==='/api/admin/drafts/recover'){
+        try{const input=await inputJson(request,128);if(!input||typeof input!=='object'||Array.isArray(input)||Object.keys(input).join(',')!=='requestKey'||!uuid(input.requestKey))return json({error:'invalid_request'},400);return json(await recoverDraftForInbox(request,input.requestKey,env.EDITORIAL_DB,admin));}
+        catch(error){if(error instanceof CloudflareDraftError)return json({error:error.code,published:false},error.status);throw error;}
+      }
       if(!ports.cloudflareDrafts||ports.cloudflareDrafts.state!=='configured')return json({error:'cloudflare_draft_unconfigured'},503);
       try{const input=await inputJson(request,2048);if(path==='/api/admin/drafts/source')return json(await ports.cloudflareDrafts.qualifySource(request,input));return json(await prepareDraftForInbox(ports.cloudflareDrafts,request,input,env.EDITORIAL_DB,admin));}
       catch(error){if(error instanceof CloudflareDraftError)return json({error:error.code,published:false},error.status);throw error;}
