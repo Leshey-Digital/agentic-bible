@@ -19,10 +19,23 @@ test('article actions and native contents support keyboard and reduced motion',a
   await actions.getByRole('link',{name:'Revision history'}).click();
   await expect(page.locator('#revision')).toBeInViewport();
   await expect(page.locator('#revision a[data-source-commit]')).toHaveAttribute('href',/\/commits\/[a-f0-9]{40}\/src\/content\/articles\/tool-use\.md$/);
-  await actions.getByRole('link',{name:'Contribution options'}).click();
+  await actions.getByRole('link',{name:'Correction options'}).click();
   await expect(page).toHaveURL(/\/contribute\/\?article=tool-use$/);
-  await expect(page.locator('#intake-status')).toContainText('Public submissions are on hold');
-  await expect(page.getByLabel('What needs attention?')).toBeDisabled();
+  await expect(page.locator('#intake-status')).toContainText('Reader submissions are currently closed');
+  await expect(page.locator('#article-context')).toBeVisible();
+  await expect(page.locator('#context-title')).toHaveText('Tool use');
+  await expect(page.locator('#context-sources')).toHaveAttribute('href','/articles/tool-use/#sources');
+  await expect(page.locator('#context-revision')).toHaveAttribute('href','/articles/tool-use/#revision');
+  await expect(page.locator('#contribution-form')).toBeHidden();
+});
+
+test('an explicitly enabled local status reveals the existing contribution form',async({page})=>{
+  await page.route('**/api/editorial/status',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({enabled:true,mode:'local-synthetic-only'})}));
+  await page.goto('/contribute/?article=computer-use-agents');
+  await expect(page.locator('#contribution-form')).toBeVisible();
+  await expect(page.getByLabel('What needs attention?')).toBeEnabled();
+  await expect(page.getByLabel('Article',{exact:true})).toHaveValue('computer-use-agents');
+  await expect(page.locator('#intake-status')).toContainText('Local synthetic preview only');
 });
 
 test('narrow, tablet and desktop reading keep labelled navigation and bounded prose',async({page},info)=>{

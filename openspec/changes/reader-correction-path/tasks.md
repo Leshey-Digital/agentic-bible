@@ -1,0 +1,5 @@
+- [x] Verify the existing public copy, form visibility, article context handling, and noindex policy before editing.
+- [x] Add article-specific source/revision context and accurately label the closed reader path.
+- [x] Keep the existing form hidden until its current local or hosted status check enables it.
+- [x] Add focused static and browser regression coverage for closed and enabled flows.
+- [x] Run focused validation and report exact checks and remaining limits.

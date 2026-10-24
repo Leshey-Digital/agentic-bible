@@ -8,9 +8,21 @@ const send = document.querySelector<HTMLButtonElement>('#send-suggestion')!;
 const requestKey = document.querySelector<HTMLInputElement>('#request-key')!;
 const renew = document.querySelector<HTMLButtonElement>('#renew-reference')!;
 const recoveryHelp = document.querySelector<HTMLElement>('#draft-recovery')!;
+const articleContext = document.querySelector<HTMLElement>('#article-context')!;
+const contextTitle = document.querySelector<HTMLElement>('#context-title')!;
+const contextSources = document.querySelector<HTMLAnchorElement>('#context-sources')!;
+const contextRevision = document.querySelector<HTMLAnchorElement>('#context-revision')!;
 const draftKey = 'agentic-bible:synthetic-suggestion:v1';
 const names = ['articleId', 'kind', 'message', 'sourceUrl', 'requestKey'] as const;
 const control = (name: string) => form.elements.namedItem(name) as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
+function showArticleContext(id: string) {
+  const option = [...control('articleId').querySelectorAll<HTMLOptionElement>('option')].find(item => item.value === id);
+  if (!option || !/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/.test(id)) { articleContext.hidden = true; return; }
+  contextTitle.textContent = option.textContent ?? id;
+  contextSources.href = `/articles/${id}/#sources`;
+  contextRevision.href = `/articles/${id}/#revision`;
+  articleContext.hidden = false;
+}
 let sendLabel = 'Send suggestion';
 let inboxDescription = 'It is available in the local editorial inbox.';
 let recoveryNeeded = false;
@@ -29,7 +41,10 @@ try {
   }
 } catch { /* A blocked or malformed local draft must not break the form. */ }
 const article = new URLSearchParams(location.search).get('article');
-if (!restoredArticle && article && [...control('articleId').querySelectorAll('option')].some(option => (option as HTMLOptionElement).value === article)) control('articleId').value = article;
+const articleIsKnown = !!article && [...control('articleId').querySelectorAll('option')].some(option => (option as HTMLOptionElement).value === article);
+if (!restoredArticle && articleIsKnown) control('articleId').value = article!;
+if (restoredArticle || articleIsKnown) showArticleContext(control('articleId').value);
+control('articleId').addEventListener('change', () => showArticleContext(control('articleId').value));
 function persist() {
   try { sessionStorage.setItem(draftKey, JSON.stringify({ ...Object.fromEntries(names.map(name => [name, control(name).value])), recoveryNeeded })); } catch { /* Browser storage can be unavailable; in-memory form remains usable. */ }
 }
@@ -52,7 +67,7 @@ async function init() {
     const state = await response.json();
     if (!response.ok) return;
     if (state.mode === 'hosted-contributions' && state.publicIntake === true && state.policy && policyPath(state.policy.termsPath) && policyPath(state.policy.privacyPath)) {
-      fields.disabled = false; sendLabel = 'Send suggestion'; send.textContent = sendLabel; inboxDescription = 'It is available for editorial review.';
+      form.hidden = false; fields.disabled = false; sendLabel = 'Send suggestion'; send.textContent = sendLabel; inboxDescription = 'It is available for editorial review.';
       message.textContent = 'Suggestions enter editorial review and do not directly change an article. No email delivery is configured.';
       for (const item of document.querySelectorAll<HTMLElement>('[data-local-intake]')) item.hidden = true;
       const policy = document.querySelector<HTMLElement>('#hosted-intake-policy')!; policy.hidden = false;
@@ -61,7 +76,7 @@ async function init() {
       return;
     }
     if (!state.enabled || state.mode !== 'local-synthetic-only') return;
-    fields.disabled = false; sendLabel = 'Send local suggestion'; send.textContent = sendLabel;
+    form.hidden = false; fields.disabled = false; sendLabel = 'Send local suggestion'; send.textContent = sendLabel;
     for (const item of document.querySelectorAll<HTMLElement>('[data-local-intake]')) item.hidden = false;
     document.querySelector<HTMLElement>('#editorial-inbox-link')!.hidden = false;
     message.textContent = 'Local synthetic preview only. Saved suggestions go to the local editorial inbox. No email is sent.';

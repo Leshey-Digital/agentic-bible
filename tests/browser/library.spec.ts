@@ -157,8 +157,8 @@ test('articles, sources and browse fallback work without JavaScript', async ({ b
 
 test('static staging keeps public intake closed and has no exposed admin page', async ({ page, request }) => {
   await page.goto('/contribute/');
-  await expect(page.getByLabel('What needs attention?')).toBeDisabled();
-  await expect(page.locator('#intake-status')).toContainText('Public submissions are on hold');
+  await expect(page.locator('#contribution-form')).toBeHidden();
+  await expect(page.locator('#intake-status')).toContainText('Reader submissions are currently closed');
   await expect(page.locator('#editorial-inbox-link')).toBeHidden();
   expect((await request.get('/admin/')).status()).toBe(404);
 });
