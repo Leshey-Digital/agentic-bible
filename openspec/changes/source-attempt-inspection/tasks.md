@@ -1,0 +1,4 @@
+- [x] Implement bounded authenticated receipt lookup and visible UI.
+- [x] Run native D1 and browser checks plus relevant regressions.
+- [x] Independent Luna 6 High review accepted the boundary; clarify charged claims rather than confirmed fetches. Remote source preservation follows.
+- [ ] Live acceptance remains separate; no deployment authorized by this source checkpoint.

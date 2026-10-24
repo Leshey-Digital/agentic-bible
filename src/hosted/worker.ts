@@ -1,6 +1,7 @@
+import {inspectSourceAttempt} from './source-attempt.ts';
 import {CloudflareDraftError} from './cloudflare-drafts.ts';
 import {prepareDraftForInbox} from './cloudflare-draft-inbox.ts';
-import {draftAdminHtml,draftAdminJs} from './cloudflare-draft-admin.ts';
+import {draftAdminHtml,draftAdminJs,sourceAttemptJs} from './cloudflare-draft-admin.ts';
 import {ProposalError,uuid,type Ports,type RuntimeEnv} from './contracts.ts';
 import {proposeGitHubCorrection} from './github.ts';
 import {runtimeRelease} from '../release/public.ts';
@@ -60,7 +61,7 @@ return {async fetch(request:Request,env:RuntimeEnv):Promise<Response>{
       for(const [key,value] of Object.entries(headers))secured.set(key,value);
       return new Response(response.body,{status:response.status,headers:secured});
     }
-    if(path==='/api/admin/drafts/cloudflare'||path==='/api/admin/drafts/source'||path.startsWith('/admin/drafts/')){
+    if(path==='/api/admin/drafts/cloudflare'||path==='/api/admin/drafts/source'||path.startsWith('/api/admin/drafts/attempt/')||path.startsWith('/admin/drafts/')){
       if(!ports.contributions)return json({error:'cloudflare_draft_unconfigured'},503);
       if(url.origin!==origin||request.headers.get('sec-fetch-site')==='cross-site')return json({error:'same_origin_required'},403);
       if(!ports.verifyAdmin||!env.EDITORIAL_DB)return json({error:'hosted_admin_identity_unconfigured'},503);
@@ -69,8 +70,13 @@ return {async fetch(request:Request,env:RuntimeEnv):Promise<Response>{
       if(url.search)return json({error:'invalid_request'},400);
       if(path.startsWith('/admin/drafts/')){
         if(request.method!=='GET')return json({error:'method_not_allowed'},405);
-        const asset=path==='/admin/drafts/'?[draftAdminHtml,'text/html; charset=utf-8']:path==='/admin/drafts/app.js'?[draftAdminJs,'text/javascript; charset=utf-8']:null;
+        const asset=path==='/admin/drafts/'?[draftAdminHtml,'text/html; charset=utf-8']:path==='/admin/drafts/app.js'?[draftAdminJs+sourceAttemptJs,'text/javascript; charset=utf-8']:null;
         return asset?new Response(asset[0],{headers:{...headers,'Content-Type':asset[1]}}):json({error:'not_found'},404);
+      }
+      if(path.startsWith('/api/admin/drafts/attempt/')){
+        if(request.method!=='GET')return json({error:'method_not_allowed'},405);
+        const key=path.slice('/api/admin/drafts/attempt/'.length);if(!uuid(key))return json({error:'invalid_request'},400);
+        const attempt=await inspectSourceAttempt(env.EDITORIAL_DB,key);return attempt?json(attempt):json({error:'source_attempt_not_found'},404);
       }
       if(request.method!=='POST')return json({error:'explicit_post_required'},405);
       if(request.headers.get('origin')!==origin||request.headers.get('x-agentic-bible-request')!=='admin')return json({error:'same_origin_required'},403);
