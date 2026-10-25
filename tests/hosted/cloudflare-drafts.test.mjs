@@ -17,7 +17,7 @@ const trust={issuer:'https://synthetic-draft.invalid',audience:'synthetic-draft'
 async function request(overrides={},claims={}){const now=Math.floor(Date.now()/1000),enc=x=>Buffer.from(JSON.stringify(x)).toString('base64url'),data=enc({alg:'RS256',kid:'test'})+'.'+enc({iss:trust.issuer,aud:trust.audience,sub:'synthetic-owner',iat:now,exp:now+300,...claims});const token=data+'.'+Buffer.from(await crypto.subtle.sign('RSASSA-PKCS1-v1_5',pair.privateKey,Buffer.from(data))).toString('base64url');return new Request(origin+'/api/admin/drafts/cloudflare',{method:'POST',headers:{Origin:origin,'X-Agentic-Bible-Request':'admin','cf-access-jwt-assertion':token},...overrides});}
 const input=()=>({articleId:'tool-use',citationId:'mcp-tools',sourceId:mcp,requestKey:crypto.randomUUID()});
 async function fixture(label,overrides={}){
- const f=await ledgerFixture('hosted-ai-'+label);for(const sql of readFileSync('migrations/0005_http_observations.sql','utf8').replace(/--[^\n]*/g,'').split(';').filter(s=>s.trim()))await f.db.prepare(sql).run();
+ const f=await ledgerFixture('hosted-ai-'+label);for(const sql of readFileSync('migrations/0005_http_observations.sql','utf8').replace(/--[^\n]*/g,'').match(/\s*CREATE TRIGGER[\s\S]*?END;|[^;]+;/gi)||[])await f.db.prepare(sql).run();
  const markdown=`---\ntitle: Tool use\nsources:\n  - id: mcp-tools\n    url: ${urls[mcp]}\n---\n\nA controlled article about validated tool use.\n`,source={articleId:'tool-use',contentPath:'src/content/articles/tool-use.md',baseCommit:'a'.repeat(40),baseMarkdownSha256:await digest(markdown),markdown,citations:['mcp-tools']};
  const now=Date.now(),p=policy({monthLimit:18_000_000,monthBaseline:0,dayBaseline:0,price:{id:'controlled-cloudflare-rate',provider:'cloudflare-workers-ai',model:cloudflareProseModel,tokenizer:'cloudflare-reported-token-usage-v1',basis:'input-output-tokens',inputPerMillion:27000,outputPerMillion:201000,requestFee:0,validFrom:now-86400000,validUntil:now+86400000}});let http=0,ai=0;
  const options={enabled:true,trust:JSON.stringify(trust),db:f.db,currency:control(p),policy:{...demonstrationPolicy,maxInputTokens:8192,maxOutputTokens:2048,runCost:10240,dayCost:81920,monthCost:163840},reviewSource:async()=>source,sourceSend:async url=>{http++;assert.equal(url,urls[mcp]);assert.equal((await f.db.prepare("SELECT COUNT(*) n FROM http_request_reservations WHERE outcome='reserved'").first()).n,1);return new Response(document(),{headers:{'Content-Type':'text/html'}});},ai:{run:async(_model,value)=>{ai++;assert.equal(value.raw,true);assert.equal((await f.db.prepare("SELECT COUNT(*) n FROM maintenance_proposals WHERE currency_state='reserved'").first()).n,1);return {response:JSON.stringify({note:'Clarify that a caller validates requested actions before executing them.',citationId:'mcp-tools'}),usage:{prompt_tokens:100,completion_tokens:30,total_tokens:130}};}},...overrides};
@@ -67,7 +67,7 @@ test('composed signed Worker action acquires source, accounts AI, persists inbox
  const markdown=readFileSync('src/content/articles/tool-use.md','utf8');
  const reviewSource=buildReviewSource({commit:'a'.repeat(40),articles:{'tool-use':{markdown,sha256:await digest(markdown)}}});
  const x=await fixture('composed-worker',{reviewSource});try{
-  for(const migration of ['0001_editorial.sql','0007_reviewed_corrections.sql','0008_github_content_proposals.sql','0009_hosted_reviewed_notes.sql','0017_published_contribution_intake.sql','0018_hosted_submission_reviews.sql'])for(const sql of readFileSync('migrations/'+migration,'utf8').replace(/--[^\n]*/g,'').split(';').filter(s=>s.trim()))await x.f.db.prepare(sql).run();
+  for(const migration of ['0001_editorial.sql','0007_reviewed_corrections.sql','0008_github_content_proposals.sql','0009_hosted_reviewed_notes.sql','0017_published_contribution_intake.sql','0018_hosted_submission_reviews.sql','0027_private_draft_outbox.sql'])for(const sql of readFileSync('migrations/'+migration,'utf8').replace(/--[^\n]*/g,'').match(/\s*CREATE TRIGGER[\s\S]*?END;|[^;]+;/gi)||[])await x.f.db.prepare(sql).run();
   const runtime=createHostedRuntime({verifyAdmin:r=>verifySignedAdmin(r,adminTrust(JSON.stringify(trust))),contributions:{trust:JSON.stringify(trust)},reviewSource:x.options.reviewSource,cloudflareDrafts:x.action});
   const env={EDITORIAL_DB:x.f.db,ASSETS:{fetch:async()=>new Response('controlled asset')}};
   async function dispatch(path,body,method='POST'){
@@ -91,4 +91,96 @@ test('composed signed Worker action acquires source, accounts AI, persists inbox
   const persisted=await x.f.db.prepare('SELECT * FROM hosted_reviewed_notes').first();assert.ok(JSON.stringify(persisted).includes(note));
   assert.equal(x.http,1);assert.equal(x.ai,1);
  }finally{await x.f.close();}
+});
+
+async function recoveryFixture(label,{outbox=true,...overrides}={}){
+ const x=await fixture('recovery-'+label,overrides);
+ const names=['0001_editorial.sql','0007_reviewed_corrections.sql','0008_github_content_proposals.sql','0009_hosted_reviewed_notes.sql','0017_published_contribution_intake.sql','0018_hosted_submission_reviews.sql',...(outbox?['0027_private_draft_outbox.sql']:[])];
+ for(const name of names)for(const sql of readFileSync('migrations/'+name,'utf8').replace(/--[^\n]*/g,'').match(/\s*CREATE TRIGGER[\s\S]*?END;|[^;]+;/gi)||[])await x.f.db.prepare(sql).run();
+ let fault='none',enabled=true,foreign=false,afterRead=()=>{};
+ const db={prepare(sql){const wrap=statement=>new Proxy(statement,{get(target,key){if(key==='draftTestSql')return sql;if(key==='first')return async(...args)=>{const value=await target.first(...args);afterRead(sql);return value;};if(key==='bind')return (...values)=>wrap(target.bind(...values));const value=Reflect.get(target,key);return typeof value==='function'?value.bind(target):value;}});return wrap(x.f.db.prepare(sql));},async batch(statements){const inbox=statements.some(statement=>statement.draftTestSql?.includes('INSERT INTO submissions'));if(inbox&&fault==='before')throw Error('controlled inbox write fault');const result=await x.f.db.batch(statements);if(inbox&&fault==='after')throw Error('controlled lost inbox response');return result;}};
+ async function call(path,body,{signed=true,method='POST',originHeader=origin}={}){
+  const headers=new Headers((await request()).headers);headers.set('Content-Type','application/json');headers.set('Origin',originHeader);if(!signed)headers.delete('cf-access-jwt-assertion');
+  const ports={verifyAdmin:async r=>{const admin=await verifySignedAdmin(r,adminTrust(JSON.stringify(trust)));return admin&&foreign?{...admin,subject:'signed-admin:'+'0'.repeat(64)}:admin;},contributions:{trust:JSON.stringify(trust)},cloudflareDrafts:enabled?x.action:undefined};
+  const response=await createHostedRuntime(ports).fetch(new Request(origin+path,{method,headers,...(method==='POST'?{body:JSON.stringify(body)}:{})}),{EDITORIAL_DB:db,ASSETS:{fetch:async()=>new Response('controlled')}});
+  assert.equal(response.headers.get('cache-control'),'no-store');return {status:response.status,value:await response.json()};
+ }
+ return {x,call,afterRead:fn=>{afterRead=fn;},fail:mode=>{fault=mode;},disable:()=>{enabled=false;},foreign:yes=>{foreign=yes;},prepare:body=>call('/api/admin/drafts/cloudflare',body),recover:(key,options)=>call('/api/admin/drafts/recover',{requestKey:key},options)};
+}
+test('failed inbox write retains paid draft through restart; concurrent explicit recovery works with expired AI policy and no configured generation port',{timeout:30000},async()=>{
+ const t=await recoveryFixture('durable');try{
+  const selected=input();t.fail('before');assert.equal((await t.prepare(selected)).status,503);
+  assert.equal(t.x.http,1);assert.equal(t.x.ai,1);assert.equal((await t.x.f.db.prepare('SELECT COUNT(*) n FROM submissions').first()).n,0);
+  const checkpoint=await t.x.f.db.prepare('SELECT * FROM hosted_draft_outbox').first(),paid=await t.x.f.db.prepare('SELECT * FROM maintenance_proposals').first();
+  assert.equal(checkpoint.event_id,paid.event_id);assert.equal(paid.currency_state,'settled');assert.equal(paid.state,'complete');
+  // This failure is on the original code path: replay would reacquire a used
+  // source attempt, never reaching its already-paid output.
+  const replay=await t.prepare(selected);assert.equal(replay.status,409);assert.equal(replay.value.error,'draft_recovery_required');
+  assert.equal((await t.prepare({...selected,citationId:'other'})).value.error,'draft_request_conflict');
+  await t.x.f.restart();t.fail('none');t.disable();
+  const realNow=Date.now;Date.now=()=>t.x.p.price.validUntil+1000;
+  let recovered;try{recovered=await Promise.all([t.recover(selected.requestKey),t.recover(selected.requestKey)]);}finally{Date.now=realNow;}
+  for(const response of recovered){assert.equal(response.status,200,JSON.stringify(response));assert.equal(response.value.approved,false);assert.equal(response.value.published,false);}
+  assert.equal(recovered[0].value.submissionId,recovered[1].value.submissionId);
+  const row=await t.x.f.db.prepare('SELECT * FROM submissions').first();assert.equal(row.status,'new');assert.match(row.message,/UNVERIFIED AI DRAFT/);assert.ok(row.message.includes(paid.event_id));assert.ok(row.message.includes(checkpoint.prompt_hash));
+  assert.equal((await t.x.f.db.prepare('SELECT COUNT(*) n FROM editorial_audit').first()).n,1);assert.equal((await t.x.f.db.prepare('SELECT COUNT(*) n FROM hosted_reviewed_notes').first()).n,0);
+  assert.deepEqual(await t.x.f.db.prepare('SELECT * FROM maintenance_proposals').first(),paid);assert.equal(t.x.http,1);assert.equal(t.x.ai,1);
+ }finally{await t.x.f.close();}
+});
+test('lost committed inbox response recovers the same row without duplicate audit or accounting changes',{timeout:30000},async()=>{
+ const t=await recoveryFixture('lost');try{const selected=input();t.fail('after');assert.equal((await t.prepare(selected)).status,503);const row=await t.x.f.db.prepare('SELECT * FROM submissions').first();assert.ok(row);await t.x.f.restart();t.fail('none');t.disable();const recovered=await t.recover(selected.requestKey);assert.equal(recovered.status,200);assert.equal(recovered.value.submissionId,row.id);assert.equal(recovered.value.duplicate,true);assert.equal((await t.x.f.db.prepare('SELECT COUNT(*) n FROM editorial_audit').first()).n,1);assert.equal(t.x.http,1);assert.equal(t.x.ai,1);}finally{await t.x.f.close();}
+});
+test('recovery rejects foreign owners, unsigned/cross-origin/GET requests and caller-supplied draft text',{timeout:30000},async()=>{
+ const t=await recoveryFixture('auth');try{const selected=input();t.fail('before');assert.equal((await t.prepare(selected)).status,503);t.fail('none');t.disable();
+  for(const options of [{signed:false},{originHeader:'https://foreign.invalid'},{method:'GET'}])assert.equal((await t.recover(selected.requestKey,options)).status,options.method?405:403);
+  t.foreign(true);assert.equal((await t.recover(selected.requestKey)).status,404);t.foreign(false);
+  assert.equal((await t.call('/api/admin/drafts/recover',{requestKey:selected.requestKey,note:'Fabricated rescue input must not be accepted.'})).status,400);
+  assert.equal((await t.recover(crypto.randomUUID())).status,404);assert.equal((await t.x.f.db.prepare('SELECT COUNT(*) n FROM submissions').first()).n,0);assert.equal(t.x.http,1);assert.equal(t.x.ai,1);
+ }finally{await t.x.f.close();}
+});
+test('missing migration and checkpoint-write failure stop before AI; source or model outcomes are never retried',{timeout:30000},async()=>{
+ const t=await recoveryFixture('migration',{outbox:false});try{assert.equal((await t.prepare(input())).status,503);assert.equal(t.x.http,0);assert.equal(t.x.ai,0);}finally{await t.x.f.close();}
+ const u=await recoveryFixture('checkpoint');try{
+  await u.x.f.db.prepare("CREATE TRIGGER controlled_checkpoint_fault BEFORE UPDATE ON hosted_draft_outbox BEGIN SELECT RAISE(ABORT,'controlled checkpoint write fault'); END").run();const selected=input();assert.equal((await u.prepare(selected)).status,503);assert.equal(u.x.http,1);assert.equal(u.x.ai,0);assert.equal((await u.prepare(selected)).status,409);assert.equal((await u.recover(selected.requestKey)).value.error,'draft_output_unavailable');assert.equal(u.x.http,1);assert.equal(u.x.ai,0);
+ }finally{await u.x.f.close();}
+});
+test('unknown usage stays held and unrecoverable across restart without accepting fabricated output',{timeout:30000},async()=>{
+ const t=await recoveryFixture('uncertain',{ai:{run:async()=>({response:JSON.stringify({note:'A synthetic valid length note does not prove paid usage.',citationId:'mcp-tools'}),usage:{}})}});try{const selected=input();assert.equal((await t.prepare(selected)).status,503);const paid=await t.x.f.db.prepare('SELECT * FROM maintenance_proposals').first();assert.equal(paid.currency_state,'uncertain');await t.x.f.restart();t.disable();assert.equal((await t.recover(selected.requestKey)).value.error,'draft_output_unavailable');assert.deepEqual(await t.x.f.db.prepare('SELECT * FROM maintenance_proposals').first(),paid);assert.equal((await t.x.f.db.prepare('SELECT COUNT(*) n FROM submissions').first()).n,0);}finally{await t.x.f.close();}
+});
+test('tampered prompt/base/source, paid packet, and missing historical pricing fail closed without a second call',{timeout:30000},async()=>{
+ const t=await recoveryFixture('tamper');try{const selected=input();t.fail('before');assert.equal((await t.prepare(selected)).status,503);t.fail('none');t.disable();
+  const checkpoint=await t.x.f.db.prepare('SELECT * FROM hosted_draft_outbox').first(),paid=await t.x.f.db.prepare('SELECT * FROM maintenance_proposals').first();
+  await assert.rejects(t.x.f.db.prepare('UPDATE hosted_draft_outbox SET prompt=?').bind(checkpoint.prompt+' ').run(),/immutable private draft/);
+  // Corrupt only this disposable test database, bypassing its immutable guard.
+  await t.x.f.db.prepare('DROP TRIGGER hosted_draft_outbox_immutable').run();
+  for(const prompt of [checkpoint.prompt+' ',checkpoint.prompt.replace('a'.repeat(40),'b'.repeat(40)),checkpoint.prompt.replace('"sourceId":"'+mcp+'"','"sourceId":"invented"')]){
+   await t.x.f.db.prepare('UPDATE hosted_draft_outbox SET prompt=?').bind(prompt).run();assert.notEqual((await t.recover(selected.requestKey)).status,200);
+  }
+  await t.x.f.db.prepare('UPDATE hosted_draft_outbox SET prompt=?').bind(checkpoint.prompt).run();
+  await t.x.f.db.prepare('UPDATE maintenance_proposals SET packet=?').bind(paid.packet+' ').run();assert.notEqual((await t.recover(selected.requestKey)).status,200);
+  await t.x.f.db.prepare('UPDATE maintenance_proposals SET packet=?').bind(paid.packet).run();
+  // A mismatched retained policy hash cannot authorize recovery.
+  await t.x.f.db.prepare('UPDATE maintenance_proposals SET currency_policy_hash=?').bind('0'.repeat(64)).run();assert.notEqual((await t.recover(selected.requestKey)).status,200);
+  assert.equal((await t.x.f.db.prepare('SELECT COUNT(*) n FROM submissions').first()).n,0);assert.equal(t.x.http,1);assert.equal(t.x.ai,1);
+ }finally{await t.x.f.close();}
+});
+
+test('outbox capacity including unfinished requests rejects before source acquisition or inference',{timeout:30000},async()=>{
+ const t=await recoveryFixture('capacity');try{
+  await t.x.f.db.prepare(`WITH RECURSIVE n(i) AS (SELECT 1 UNION ALL SELECT i+1 FROM n WHERE i<16)
+   INSERT INTO hosted_draft_outbox(request_key,owner,fingerprint,selection,created_at)
+   SELECT printf('00000000-0000-4000-8000-%012d',i),?,?,'{}',1 FROM n`).bind('signed-admin:'+'a'.repeat(64),'b'.repeat(64)).run();
+  const result=await t.prepare(input());assert.equal(result.status,503);assert.equal(result.value.error,'draft_outbox_capacity');assert.equal(t.x.http,0);assert.equal(t.x.ai,0);
+ }finally{await t.x.f.close();}
+});
+test('two initial submissions of one selection have one durable claimant and one source/model dispatch',{timeout:30000},async()=>{
+ let release,started;const pending=new Promise(resolve=>{release=resolve;}),entered=new Promise(resolve=>{started=resolve;});let fetches=0;
+ const t=await recoveryFixture('claim',{sourceSend:async()=>{fetches++;started();await pending;return new Response(document(),{headers:{'Content-Type':'text/html'}});}});
+ try{const selected=input(),first=t.prepare(selected);await entered;const duplicate=await t.prepare(selected);assert.equal(duplicate.status,409);assert.equal(duplicate.value.error,'draft_recovery_required');release();assert.equal((await first).status,200);assert.equal(fetches,1);assert.equal(t.x.ai,1);}finally{release();await t.x.f.close();}
+});
+test('identity expiry after reading paid evidence prevents the recovered inbox mutation',{timeout:30000},async()=>{
+ const t=await recoveryFixture('expiry');const realNow=Date.now;try{const selected=input();t.fail('before');assert.equal((await t.prepare(selected)).status,503);t.fail('none');t.disable();
+  const later=realNow()+600000;t.afterRead(sql=>{if(sql==='SELECT * FROM maintenance_proposals WHERE event_id=?')Date.now=()=>later;});
+  assert.equal((await t.recover(selected.requestKey)).status,403);assert.equal((await t.x.f.db.prepare('SELECT COUNT(*) n FROM submissions').first()).n,0);assert.equal(t.x.http,1);assert.equal(t.x.ai,1);
+ }finally{Date.now=realNow;await t.x.f.close();}
 });

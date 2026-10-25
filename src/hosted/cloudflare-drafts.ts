@@ -65,13 +65,13 @@ export function createCloudflareDraftAction(options:CloudflareDraftOptions={}){
     source:{...verified.source,raw:{...verified.source.raw,bytes:Array.from(verified.source.raw.bytes)}},receipt:verified.receipt,
     aiInvoked:false as const,approved:false as const,published:false as const};
   },
-  async prepare(request:Request,input:unknown){
+  async prepare(request:Request,input:unknown,retain?:(checkpoint:{prompt:string;maxOutputTokens:number})=>Promise<void>){
    try{
    if(state!=='configured')fail('cloudflare_draft_'+state);
    currencyTime(currency!,Date.now());
    const {target,selected,source,packet,fresh}=await acquire(request,input);
    const adapter=createCloudflareProseAdapter({enabled:true,db:options.db,policy,currency:{enabled:true,policy:currency},inputTokenUpperBound:createCloudflareLlama32InputTokenUpperBound({rawPrompt:true}),ai:{run:(model,value)=>{fresh();return options.ai!.run(model,value);}}});
-   const preparer=createSourcedDraftPreparer({verifySource:async value=>{const result=await verifyAcquiredSource(value,{db:options.db!});fresh();return result;},generate:prompt=>{fresh();return adapter.generate(prompt);}});
+   const preparer=createSourcedDraftPreparer({beforeGenerate:async prompt=>{if(retain){fresh();await retain({prompt,maxOutputTokens:policy!.maxOutputTokens});fresh();}},verifySource:async value=>{const result=await verifyAcquiredSource(value,{db:options.db!});fresh();return result;},generate:prompt=>{fresh();return adapter.generate(prompt);}});
    const draft=await preparer.prepare({articleId:target.articleId,baseCommit:source.baseCommit,baseMarkdownSha256:source.baseMarkdownSha256,markdown:source.markdown},[{citationId:selected.citationId,packet}]);fresh();return draft;
   }catch(error){if(error instanceof CloudflareDraftError)throw error;return fail('cloudflare_draft_unavailable');}
  }});

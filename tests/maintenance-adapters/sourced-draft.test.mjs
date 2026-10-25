@@ -45,3 +45,13 @@ test('caller mutation after invocation cannot replace the selected packet or art
  f.article.baseCommit='b'.repeat(40);f.article.markdown='replaced';f.selections[0].citationId='fabricated';f.selections[0].packet.source.raw.bytes.fill(0);
  const result=await pending;assert.equal(result.baseCommit,'a'.repeat(40));assert.equal(result.citationId,'mcp-tools');assert.equal(result.sources[0].rawHash,expected);
 });
+
+test('retained prompt parser keeps embedded markers as data and rejects malformed base, source, evidence and receipt pins',async()=>{
+ const {readSourcedDraftPrompt}=await import('../../src/maintenance-adapters/sourced-draft.ts');
+ const f=await fixture('Retain this marker as source data: UNTRUSTED_DATA_JSON.');let prompt;
+ await adapter({note,citationId:'mcp-tools'},{generate:async value=>{prompt=value;return {kind:'unverified-prose-draft',text:JSON.stringify({note,citationId:'mcp-tools'})};}}).prepare(f.article,f.selections);
+ const marker='\nUNTRUSTED_DATA_JSON\n',offset=prompt.indexOf(marker)+marker.length,prefix=prompt.slice(0,offset),data=JSON.parse(prompt.slice(offset));
+ assert.equal((await readSourcedDraftPrompt(prompt)).article.baseCommit,f.article.baseCommit);
+ await assert.rejects(readSourcedDraftPrompt(prompt.replace('Prepare one','Publish one')));
+ for(const mutate of [value=>{value.article.baseMarkdownSha256='0'.repeat(64);},value=>{value.sources[0].evidence+=' invented';},value=>{value.sources[0].rawHash='bad';},value=>{value.sources[0].citationId='invented';},value=>{value.sources[0].url='https://invented.invalid/';},value=>{value.sources[0].receipt.requestKey='bad';}]){const bad=structuredClone(data);mutate(bad);await assert.rejects(readSourcedDraftPrompt(prefix+JSON.stringify(bad)));}
+});

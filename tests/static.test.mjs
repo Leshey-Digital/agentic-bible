@@ -130,7 +130,9 @@ test('contribution choices exactly match the published source catalog while stat
   const choices = [...select.matchAll(/<option\b[^>]*value="([^"]+)"/g)].map(match => match[1]);
   assert.equal(choices.length, 20);
   assert.deepEqual(choices.sort(), catalog.articles.map(article => article.id).sort());
+  assert.match(page, /<form\b[^>]*hidden/);
   assert.match(page, /<fieldset\b[^>]*disabled/);
-  assert.match(page, /Public submissions are on hold/);
+  assert.match(page, /Reader submissions are currently closed/);
+  assert.match(page, /This page cannot send a suggestion/);
   assert.doesNotMatch(page, /only.*AI agent, Tool use, and Model Context Protocol/);
 });

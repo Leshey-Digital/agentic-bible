@@ -7,6 +7,10 @@ import {policyInput,stop} from '../wiki-bridge/maintenance-provider.ts';
 export const cloudflareProseModel='@cf/meta/llama-3.2-1b-instruct';
 export const cloudflareProseLimits=Object.freeze({promptBytes:8192,responseBytes:4096,timeoutMs:2000});
 export type WorkersAiBinding={run:(model:string,input:{prompt:string;max_tokens:number;raw:true})=>Promise<unknown>};
+export function cloudflareProseIdentity(prompt:string,maxTokens:number){
+ const request={model:cloudflareProseModel,prompt,max_tokens:maxTokens,raw:true as const},requestHash=hash(canonical(request));
+ return {request,requestHash,eventId:'cfa-'+requestHash.slice(0,48)};
+}
 export type ProseInputBound=(prompt:string)=>number;
 export type CloudflareProseOptions={enabled?:boolean;ai?:WorkersAiBinding;db?:SqlDatabase;currency?:CurrencyControl;policy?:unknown;
  inputTokenUpperBound?:ProseInputBound;clock?:()=>number;timeoutMs?:number};
@@ -45,8 +49,8 @@ export function createCloudflareProseAdapter(options:CloudflareProseOptions={}){
    const now=(clock??Date.now)();if(!Number.isSafeInteger(now)||now<0||now>253402300799999)stop('maintenance_clock');
    // Raw mode is part of both dispatched bytes and identity; the trusted bound
    // excludes undocumented chat-template framing only in this mode.
-   const request={model:cloudflareProseModel,prompt,max_tokens:policy.maxOutputTokens,raw:true as const},requestHash=hash(canonical(request));
-   const event='cfa-'+requestHash.slice(0,48),fingerprint=hash(canonical({requestHash,policy,currency:currencyPin(currency),priceId:price.id}));
+   const {request,requestHash,eventId:event}=cloudflareProseIdentity(prompt,policy.maxOutputTokens);
+   const fingerprint=hash(canonical({requestHash,policy,currency:currencyPin(currency),priceId:price.id}));
    const reservationPolicy=Object.freeze({...policy,maxInputTokens:inputReservation});
    const budget=new MaintenanceBudget(db,{enabled:true,policy:currency}),row=await budget.reserve(event,fingerprint,reservationPolicy,inputReservation,now,price.id);
    let dispatched=false;const controller=new AbortController();let timer:ReturnType<typeof setTimeout>|undefined;
