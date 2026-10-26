@@ -1,0 +1,50 @@
+✖ preview to draft handles unknown response, explicit reconciliation and confirmed at 1440px (1882.617609ms)
+✔ preview to draft handles unknown response, explicit reconciliation and stale at 1440px (1489.903777ms)
+✔ preview to draft handles unknown response, explicit reconciliation and mismatch at 1440px (1412.055089ms)
+✖ preview to draft handles unknown response, explicit reconciliation and confirmed at 390px (1656.675687ms)
+✔ preview to draft handles unknown response, explicit reconciliation and stale at 390px (1462.958932ms)
+✔ preview to draft handles unknown response, explicit reconciliation and mismatch at 390px (1383.720703ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 4
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 9840.562167
+
+✖ failing tests:
+
+test at tests/production-hosted/preview-draft-workflow-browser.test.mjs:8:82
+✖ preview to draft handles unknown response, explicit reconciliation and confirmed at 1440px (1882.617609ms)
+  Error: Please use browser.newContext()
+   Please check out https://github.com/dequelabs/axe-core-npm/blob/develop/packages/playwright/error-handling.md
+      at AxeBuilder.analyze (file:///workspace/agentic-bible/node_modules/@axe-core/playwright/dist/index.mjs:219:13)
+      at async TestContext.<anonymous> (file:///workspace/agentic-bible-preview-transport/tests/production-hosted/preview-draft-workflow-browser.test.mjs:25:594)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    [cause]: Error: Please use browser.newContext()
+        at _BrowserContext.newPage (/workspace/agentic-bible/node_modules/playwright-core/lib/coreBundle.js:63972:17)
+        at AxeBuilder.finishRun (file:///workspace/agentic-bible/node_modules/@axe-core/playwright/dist/index.mjs:315:37)
+        at AxeBuilder.analyze (file:///workspace/agentic-bible/node_modules/@axe-core/playwright/dist/index.mjs:217:25)
+        at async TestContext.<anonymous> (file:///workspace/agentic-bible-preview-transport/tests/production-hosted/preview-draft-workflow-browser.test.mjs:25:594)
+        at async Test.run (node:internal/test_runner/test:1389:7)
+        at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+  }
+
+test at tests/production-hosted/preview-draft-workflow-browser.test.mjs:8:82
+✖ preview to draft handles unknown response, explicit reconciliation and confirmed at 390px (1656.675687ms)
+  Error: Please use browser.newContext()
+   Please check out https://github.com/dequelabs/axe-core-npm/blob/develop/packages/playwright/error-handling.md
+      at AxeBuilder.analyze (file:///workspace/agentic-bible/node_modules/@axe-core/playwright/dist/index.mjs:219:13)
+      at async TestContext.<anonymous> (file:///workspace/agentic-bible-preview-transport/tests/production-hosted/preview-draft-workflow-browser.test.mjs:25:594)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    [cause]: Error: Please use browser.newContext()
+        at _BrowserContext.newPage (/workspace/agentic-bible/node_modules/playwright-core/lib/coreBundle.js:63972:17)
+        at AxeBuilder.finishRun (file:///workspace/agentic-bible/node_modules/@axe-core/playwright/dist/index.mjs:315:37)
+        at AxeBuilder.analyze (file:///workspace/agentic-bible/node_modules/@axe-core/playwright/dist/index.mjs:217:25)
+        at async TestContext.<anonymous> (file:///workspace/agentic-bible-preview-transport/tests/production-hosted/preview-draft-workflow-browser.test.mjs:25:594)
+        at async Test.run (node:internal/test_runner/test:1389:7)
+        at async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  }

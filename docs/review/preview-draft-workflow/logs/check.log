@@ -1,0 +1,14 @@
+
+> agentic-bible@0.1.0 check
+> ASTRO_TELEMETRY_DISABLED=1 astro check
+
+12:37:04 [vite] Re-optimizing dependencies because vite config has changed
+12:37:04 [content] Syncing content
+12:37:04 [content] Synced content
+12:37:04 [types] Generated 410ms
+12:37:04 [check] Getting diagnostics for Astro files in /workspace/agentic-bible-preview-transport...
+Result (206 files): 
+- 0 errors
+- 0 warnings
+- 0 hints
+

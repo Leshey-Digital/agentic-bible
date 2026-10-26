@@ -41,4 +41,4 @@ The denied OpenAI local GET remains unresolved: HTTP403 via envoy at 2026-10-23T
 
 The previously denied source-only draft PR was checked absent, then retried once for the same repository/head/base. Automatic approval review again rejected it before execution because it still required specific owner authorization after the denial. No further retry or alternate publication route occurred. Existing remote `5d3d370` remains unchanged; additional work stays local pending that boundary. PR58 remains unmerged. Rollback of this source change is an application revert with no migration, data cleanup or provider change.
 
-[Sanitized command outcomes, retained failure logs and SHA-256 hashes](evidence.json).
+[Sanitized command outcomes, retained failure logs and SHA-256 hashes](evidence.json). Command logs retain verbatim terminal whitespace; source/spec/documentation diff checks pass with these raw logs excluded. Original log bytes are not rewritten to satisfy source formatting checks.

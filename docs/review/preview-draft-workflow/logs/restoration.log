@@ -1,0 +1,30 @@
+
+> agentic-bible@0.1.0 test:maintenance-restore
+> node --test tests/maintenance-restore/restoration.test.mjs
+
+✔ a signed, explicit restoration approval is separate from a request and enforces owner/CSRF/confirmation (7818.252625ms)
+✔ restoration atomically appends new previous/target lineage, exact body/source metadata and review flags (931.656259ms)
+✔ stale canonical head or a head advancing after durable intent never silently rebases (1005.360637ms)
+✔ revoked or superseded approvals and corrupt D1 authority stop before mutation (1502.374124ms)
+✔ known durable intent resumes after actual D1 restart with one dispatch and one mutation (1081.130104ms)
+✔ a lost applied GraphQL response reconciles after restart without a second mutation (1257.716894ms)
+✔ completed historical replay performs no requests and cannot undo a newer canonical head (1403.020772ms)
+✔ concurrent same-approval callers have one owner; dispatched-without-proof ambiguity never redispatches (1849.723803ms)
+✔ tampered atomic output cannot produce a verified receipt or a second dispatch (775.057281ms)
+✔ restored canonical Git tree builds actual twenty-entry Astro/Pagefind history and source attribution (2900.064756ms)
+✔ completion reply loss resumes the stored historical receipt without another request (1430.84186ms)
+✔ late mutation after the client deadline is reconciled once, including an early unconfirmed read (3283.545109ms)
+✔ revocation immediately before dispatch prevents mutation; revocation after applied effects preserves truth (1325.428494ms)
+✔ lifetime request budget and global outbox capacity remain actual D1 gates before transport (1202.652619ms)
+✔ an actual killed process retains D1 intent and resumes one guarded restoration (1693.554719ms)
+✔ a forged completed receipt cannot invent a Git commit even when its cached hash is recomputed (1117.980231ms)
+✔ successive restorations retain earlier restoration targets and old completed replay cannot rewind content (7699.367573ms)
+✔ server expected-head CAS rejects movement after the last client check without overwriting the contender (904.778516ms)
+ℹ tests 18
+ℹ suites 0
+ℹ pass 18
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 39498.766805

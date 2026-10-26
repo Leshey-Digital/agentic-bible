@@ -1,0 +1,48 @@
+✖ signed hosted inbox and write-only integration UI at 1280 (1996.327089ms)
+✖ signed hosted inbox and write-only integration UI at 390 (1568.395854ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 0
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4208.773791
+
+✖ failing tests:
+
+test at tests/production-hosted/browser.mjs:16:72
+✖ signed hosted inbox and write-only integration UI at 1280 (1996.327089ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  false !== true
+  
+      at TestContext.<anonymous> (file:///workspace/agentic-bible-preview-transport/tests/production-hosted/browser.mjs:16:3114)
+      at runNextTicks (node:internal/process/task_queues:65:5)
+      at process.processImmediate (node:internal/timers:502:9)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/production-hosted/browser.mjs:16:72
+✖ signed hosted inbox and write-only integration UI at 390 (1568.395854ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  false !== true
+  
+      at TestContext.<anonymous> (file:///workspace/agentic-bible-preview-transport/tests/production-hosted/browser.mjs:16:3114)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
