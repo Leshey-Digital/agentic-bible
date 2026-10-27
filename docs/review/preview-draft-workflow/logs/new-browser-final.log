@@ -1,0 +1,14 @@
+✔ preview to draft handles unknown response, explicit reconciliation and confirmed at 1440px (2148.660508ms)
+✔ preview to draft handles unknown response, explicit reconciliation and stale at 1440px (1512.685361ms)
+✔ preview to draft handles unknown response, explicit reconciliation and mismatch at 1440px (1328.516652ms)
+✔ preview to draft handles unknown response, explicit reconciliation and confirmed at 390px (1848.801366ms)
+✔ preview to draft handles unknown response, explicit reconciliation and stale at 390px (1484.111882ms)
+✔ preview to draft handles unknown response, explicit reconciliation and mismatch at 390px (1346.196204ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 10223.207509

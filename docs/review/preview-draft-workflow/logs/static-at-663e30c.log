@@ -1,0 +1,23 @@
+
+> agentic-bible@0.1.0 test
+> node --test tests/static.test.mjs
+
+✔ reader inventory rejects unsafe paths, duplicate IDs/orders, invalid anchors and unresolved links (1.358381ms)
+✔ isolated canonical build includes a schema-valid twenty-first reader article in routes, history, Pagefind and sitemap (3528.830584ms)
+✔ all generated links and fragments resolve, including article citations (18.906139ms)
+✔ twenty substantive articles include provenance, review status and connected ideas (2.172425ms)
+✔ new genuine entries have substantive prose, audited citations and actual GitHub history (1.206014ms)
+✔ six operating-principles entries retain genuine provenance, source dates, primary evidence and current file history (0.957747ms)
+✔ staging pages are non-indexable, use staging canonicals, and contain no inline or external scripts (1.917667ms)
+✔ Pagefind artifacts and the isolated static-only staging configuration exist (0.299984ms)
+✔ twenty-entry inventory has eighteen scoped primary records for final six working drafts (0.915936ms)
+✔ rendered numeric claim citations point to their matching source-list ordinal (1.019298ms)
+✔ contribution choices exactly match the published source catalog while static intake stays disabled (0.373633ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 11
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3623.915592

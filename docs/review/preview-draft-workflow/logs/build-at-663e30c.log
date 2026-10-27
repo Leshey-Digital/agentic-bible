@@ -1,0 +1,83 @@
+
+> agentic-bible@0.1.0 build
+> ASTRO_TELEMETRY_DISABLED=1 astro build && pagefind --site dist --glob 'articles/**/*.html'
+
+12:43:02 [vite] Re-optimizing dependencies because vite config has changed
+12:43:03 [content] Syncing content
+12:43:03 [content] Synced content
+12:43:03 [types] Generated 405ms
+12:43:03 [build] output: "static"
+12:43:03 [build] mode: "static"
+12:43:03 [build] directory: /workspace/agentic-bible-preview-transport/dist/
+12:43:03 [build] Collecting build info...
+12:43:03 [build] ✓ Completed in 435ms.
+12:43:03 [build] Building static entrypoints...
+12:43:03 [vite] ✓ built in 197ms
+12:43:03 [vite] ✓ built in 19ms
+12:43:03 [build] Rearranging server assets...
+
+ generating static routes 
+12:43:03   ├─ /404.html (+8ms) 
+12:43:03   ├─ /about/index.html (+2ms) 
+12:43:03   ├─ /articles/ai-agent/index.html (+15ms) 
+12:43:03   ├─ /articles/tool-use/index.html (+12ms) 
+12:43:03   ├─ /articles/model-context-protocol/index.html (+15ms) 
+12:43:03   ├─ /articles/agent-orchestration/index.html (+16ms) 
+12:43:03   ├─ /articles/agent-memory/index.html (+20ms) 
+12:43:03   ├─ /articles/retrieval-augmented-generation/index.html (+16ms) 
+12:43:03   ├─ /articles/agent-evaluation/index.html (+14ms) 
+12:43:03   ├─ /articles/prompt-injection/index.html (+15ms) 
+12:43:03   ├─ /articles/agent-planning/index.html (+14ms) 
+12:43:03   ├─ /articles/durable-agent-execution/index.html (+16ms) 
+12:43:03   ├─ /articles/tool-permissions/index.html (+12ms) 
+12:43:03   ├─ /articles/agent-sandboxing/index.html (+15ms) 
+12:43:03   ├─ /articles/agent-observability/index.html (+12ms) 
+12:43:03   ├─ /articles/human-oversight/index.html (+9ms) 
+12:43:03   ├─ /articles/context-engineering/index.html (+10ms) 
+12:43:03   ├─ /articles/structured-outputs/index.html (+10ms) 
+12:43:03   ├─ /articles/agent-identity/index.html (+9ms) 
+12:43:03   ├─ /articles/agent-to-agent-communication/index.html (+11ms) 
+12:43:03   ├─ /articles/agent-budgets/index.html (+11ms) 
+12:43:03   ├─ /articles/computer-use-agents/index.html (+10ms) 
+12:43:03   ├─ /contribute/index.html (+1ms) 
+12:43:03   ├─ /history/index.html (+2ms) 
+12:43:03   ├─ /indexing-manifest.json (+1ms) 
+12:43:03   ├─ /maintenance-history.json (+1ms) 
+12:43:03   ├─ /review/index.html (+1ms) 
+12:43:03   ├─ /search/index.html (+1ms) 
+12:43:03   ├─ /source-catalog.json (+5ms) 
+12:43:03   ├─ /topics/foundations/index.html (+1ms) 
+12:43:03   ├─ /topics/capabilities/index.html (+1ms) 
+12:43:03   ├─ /topics/protocols/index.html (+1ms) 
+12:43:03   ├─ /topics/index.html (+1ms) 
+12:43:03   ├─ /index.html (+2ms) 
+12:43:03 ✓ Completed in 311ms.
+
+12:43:03 [build] ✓ Completed in 554ms.
+12:43:03 [build] 31 page(s) built in 992ms
+12:43:03 [build] Complete!
+
+Running Pagefind v1.5.2 (Extended)
+Running from: "/workspace/agentic-bible-preview-transport"
+Source:       "dist"
+Output:       "dist/pagefind"
+
+[Walking source directory]
+Found 20 files matching articles/**/*.html
+
+[Parsing files]
+Found a data-pagefind-body element on the site.
+↳ Ignoring pages without this tag.
+
+[Reading languages]
+Discovered 1 language: en
+
+[Building search indexes]
+Total: 
+  Indexed 1 language
+  Indexed 20 pages
+  Indexed 1551 words
+  Indexed 0 filters
+  Indexed 0 sorts
+
+Finished in 0.032 seconds

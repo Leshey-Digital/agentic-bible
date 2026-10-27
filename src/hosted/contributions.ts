@@ -5,6 +5,7 @@ import {InputError,RateLimitError,ReplayConflictError,CapacityError,submissionIn
 import {adminTrust,hostedOrigin,verifySignedAdmin} from './identity.ts';
 import {sourcePreview} from './source.ts';
 import {uuid,type Ports} from './contracts.ts';
+import {previewReviewedRevision,RevisionPreviewError} from './revision-preview.ts';
 import {submissionHistory} from './submission-history.ts';
 import {createSubmissionReview} from './submission-reviews.ts';
 import {listAbuseOutcomes} from './privacy.ts';
@@ -71,15 +72,22 @@ export function createContributionHandler(adapters:ContributionAdapters,send?:Po
         if(!await store.get(auditMatch[1]))fail('not_found',404);
         const result=await store.auditPage(auditMatch[1],url.searchParams.get('before')??undefined);fresh();return json(result);
       }
-      const match=/^\/api\/admin\/submissions\/([a-f0-9-]{36})(\/(?:review|source|reviews))?$/.exec(url.pathname);
+      const match=/^\/api\/admin\/submissions\/([a-f0-9-]{36})(\/(?:review|source|reviews|revision-preview))?$/.exec(url.pathname);
       if(!match||!uuid(match[1])||url.search)fail('not_found',404);
-      const id=match[1];if(match[2]==='/reviews'){if(request.method!=='GET')fail('method_not_allowed',405);if(!await store.get(id))fail('not_found',404);const history=await submissionHistory(db,id,admin);fresh();return json(history);}if(match[2]==='/source'){if(request.method!=='GET')fail('method_not_allowed',405);if(!send&&!reviewSource)fail('source_adapter_unconfigured',503);const item=await store.get(id);if(!item)fail('not_found',404);const preview=send?await sourcePreview(db,send,item.articleId):await reviewSource!(item.articleId);fresh();return json(preview);}
+      const id=match[1];
+      if(match[2]==='/revision-preview'){
+        if(request.method!=='POST')fail('explicit_post_required',405);
+        const value=await contributionJson(request);if(!exact(value,['approvalId'])||!uuid(value.approvalId))fail('invalid_request');
+        return json(await previewReviewedRevision(db,id,value.approvalId,admin,request,reviewSource));
+      }
+      if(match[2]==='/reviews'){if(request.method!=='GET')fail('method_not_allowed',405);if(!await store.get(id))fail('not_found',404);const history=await submissionHistory(db,id,admin);fresh();return json(history);}if(match[2]==='/source'){if(request.method!=='GET')fail('method_not_allowed',405);if(!send&&!reviewSource)fail('source_adapter_unconfigured',503);const item=await store.get(id);if(!item)fail('not_found',404);const preview=send?await sourcePreview(db,send,item.articleId):await reviewSource!(item.articleId);fresh();return json(preview);}
       if(match[2]){if(request.method!=='POST')fail('explicit_post_required',405);const value=await contributionJson(request);if(!send&&reviewSource){const item=await store.get(id);if(!item)fail('not_found',404);const source=await reviewSource(item.articleId);if(value?.baseCommit!==source.baseCommit||value?.baseMarkdownSha256!==source.baseMarkdownSha256||!source.citations.includes(value?.citationId))fail('build_review_source_mismatch',409);}fresh();return json({...await createSubmissionReview(db,id,value,admin),gitHubDraftAvailable:!!send});}
       if(request.method==='GET'){const item=await store.get(id);if(!item)fail('not_found',404);const audit=await store.audit(id);fresh();return json({item,audit});}
       if(request.method!=='PATCH')fail('method_not_allowed',405);
       const value=await contributionJson(request);if(!exact(value,['status','tags','version']))fail('invalid_request');const change=changeInput(value);fresh();
       if(!await store.update(id,change,admin.subject,Date.now()))fail('stale_submission_revision',409);return json({updated:true,articleChanged:false});
     }catch(error){
+      if(error instanceof RevisionPreviewError)return json({error:error.code,published:false},error.status);
       if(error instanceof ContributionError)return json({error:error.code},error.status);
       if(error instanceof InputError)return json({error:'invalid_fields',fields:error.fields},error.status);
       if(error instanceof RateLimitError)return json({error:'rate_limit'},429);

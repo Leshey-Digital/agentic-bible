@@ -1,0 +1,26 @@
+
+> agentic-bible@0.1.0 test:publication
+> node --test tests/publishing/*.test.ts tests/publishing/*.test.mjs
+
+✔ CLI rejects an untrusted new identity but keeps the existing twenty-target apply path (932.913502ms)
+✔ the demo uses durable controlled-test quality receipts and stable publication replay (4580.335283ms)
+✔ strict schema rejects unsafe markup/URLs, invalid citations/dates/types and unknown fields with technical reasons (3.671584ms)
+✔ topic requires an allowed string and malformed topics cannot change a published snapshot or claim an event (132.012263ms)
+✔ unknown crosslinks and stale bases fail before activation; valid flagged content publishes automatically and escapes text (80.815344ms)
+✔ exact event receipts survive later writes and rollback; conflicting reuse fails and every earlier revision stays readable (138.900963ms)
+✔ identical inputs produce byte-identical deterministic snapshot manifests and file hashes in independent stores (69.194297ms)
+✔ rollback keeps historical crosslinks usable when a later linked article is no longer current (152.387691ms)
+✔ interruption checkpoints preserve the last complete snapshot until a full activation and retries recover once (399.275223ms)
+✔ actual process death releases the mutex; sealed orphan stays invisible and post-activation retry confirms the committed event (450.244699ms)
+✔ concurrent writers fail busy and safely retry without replacing another revision (52.083631ms)
+✔ tampered pointers, HTML/search assets, revisions and unlisted files fail closed without silently serving older state (61.996976ms)
+✔ bounded operation/storage capacity preserves accepted receipts and the prior active snapshot (1288.325999ms)
+✔ preview is loopback/read-only, refuses traversal and sealed uncommitted snapshots, and never alters source Markdown (131.672676ms)
+ℹ tests 14
+ℹ suites 0
+ℹ pass 14
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5555.843121
