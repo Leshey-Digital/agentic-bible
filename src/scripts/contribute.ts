@@ -1,5 +1,5 @@
 import {policyPath} from '../hosted/policy.ts';
-import {recordMeasurement} from '../measurement/browser.ts';
+import {recordMeasurement,measurementReadyEvent} from '../measurement/browser.ts';
 import {closedIntakeSignal,submissionSignal} from '../measurement/contribution.ts';
 const form = document.querySelector<HTMLFormElement>('#contribution-form')!;
 const fields = document.querySelector<HTMLFieldSetElement>('#contribution-fields')!;
@@ -30,6 +30,15 @@ let inboxDescription = 'It is available in the local editorial inbox.';
 let recoveryNeeded = false;
 let saving = false;
 let restoredArticle = false;
+let measurementOpened=false,closedAvailability=false,measurementClosed=false;
+function measureCurrentAvailability(){
+  if(!measurementOpened)measurementOpened=recordMeasurement({event:'contribution_open'});
+  if(closedAvailability&&!measurementClosed)measurementClosed=recordMeasurement({event:'contribution_result',outcome:'closed'});
+}
+// Only current public availability may be observed after opt-in. No past save,
+// query, error, form value or request reference is retained/replayed for tracking.
+window.addEventListener(measurementReadyEvent,measureCurrentAvailability);
+function measureAvailability(status:number,state:unknown){const signal=closedIntakeSignal(status,state);if(signal.event==='contribution_result'&&signal.outcome==='closed'){closedAvailability=true;measureCurrentAvailability();}else recordMeasurement(signal);}
 function showRecovery(needed: boolean) {
   recoveryNeeded = needed; renew.hidden = !needed; recoveryHelp.hidden = !needed;
 }
@@ -64,11 +73,11 @@ document.querySelector('#clear-draft')!.addEventListener('click', () => {
   control('message').focus();
 });
 async function init() {
-  recordMeasurement({event:'contribution_open'});
+  measureCurrentAvailability();
   try {
     const response = await fetch('/api/editorial/status', { credentials: 'same-origin' });
     const state = await response.json();
-    if (!response.ok) { recordMeasurement(closedIntakeSignal(response.status,state)); return; }
+    if (!response.ok) { measureAvailability(response.status,state); return; }
     if (state.mode === 'hosted-contributions' && state.publicIntake === true && state.policy && policyPath(state.policy.termsPath) && policyPath(state.policy.privacyPath)) {
       form.hidden = false; fields.disabled = false; sendLabel = 'Send suggestion'; send.textContent = sendLabel; inboxDescription = 'It is available for editorial review.';
       message.textContent = 'Suggestions enter editorial review and do not directly change an article. No email delivery is configured.';
@@ -78,7 +87,7 @@ async function init() {
       const privacy = document.querySelector<HTMLAnchorElement>('#contribution-privacy')!; privacy.href = state.policy.privacyPath;
       return;
     }
-    if (!state.enabled || state.mode !== 'local-synthetic-only') { recordMeasurement(closedIntakeSignal(response.status,state)); return; }
+    if (!state.enabled || state.mode !== 'local-synthetic-only') { measureAvailability(response.status,state); return; }
     form.hidden = false; fields.disabled = false; sendLabel = 'Send local suggestion'; send.textContent = sendLabel;
     for (const item of document.querySelectorAll<HTMLElement>('[data-local-intake]')) item.hidden = false;
     document.querySelector<HTMLElement>('#editorial-inbox-link')!.hidden = false;

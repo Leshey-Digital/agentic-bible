@@ -27,6 +27,7 @@ test('never-ending streamed request is stopped by the original two-second read b
 test('only finite projections/counts reach native binding,202 does not claim durable ingestion',async()=>{
  const f=fixture(),r=await f.collector(req(batch([event,event,{page:'/articles/tool-use/',signal:{event:'page_view'}}])));assert.equal(r.status,202);assert.deepEqual(await r.json(),{schemaVersion:1,state:'submitted_unconfirmed'});assert.equal(f.claims[0].events,3);assert.deepEqual(f.points,[{blobs:['1','2026-10-30','/search/','search_complete','none','','0'],doubles:[2],indexes:['/search/']},{blobs:['1','2026-10-30','/articles/tool-use/','page_view','','','0'],doubles:[1],indexes:['/articles/tool-use/']}]);
  assert.throws(()=>analyticsEngineTransport({writeDataPoint(){assert.fail();}}).submit({schemaVersion:1,day:'2026-10-30',page:'/search/',signal:{...event.signal,query:'secret'}},1));
+ for(const value of [{page:{toString:()=>'/search/'}},{day:{toString:()=>'2026-10-30'}}])assert.throws(()=>analyticsEngineTransport({writeDataPoint(){assert.fail();}}).submit({schemaVersion:1,day:'2026-10-30',page:'/search/',signal:event.signal,...value},1));
 });
 test('actual D1 atomic hourly/monthly cap survives concurrency and backward clock without identities',{timeout:30000},async()=>{
  const f=await dbFixture();try{let now=at;const p={...policy,hourEvents:8,monthEvents:9},points=[],collect=createMeasurementCollector({policy:p,quota:d1MeasurementQuota(f.db),transport:analyticsEngineTransport({writeDataPoint(p){points.push(p);}}),now:()=>now});

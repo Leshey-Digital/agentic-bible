@@ -15,7 +15,7 @@ export function measurementPolicy(raw:unknown):MeasurementPolicy|undefined{
 }
 export function analyticsEngineTransport(binding:AnalyticsEngineBinding):MeasurementTransport{
  return {submit(row,count){
-  if(!row||keys(row)!=='day,page,schemaVersion,signal'||row.schemaVersion!==1||!/^\d{4}-\d{2}-\d{2}$/.test(row.day)||!measurementPage(row.page)||!checkedSignal(row.signal,row.page)||!Number.isSafeInteger(count)||count<1||count>8)throw Error('measurement_projection_required');
+  if(!row||keys(row)!=='day,page,schemaVersion,signal'||row.schemaVersion!==1||typeof row.day!=='string'||typeof row.page!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(row.day)||!measurementPage(row.page)||!checkedSignal(row.signal,row.page)||!Number.isSafeInteger(count)||count<1||count>8)throw Error('measurement_projection_required');
   const s=row.signal,detail='results'in s?s.results:'outcome'in s?s.outcome:'component'in s?s.component:'',article='article'in s?s.article:'',expanded='expanded'in s&&s.expanded?'1':'0';
   const result=binding.writeDataPoint({blobs:['1',row.day,row.page,s.event,detail,article,expanded],doubles:[count],indexes:[row.page]});
   if(result&&(typeof result==='object'||typeof result==='function')&&typeof (result as PromiseLike<unknown>).then==='function'){void Promise.resolve(result).catch(()=>{});throw Error('measurement_submission_unconfirmed');}

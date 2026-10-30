@@ -24,10 +24,12 @@ export function createMeasurementClient(options:{enabled:boolean;origin:'https:/
   })();
   return pending;
  }
- const recorder:Recorder=createRecorder({enabled:options.enabled,origin:options.origin,sink(row){
+ const admit=createRecorder({enabled:options.enabled,origin:options.origin,sink(row){
   if(stopped||!permitted()||queue.length>=8)throw Error('measurement_queue_closed');queue.push(row);
   if(queue.length===8)queueMicrotask(()=>{void flush();});
  }});
+ let pageMeasured=false;
+ const recorder:Recorder=(signal,context)=>{const isPage=!!signal&&typeof signal==='object'&&(signal as {event?:unknown}).event==='page_view';if(isPage&&pageMeasured)return false;const accepted=admit(signal,context);if(accepted&&isPage)pageMeasured=true;return accepted;};
  return {recorder,flush,revoke(){stop('revoked');},resume(){if(failed){state='stopped';return;}if(state==='revoked'&&permitted()){stopped=false;state='idle';}},dispose(){stop('stopped');},state:()=>state,queued:()=>queue.length};
 }
 /** The preference is a versioned boolean, never a visitor/session identifier. */

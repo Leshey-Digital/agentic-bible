@@ -1,9 +1,10 @@
 import type {Recorder,Signal} from './aggregate.ts';
 
 let active:Recorder|undefined;
-export function recordMeasurement(signal:Signal):void {
-  if(!active)return;
-  try{active(signal,{origin:location.origin,pathname:location.pathname,consent:'granted',dnt:navigator.doNotTrack,gpc:(navigator as Navigator&{globalPrivacyControl?:boolean}).globalPrivacyControl});}catch{/* Measurement must never break reading, search or a confirmed save. */}
+export const measurementReadyEvent='agentic-bible-measurement-ready';
+export function recordMeasurement(signal:Signal):boolean {
+  if(!active)return false;
+  try{return active(signal,{origin:location.origin,pathname:location.pathname,consent:'granted',dnt:navigator.doNotTrack,gpc:(navigator as Navigator&{globalPrivacyControl?:boolean}).globalPrivacyControl});}catch{return false;/* Measurement must never break reading, search or a confirmed save. */}
 }
 
 // Only a separately approved, compiled integration may install a recorder.
@@ -16,5 +17,6 @@ export function installMeasurement(recorder:Recorder,consent:()=>boolean):()=>vo
   recordMeasurement({event:'page_view'});
   const error=()=>recordMeasurement({event:'reader_error',component:location.pathname==='/search/'?'search':location.pathname==='/contribute/'?'contribution':'reader'});
   window.addEventListener('error',error);window.addEventListener('unhandledrejection',error);
+  window.dispatchEvent(new Event(measurementReadyEvent));
   return ()=>{if(active===wrapped)active=undefined;window.removeEventListener('error',error);window.removeEventListener('unhandledrejection',error);};
 }
