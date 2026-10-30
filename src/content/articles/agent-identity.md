@@ -39,6 +39,8 @@ Delegation describes acting on another party’s behalf while retaining a meanin
 
 For the reference example, the user might permit reading one collection while the assistant service has broader technical access for unrelated jobs. A proposed delegation should retain the narrower task boundary rather than silently substitute all of the service’s privileges. If the user withdraws access, the implementation needs a defined response for ongoing and future work. These requirements cannot be inferred merely from the presence of an “on behalf of” label in a message.
 
+Follow a concrete, original example: user **U** permits service **S** to read collection **A** from document service **D**. U asks S to read A. S authenticates itself to D and presents the verified delegation for U. D checks the caller, intended resource and requested read against that delegation before returning A. If the same authenticated S asks to write A or read collection B, this grant does not authorize either action. Calling S “editor” changes none of those checks. This is a conceptual request trace, not an OAuth wire format or SPIFFE configuration; the actual protocol and receiver must implement the checks.
+
 ## Check the receiving boundary
 
 The cited MCP authorization version requires resource-aware token handling and validation of intended audience, and prohibits token passthrough to upstream services. These rules concern its documented HTTP authorization arrangement. They illustrate why a token accepted for one resource should not be treated as a universal credential for every destination. Other protocols and local transports require their own analysis. [3](#source-mcp-auth)

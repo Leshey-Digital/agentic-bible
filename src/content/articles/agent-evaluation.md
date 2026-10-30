@@ -45,7 +45,16 @@ For the correction example, a claim that an edit succeeded would need a correspo
 
 τ-bench distinguishes success at least once across repeated attempts from success on every attempt in a set of trials. Its pass^k metric measures the latter, averaged over tasks. This is different from pass@k, which concerns finding at least one successful attempt. Neither metric alone captures every aspect of an application, and trial counts and conditions need to accompany any reported result. [2](#source-tau-bench)
 
-In the illustrative correction task, repeated runs could expose inconsistent citation choices. A report would distinguish the proportion of successful runs from a selected best run. It would also record incomplete or stopped runs rather than silently excluding them. No benchmark statistics or performance claims for this encyclopedia are supplied here.
+Here is an original miniature example with four tasks, each attempted three times under the same declared conditions:
+
+- **Task A:** success, success, success.
+- **Task B:** success, failure, success.
+- **Task C:** failure, failure, success.
+- **Task D:** failure, failure, failure.
+
+Three of four tasks succeeded at least once: 75%. Only one of four succeeded on all three attempts: 25%. Six of the twelve individual attempts succeeded: 50%. These answer three different questions using the same observations. They are illustrative fractions, not reported benchmark scores or a production reliability estimate. Formal benchmark estimators and sampling conditions still need to be read in the benchmark's definition.
+
+For the correction task, this distinction could expose inconsistent citation choices hidden by a selected best run. Keep incomplete or stopped attempts in the declared accounting rather than silently excluding them. A small example can explain a metric; a useful evaluation also needs enough representative cases and repeated observations for the decision being made.
 
 ## Design cases that expose a boundary
 

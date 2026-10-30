@@ -25,7 +25,7 @@
     "test:editorial": "node --test tests/editorial/*.test.ts",
     "test:editorial:browser": "PLAYWRIGHT_BROWSERS_PATH=.git/playwright playwright test --config playwright.editorial.config.ts",
     "test:monitoring": "node --test tests/monitoring/*.test.ts tests/monitoring/*.test.mjs",
-    "test:settings": "node --test tests/settings/*.test.ts",
+    "test:settings": "node --test tests/settings/*.test.ts tests/measurement/*.test.mjs",
     "test:integration-settings": "node --test tests/integration-settings/*.test.mjs",
     "test:hosted-integration-settings": "node --test tests/hosted-integration-settings/*.test.mjs",
     "test:integration": "node --test tests/integration/*.test.ts",

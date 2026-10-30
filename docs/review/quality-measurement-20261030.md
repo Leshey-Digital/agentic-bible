@@ -2,6 +2,8 @@
 
 This is local implementation and read-only provider evidence. Nothing in this checkpoint was published or deployed. The founding scope remains the sourced, interconnected encyclopedia with contributions, revision history, bounded automatic creation/maintenance and post-publication editorial follow-up in [the product specification](../../openspec/specs/product.md) and [roadmap](../roadmap.md). It is not complete.
 
+The subsequent [complete corpus review and bundled MVP decision](corpus-mvp-recovery-20261030.md) records the remaining eighteen entries, selected practical additions and the exact collection proposal. This initial report retains its own narrower test/source scope.
+
 ## What is actually deployed
 
 Official Agentic Bible connector reads on October 30 returned complete inventories: 14 staging versions and two production versions. Production is still `7eccb256-0659-43c4-b2e6-5f54ac652824`, deployment `76e27d35-fe4a-4d9f-ba16-3db019f4340d`, 100%, activated October 22. Its annotation pins source `cd762a6d87e9abda2cb4a04f112d1ac439c61b2c`. Its configuration has no D1, AI, credential or other bindings. Staging is still `a70ede39-1221-4a8a-983b-1ca66672bf69`, deployment `6593f4e8-aec8-4d4c-a738-f6b02f64769a`, 100%, October 25.
