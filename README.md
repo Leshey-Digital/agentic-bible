@@ -76,6 +76,8 @@ Run a `baseline` and then a `change` for one source. Synthetic HTTP responses pr
 
 The default-off [first-party aggregate collector](docs/first-party-measurement.md) now provides minimized consent controls, bounded same-origin ingestion, atomic global quota and a native Analytics Engine transport. No collection/binding/database is activated; editorial data is never reused for its counter.
 
+The default-off hosted maintenance composition now connects retained primary-source evidence, shared-budget complete generation and semantic assessment, opaque quality admission, atomic expected-head canonical Git history, and existing signed review/restoration tooling. Native source capture requires additive migration0028. No source port, AI policy, schedule, canonical credential or deployment authority is configured. A canonical Git write is not a live release; all reader deployment still uses qualified artifacts.
+
 ## Local measurement settings
 
 After `npm run build` and `npm run editorial:migrate`, start `npm run editorial:local` and open `/admin/settings/` with the local editor fixture. Google tag/GA4 and Microsoft Clarity identifiers save independently with per-section revisions and a bounded audit history. Use synthetic identifiers only. Consent defaults are denied and ads are locked off.

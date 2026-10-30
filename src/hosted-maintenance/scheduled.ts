@@ -65,8 +65,9 @@ export function createHostedMaintenanceAction(options:HostedMaintenanceOptions={
   const selection=selected(structuredClone(options.selection),native),policy=policyInput(options.policy);
   if((native&&options.canonical||selection.sources.some(s=>sourceBodyLimit(s.sourceId)>32768))&&!quality.verifier?.acceptedRequestSchemas?.includes(2))throw Error();
   const complete=native?{...options.completeCandidate,enabled:true,baseRevision:selection.baseRevision,...(options.canonical?{canonicalBase:{commit:options.canonical.expectedBaseCommit!,markdownSha256:options.canonical.expectedMarkdownHash!,markdown:options.canonical.baselineMarkdown!}}:{}),article:selection.article as import('../publishing/contracts.ts').SourceBackedArticle,db:options.db,clock:options.clock,policy,ai:options.completeCandidate?.ai?{run:options.completeCandidate.ai.run.bind(options.completeCandidate.ai)}:undefined,currency:options.completeCandidate?.currency?structuredClone(options.completeCandidate.currency):undefined}:undefined;
-  const completeAction=complete?createHostedCompleteCandidateAction(complete):undefined;if(completeAction&&completeAction.state!=='configured')throw Error();
   const canonicalAction=options.canonical?createHostedCanonicalPublisher({...options.canonical,db:options.db,clock:options.clock}):undefined;
+  if(canonicalAction&&quality.verifier?.environment==='production'){if(!quality.verifier.withDispatchGuard)throw Error();quality.verifier=quality.verifier.withDispatchGuard(()=>canonicalAction.preflight(selection.article.id).then(()=>{}));}
+  const completeAction=complete?createHostedCompleteCandidateAction({...complete,...(canonicalAction?{beforeDispatch:()=>canonicalAction.preflight(selection.article.id).then(()=>{})}:{})}):undefined;if(completeAction&&completeAction.state!=='configured')throw Error();
   if(options.publisher&&typeof options.publisher.execute!=='function'||canonicalAction&&(!native||canonicalAction.state!=='configured')||!options.publisher&&!canonicalAction)throw Error();
   configuration={selection,policy,quality,cron:options.cron,...(complete?{complete,completeAction}:{}),...(canonicalAction?{canonicalAction,canonical:{expectedBaseCommit:options.canonical!.expectedBaseCommit,expectedMarkdownHash:options.canonical!.expectedMarkdownHash,qualifiedCodeHash:options.canonical!.qualifiedCodeHash}}:{})};
  }catch{/* Missing/invalid trust or controlled capabilities always closes activation. */}
@@ -95,6 +96,7 @@ export function createHostedMaintenanceAction(options:HostedMaintenanceOptions={
    if(row.phase==='admitted'){
     const sources:CaptureReference[]=[];
     for(const source of config.selection.sources){
+     if(config.canonicalAction)await config.canonicalAction.preflight(config.selection.article.id);
      const requestKey=uuid(eventId+'\n'+source.sourceId),existing=await readSourceCapture(db,eventId,{...source,requestKey},false,now),packet=existing??await acquireMaintenanceSource({sourceId:source.sourceId,requestKey},{enabled:true,db,send,clock:now});
      sources.push(await retainSourceCapture(db,eventId,source.citationId,packet,now));
     }
@@ -111,6 +113,7 @@ export function createHostedMaintenanceAction(options:HostedMaintenanceOptions={
    }
    let command:Publish,budget:MaintenanceBudget|undefined,proposal:Awaited<ReturnType<MaintenanceBudget['job']>>,nativeProposal:Awaited<ReturnType<NonNullable<typeof config.completeAction>['prepare']>>|undefined;
    if(config.completeAction){
+    if(!['generated','complete'].includes(row.phase)&&config.canonicalAction)await config.canonicalAction.preflight(config.selection.article.id);
     nativeProposal=await (['generated','complete'].includes(row.phase)?config.completeAction.read:config.completeAction.prepare)({eventId,sources:references});
     command={schemaVersion:1,kind:'publish',eventId,baseRevision:config.selection.baseRevision,article:nativeProposal.article};
    }else{
@@ -130,6 +133,7 @@ export function createHostedMaintenanceAction(options:HostedMaintenanceOptions={
     const checked=validateReply(JSON.parse(proposal.response),request,config.policy);command=candidate(config.selection,eventId,checked.output.extracts,observedAt);
     if(canonical(command)!==proposal.packet||proposal.actual_cost!==checked.actualCost||proposal.input_tokens!==tokens(request)||proposal.output_tokens!==config.policy.maxOutputTokens)stop('hosted_maintenance_proposal_corrupt');
    }
+   if(row.phase!=='complete'&&config.canonicalAction)await config.canonicalAction.preflight(config.selection.article.id);
    const admission=await assessQuality(eventId,command.article,sources,{db,quality,clock:now});
    if(admission.decision==='deny'){
     if(row.phase!=='collected')stop('hosted_maintenance_journal');

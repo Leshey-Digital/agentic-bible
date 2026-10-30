@@ -25,3 +25,5 @@ Use mocked external source and AI responses with actual local D1 and the existin
 - Native source-backed maintenance MUST bind a complete previous article body and full original Markdown hash to quality/generation, and verify the exact qualified canonical code/base before new source/model costs.
 - A stale pinned operation MUST NOT silently rebase or spend on a new event; completed historical replay MUST NOT repeat external work.
 - Native schemas MUST preserve signed post-publication review/explicit restoration and exact saved-environment release preparation safeguards.
+
+Canonical generation and semantic assessment must recheck current baseline authority after durable monetary reservation, then refresh currency/time eligibility before inference. Completed receipt replay performs no new inference. An interrupted collected job must not charge a model against a stale canonical base.

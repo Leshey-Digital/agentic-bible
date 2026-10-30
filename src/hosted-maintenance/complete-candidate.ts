@@ -46,7 +46,7 @@ export function createHostedCompleteCandidateAction(options:CompleteCandidateOpt
   const prompt=prefix+JSON.stringify({eventId:selected.eventId,base:{...config.base,...(oldContext?{previousBody:oldContext.body,previousBodyHash:oldContext.bodyHash}:{})},article:{id:config.article.id,title:config.article.title,description:config.article.description,topic:config.article.topic},sources});
   const {requestHash,eventId:generationId}=cloudflareProseIdentity(prompt,config.policy.maxOutputTokens),price=currencyProvider(config.currency,'cloudflare-workers-ai','cloudflare-reported-token-usage-v1',cloudflareProseModel)!,budget=new MaintenanceBudget(db,{enabled:true,policy:config.currency});
   let generated:ProseDraft;const existing=await budget.job(generationId);
-  if(!existing){if(!allowGenerate)stop('hosted_complete_candidate_generation_required');generated=await createCloudflareProseAdapter({enabled:true,ai,db,currency:{enabled:true,policy:config.currency},policy:config.policy,inputTokenUpperBound:upperBound,clock,timeoutMs:timeout}).generate(prompt);}
+  if(!existing){if(!allowGenerate)stop('hosted_complete_candidate_generation_required');generated=await createCloudflareProseAdapter({enabled:true,ai,db,currency:{enabled:true,policy:config.currency},policy:config.policy,inputTokenUpperBound:upperBound,clock,timeoutMs:timeout,beforeDispatch:options.beforeDispatch}).generate(prompt);}
   else{
    const fingerprint=hash(canonical({requestHash,policy:config.policy,currency:currencyPin(config.currency),priceId:price.id}));
    if(existing.fingerprint!==fingerprint)stop('hosted_complete_candidate_generation_conflict');

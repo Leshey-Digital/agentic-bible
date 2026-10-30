@@ -11,4 +11,4 @@ export function maintenanceBuild(){
  if(!sourceCommit||execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim()!==sourceCommit)throw Error('history_build_source_pin_required');
  return readCanonicalMaintenance({mode,repo:process.cwd(),sourceCommit});
 }
-export function maintenanceCatalog(){const view=maintenanceBuild();return canonicalMaintenanceCatalog(view.history,view.enabled,'sourceCommit' in view?view.sourceCommit:null);}
+export function maintenanceCatalog(){const view=maintenanceBuild();return canonicalMaintenanceCatalog(view.history,view.enabled,'sourceCommit' in view?view.sourceCommit??null:null);}

@@ -96,7 +96,7 @@
     "test:production-hosted": "node --test tests/production-hosted/*.test.mjs",
     "test:vault-github": "node --test tests/vault-github/*.test.mjs",
     "test:integration-vault": "node --test tests/integration-vault/*.test.mjs",
-    "test:maintenance-adapters": "node --test tests/maintenance-adapters/*.test.mjs tests/hosted-maintenance/*.test.mjs",
+    "test:maintenance-adapters": "node --test --test-concurrency=1 tests/maintenance-adapters/*.test.mjs tests/hosted-maintenance/*.test.mjs",
     "test:production-hosted:browser": "node --test tests/production-hosted/browser.mjs",
     "test:history-target-pages": "node --test tests/history-target-pages/*.test.mjs",
     "test:production-config": "node --test tests/production-config/*.test.mjs",

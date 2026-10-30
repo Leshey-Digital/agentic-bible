@@ -1,3 +1,5 @@
+import {createHostedSemanticQualityVerifier} from '../../src/hosted-maintenance/semantic-quality.ts';
+import {report as semanticReport} from '../maintenance-quality/helpers.mjs';
 import {qualifiedCanonicalCodeHash} from '../../src/maintenance-github/core.ts';
 import {readSourceCapture} from '../../src/hosted-maintenance/source-capture.ts';
 import {prepareCandidate} from '../../src/release/artifact.ts';
@@ -407,4 +409,44 @@ test('native generated links must resolve to compiled inventory even if the trus
  const remote=controlledGitHub('hosted-unresolved-link'),f=await setup('unresolved-link'),n=await native(f,output=>output.blocks[1].content.push({type:'article',articleId:'untrusted-new-topic',label:'Unknown topic'}));try{
   const options=await canonicalOptions(f,n,remote),event=f.event();await assert.rejects(createHostedMaintenanceAction(options).scheduled(event),code('unresolved_article_link'));await f.local.restart();await assert.rejects(createHostedMaintenanceAction({...options,db:f.local.db}).scheduled(event),code('unresolved_article_link'));assert.equal(n.calls,1);assert.equal(f.counts().qualityCalls,0);assert.equal(remote.state.mutations,0);assert.equal((await f.local.db.prepare("SELECT currency_state FROM maintenance_proposals WHERE event_id LIKE 'cfa-%'").first()).currency_state,'settled');
  }finally{await f.local.close();}
+});
+
+
+test('scheduled native generation and semantic assessment share one retained paid ledger before controlled publication',async()=>{
+ const f=await setup('native-paid-semantic'),n=await native(f);let reviews=0;try{
+  const options=n.options(),markdown='---\ntitle: Controlled existing article\n---\nExisting substantive technical body with bounded source evidence and an explicit review boundary.\n';
+  const previous={commit:'a'.repeat(40),markdownSha256:hash(markdown),markdown};
+  options.quality={profile:'quality-gated-v1',minimumIndependentOrigins:1,canonicalContext:previous,verifier:createHostedSemanticQualityVerifier({enabled:true,db:f.local.db,previous,clock:options.clock,policy:options.policy,currency:options.completeCandidate.currency,ai:{async run(_model,input){reviews++;const request=JSON.parse(input.prompt.split('UNTRUSTED_DATA_JSON\n')[1]);assert.equal(request.canonicalBase.body,markdown.split('---\n')[2]);return {response:JSON.stringify(semanticReport(request)),usage:{prompt_tokens:100,completion_tokens:100,total_tokens:200}};}}})};
+  const event=f.event(),result=await createHostedMaintenanceAction(options).scheduled(event);assert.equal(result.state,'source-backed-publication-complete');assert.equal(result.livePublished,false);assert.equal(n.calls,1);assert.equal(reviews,1);
+  const rows=(await f.local.db.prepare("SELECT * FROM maintenance_proposals WHERE event_id LIKE 'cfa-%'").all()).results;assert.equal(rows.length,2);assert.ok(rows.every(row=>row.currency_state==='settled'&&row.currency_actual>0));
+  await f.local.restart();assert.deepEqual(await createHostedMaintenanceAction({...options,db:f.local.db}).scheduled(event),result);assert.equal(n.calls,1);assert.equal(reviews,1);assert.equal(f.publisher.current().manifest.state.sequence,1);
+ }finally{await f.local.close();}
+});
+
+
+test('resumed collected native job rechecks canonical base at the paid dispatch boundary',async()=>{
+ const remote=controlledGitHub('hosted-native-resumed-stale'),f=await setup('native-resumed-stale'),n=await native(f);try{
+  const options=await canonicalOptions(f,n,remote),event=f.event();let stopped=false;options.checkpoint=phase=>{if(phase==='source-ready'&&!stopped){stopped=true;throw Error('controlled collected interruption');}};
+  await assert.rejects(createHostedMaintenanceAction(options).scheduled(event));assert.equal(n.calls,0);assert.equal(f.counts().sourceCalls,1);
+  remote.append({'unrelated.txt':'A competing edit after retained collection.\n'});await f.local.restart();
+  await assert.rejects(createHostedMaintenanceAction({...options,db:f.local.db}).scheduled(event),code('writer_stale_base'));assert.equal(n.calls,0);assert.equal(f.counts().sourceCalls,1);assert.equal(remote.state.mutations,0);
+  const row=await f.local.db.prepare("SELECT * FROM maintenance_proposals WHERE event_id LIKE 'cfa-%'").first();assert.equal(row,null);
+ }finally{await f.local.close();}
+});
+
+test('canonical change while semantic reservation response is held prevents assessment and publication across restart',async()=>{
+ const remote=controlledGitHub('hosted-native-quality-stale'),f=await setup('native-quality-stale'),n=await native(f);let release;try{
+  let entered,reviews=0;const held=new Promise(r=>release=r),reserved=new Promise(r=>entered=r),options=await canonicalOptions(f,n,remote);
+  const db={prepare:sql=>f.local.db.prepare(sql),async batch(statements){const results=await f.local.db.batch(statements),rows=(await f.local.db.prepare("SELECT * FROM maintenance_proposals WHERE event_id LIKE 'cfa-%'").all()).results;if(rows.length===2&&rows.some(r=>r.state==='calling')&&rows.some(r=>r.currency_state==='settled')){entered();await held;}return results;}};
+  options.db=db;const previous={commit:options.canonical.expectedBaseCommit,markdownSha256:options.canonical.expectedMarkdownHash,markdown:options.canonical.baselineMarkdown};
+  options.quality={profile:'quality-gated-v1',minimumIndependentOrigins:1,verifier:createHostedSemanticQualityVerifier({enabled:true,db,previous,clock:options.clock,policy:options.policy,currency:options.completeCandidate.currency,ai:{async run(){reviews++;throw Error('unexpected stale semantic dispatch');}}})};
+  const event=f.event(),pending=createHostedMaintenanceAction(options).scheduled(event);
+  // If bounded prompt admission rejects before reservation, surface that exact
+  // error rather than indefinitely waiting for an impossible marker.
+  await Promise.race([reserved,pending.then(()=>{throw Error('missing semantic reservation marker');})]);
+  remote.append({'unrelated.txt':'A competing canonical edit during retained semantic reservation.\n'});release();
+  await assert.rejects(pending,code('quality_verifier_outcome_unconfirmed_no_retry'));assert.equal(n.calls,1);assert.equal(reviews,0);assert.equal(f.counts().sourceCalls,1);assert.equal(remote.state.mutations,0);
+  const rows=(await f.local.db.prepare("SELECT * FROM maintenance_proposals WHERE event_id LIKE 'cfa-%'").all()).results;assert.equal(rows.length,2);assert.equal(rows.filter(r=>r.currency_state==='settled').length,1);assert.ok(rows.some(r=>r.currency_state==='uncertain'&&r.currency_reserved>0));
+  await f.local.restart();await assert.rejects(createHostedMaintenanceAction(options).scheduled(event));assert.equal(n.calls,1);assert.equal(reviews,0);assert.equal(remote.state.mutations,0);
+ }finally{release?.();await f.local.close();}
 });

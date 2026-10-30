@@ -91,3 +91,10 @@ test('raw output boundary and JSON escaping settle within separate persisted bou
   assert.equal(rows.length,3);assert.ok(rows.every(row=>row.state==='complete'&&row.currency_state==='settled'));
  }finally{await f.close();}
 });
+
+test('trusted dispatch guard rejection and expiry after its await never call the provider and retain reservation',async()=>{
+ for(const phase of ['guard','expiry']){const f=await ledgerFixture('cloudflare-prose-dispatch-'+phase);try{let calls=0,now=Date.now();const p=currencyPolicy(),ai={async run(){calls++;return {response:text,usage};}};
+ const prose=adapter(f.db,{currency:control(p),ai,clock:()=>now,beforeDispatch:async()=>{await Promise.resolve();if(phase==='guard')throw Error('controlled stale canonical base');now=p.price.validUntil+1;}});
+ await assert.rejects(prose.generate('Controlled guarded dispatch '+phase));assert.equal(calls,0);const row=await f.db.prepare("SELECT * FROM maintenance_proposals WHERE event_id LIKE 'cfa-%'").first();assert.equal(row.currency_state,'uncertain');assert.ok(row.currency_reserved>0);
+ }finally{await f.close();}}
+});

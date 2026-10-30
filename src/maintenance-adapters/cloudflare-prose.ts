@@ -13,7 +13,7 @@ export function cloudflareProseIdentity(prompt:string,maxTokens:number){
 }
 export type ProseInputBound=(prompt:string)=>number;
 export type CloudflareProseOptions={enabled?:boolean;ai?:WorkersAiBinding;db?:SqlDatabase;currency?:CurrencyControl;policy?:unknown;
- inputTokenUpperBound?:ProseInputBound;clock?:()=>number;timeoutMs?:number;signal?:AbortSignal};
+ inputTokenUpperBound?:ProseInputBound;clock?:()=>number;timeoutMs?:number;signal?:AbortSignal;beforeDispatch?:()=>Promise<void>};
 export type ProseDraft={kind:'unverified-prose-draft';model:string;text:string;usage:Usage;costUpperBoundMicroUsd:number;costSettledMicroUsd:number;eventId:string};
 
 // The pinned Workerd Workers AI output type models this generation result as
@@ -55,7 +55,7 @@ export function createCloudflareProseAdapter(options:CloudflareProseOptions={}){
    const budget=new MaintenanceBudget(db,{enabled:true,policy:currency}),row=await budget.reserve(event,fingerprint,reservationPolicy,inputReservation,now,price.id);
    let dispatched=false;const controller=new AbortController();let timer:ReturnType<typeof setTimeout>|undefined;
    try{
-    const eligible=await budget.dispatchEligibility(row);eligible((clock??Date.now)());if(controller.signal.aborted||options.signal?.aborted)stop('cloudflare_prose_cancelled');dispatched=true;
+    await options.beforeDispatch?.();const eligible=await budget.dispatchEligibility(row);eligible((clock??Date.now)());if(controller.signal.aborted||options.signal?.aborted)stop('cloudflare_prose_cancelled');dispatched=true;
     const raw=await Promise.race([ai.run(request.model,{prompt:request.prompt,max_tokens:request.max_tokens,raw:request.raw}),new Promise<never>((_,reject)=>{timer=setTimeout(()=>{controller.abort();reject(new Error('cloudflare_prose_timeout'));},timeout);})]);
     if(controller.signal.aborted||options.signal?.aborted)stop('cloudflare_prose_timeout');
     if(!raw||typeof raw!=='object'||Array.isArray(raw))stop('cloudflare_prose_response');const value=raw as Record<string,unknown>;
