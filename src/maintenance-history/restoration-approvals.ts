@@ -32,7 +32,7 @@ export async function createRestorationApproval(db:SqlDatabase,value:any,admin:V
  const encoded=canonical(approval),fingerprint=await hash(encoded);
  await db.prepare(`INSERT INTO hosted_restoration_approvals(approval_id,request_id,owner_hash,input_json,approval_json,fingerprint,approved_at)
  SELECT ?,request_id,owner_hash,?,?,?,? FROM hosted_maintenance_reviews WHERE request_id=? AND owner_hash=? AND fingerprint=? AND version=? AND decision='revert-requested'
- AND version=(SELECT MAX(version) FROM hosted_maintenance_reviews WHERE receipt_commit=?) AND (SELECT COUNT(*) FROM hosted_restoration_approvals)<${view.catalog.schemaVersion===2?64:16} ON CONFLICT DO NOTHING`).bind(value.approvalId,raw,encoded,fingerprint,now,value.requestId,owner,request.fingerprint,request.version,current.commit).run();
+ AND version=(SELECT MAX(version) FROM hosted_maintenance_reviews WHERE receipt_commit=?) AND (SELECT COUNT(*) FROM hosted_restoration_approvals)<${view.catalog.schemaVersion>=2?64:16} ON CONFLICT DO NOTHING`).bind(value.approvalId,raw,encoded,fingerprint,now,value.requestId,owner,request.fingerprint,request.version,current.commit).run();
  const saved=await stored(db,value.approvalId);if(!saved)fail('restoration_approval_capacity_or_superseded');if(saved.owner_hash!==owner||saved.input_json!==raw)fail('restoration_approval_key_conflict');return lookupRestorationApproval(db,value.approvalId,admin,now);
 }
 export async function revokeRestorationApproval(db:SqlDatabase,id:string,admin:VerifiedAdmin,now=Date.now()){

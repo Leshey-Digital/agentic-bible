@@ -4,19 +4,24 @@ import {publicationMarkdown} from '../wiki-bridge/markdown.ts';
 import {maintenanceTarget} from '../maintenance-quality/target.ts';
 import {WriterOutbox} from '../maintenance-github/outbox.ts';
 import {session} from '../maintenance-github/transport.ts';
-import {leaves,regular,commit,decodeBlob,type Entry} from '../maintenance-github/core.ts';
+import {leaves,regular,commit,decodeBlob,qualifiedCanonicalCodeHash,type Entry} from '../maintenance-github/core.ts';
 import {repository,branch,sha,digest,blobSha,historyPath,intentInput,assertCanonicalHistoryCapacity,writerLimits,commitMutation,stop,type Intent} from '../maintenance-github/contracts.ts';
 import {readSourceBackedAuthority,sourceBackedCommand,type SourceBackedPublicationAuthority} from './authority.ts';
 import {nativeMaintenanceRecord,nativeCanonicalReceipt,type NativeProof} from './records.ts';
 
-export type HostedCanonicalOptions={enabled?:boolean;db?:SqlDatabase;expectedBaseCommit?:string;expectedMarkdownHash?:string;transport?:{kind:'expected-head-maintenance-http-v1';send:(request:Request)=>Promise<Response>};clock?:()=>number;checkpoint?:(phase:'intent'|'dispatched'|'remote-committed'|'verified')=>void|Promise<void>};
+export type HostedCanonicalOptions={enabled?:boolean;db?:SqlDatabase;expectedBaseCommit?:string;expectedMarkdownHash?:string;baselineMarkdown?:string;qualifiedCodeHash?:string;transport?:{kind:'expected-head-maintenance-http-v1';send:(request:Request)=>Promise<Response>};clock?:()=>number;checkpoint?:(phase:'intent'|'dispatched'|'remote-committed'|'verified')=>void|Promise<void>};
 /** Reuses the existing canonical outbox and bounded GitHub session. It creates
  * one expected-head atomic article/history/pointer commit; it cannot deploy.
  * Every source/AI/GitHub dependency is explicit and no credential is acquired. */
 export function createHostedCanonicalPublisher(options:HostedCanonicalOptions={}){
- const ready=!!options.db&&sha(options.expectedBaseCommit)&&digest(options.expectedMarkdownHash)&&options.transport?.kind==='expected-head-maintenance-http-v1'&&typeof options.transport.send==='function',state=!ready?'unconfigured' as const:options.enabled===true?'configured' as const:'disabled' as const;
- const db=options.db,expectedBase=options.expectedBaseCommit!,originalHash=options.expectedMarkdownHash!,send=options.transport?.send.bind(options.transport),clock=options.clock??Date.now,checkpoint=options.checkpoint;
- return Object.freeze({state,async publish(value:unknown,authority:SourceBackedPublicationAuthority){
+ const ready=!!options.db&&sha(options.expectedBaseCommit)&&digest(options.expectedMarkdownHash)&&digest(options.qualifiedCodeHash)&&typeof options.baselineMarkdown==='string'&&Buffer.byteLength(options.baselineMarkdown)<=65536&&hash(options.baselineMarkdown)===options.expectedMarkdownHash&&options.transport?.kind==='expected-head-maintenance-http-v1'&&typeof options.transport.send==='function',state=!ready?'unconfigured' as const:options.enabled===true?'configured' as const:'disabled' as const;
+ const db=options.db,expectedBase=options.expectedBaseCommit!,originalHash=options.expectedMarkdownHash!,send=options.transport?.send.bind(options.transport),clock=options.clock??Date.now,checkpoint=options.checkpoint,baseline=options.baselineMarkdown!,codeHash=options.qualifiedCodeHash!;
+ return Object.freeze({state,async preflight(articleId:string){
+  if(state!=='configured'||!db||!send)stop('hosted_canonical_'+state);const target=maintenanceTarget(articleId);let calls=0;
+  const api=session({reserve:async()=>{if(++calls>4)stop('native_preflight_read_limit');}},'native-read-only-preflight','read-only',{send},clock);
+  if((await api.request('/git/ref/heads/'+branch))?.object?.sha!==expectedBase)stop('writer_stale_base');const base=commit(await api.request('/git/commits/'+expectedBase),expectedBase),tree=leaves(await api.request('/git/trees/'+base.tree.sha+'?recursive=1'),base.tree.sha);
+  if(qualifiedCanonicalCodeHash(tree)!==codeHash)stop('native_unqualified_canonical_code');const entry=regular(tree,target.articlePath),markdown=decodeBlob(await api.request('/git/blobs/'+entry.sha),entry.sha,writerLimits.markdownBytes);if(markdown!==baseline||hash(markdown)!==originalHash)stop('writer_canonical_base_conflict');return {commit:expectedBase,markdownSha256:originalHash,markdown};
+ },async publish(value:unknown,authority:SourceBackedPublicationAuthority){
   if(state!=='configured'||!db||!send)stop('hosted_canonical_'+state);
   const command=sourceBackedCommand(value,authority),target=maintenanceTarget(command.article.id),id=command.eventId;
   const proof=await readSourceBackedAuthority(command,authority,db);if(proof.proposal.base.commit!==expectedBase||proof.proposal.base.markdownSha256!==originalHash||proof.proposal.base.revision!==command.baseRevision)stop('native_canonical_base_binding');
@@ -36,7 +41,7 @@ export function createHostedCanonicalPublisher(options:HostedCanonicalOptions={}
    }
    if(row.state==='preparing'){
     if((await api.request('/git/ref/heads/'+branch))?.object?.sha!==expectedBase)stop('writer_stale_base');
-    baseTree=(await treeAt(expectedBase)).leaves;assertCanonicalHistoryCapacity(baseTree.keys(),64);
+    baseTree=(await treeAt(expectedBase)).leaves;if(qualifiedCanonicalCodeHash(baseTree)!==codeHash)stop('native_unqualified_canonical_code');assertCanonicalHistoryCapacity(baseTree.keys(),64);
     const baseline=decodeBlob(await api.request('/git/blobs/'+regular(baseTree,target.articlePath).sha),regular(baseTree,target.articlePath).sha,writerLimits.markdownBytes);if(hash(baseline)!==originalHash)stop('writer_canonical_base_conflict');
     let previous:null|{eventId:string;revisionId:string;path:string;sha256:string}=null;
     if(command.baseRevision===null){if(baseTree.has(target.pointerPath))stop('writer_previous_revision_conflict');}

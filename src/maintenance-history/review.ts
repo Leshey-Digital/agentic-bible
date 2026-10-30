@@ -7,7 +7,7 @@ export class MaintenanceReviewError extends Error{code:string;status:number;cons
 function reject(code:string,status=409):never{throw new MaintenanceReviewError(code,status);}
 export const historyBindingConfigured=()=>typeof __AGENTIC_MAINTENANCE_CATALOG_SHA256__==='string'&&digest(__AGENTIC_MAINTENANCE_CATALOG_SHA256__);
 export type CatalogEntry={articleId?:string;current:boolean;receipt:{schemaVersion:1;mode:'local-synthetic-only'|'hosted-source-backed';state:'canonical-commit-verified';livePublished:false;eventId:string;authorityHash:string;baseCommit:string;commit:string;articleRevision:string;markdownSha256:string;historyPath:string;historySha256:string;flags:string[]}};
-export type Catalog={schemaVersion:1|2;mode:'controlled-static-preview';enabled:true;sourceCommit:string;noindex:true;history:CatalogEntry[]};
+export type Catalog={schemaVersion:1|2|3;mode:'controlled-static-preview';enabled:true;sourceCommit:string;noindex:true;history:CatalogEntry[]};
 export async function verifiedCatalog(assets:{fetch(request:Request):Promise<Response>}){
  if(!historyBindingConfigured())reject('maintenance_review_unconfigured',503);
  const response=await assets.fetch(new Request('https://staging.agenticbible.si/maintenance-history.json',{signal:AbortSignal.timeout(2000)}));

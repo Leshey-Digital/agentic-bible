@@ -1,3 +1,6 @@
+import {qualifiedCanonicalCodeHash} from '../../src/maintenance-github/core.ts';
+import {readSourceCapture} from '../../src/hosted-maintenance/source-capture.ts';
+import {prepareCandidate} from '../../src/release/artifact.ts';
 import {execFileSync} from 'node:child_process';
 import {pages,articlePage} from '../../src/publishing/render.ts';
 import {controlledGitHub} from '../maintenance-github/provider.mjs';
@@ -11,20 +14,20 @@ import {admitSourceBackedPublication} from '../../src/hosted-maintenance/authori
 import {cloudflareProseModel} from '../../src/maintenance-adapters/cloudflare-prose.ts';
 import {test,after} from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync,rmSync,symlinkSync,readdirSync} from 'node:fs';
+import {readFileSync,rmSync,symlinkSync,readdirSync,writeFileSync} from 'node:fs';
 import {build} from 'esbuild';
 import {createHostedMaintenanceAction} from '../../src/hosted-maintenance/scheduled.ts';
 import {PublicationStore} from '../../src/publishing/store.ts';
 import {deterministicProvider,demonstrationPolicy} from '../../src/wiki-bridge/maintenance-provider.ts';
 import {fixture,sample,quality} from '../maintenance-quality/helpers.mjs';
-import {mcp,document,urls} from '../maintenance-adapters/fixtures.mjs';
+import {mcp,openai,document,urls} from '../maintenance-adapters/fixtures.mjs';
 
 const roots=[];after(()=>{for(const root of roots)rmSync(root,{recursive:true,force:true});});
 async function setup(label){
  const local=await fixture('hosted-scheduled-'+label);
- for(const file of ['0005_http_observations.sql','0010_maintenance_proposals.sql','0015_maintenance_pipeline.sql','0021_quality_pipeline_dispositions.sql']){
+ for(const file of ['0005_http_observations.sql','0010_maintenance_proposals.sql','0015_maintenance_pipeline.sql','0021_quality_pipeline_dispositions.sql','0026_http_download_envelope.sql','0028_hosted_source_capture.sql']){
   const raw=readFileSync('migrations/'+file,'utf8');
-  for(const sql of raw.replace(/--[^\n]*/g,'').split(file==='0021_quality_pipeline_dispositions.sql'?/;(?=\s*(?:CREATE|$))/:/;/).filter(s=>s.trim()))await local.db.prepare(sql).run();
+  for(const sql of raw.replace(/--[^\n]*/g,'').match(/\s*CREATE TRIGGER[\s\S]*?END;|[^;]+;/gi)||[])await local.db.prepare(sql).run();
  }
  const publisher=new PublicationStore('article-publication-hosted-scheduled-'+crypto.randomUUID());roots.push(publisher.root);
  const {article}=sample();article.id='tool-use';article.related=['ai-agent','model-context-protocol'];
@@ -120,7 +123,7 @@ async function native(f,change=()=>{}){
   for(const sql of source.match(/\s*CREATE TRIGGER[\s\S]*?END;|[^;]+;/gi)||[])if(sql.trim())await f.local.db.prepare(sql).run();
  }
  let calls=0;
- const options=()=>{const o=f.options();o.selection.article=sourceBackedArticleInput({...o.selection.article,provenance:'charged-acquired-sources-v1'});o.source.kind='bounded-official-http-source-v2';delete o.provider;o.publisher=f.publisher;
+ const options=()=>{const o=f.options();o.quality.verifier.acceptedRequestSchemas=[1,2];o.selection.article=sourceBackedArticleInput({...o.selection.article,provenance:'charged-acquired-sources-v1'});o.source.kind='bounded-official-http-source-v2';delete o.provider;o.publisher=f.publisher;
   const at=f.event().scheduledTime;o.completeCandidate={enabled:true,currency:{enabled:true,policy:{schemaVersion:1,unit:'MICRO_USD',account:'controlled-native-hosted',runLimit:100000,dayLimit:500000,monthLimit:10000000,dayBaseline:166667,monthBaseline:5000000,price:{id:'controlled-native-cloudflare-v1',provider:'cloudflare-workers-ai',model:cloudflareProseModel,tokenizer:'cloudflare-reported-token-usage-v1',basis:'input-output-tokens',inputPerMillion:27000,outputPerMillion:201000,requestFee:0,validFrom:at-86400000,validUntil:at+86400000}}},ai:{async run(model,input){calls++;assert.equal(model,cloudflareProseModel);assert.equal(input.raw,true);assert.match(input.prompt,/complete sourced encyclopedia/);const output={title:'Complete native candidate',description:'Original bounded complete candidate from controlled evidence.',blocks:[{type:'heading',id:'native-complete',text:'Complete source-backed article'},{type:'paragraph',content:[{type:'text',text:'A guarded agent validates every proposed tool argument before requesting an external action and retains the original evidence for later human review.'},{type:'citation',sourceId:'mcp-tools'}]}]};change(output);return {response:JSON.stringify(output),usage:{prompt_tokens:100,completion_tokens:100,total_tokens:200}};}}};return o;};
  return {options,get calls(){return calls}};
 }
@@ -178,9 +181,10 @@ test('native replay after a lost actual publisher response mints fresh admission
  }finally{await f.local.close();}
 });
 
+function canonicalPins(remote,commit=remote.state.base){const rows=execFileSync('git',['--git-dir='+remote.state.root,'ls-tree','-r','-z',commit],{encoding:'utf8'}).split('\0').filter(Boolean).map(line=>{const [meta,path]=line.split('\t'),[mode,type,sha]=meta.split(' ');return {path,mode,type,sha};}),baselineMarkdown=remote.read('src/content/articles/tool-use.md',commit).toString();return {expectedBaseCommit:commit,baselineMarkdown,expectedMarkdownHash:hash(baselineMarkdown),qualifiedCodeHash:qualifiedCanonicalCodeHash(new Map(rows.map(e=>[e.path,e])))};}
 async function canonicalOptions(f,n,remote){
  for(const sql of readFileSync('migrations/0011_canonical_maintenance_writes.sql','utf8').replace(/--[^\n]*/g,'').split(';').filter(s=>s.trim()))await f.local.db.prepare(sql).run();
- const options=n.options();delete options.publisher;options.canonical={enabled:true,expectedBaseCommit:remote.state.base,expectedMarkdownHash:hash(remote.read('src/content/articles/tool-use.md')),transport:{kind:'expected-head-maintenance-http-v1',send:remote.port.send}};return options;
+ const options=n.options();delete options.publisher;options.canonical={enabled:true,...canonicalPins(remote),transport:{kind:'expected-head-maintenance-http-v1',send:remote.port.send}};return options;
 }
 
 test('native scheduled path is filesystem-free through atomic expected-head article/history/pointer Git publication',async()=>{
@@ -206,8 +210,8 @@ test('native current-head conflict never mutates or silently rebases, and shared
  const remote=controlledGitHub('hosted-native-stale'),f=await setup('native-canonical-stale'),n=await native(f);try{
   const options=await canonicalOptions(f,n,remote),event=f.event();remote.append({'unrelated.txt':'A competing trusted edit changes the expected head.\n'});
   await assert.rejects(createHostedMaintenanceAction(options).scheduled(event),code('writer_stale_base'));assert.equal(remote.state.mutations,0);
-  assert.equal((await f.local.db.prepare("SELECT currency_state FROM maintenance_proposals WHERE event_id LIKE 'cfa-%'").first()).currency_state,'settled');
-  await assert.rejects(createHostedMaintenanceAction(options).scheduled({...event,scheduledTime:event.scheduledTime-1000}),code('pipeline_capacity_or_pending_operation'));assert.equal(n.calls,1);assert.equal(remote.state.mutations,0);
+  assert.equal(await f.local.db.prepare("SELECT currency_state FROM maintenance_proposals WHERE event_id LIKE 'cfa-%'").first(),null);
+  await assert.rejects(createHostedMaintenanceAction(options).scheduled({...event,scheduledTime:event.scheduledTime-1000}),code('writer_stale_base'));assert.equal(n.calls,0);assert.equal(remote.state.mutations,0);
  }finally{await f.local.close();}
 });
 
@@ -244,7 +248,7 @@ test('native concurrent dispatch has one durable claimant and one actual canonic
 
 test('native opaque admission binds source/generation pins and candidate, and serialized copies cannot authorize',async()=>{
  const f=await setup('native-forged-pins'),n=await native(f);try{
-  const options=n.options(),result=await createHostedMaintenanceAction(options).scheduled(f.event()),row=await f.local.db.prepare('SELECT journal FROM maintenance_pipeline_jobs').first(),references=JSON.parse(row.journal).sources.map(s=>({citationId:s.citationId,requestKey:s.requestKey,source:{...s.source,raw:{...s.source.raw,bytes:Buffer.from(s.source.raw.bytes,'base64')}}}));
+  const options=n.options(),result=await createHostedMaintenanceAction(options).scheduled(f.event()),row=await f.local.db.prepare('SELECT journal FROM maintenance_pipeline_jobs').first(),references=await Promise.all(JSON.parse(row.journal).sources.map(async s=>({citationId:s.citationId,requestKey:s.requestKey,source:(await readSourceCapture(f.local.db,result.eventId,s,true)).source})));
   const complete={...options.completeCandidate,enabled:true,article:options.selection.article,policy:options.policy,db:f.local.db,clock:options.clock},proposal=await createHostedCompleteCandidateAction(complete).read({eventId:result.eventId,sources:references}),context={db:f.local.db,completeCandidate:complete,quality:options.quality,clock:options.clock};
   const forged=structuredClone(proposal);forged.generation.eventId='cfa-'+'0'.repeat(48);await assert.rejects(admitSourceBackedPublication({proposal:forged,baseRevision:null,references},context),code('source_backed_proposal_binding'));
   const forgedSources=structuredClone(references);forgedSources[0].requestKey=crypto.randomUUID();await assert.rejects(admitSourceBackedPublication({proposal,baseRevision:null,references:forgedSources},context),code('adapter_uncharged_body'));
@@ -275,14 +279,14 @@ test('native and mixed render provenance is accurate while fixture rendering sta
 test('actual workerd executes portable native source/currency/quality/canonical path and restarts without another external request',async()=>{
  const {Miniflare,convertV4MiniflareOptions}=await import('miniflare'),{report}=await import('../maintenance-quality/helpers.mjs'),remote=controlledGitHub('hosted-native-workerd'),{article:fixtureArticle}=sample(),article=sourceBackedArticleInput({...fixtureArticle,provenance:'charged-acquired-sources-v1',sources:[{id:'mcp-tools',title:'Controlled native evidence',url:urls[mcp],publisher:'Controlled documentation',context:'Original synthetic content for native Workers testing.'}],blocks:[{type:'paragraph',content:[{type:'text',text:'A controlled native complete candidate placeholder with a required source citation.'},{type:'citation',sourceId:'mcp-tools'}]}]}),path=process.cwd()+'/.git/hosted-native-workerd-test-'+crypto.randomUUID();roots.push(path);
  const script=(await build({entryPoints:['tests/hosted-maintenance/worker-entry.ts'],bundle:true,write:false,format:'esm',platform:'browser',target:'es2022',external:['node:*']})).outputFiles[0].text;let sourceCalls=0,aiCalls=0,qualityCalls=0,transportFailure;
- const options={...convertV4MiniflareOptions({name:'hosted-native-test',modules:true,script,compatibilityDate:'2026-10-16',compatibilityFlags:['nodejs_compat'],bindings:{ARTICLE:JSON.stringify(article),BASE:remote.state.base,MARKDOWN_HASH:hash(remote.read('src/content/articles/tool-use.md'))},d1Databases:{EDITORIAL_DB:'hosted-native-d1'},outboundService:async request=>{
+ const options={...convertV4MiniflareOptions({name:'hosted-native-test',modules:true,script,compatibilityDate:'2026-10-16',compatibilityFlags:['nodejs_compat'],bindings:{ARTICLE:JSON.stringify(article),BASE:remote.state.base,MARKDOWN_HASH:hash(remote.read('src/content/articles/tool-use.md')),BASELINE:remote.read('src/content/articles/tool-use.md').toString(),CODE_HASH:canonicalPins(remote).qualifiedCodeHash},d1Databases:{EDITORIAL_DB:'hosted-native-d1'},outboundService:async request=>{
   const url=new URL(request.url);if(url.hostname==='api.github.com'){try{return await remote.port.send(new Request(request.url,{method:request.method,headers:[...request.headers],body:request.method==='GET'?undefined:await request.arrayBuffer(),redirect:'manual',credentials:'omit'}));}catch(error){transportFailure={message:String(error),origin:url.origin,redirect:request.redirect,authorizationPresent:request.headers.has('authorization')};return Response.json({controlledTransportError:String(error)},{status:500});}}
   if(url.hostname==='controlled-ai.invalid'){aiCalls++;return Response.json({response:JSON.stringify({title:'Actual Workers native candidate',description:'A complete native candidate tested with controlled source and provider responses.',blocks:[{type:'paragraph',content:[{type:'text',text:'A guarded agent validates every proposed tool argument before requesting an external action and retains the original evidence for later human review.'},{type:'citation',sourceId:'mcp-tools'}]}]}),usage:{prompt_tokens:100,completion_tokens:100,total_tokens:200}});}
   if(url.hostname==='controlled-quality.invalid'){qualityCalls++;return Response.json(report(await request.json()));}
   assert.equal(request.url,urls[mcp]);sourceCalls++;return new Response(document(mcp,'A guarded agent validates every proposed tool argument before requesting an external action and retains the original evidence for later human review.'),{headers:{'Content-Type':'text/html'}});
  }}),cf:false,resourcePersistencePath:path};let runtime=new Miniflare(options);
  try{
-  const db=await runtime.getD1Database('EDITORIAL_DB');for(const file of ['0005_http_observations.sql','0010_maintenance_proposals.sql','0011_canonical_maintenance_writes.sql','0015_maintenance_pipeline.sql','0016_maintenance_currency.sql','0020_quality_admission.sql','0021_quality_pipeline_dispositions.sql','0024_currency_policy_rotation.sql']){
+  const db=await runtime.getD1Database('EDITORIAL_DB');for(const file of ['0005_http_observations.sql','0010_maintenance_proposals.sql','0011_canonical_maintenance_writes.sql','0015_maintenance_pipeline.sql','0016_maintenance_currency.sql','0020_quality_admission.sql','0021_quality_pipeline_dispositions.sql','0024_currency_policy_rotation.sql','0026_http_download_envelope.sql','0028_hosted_source_capture.sql']){
    const raw=readFileSync('migrations/'+file,'utf8').replace(/--[^\n]*/g,'');for(const sql of raw.match(/\s*CREATE TRIGGER[\s\S]*?END;|[^;]+;/gi)||[])if(sql.trim())await db.prepare(sql).run();
   }
   const response=await runtime.dispatchFetch('https://controlled.invalid/controlled-scheduled-tick'),result=await response.json();assert.equal(response.status,200,JSON.stringify({result,calls:remote.state.calls,transportFailure}));assert.equal(result.state,'source-backed-canonical-complete');assert.equal(remote.state.mutations,1);assert.equal(sourceCalls,1);assert.equal(aiCalls,1);assert.equal(qualityCalls,1);
@@ -293,21 +297,114 @@ test('actual workerd executes portable native source/currency/quality/canonical 
 test('native canonical tree builds the existing twenty-entry Astro/Pagefind reader with schema3 history and native provenance',async()=>{
  const remote=controlledGitHub('hosted-native-build'),f=await setup('native-build'),n=await native(f),checkout=process.cwd()+'/.git/hosted-native-projected-build-'+crypto.randomUUID();roots.push(checkout);try{
   const options=await canonicalOptions(f,n,remote),result=await createHostedMaintenanceAction(options).scheduled(f.event());
-  execFileSync('git',['clone','--no-hardlinks','--no-checkout',remote.state.root,checkout],{stdio:'ignore'});execFileSync('git',['checkout','--detach',result.canonical.commit],{cwd:checkout,stdio:'ignore'});symlinkSync(process.cwd()+'/node_modules',checkout+'/node_modules','dir');
+  execFileSync('git',['clone','--no-hardlinks','--no-checkout',remote.state.root,checkout],{stdio:'ignore'});execFileSync('git',['checkout','--detach',result.canonical.commit],{cwd:checkout,stdio:'ignore'});symlinkSync(process.cwd()+'/node_modules',checkout+'/node_modules','dir');writeFileSync(checkout+'/.git/info/exclude','node_modules\n');
   execFileSync('npm',['run','build'],{cwd:checkout,env:{...process.env,CI:'1',ASTRO_TELEMETRY_DISABLED:'1',CLOUDFLARE_CF_FETCH_ENABLED:'false',WRANGLER_SEND_METRICS:'false',AGENTIC_BIBLE_DISCOVERY_MODE:'staging',AGENTIC_BIBLE_SOURCE_COMMIT:result.canonical.commit,AGENTIC_BIBLE_MAINTENANCE_HISTORY_MODE:'controlled-static-preview'},timeout:45000,maxBuffer:1024*1024,stdio:['ignore','pipe','pipe']});
   const html=readFileSync(checkout+'/dist/articles/tool-use/index.html','utf8');assert.match(html,/Complete native candidate/);assert.match(html,/Published source-backed maintenance/);assert.match(html,/AI-assisted sourced maintenance/);assert.match(html,/Source-backed generation/);assert.match(html,/Post-publication review flagged/);
   const catalog=JSON.parse(readFileSync(checkout+'/dist/maintenance-history.json','utf8'));assert.equal(catalog.schemaVersion,3);assert.equal(catalog.history[0].receipt.mode,'hosted-source-backed');assert.equal(catalog.history[0].receipt.commit,result.canonical.commit);
   assert.equal(JSON.parse(readFileSync(checkout+'/dist/source-catalog.json','utf8')).articles.length,20);assert.ok(readdirSync(checkout+'/dist/pagefind').includes('pagefind.js'));
+  const candidateOutput=process.cwd()+'/.git/hosted-native-candidate-'+crypto.randomUUID();roots.push(candidateOutput);const candidate=await prepareCandidate(checkout,candidateOutput);assert.equal(candidate.sourceCommit,result.canonical.commit);
  }finally{await f.local.close();}
 });
 
 test('native canonical successor binds its exact predecessor and preserves prior immutable history',async()=>{
  const remote=controlledGitHub('hosted-native-successor'),f=await setup('native-successor'),n=await native(f);try{
   const firstOptions=await canonicalOptions(f,n,remote),first=await createHostedMaintenanceAction(firstOptions).scheduled(f.event()),previousBytes=remote.read(historyPath(first.eventId));f.advance(1000);
-  const next=n.options();delete next.publisher;next.selection.baseRevision=first.canonical.articleRevision;next.completeCandidate.currency=firstOptions.completeCandidate.currency;next.canonical={...firstOptions.canonical,expectedBaseCommit:first.canonical.commit,expectedMarkdownHash:hash(remote.read('src/content/articles/tool-use.md'))};
+  const next=n.options();delete next.publisher;next.selection.baseRevision=first.canonical.articleRevision;next.completeCandidate.currency=firstOptions.completeCandidate.currency;next.canonical={...firstOptions.canonical,...canonicalPins(remote,first.canonical.commit)};
   next.completeCandidate.ai.run=async()=>({response:JSON.stringify({title:'Revised native complete candidate',description:'A later complete candidate retains its exact canonical predecessor.',blocks:[{type:'paragraph',content:[{type:'text',text:'The next controlled article explains how a guarded agent validates requested tool arguments and preserves original evidence through every revision for later human review.'},{type:'citation',sourceId:'mcp-tools'}]}]}),usage:{prompt_tokens:100,completion_tokens:100,total_tokens:200}});
   const second=await createHostedMaintenanceAction(next).scheduled(f.event());assert.equal(remote.state.mutations,2);assert.equal(second.canonical.baseCommit,first.canonical.commit);assert.deepEqual(remote.read(historyPath(first.eventId)),previousBytes);
   const record=JSON.parse(remote.read(historyPath(second.eventId)));assert.equal(record.previous.eventId,first.eventId);assert.equal(record.proposal.base.revision,first.canonical.articleRevision);assert.equal(record.proposal.base.commit,first.canonical.commit);
   const view=readCanonicalMaintenance({mode:'controlled-static-preview',repo:remote.state.root,sourceCommit:second.canonical.commit});assert.equal(view.history.length,2);assert.equal(view.history[0].current,true);assert.equal(view.history[1].current,false);
+ }finally{await f.local.close();}
+});
+
+test('native schema3 history retains the existing signed review and explicit restoration authority path',async()=>{
+ const {buildCanonicalHistorySite}=await import('../maintenance-restore/build-site.mjs'),{restorationFixture}=await import('../maintenance-restore/helpers.mjs'),{restoreMaintenanceRevision}=await import('../../src/maintenance-restore/coordinator.ts'),remote=controlledGitHub('hosted-native-restoration'),f=await setup('native-restoration'),n=await native(f);let reviewed;
+ try{
+  const firstOptions=await canonicalOptions(f,n,remote),first=await createHostedMaintenanceAction(firstOptions).scheduled(f.event()),targetMarkdown=remote.read('src/content/articles/tool-use.md').toString();f.advance(1000);
+  const next=n.options();delete next.publisher;next.selection.baseRevision=first.canonical.articleRevision;next.completeCandidate.currency=firstOptions.completeCandidate.currency;next.canonical={...firstOptions.canonical,...canonicalPins(remote,first.canonical.commit)};next.completeCandidate.ai.run=async()=>({response:JSON.stringify({title:'Native revision selected for later human follow-up',description:'A second native revision exercises retained restoration authority.',blocks:[{type:'paragraph',content:[{type:'text',text:'A later guarded agent revision retains all prior source records and verifies action boundaries before execution while allowing explicit human restoration to a retained ancestor.'},{type:'citation',sourceId:'mcp-tools'}]}]}),usage:{prompt_tokens:100,completion_tokens:100,total_tokens:200}});
+  const second=await createHostedMaintenanceAction(next).scheduled(f.event()),site=buildCanonicalHistorySite({remote,writerReceipts:[second.canonical,first.canonical]},second.canonical.commit);assert.equal(site.catalog.schemaVersion,3);
+  reviewed=await restorationFixture(site);assert.equal((await reviewed.approve()).status,200);assert.equal(remote.state.mutations,2);
+  const approved=await reviewed.app.db.prepare('SELECT * FROM hosted_restoration_approvals').first();
+  // Fill exactly the old 16-row boundary with unrelated valid-shaped retained
+  // approval rows; schema3 must retain the existing 64-row admitted capacity.
+  const audit=await reviewed.app.db.prepare('SELECT * FROM hosted_maintenance_reviews').first();
+  for(let index=0;index<15;index++){
+   const requestId=crypto.randomUUID(),approvalId=crypto.randomUUID(),receiptCommit=hash('retained-history-'+index).slice(0,40),input={...JSON.parse(audit.input_json),requestId,receiptCommit},raw=JSON.stringify(input,Object.keys(input).sort())+'\n';
+   await reviewed.app.db.prepare('INSERT INTO hosted_maintenance_reviews(request_id,owner_hash,input_json,fingerprint,receipt_commit,catalog_hash,version,decision,target_commit,note,created_at) VALUES(?,?,?,?,?,?,?,?,?,?,?)').bind(requestId,audit.owner_hash,raw,hash(JSON.stringify({owner:audit.owner_hash,input,createdAt:audit.created_at})),receiptCommit,audit.catalog_hash,1,audit.decision,audit.target_commit,audit.note,audit.created_at).run();
+   await reviewed.app.db.prepare('INSERT INTO hosted_restoration_approvals(approval_id,request_id,owner_hash,input_json,approval_json,fingerprint,approved_at) VALUES(?,?,?,?,?,?,?)').bind(approvalId,requestId,approved.owner_hash,approved.input_json,approved.approval_json,approved.fingerprint,approved.approved_at).run();
+  }
+  const newer=reviewed.app.input({expectedVersion:1,decision:'revert-requested',targetCommit:first.canonical.commit});assert.equal((await reviewed.app.request(newer)).status,200);
+  const another=crypto.randomUUID();assert.equal((await reviewed.signedRequest('restore-approval',{approvalId:another,requestId:newer.requestId,confirm:'approve-canonical-restoration'})).status,200);assert.equal((await reviewed.app.db.prepare('SELECT COUNT(*) n FROM hosted_restoration_approvals').first()).n,17);
+  const receipt=await restoreMaintenanceRevision({approvalId:another},await reviewed.context());assert.equal(receipt.operation,'reviewed-restoration');assert.equal(receipt.restoredFromCommit,first.canonical.commit);assert.equal(remote.state.mutations,3);assert.equal(receipt.livePublished,false);
+  const restored=remote.read('src/content/articles/tool-use.md').toString(),body=text=>text.replace(/^---\n[\s\S]*?\n---\n/,'');assert.equal(body(restored),body(targetMarkdown));assert.match(restored,/AI-assisted sourced maintenance/);assert.match(restored,/qualityReceiptHash/);assert.match(restored,/restoration/);
+  const view=readCanonicalMaintenance({mode:'controlled-static-preview',repo:remote.state.root,sourceCommit:receipt.commit});assert.equal(view.history.length,3);assert.deepEqual(view.history.map(e=>e.operation),['restoration','automatic','automatic']);assert.equal(view.history[0].qualityRequired,true);assert.deepEqual(view.history[0].sources,view.history[2].sources);
+  const restoredSite=buildCanonicalHistorySite(site,receipt.commit);assert.equal(restoredSite.catalog.schemaVersion,3);assert.match(readFileSync(restoredSite.assets+'/articles/tool-use/index.html','utf8'),/Restored after a separate explicit admin approval/);
+ }finally{await reviewed?.close();await f.local.close();}
+});
+
+async function largeNativeOptions(f,n,remote,{overflow=false}={}){
+ const options=await canonicalOptions(f,n,remote);options.selection.article.sources[0]={...options.selection.article.sources[0],id:'openai-tools',url:urls[openai]};options.selection.article.blocks[0].content[1].sourceId='openai-tools';options.selection.sources=[{citationId:'openai-tools',sourceId:openai}];
+ const ai=options.completeCandidate.ai.run;options.completeCandidate.ai.run=async(...args)=>{const generated=await ai(...args),value=JSON.parse(generated.response);for(const block of value.blocks)if(block.type==='paragraph')for(const part of block.content)if(part.type==='citation')part.sourceId='openai-tools';return {...generated,response:JSON.stringify(value)};};
+ const marker='PRIVATE_RAW_NAVIGATION_MARKER',html=document(openai,'A guarded agent validates every proposed tool argument before requesting an external action and retains the original evidence for later human review.').replace('Navigation is not evidence.',marker+' '+('navigation '.repeat(overflow?105000:6000)));let sourceCalls=0;
+ options.source.send=async()=>{sourceCalls++;return new Response(html,{headers:{'Content-Type':'text/html'}});};
+ return {options,html,marker,get sourceCalls(){return sourceCalls}};
+}
+
+test('registered large original HTML retains private bounded chunks and reaches exact native quality/canonical publication',async()=>{
+ const remote=controlledGitHub('hosted-large-source'),f=await setup('large-source'),n=await native(f);try{
+  const large=await largeNativeOptions(f,n,remote);let request;const verify=large.options.quality.verifier.verify;large.options.quality.verifier.verify=async(...args)=>{request=args[0];return verify(...args);};
+  const event=f.event(),result=await createHostedMaintenanceAction(large.options).scheduled(event);assert.equal(result.state,'source-backed-canonical-complete');assert.ok(Buffer.byteLength(large.html)>32768);assert.equal(request.schemaVersion,2);assert.equal(request.sources[0].bodyHash,hash(large.html));assert.ok(request.canonicalBase.body.length>100);assert.doesNotMatch(JSON.stringify(request),new RegExp(large.marker));
+  const capture=await f.local.db.prepare('SELECT * FROM hosted_maintenance_source_captures').first(),chunks=(await f.local.db.prepare('SELECT * FROM hosted_maintenance_source_chunks ORDER BY chunk_index').all()).results;assert.equal(capture.raw_bytes,Buffer.byteLength(large.html));assert.ok(chunks.length>1&&chunks.length<=32);assert.ok(chunks.every(c=>c.chunk_bytes<=32768));assert.equal(chunks.reduce((n,c)=>n+c.chunk_bytes,0),capture.raw_bytes);
+  const journal=(await f.local.db.prepare('SELECT journal FROM maintenance_pipeline_jobs').first()).journal;assert.ok(Buffer.byteLength(journal)<2048);assert.doesNotMatch(journal,new RegExp(large.marker));assert.doesNotMatch(remote.read(historyPath(result.eventId)).toString(),new RegExp(large.marker));assert.equal(JSON.parse(remote.read(historyPath(result.eventId))).sourceBindings[0].bytes,capture.raw_bytes);
+  const calls=remote.state.calls.length;await f.local.restart();assert.deepEqual(await createHostedMaintenanceAction({...large.options,db:f.local.db}).scheduled(event),result);assert.equal(large.sourceCalls,1);assert.equal(n.calls,1);assert.equal(f.counts().qualityCalls,1);assert.equal(remote.state.calls.length,calls);
+ }finally{await f.local.close();}
+});
+
+test('missing private capture schema closes before any job admission, source, AI or canonical request',async()=>{
+ const remote=controlledGitHub('hosted-missing-capture-schema'),f=await setup('missing-capture-schema'),n=await native(f);try{
+  const options=await canonicalOptions(f,n,remote);await f.local.db.prepare('DROP TABLE hosted_maintenance_source_chunks').run();await f.local.db.prepare('DROP TABLE hosted_maintenance_source_captures').run();
+  await assert.rejects(createHostedMaintenanceAction(options).scheduled(f.event()),code('hosted_capture_schema_required'));assert.equal((await f.local.db.prepare('SELECT COUNT(*) n FROM maintenance_pipeline_jobs').first()).n,0);assert.equal(f.counts().sourceCalls,0);assert.equal(n.calls,0);assert.equal(remote.state.calls.length,0);
+ }finally{await f.local.close();}
+});
+
+test('over-profile source body stays charged/held without another source attempt or AI call',async()=>{
+ const remote=controlledGitHub('hosted-over-profile'),f=await setup('over-profile'),n=await native(f);try{
+  const large=await largeNativeOptions(f,n,remote,{overflow:true}),event=f.event();assert.ok(Buffer.byteLength(large.html)>1048576);await assert.rejects(createHostedMaintenanceAction(large.options).scheduled(event));await f.local.restart();await assert.rejects(createHostedMaintenanceAction({...large.options,db:f.local.db}).scheduled(event));assert.equal(large.sourceCalls,1);assert.equal(n.calls,0);assert.equal(remote.state.mutations,0);assert.equal((await f.local.db.prepare('SELECT COUNT(*) n FROM http_request_reservations').first()).n,1);
+ }finally{await f.local.close();}
+});
+
+test('capture chunk/header corruption stays held after restart and never refetches or regenerates',async()=>{
+ for(const variant of ['count','hash','partial']){
+  const remote=controlledGitHub('hosted-capture-'+variant),f=await setup('capture-'+variant),n=await native(f);try{
+   const large=await largeNativeOptions(f,n,remote),event=f.event();await createHostedMaintenanceAction(large.options).scheduled(event);
+   await assert.rejects(f.local.db.prepare("UPDATE hosted_maintenance_source_captures SET state='capturing'").run());await assert.rejects(f.local.db.prepare("UPDATE hosted_maintenance_source_chunks SET chunk_hash=?").bind('0'.repeat(64)).run());
+   // Explicit synthetic disk-corruption injection bypasses the append-only
+   // trigger solely to verify read/restart closure; application code cannot do it.
+   if(variant==='hash'){await f.local.db.prepare('DROP TRIGGER hosted_capture_chunk_immutable').run();await f.local.db.prepare('UPDATE hosted_maintenance_source_chunks SET chunk_hash=? WHERE chunk_index=0').bind('0'.repeat(64)).run();}
+   else{await f.local.db.prepare('DROP TRIGGER hosted_capture_ready_immutable').run();await f.local.db.prepare(variant==='count'?'UPDATE hosted_maintenance_source_captures SET chunk_count=chunk_count+1':"UPDATE hosted_maintenance_source_captures SET state='capturing'").run();}
+   const calls=remote.state.calls.length;await f.local.restart();await assert.rejects(createHostedMaintenanceAction({...large.options,db:f.local.db}).scheduled(event),code('hosted_capture_unconfirmed_or_corrupt'));assert.equal(large.sourceCalls,1);assert.equal(n.calls,1);assert.equal(remote.state.calls.length,calls);assert.equal(remote.state.mutations,1);
+  }finally{await f.local.close();}
+ }
+});
+
+test('lost atomic capture reply reconciles complete chunks without a new source or AI attempt',async()=>{
+ const remote=controlledGitHub('hosted-capture-lost'),f=await setup('capture-lost'),n=await native(f);try{
+  const large=await largeNativeOptions(f,n,remote),db=f.local.db;let captureBatch=false,lost=false;
+  const proxy={prepare(sql){if(sql.startsWith('INSERT INTO hosted_maintenance_source_captures'))captureBatch=true;return db.prepare(sql);},async batch(rows){const result=await db.batch(rows);if(captureBatch&&!lost){captureBatch=false;lost=true;throw Error('Controlled lost capture reply after atomic commit');}return result;}};
+  const result=await createHostedMaintenanceAction({...large.options,db:proxy}).scheduled(f.event());assert.equal(result.state,'source-backed-canonical-complete');assert.equal(lost,true);assert.equal(large.sourceCalls,1);assert.equal(n.calls,1);assert.equal((await db.prepare('SELECT state FROM hosted_maintenance_source_captures').first()).state,'ready');
+ }finally{await f.local.close();}
+});
+
+test('new stale or unqualified canonical base stops before new source/AI/quality costs and cannot silently rebase',async()=>{
+ const remote=controlledGitHub('hosted-preflight'),f=await setup('preflight'),n=await native(f);try{
+  const options=await canonicalOptions(f,n,remote);await createHostedMaintenanceAction(options).scheduled(f.event());const counts=f.counts(),models=n.calls;f.advance(1000);await assert.rejects(createHostedMaintenanceAction(options).scheduled(f.event()),code('writer_stale_base'));assert.deepEqual(f.counts(),counts);assert.equal(n.calls,models);assert.equal(remote.state.mutations,1);
+  const changed=remote.append({'src/styles/global.css':'/* An unqualified reader implementation. */\n'}),oldCode=options.canonical.qualifiedCodeHash,fresh={...options,canonical:{...options.canonical,...canonicalPins(remote,changed),qualifiedCodeHash:oldCode}};
+  await assert.rejects(createHostedMaintenanceAction(fresh).scheduled(f.event()),code('native_unqualified_canonical_code'));assert.deepEqual(f.counts(),counts);assert.equal(n.calls,models);assert.equal(remote.state.mutations,1);
+ }finally{await f.local.close();}
+});
+
+test('native generated links must resolve to compiled inventory even if the trusted semantic verifier would allow',async()=>{
+ const remote=controlledGitHub('hosted-unresolved-link'),f=await setup('unresolved-link'),n=await native(f,output=>output.blocks[1].content.push({type:'article',articleId:'untrusted-new-topic',label:'Unknown topic'}));try{
+  const options=await canonicalOptions(f,n,remote),event=f.event();await assert.rejects(createHostedMaintenanceAction(options).scheduled(event),code('unresolved_article_link'));await f.local.restart();await assert.rejects(createHostedMaintenanceAction({...options,db:f.local.db}).scheduled(event),code('unresolved_article_link'));assert.equal(n.calls,1);assert.equal(f.counts().qualityCalls,0);assert.equal(remote.state.mutations,0);assert.equal((await f.local.db.prepare("SELECT currency_state FROM maintenance_proposals WHERE event_id LIKE 'cfa-%'").first()).currency_state,'settled');
  }finally{await f.local.close();}
 });

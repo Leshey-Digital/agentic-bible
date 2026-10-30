@@ -18,3 +18,10 @@ Use mocked external source and AI responses with actual local D1 and the existin
 - Removing source authority while dispatch or local activation is held MUST prevent the subsequent effect while retaining source/provider charges.
 - Current schema 1/2 records remain readable; version 3 native records and review catalogs are admitted explicitly, without widening compiled targets or inventing human preapproval.
 - The portable native path MUST execute in actual workerd/D1 with mocked external dependencies, and its canonical Git tree MUST build the existing reader/search/history inventory.
+
+- Registered source profile bounds MUST remain available end to end. Raw bodies above legacy32KiB limits MUST be privately retained/reconstructed under the registered per-source cap; full raw bodies MUST NOT enter Git/public output/provider prompts. SQL, chunks, captures and event/source counts remain finite.
+- Missing capture schema MUST stop readonly before any job admission or source/model effect. Partial, corrupt and unknown captures MUST NOT silently refetch or regenerate.
+- Quality v2 MUST require explicit verifier format support and actual charged source/capture authority; absent extensions retain legacy request/receipt bytes.
+- Native source-backed maintenance MUST bind a complete previous article body and full original Markdown hash to quality/generation, and verify the exact qualified canonical code/base before new source/model costs.
+- A stale pinned operation MUST NOT silently rebase or spend on a new event; completed historical replay MUST NOT repeat external work.
+- Native schemas MUST preserve signed post-publication review/explicit restoration and exact saved-environment release preparation safeguards.

@@ -14,3 +14,13 @@
 No live port, schedule, credential, provider write or deployment is configured. Aggregate suites are owned by the parent and are not run concurrently here.
 
 Existing focused publication/quality regressions: 22 passed. Astro check: zero errors. Native suite final exact-source run is recorded in the parent handoff; aggregate qualification remains parent-owned.
+
+Compatibility verification:
+- [x] Entire hosted suite: 32 tests passed with actual workerd/D1, owned Git, mocked external source/AI/GitHub and projected reader builds.
+- [x] Large registered source (>32KiB) through private chunks, native quality/canonical commit and restart with zero repeated requests.
+- [x] Missing capture schema stops before ledger admission; profile overflow, partial/hash/count corruption and lost retention response hold or reconcile exactly.
+- [x] Pinned previous-body/qualified-code preflight, stale next-event cost closure and deterministic article-link rejection.
+- [x] Schema3 signed review/restoration, >16-row approval admission and actual native local release candidate preparation.
+- [ ] Parent-owned production semantic adapter integration, independent security review and full combined qualification.
+
+The production semantic adapter must use the same existing currency account/ledger as generation. Mock semantic callbacks in these tests are not paid-provider pricing, usage evidence or factual certification. Live schedules, bindings, credentials, provider calls, canonical remote writes and deployments remain disabled.
