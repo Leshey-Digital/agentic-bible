@@ -1,0 +1,5 @@
+# Budgeted semantic assessment
+
+The hosted source-backed publisher needs an actual injectable semantic verifier, rather than a test-only assessor. Add a Workers AI verifier using the existing monetary ledger and pinned model. It receives the complete prior substantive Markdown body and source-bound candidate, returns the existing strict claim/lineage/check report, and grants no publication authority itself. Both generation and assessment consume the same account reservation policy and $20 outer monthly ceiling. Model output is an assessment, not proof of truth.
+
+Default off. No binding, schedule, token, policy renewal, live request or publication is configured here. Prompt/output limits remain unchanged; insufficient context capacity fails closed without truncating evidence. Known malformed settled output becomes a durable unknown denial. Unknown dispatch/cost keeps its reservation and prevents retry. Read-only replay requires exact policy, request, usage, packet and receipt integrity.
