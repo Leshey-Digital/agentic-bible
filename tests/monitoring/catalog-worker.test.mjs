@@ -9,7 +9,8 @@ import {sourceId,validateCatalog,catalogSourceLimit} from '../../src/monitoring/
 test('actual Worker/D1 catalog admission is atomic at partial capacity, faults, restart and competing seeds',{timeout:180000},async()=>{
   const path=resolve('.git/catalog-seed-worker-state');rmSync(path,{recursive:true,force:true});mkdirSync(path,{recursive:true});
   const script=(await build({entryPoints:['tests/monitoring-worker/catalog-entry.ts'],bundle:true,write:false,format:'esm',platform:'browser',target:'es2022'})).outputFiles[0].text;
-  const base=await validateCatalog(JSON.parse(readFileSync('dist/source-catalog.json','utf8')));assert.equal(base.sources.length,51);
+  const base=await validateCatalog(JSON.parse(readFileSync('dist/source-catalog.json','utf8')));assert.equal(base.sources.length,50);
+  const shared=base.sources.find(source=>source.url==='https://arxiv.org/abs/2210.03629v3');assert.ok(shared?.articleIds.includes('ai-agent'));assert.ok(shared?.articleIds.includes('agent-orchestration'));
   const extra=async n=>{const url=`https://docs.langchain.com/fixture-atomic-catalog/${n}`;return {id:await sourceId(url),url,title:`Supplied atomic catalog fixture ${n}`,articleIds:['ai-agent']};};
   const initial=structuredClone(base);for(let n=0;initial.sources.length<catalogSourceLimit-1;n++)initial.sources.push(await extra(n));await validateCatalog(initial);
   const incoming=structuredClone(base);incoming.sources=incoming.sources.slice(0,base.sources.length-2);incoming.sources[0].title='Rejected title update must roll back';incoming.sources[0].articleIds=['ai-agent'];incoming.sources.push(await extra(100),await extra(101));await validateCatalog(incoming);

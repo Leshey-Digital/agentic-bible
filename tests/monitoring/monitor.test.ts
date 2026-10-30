@@ -26,7 +26,9 @@ async function changed(store:MonitorStore,time=start) {
 }
 
 test('catalog comes from all twenty article metadata sets and rejects external/private/credential URLs',async()=>{
-  assert.equal(catalog.articles.length,20);assert.equal(catalog.sources.length,51);
+  assert.equal(catalog.articles.length,20);assert.equal(catalog.sources.length,50);
+  const shared=catalog.sources.find(source=>source.url==='https://arxiv.org/abs/2210.03629v3');
+  assert.ok(shared?.articleIds.includes('ai-agent'));assert.ok(shared?.articleIds.includes('agent-orchestration'));
   for(const url of ['http://127.0.0.1/','https://evil.invalid/','https://user:secret@www.anthropic.com/','https://www.anthropic.com:444/']) {
     const bad=structuredClone(catalog);bad.sources[0].url=url;await assert.rejects(validateCatalog(bad));
   }
