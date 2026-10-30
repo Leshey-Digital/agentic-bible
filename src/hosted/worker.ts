@@ -41,7 +41,7 @@ const integrationSettings=ports.integrationSettings?createIntegrationSettingsCon
 const jevSettings=ports.integrationSettings?createIntegrationSettingsContract(ports.integrationSettings,'typesafe-jev'):undefined;
 return {async scheduled(event:import('../hosted-maintenance/scheduled.ts').HostedMaintenanceEvent){
  if(!maintenance)return {state:'unconfigured',canonicalGitChanged:false,deploymentChanged:false,livePublished:false};
- return maintenance.scheduled(event);
+ return maintenance.scheduled({scheduledTime:event.scheduledTime,cron:event.cron});
 },async fetch(request:Request,env:RuntimeEnv):Promise<Response>{
   const url=new URL(request.url),path=url.pathname;
   try{
