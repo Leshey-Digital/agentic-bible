@@ -35,13 +35,13 @@ LangGraph’s guide demonstrates chaining, routing, parallelization, orchestrato
 
 The following examples are original design comparisons for a hypothetical document-processing application. They describe possible choices, not measured performance or a system running on this site.
 
-| Arrangement | Example | Decision to make |
+| Pattern | Example work | Check |
 | --- | --- | --- |
-| Sequence | Extract fields, validate them, then render a report | Which invalid output stops the next step? |
-| Router | Send an invoice to one extractor and a contract to another | What happens to an unknown document type? |
-| Parallel work | Check dates and totals independently | Is a partial result useful if one check fails? |
-| Orchestrator and workers | Break an unfamiliar report into sections as they are discovered | Who decides the work is complete? |
-| Evaluator and revision loop | Check a draft against an explicit rubric, then revise | What stops repeated revisions that do not improve it? |
+| Sequence | Extract, validate, render | Stop on invalid output |
+| Router | Choose invoice or contract extractor | Handle unknown types |
+| Parallel work | Check dates and totals independently | Handle partial results |
+| Orchestrator and workers | Discover sections, then delegate | Define completion |
+| Evaluator and revision loop | Score a draft, then revise | Stop without improvement |
 
 For a known invoice format, a fixed extraction-and-validation sequence might be enough. For an unfamiliar bundle of mixed documents, discovering the required subtasks during execution could be useful. This is a task-design judgment to test, rather than a reason to maximize the number of agents.
 

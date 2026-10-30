@@ -39,13 +39,11 @@ ReAct is an early research example of alternating generated reasoning, actions a
 
 Consider this original, simplified example. A coding assistant receives a failing test and permission to edit a disposable checkout. The names and results below are invented; they are not a provider API or a benchmark result.
 
-| Step | Observation available | Action selected | What changes |
-| --- | --- | --- | --- |
-| Start | Test `parse-empty-name` fails | Read the parser and the test | The model gains code context |
-| Inspect | Parser accepts an empty string | Propose an input check | A patch is prepared |
-| Apply | Patch is within the permitted files | Write the patch | Checkout files change |
-| Check | The focused test passes | Run the neighbouring parser tests | New evidence can expose a regression |
-| Finish | Relevant checks pass | Return the diff and test results | Work stops; nothing is deployed |
+1. **Read the failure.** Test `parse-empty-name` fails. The model requests the parser and test source so it can inspect their expected behaviour.
+2. **Prepare a patch.** The parser accepts an empty string. The model proposes an input check; no file has changed yet.
+3. **Apply within scope.** The executor checks that the patch touches only permitted files, then writes it to the disposable checkout.
+4. **Check the result.** The focused test passes. The model selects neighbouring parser tests; their results may expose a regression and change its next action.
+5. **Finish.** Relevant checks pass. The assistant returns the diff and test results, then stops. Nothing has been deployed.
 
 If the neighbouring test fails, the next action may be to revise the patch. If access to the required file is denied, the correct terminal result is an unresolved repair. “I fixed it” is weaker evidence than the actual diff and test outputs. Passing those tests still does not prove that every possible input works.
 
