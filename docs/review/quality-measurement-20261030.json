@@ -1,0 +1,172 @@
+{
+  "schemaVersion": 1,
+  "state": "local-only-not-release-qualified",
+  "base": "061359cc443da097e5472bac2914ac81e3f91fd0",
+  "runtimeSource": "11af72acfc0b966090e2686e9652875ffc5c6e4a",
+  "measurementRuntimeSource": "12b903e49cd328cb4e08645284203bf4e5b925e7",
+  "branch": "feat/reader-quality-measurement-20261030",
+  "providerReadback": {
+    "productionVersion": "7eccb256-0659-43c4-b2e6-5f54ac652824",
+    "productionDeployment": "76e27d35-fe4a-4d9f-ba16-3db019f4340d",
+    "productionBindings": [],
+    "productionVersionCount": 2,
+    "stagingVersion": "a70ede39-1221-4a8a-983b-1ca66672bf69",
+    "stagingDeployment": "6593f4e8-aec8-4d4c-a738-f6b02f64769a",
+    "stagingVersionCount": 14,
+    "privateInboxEnabled": true,
+    "stagingPriceValidUntil": 1792778108979,
+    "stagingPriceExpired": true,
+    "webAnalyticsSiteForApex": false,
+    "htmlPagesWithoutKnownTrackingMarkers": 31
+  },
+  "pr60": {
+    "state": "open",
+    "draft": true,
+    "merged": false,
+    "head": "061359cc443da097e5472bac2914ac81e3f91fd0"
+  },
+  "checks": {
+    "browserBaseline": {
+      "source": "12b903e",
+      "passed": 94,
+      "total": 94,
+      "chromium": "154.0.8037.57",
+      "duration": "1.7m",
+      "evidence": "observed terminal result; later focused run uses separate scope"
+    },
+    "finalAffectedArticles": {
+      "source": "11af72a",
+      "passed": 4,
+      "total": 4,
+      "duration": "7.3s"
+    },
+    "measurement": {
+      "passed": 11,
+      "total": 11
+    },
+    "static": {
+      "passed": 11,
+      "total": 11
+    },
+    "readerRevision": {
+      "passed": 3,
+      "total": 3
+    },
+    "inertExamples": {
+      "passed": 5,
+      "total": 5
+    },
+    "typecheck": {
+      "files": 209,
+      "errors": 0,
+      "warnings": 0,
+      "hints": 0
+    },
+    "build": {
+      "source": "11af72a",
+      "indexedArticles": 20
+    },
+    "stagingDryRun": {
+      "passed": true,
+      "uploaded": false
+    },
+    "documentation": {
+      "passed": true,
+      "markdownFiles": 503,
+      "relativeLinks": 423
+    }
+  },
+  "retainedCommandLogs": [
+    {
+      "name": "measurement",
+      "command": [
+        "node",
+        "--test",
+        "tests/measurement/aggregate.test.mjs",
+        "tests/measurement/contribution.test.mjs",
+        "tests/measurement/browser.test.mjs"
+      ],
+      "exit": 0,
+      "bytes": 1257,
+      "sha256": "c9777174296053ceef736e7ba858a0fbc837cbcea20b3b3ca7608bbb9ef0246c",
+      "path": "/workspace/agentic-bible-quality-validation-20261030/.git/quality-evidence/measurement-final.log"
+    },
+    {
+      "name": "static",
+      "command": [
+        "npm",
+        "test"
+      ],
+      "exit": 0,
+      "bytes": 1385,
+      "sha256": "437b891105770bffc81945b43e4fd5a02a29d78286475db46aab58f8fb5c7aa2",
+      "path": "/workspace/agentic-bible-quality-validation-20261030/.git/quality-evidence/static-final.log"
+    },
+    {
+      "name": "docs",
+      "command": [
+        "npm",
+        "run",
+        "test:docs"
+      ],
+      "exit": 1,
+      "bytes": 154,
+      "sha256": "57a48b8ad6e3aacee03e8f586c9d36f7844951c25135bf479201a18c103e3e09",
+      "path": "/workspace/agentic-bible-quality-validation-20261030/.git/quality-evidence/docs-final.log",
+      "note": "Initial documentation check failed because the referenced evidence JSON had not yet been written; final documentation check passed after its creation."
+    }
+  ],
+  "screenshots": [
+    {
+      "path": "/workspace/agentic-bible-quality-validation-20261030/.git/quality-evidence/agent-orchestration-1440-final.png",
+      "sha256": "487077d3b9fdb1b20cba2e92a141b4b582266e7940000031df32fd7e53f5c807",
+      "overflow": false,
+      "inspected": true
+    },
+    {
+      "path": "/workspace/agentic-bible-quality-validation-20261030/.git/quality-evidence/agent-orchestration-390-final.png",
+      "sha256": "2561e183224dead2b5d789317d2205735b747737c445d7dc955e8d4a854294ab",
+      "overflow": false,
+      "inspected": true
+    },
+    {
+      "path": "/workspace/agentic-bible-quality-validation-20261030/.git/quality-evidence/ai-agent-1440-final.png",
+      "sha256": "33adccca8f4ce123bb9cccbe001276458bda8aab6adcd422df3e4374037d8a73",
+      "overflow": false,
+      "inspected": true
+    },
+    {
+      "path": "/workspace/agentic-bible-quality-validation-20261030/.git/quality-evidence/ai-agent-390-final.png",
+      "sha256": "24d1de9aeb56f37ed48458dce5a6fc74d4d6eaba132613137d5c91906b54ca01",
+      "overflow": false,
+      "inspected": true
+    }
+  ],
+  "articleCandidates": {
+    "ai-agent.md": "13786d79f6e1201dbc62f1a7bfd981d4714e2257b2f39a589fb38504e07104ac",
+    "agent-orchestration.md": "9869d0652b36fd52c22ccf55975adaf9911b91b00ffb72a013d959ee99eab612"
+  },
+  "preservedFrozenFiles": {
+    "operation-journal.json": "a0548d2aadf2cda8f9681d3d8c6646fe04499d38ce78fb12a83d5d0bc5a29d4e",
+    "release-set.json": "66cd592aee4114b2d3bda7c72bfa578f6452d7e27d9a69b5bb8fef1d787b17a7",
+    "staging-package/manifest.json": "bed09fec969d69e04a90cddacb19560dcd14438f5f89beea4286db56a1f2a304",
+    "production-package/manifest.json": "bc148b9ab30b66f1fd6a76f2ff1f1ebfdfe2c47dc8817611c2586cfbd6dc81ac"
+  },
+  "externalMutations": {
+    "remotePush": false,
+    "prApproval": false,
+    "uploadRetry": false,
+    "deployment": false,
+    "paidInference": false,
+    "sourceRetry": false,
+    "credentialsOrGrants": false,
+    "collectionActivation": false,
+    "realDataWrite": false
+  },
+  "remainingOperationState": {
+    "operation": "b902c48c-767e-4515-bdb9-d1ae39572a87",
+    "cell": "8",
+    "state": "uncertain; no recorded new version; original platform execution receipt unavailable",
+    "attemptsPreserved": 1
+  }
+}

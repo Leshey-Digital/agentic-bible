@@ -44,3 +44,9 @@ test('unsupported async sink is consumed as unknown and stops without another di
  assert.equal(record({event:'page_view'},base),false);assert.equal(record({event:'page_view'},base),false);
  await new Promise(resolve=>setImmediate(resolve));assert.equal(calls,1);
 });
+test('local aggregate capacity retains existing cells and never evicts to admit another',()=>{
+ const a=aggregatePreview(),row={schemaVersion:1,day:'2026-10-30',page:'/',signal:{event:'page_view'}};
+ for(let i=0;i<10000;i++)a.sink(row);assert.throws(()=>a.sink(row),/counter_capacity/);assert.equal(a.snapshot()[0].count,10000);
+ for(let i=1;i<128;i++)a.sink({...row,day:'fixture-day-'+i});assert.throws(()=>a.sink({...row,day:'overflow'}),/cell_capacity/);
+ assert.equal(a.snapshot().length,128);assert.equal(a.snapshot()[0].count,10000);
+});

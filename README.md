@@ -2,6 +2,8 @@
 
 A planned living encyclopedia of AI agents and the technology around them: sourced, interconnected articles with transparent revision history.
 
+**Recovery snapshot, 30 October 2026:** production remains the October 22 read-only release; PR60 is not deployed. This branch contains two rewritten article candidates and default-off measurement preparation, with local verification and remaining live prerequisites in the [recovery report](docs/review/quality-measurement-20261030.md). No tracking, paid inference or public intake is activated by this work.
+
 **Current preparation:** production preparation preserves reviewed staging source `b41a422881921638833f92b2361a70eb1647d01f` and the accepted intake/integration branches. The independently reviewed reader composition adds article corrections and inert examples, bounded search improvements, truthful Git revision metadata and page-specific sharing metadata. Hosted workflows and publishing changes require their own exact-head reviews and complete composition qualification. See the [preparation checkpoint](docs/production-preparation.md) and [launch checklist](docs/production-launch-checklist.md). Staging remains unchanged; production and live setup are not activated.
 
 The saved-environment qualification/direct-connector work began from reviewed main `fd44aeb5111145e12785a076fcc27dd323d6a193`, which contains the accepted twenty-article MVP, maintenance pipeline, currency-dispatch and monitor corrections. The historical sections below retain their own checkpoint states. Deep reading and sampled claim verification do not establish factual completeness.
