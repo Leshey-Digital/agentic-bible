@@ -12,7 +12,7 @@ export const event=(value:unknown):value is string=>typeof value==='string'&&/^[
 export const historyPath=(id:string)=>'src/content/maintenance/history/'+hash(id)+'.json';
 export const blobSha=(content:string|Uint8Array)=>createHash('sha1').update('blob '+Buffer.byteLength(content)+'\0').update(content).digest('hex');
 export type Intent={schemaVersion:1|2;articleId?:string;expectedBase:string;previousEvent:string|null;files:Record<string,string>};
-export type WriterReceipt={schemaVersion:1;mode:'local-synthetic-only';state:'canonical-commit-verified';livePublished:false;eventId:string;authorityHash:string;baseCommit:string;commit:string;articleRevision:string;markdownSha256:string;historyPath:string;historySha256:string;flags:string[]};
+export type WriterReceipt={schemaVersion:1;mode:'local-synthetic-only'|'hosted-source-backed';state:'canonical-commit-verified';livePublished:false;eventId:string;authorityHash:string;baseCommit:string;commit:string;articleRevision:string;markdownSha256:string;historyPath:string;historySha256:string;flags:string[]};
 export const commitMutation='mutation CanonicalMaintenanceCommit($input: CreateCommitOnBranchInput!) { createCommitOnBranch(input: $input) { clientMutationId commit { oid } } }';
 export function intentInput(value:unknown,id:string):Intent{
  if(!value||typeof value!=='object'||Array.isArray(value))stop('writer_intent_corrupt');const v=value as Intent;let target={articlePath,pointerPath};if(v.schemaVersion===2){try{target=maintenanceTarget(v.articleId);}catch{stop('writer_intent_corrupt');}}
