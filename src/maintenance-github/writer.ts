@@ -1,6 +1,6 @@
+import {leaves,commit,regular,decodeBlob,type Entry} from './core.ts';
 import {maintenanceTarget} from '../maintenance-quality/target.ts';
 import {legacyPredecessor} from '../maintenance-quality/predecessors.ts';
-import {readingArticleIds} from '../lib/article-ids.ts';
 import type {QualityControl} from '../maintenance-quality/contracts.ts';
 import type {CurrencyControl} from '../wiki-bridge/maintenance-currency.ts';
 import {readMaintenanceBase,readMaintenanceSource,type CanonicalBasePort} from '../maintenance-base/read.ts';
@@ -17,19 +17,11 @@ export {WriterError,writerLimits} from './contracts.ts';
 type Authority=Awaited<ReturnType<typeof completedMaintenance>>;
 type Selection={schemaVersion:1;mode:'local-synthetic-only';expectedBaseCommit:string;previousRevision:string|null;command:unknown};
 type Context={quality?:QualityControl;currency?:CurrencyControl;canonicalBase?:CanonicalBasePort;enabled?:boolean;transport?:ControlledGitHub;db:SqlDatabase;bridge:WikiBridge;sourceDirectory:string;policy:unknown;clock?:()=>number;checkpoint?:(phase:'intent'|'dispatched'|'remote-committed'|'verified')=>void|Promise<void>};
-type Entry={path:string;type:string;mode:string;sha:string};
+
 function selection(value:unknown):Selection{
  if(!value||typeof value!=='object'||Array.isArray(value)||Object.keys(value).sort().join(',')!=='command,expectedBaseCommit,mode,previousRevision,schemaVersion')stop('writer_invalid_selection');const v=value as Selection;
  if(v.schemaVersion!==1||v.mode!=='local-synthetic-only'||!sha(v.expectedBaseCommit)||(v.previousRevision!==null&&!digest(v.previousRevision)))stop('writer_invalid_selection');return v;
 }
-function leaves(value:any,expected:string):Map<string,Entry>{
- if(value?.sha!==expected||value.truncated!==false||!Array.isArray(value.tree)||value.tree.length>writerLimits.treeEntries)stop('writer_tree_rejected');const result=new Map<string,Entry>(),all=new Set<string>();
- for(const e of value.tree){if(typeof e.path!=='string'||e.path.length>240||!/^[A-Za-z0-9_./\[\]-]+$/.test(e.path)||e.path.split('/').some((p:string)=>!p||p==='.'||p==='..')||!sha(e.sha)||!['tree','blob','commit'].includes(e.type)||!['040000','100644','100755','120000','160000'].includes(e.mode)||all.has(e.path))stop('writer_tree_rejected');if(e.type==='tree'&&e.mode!=='040000'||e.type==='blob'&&!['100644','100755','120000'].includes(e.mode)||e.type==='commit'&&e.mode!=='160000')stop('writer_tree_rejected');all.add(e.path);if(e.type!=='tree')result.set(e.path,e);}
- for(const path of [...readingArticleIds.flatMap(id=>{const t=maintenanceTarget(id);return [t.articlePath,t.pointerPath];}),'src/content/maintenance/history/x.json'])for(const e of result.values())if(path.startsWith(e.path+'/'))stop('writer_unsafe_path');return result;
-}
-function commit(value:any,oid:string){if(value?.sha!==oid||!sha(value.tree?.sha)||!Array.isArray(value.parents)||value.parents.some((p:any)=>!sha(p.sha))||typeof value.message!=='string')stop('writer_commit_rejected');return value;}
-function regular(tree:Map<string,Entry>,path:string){const entry=tree.get(path);if(!entry||entry.type!=='blob'||entry.mode!=='100644')stop('writer_regular_file_required');return entry;}
-function decodeBlob(value:any,oid:string,max:number){if(value?.sha!==oid||value.encoding!=='base64'||!Number.isSafeInteger(value.size)||value.size<1||value.size>max||typeof value.content!=='string'||value.content.length>max*2)stop('writer_blob_rejected');const encoded=value.content.replace(/\n/g,'');if(!/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(encoded))stop('writer_blob_rejected');const bytes=Buffer.from(encoded,'base64');if(bytes.length!==value.size)stop('writer_blob_rejected');let text:string;try{text=new TextDecoder('utf-8',{fatal:true}).decode(bytes);}catch{return stop('writer_blob_rejected');}if(blobSha(text)!==oid)stop('writer_blob_rejected');return text;}
 function message(id:string,authorityHash:string,articleId='tool-use'){return 'Automatic maintenance: '+articleId+'\n\nEvent: '+id+'\nAuthority: '+authorityHash+'\n';}
 function cachedReceipt(row:WriterRow,authorityHash:string,intent:Intent,authority:Authority):WriterReceipt{
  const {articlePath}=maintenanceTarget(authority.command.revision.article.id);if(!row.receipt||hash(row.receipt)!==row.receipt_hash)stop('writer_receipt_corrupt');let r;try{r=JSON.parse(row.receipt);}catch{return stop('writer_receipt_corrupt');}

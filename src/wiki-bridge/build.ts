@@ -1,3 +1,4 @@
+import {publicationMarkdown as markdown} from './markdown.ts';
 import {childPhases,safeFailure} from './diagnostics.ts';
 import {mkdtempSync,mkdirSync,writeFileSync,readFileSync,symlinkSync,rmSync,lstatSync,readdirSync,openSync,closeSync,fsyncSync,fstatSync,constants} from 'node:fs';
 import {spawn} from 'node:child_process';
@@ -5,21 +6,12 @@ import {join,resolve,dirname} from 'node:path';
 import {canonical,qualityFlags,hash as hashOriginal} from '../publishing/contracts.ts';
 import {readingArticleIds} from '../lib/article-ids.ts';
 import type {PublicationStore} from '../publishing/store.ts';
-import type {Reference,Article} from '../publishing/contracts.ts';
+import type {Reference} from '../publishing/contracts.ts';
 import type {Binding} from './contracts.ts';
 import {bounded,inventory,walk,write} from './files.ts';
 import {reject,bridgeLimits,BridgeError} from './limits.ts';
 import {pinWikiLinks} from './html.ts';
 
-function markdown(article:Article,publisher:Reference,bindings:Binding[],citationOrder=article.sources.map(s=>s.id)){
-  // Entity-encode plain-text punctuation before Markdown parsing. Backslash
-  // escapes can leak into GFM URL recognition; entities preserve literal text
-  // while the explicit citation and internal-link syntax below stays functional.
-  const text=(value:string)=>value.replace(/[!-/:-@\[-`{-~]/g,char=>'&#'+char.charCodeAt(0)+';');
-  const front={title:article.title,description:article.description,topic:article.topic,order:readingArticleIds.indexOf(article.id as any)+1,status:'Published local demonstration',verified:article.verified,author:'Supplied local demonstration',related:article.related,sources:article.sources,publication:{revisionId:'',publisherSnapshot:publisher.id,flags:article.concerns,evidence:bindings.map(b=>({citationId:b.citationId,sourceId:b.sourceId,url:b.url,hash:b.bodyHash,receiptKey:b.receiptKey}))}};
-  const body=article.blocks.map(block=>block.type==='heading'?`## ${text(block.text)}`:block.content.map(part=>part.type==='text'?text(part.text):part.type==='citation'?` [${citationOrder.indexOf(part.sourceId)+1}](#source-${part.sourceId}) `:` [${text(part.label)}](/articles/${part.articleId}/) `).join('')).join('\n\n');
-  return {front,body};
-}
 export async function buildWiki(options:{repo:string;captureRoot:string;capture:{eventId:string;jobId:string;attempt:number};project:Record<string,Buffer>;output:string;siteId:string;publisher:PublicationStore;reference:Reference;bindings:Binding[];proofs:{eventId:string;revisionId:string;bindings:Binding[]}[];started?:()=>void|Promise<void>}){
   const pinned=options.publisher.load(options.reference);const revision=pinned.state.articles['tool-use'];
   if(Object.keys(pinned.state.articles).some(id=>!readingArticleIds.includes(id as any)))reject('unsupported_publisher_snapshot');

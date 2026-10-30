@@ -1,4 +1,4 @@
-import {articleInput,canonical,hash,type Article} from '../publishing/contracts.ts';
+import {articleInput,sourceBackedArticleInput,canonical,hash,type Article} from '../publishing/contracts.ts';
 export class QualityError extends Error {code:string;constructor(code:string){super(code);this.code=code;}}
 export function stop(code:string):never{throw new QualityError(code);}
 export const qualityLimits=Object.freeze({rows:64,sourceBytes:32768,totalSourceBytes:131072,requestBytes:196608,responseBytes:16384,timeoutMs:2000});
@@ -25,7 +25,9 @@ export function qualityRequest(value:unknown,input:QualitySource[]):QualityReque
  // publication ledger only after this complete candidate receives a trusted
  // allow decision. Canonical maintenance targets remain independently pinned
  // to readingArticleIds by maintenance-quality/target.ts.
- const article=articleInput(value);
+ // Structural quality requests create no publication authority. Native commands
+ // still need the separate D1 source/generation-bound opaque admission.
+ const article=(value as {provenance?:unknown})?.provenance==='charged-acquired-sources-v1'?sourceBackedArticleInput(value):articleInput(value);
  const claims:Claim[]=article.blocks.flatMap((block,index)=>block.type==='paragraph'?[{id:'paragraph-'+index,block:index,text:block.content.map(p=>p.type==='text'?p.text:p.type==='article'?p.label:'').join(' '),citationIds:[...new Set(block.content.flatMap(p=>p.type==='citation'?[p.sourceId]:[]))]}]:[]);
  if(!claims.length||input.length!==article.sources.length)stop('quality_manifest');
  let bytes=0;const sources=input.map(s=>{const citation=article.sources.find(c=>c.id===s.citationId);if(!citation||citation.url!==s.url||!identity(s.sourceId)||!digest(s.bodyHash)||!Buffer.isBuffer(s.bytes)||!s.bytes.length||s.bytes.length>qualityLimits.sourceBytes||hash(s.bytes)!==s.bodyHash)stop('quality_source_binding');bytes+=s.bytes.length;let text:string;try{text=new TextDecoder('utf-8',{fatal:true}).decode(s.bytes);}catch{return stop('quality_source_binding');}return {citationId:s.citationId,sourceId:s.sourceId,url:s.url,bodyHash:s.bodyHash,untrusted:true as const,text,...(s.extraction?{extraction:structuredClone(s.extraction),lineage:structuredClone(s.lineage)}:{})};});

@@ -1,3 +1,4 @@
+import {sourceBackedCommand,revalidateSourceBackedPublication,type SourceBackedPublicationAuthority} from '../hosted-maintenance/authority.ts';
 import {readingArticleIds} from '../lib/article-ids.ts';
 import {execFileSync} from 'node:child_process';
 import {DatabaseSync} from 'node:sqlite';
@@ -5,11 +6,11 @@ import {randomUUID} from 'node:crypto';
 import {readFileSync,writeFileSync,mkdirSync,existsSync,lstatSync,readdirSync,renameSync,rmSync,openSync,closeSync,fsyncSync,realpathSync} from 'node:fs';
 import {join,dirname,relative} from 'node:path';
 import {createIndex,close as closePagefind} from 'pagefind';
-import {articleInput,baselineArticles,canonical,commandInput,concerns,digestId,fail,hash,publicationLimits,PublicationError,qualityFlags,validateCrosslinks,type Article,type Manifest,type PublicationState,type Receipt,type Reference} from './contracts.ts';
+import {articleInput,sourceBackedArticleInput,baselineArticles,canonical,commandInput,concerns,digestId,fail,hash,publicationLimits,PublicationError,qualityFlags,validateCrosslinks,type Article,type Manifest,type PublicationState,type Receipt,type Reference} from './contracts.ts';
 import {pages,releaseBase} from './render.ts';
 
 export type Phase='after-revision'|'after-render'|'after-index'|'after-seal'|'after-activate';
-type Options={checkpoint?:(phase:Phase)=>void|Promise<void>};
+type Options={sourceBacked?:SourceBackedPublicationAuthority;checkpoint?:(phase:Phase)=>void|Promise<void>};
 const object=(v:unknown):v is Record<string,any>=>!!v&&typeof v==='object'&&!Array.isArray(v);
 const exact=(v:unknown,keys:string[])=>object(v)&&Object.keys(v).length===keys.length&&Object.keys(v).every(k=>keys.includes(k));
 const id=(v:unknown):v is string=>typeof v==='string'&&v.length<=50&&/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/.test(v)&&!['constructor','prototype'].includes(v);
@@ -55,7 +56,7 @@ export class PublicationStore{
     for(const part of path.split('/')){cursor=join(cursor,part);if(lstatSync(cursor,{throwIfNoEntry:false})?.isSymbolicLink())fail('unsafe_output');}return cursor;
   }
   revision(revisionId:string):Article{
-    if(!digestId(revisionId))fail('artifact_corrupt');try{const raw=readFileSync(this.file(`revisions/${revisionId}.json`));if(raw.byteLength>publicationLimits.inputBytes||hash(raw)!==revisionId)fail('artifact_corrupt');return articleInput(JSON.parse(raw.toString('utf8')));}catch{ return fail('artifact_corrupt');}
+    if(!digestId(revisionId))fail('artifact_corrupt');try{const raw=readFileSync(this.file(`revisions/${revisionId}.json`));if(raw.byteLength>publicationLimits.inputBytes||hash(raw)!==revisionId)fail('artifact_corrupt');const value=JSON.parse(raw.toString('utf8'));return value?.provenance==='charged-acquired-sources-v1'?sourceBackedArticleInput(value):articleInput(value);}catch{ return fail('artifact_corrupt');}
   }
   load(reference:Reference):Manifest{
     if(!ref(reference))fail('artifact_corrupt');
@@ -87,7 +88,7 @@ export class PublicationStore{
   }
   private rendererHash(){return hash(canonical(['package-lock.json','.nvmrc','src/publishing/contracts.ts','src/publishing/render.ts','src/publishing/store.ts','src/publishing/search.js','src/publishing/preview.css','src/styles/global.css','src/styles/reading.css','public/favicon.svg'].map(path=>[path,hash(readFileSync(path))])));}
   async execute(value:unknown,options:Options={}):Promise<Receipt>{
-    const command=commandInput(value);const fingerprint=hash(canonical(command));
+    const command=(value as {article?:{provenance?:unknown}})?.article?.provenance==='charged-acquired-sources-v1'?sourceBackedCommand(value,options.sourceBacked):commandInput(value);if(options.sourceBacked)await revalidateSourceBackedPublication(command,options.sourceBacked);const fingerprint=hash(canonical(command));
     let mutex:DatabaseSync|undefined;
     try{
       mutex=new DatabaseSync(this.file('mutex.sqlite'));mutex.exec('PRAGMA busy_timeout=0; CREATE TABLE IF NOT EXISTS publication_mutex(id INTEGER PRIMARY KEY); BEGIN IMMEDIATE;');
@@ -107,6 +108,7 @@ export class PublicationStore{
         validateCrosslinks(article,new Set([...baselineArticles,...readingArticleIds,...Object.keys(articles),article.id]));revisionId=hash(canonical(article));flags=qualityFlags(article);
         articles[article.id]=revisionId;history[article.id]??=[];if(!history[article.id].includes(revisionId))history[article.id].push(revisionId);
         if(Object.keys(articles).length>publicationLimits.articles||new Set(Object.values(history).flat()).size>publicationLimits.revisions)fail('publication_capacity');
+        if(options.sourceBacked)await revalidateSourceBackedPublication(command,options.sourceBacked);
         const revision=this.file(`revisions/${revisionId}.json`);if(existsSync(revision)){if(hash(readFileSync(revision))!==revisionId)fail('artifact_corrupt');}
         else{const temporary=this.file(`revisions/${revisionId}.tmp`);write(temporary,canonical(article));sync(temporary);renameSync(temporary,revision);sync(dirname(revision));}
         await options.checkpoint?.('after-revision');
@@ -151,6 +153,7 @@ export class PublicationStore{
         reference={id:releaseId,manifestHash:hash(canonical(manifest))};
       }
       this.load(reference);await options.checkpoint?.('after-seal');
+      if(options.sourceBacked)await revalidateSourceBackedPublication(command,options.sourceBacked);
       if(walk(this.root).reduce((n,path)=>n+lstatSync(path).size,0)>publicationLimits.diskBytes)fail('publication_capacity');
       const temporary=this.file('current.tmp');writeFileSync(temporary,canonical(reference));sync(temporary);renameSync(temporary,this.file('current.json'));sync(this.root);
       await options.checkpoint?.('after-activate');return result;
