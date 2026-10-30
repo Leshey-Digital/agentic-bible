@@ -133,7 +133,6 @@ export function createHostedMaintenanceAction(options:HostedMaintenanceOptions={
     const checked=validateReply(JSON.parse(proposal.response),request,config.policy);command=candidate(config.selection,eventId,checked.output.extracts,observedAt);
     if(canonical(command)!==proposal.packet||proposal.actual_cost!==checked.actualCost||proposal.input_tokens!==tokens(request)||proposal.output_tokens!==config.policy.maxOutputTokens)stop('hosted_maintenance_proposal_corrupt');
    }
-   if(row.phase!=='complete'&&config.canonicalAction)await config.canonicalAction.preflight(config.selection.article.id);
    const admission=await assessQuality(eventId,command.article,sources,{db,quality,clock:now});
    if(admission.decision==='deny'){
     if(row.phase!=='collected')stop('hosted_maintenance_journal');
