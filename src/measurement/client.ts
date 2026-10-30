@@ -2,9 +2,9 @@ import {createRecorder,measurementRevision,type Measurement,type Recorder} from 
 import {installMeasurement} from './browser.ts';
 export type ClientState='idle'|'submitted-unconfirmed'|'stopped'|'revoked';
 export function createMeasurementClient(options:{enabled:boolean;origin:'https://agenticbible.si'|'http://127.0.0.1';consent:()=>boolean;send?:typeof fetch}){
- let queue:Measurement[]=[],pending:Promise<ClientState>|undefined,stopped=false,state:ClientState='idle';
+ let queue:Measurement[]=[],pending:Promise<ClientState>|undefined,stopped=false,failed=false,state:ClientState='idle';
  const permitted=()=>{try{return options.enabled===true&&options.consent()&&navigator.doNotTrack!=='1'&&(navigator as Navigator&{globalPrivacyControl?:boolean}).globalPrivacyControl!==true;}catch{return false;}};
- const stop=(next:ClientState)=>{stopped=true;queue=[];state=next;};
+ const stop=(next:ClientState)=>{stopped=true;if(next==='stopped')failed=true;queue=[];state=next;};
  async function flush():Promise<ClientState>{
   if(pending)return pending;if(stopped)return state;
   if(!permitted()){queue=[];return state='revoked';}if(!queue.length)return state;
@@ -28,7 +28,7 @@ export function createMeasurementClient(options:{enabled:boolean;origin:'https:/
   if(stopped||!permitted()||queue.length>=8)throw Error('measurement_queue_closed');queue.push(row);
   if(queue.length===8)queueMicrotask(()=>{void flush();});
  }});
- return {recorder,flush,revoke(){stop('revoked');},resume(){if(state==='revoked'&&permitted()){stopped=false;state='idle';}},dispose(){stop('stopped');},state:()=>state,queued:()=>queue.length};
+ return {recorder,flush,revoke(){stop('revoked');},resume(){if(failed){state='stopped';return;}if(state==='revoked'&&permitted()){stopped=false;state='idle';}},dispose(){stop('stopped');},state:()=>state,queued:()=>queue.length};
 }
 /** The preference is a versioned boolean, never a visitor/session identifier. */
 export function mountMeasurementConsent(root:HTMLElement,options:{enabled:boolean;origin:'https://agenticbible.si'|'http://127.0.0.1';send?:typeof fetch;storage?:Pick<Storage,'getItem'|'setItem'>}){
