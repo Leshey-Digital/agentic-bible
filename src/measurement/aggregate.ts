@@ -1,4 +1,5 @@
 import {readingArticleIds} from '../lib/article-ids.ts';
+export const measurementRevision='aggregate-v1' as const;
 
 export type Signal =
   | {event:'page_view'}
@@ -12,12 +13,12 @@ export type Measurement={schemaVersion:1;day:string;page:string;signal:Signal};
 export type Recorder=(signal:unknown,context:Context)=>boolean;
 const articles=new Set<string>(readingArticleIds);
 const fixedPages=new Set(['/','/about/','/history/','/topics/','/topics/foundations/','/topics/capabilities/','/topics/protocols/','/search/','/contribute/']);
-function page(path:string):string|null {
+export function measurementPage(path:string):string|null {
   if(fixedPages.has(path))return path;
   const id=/^\/articles\/([a-z-]+)\/$/.exec(path)?.[1];
   return id&&articles.has(id)?`/articles/${id}/`:null;
 }
-function checkedSignal(input:unknown,path:string):Signal|null {
+export function checkedSignal(input:unknown,path:string):Signal|null {
   if(!input||typeof input!=='object'||Array.isArray(input))return null;
   const s=input as Record<string,unknown>,keys=Object.keys(s).sort().join(',');
   if(keys==='event'&&s.event==='page_view'&&path!=='/contribute/')return {event:s.event};
@@ -40,7 +41,7 @@ export function createRecorder(options:{enabled:boolean;origin:'https://agenticb
   let admitted=0,failed=false;
   return (input,context)=>{
     if(options.enabled!==true||!['https://agenticbible.si','http://127.0.0.1'].includes(options.origin)||failed||admitted>=32||context.origin!==options.origin||context.consent!=='granted'||context.dnt==='1'||context.gpc===true)return false;
-    const path=page(context.pathname);if(!path)return false;
+    const path=measurementPage(context.pathname);if(!path)return false;
     const signal=checkedSignal(input,path);if(!signal)return false;
     const now=(options.now??Date.now)();if(!Number.isFinite(now)||now<0||now>8.64e15)return false;
     const row:Measurement={schemaVersion:1,day:new Date(now).toISOString().slice(0,10),page:path,signal};

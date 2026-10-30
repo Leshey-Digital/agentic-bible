@@ -1,4 +1,5 @@
 import {inspectSourceAttempt} from './source-attempt.ts';
+import {configuredMeasurement} from '../measurement/collector.ts';
 import {CloudflareDraftError} from './cloudflare-drafts.ts';
 import {prepareDraftForInbox,recoverDraftForInbox} from './cloudflare-draft-inbox.ts';
 import {draftAdminHtml,draftAdminJs,sourceAttemptJs,draftRecoveryJs} from './cloudflare-draft-admin.ts';
@@ -40,6 +41,7 @@ const jevSettings=ports.integrationSettings?createIntegrationSettingsContract(po
 return {async fetch(request:Request,env:RuntimeEnv):Promise<Response>{
   const url=new URL(request.url),path=url.pathname;
   try{
+    if(path==='/api/measurement')return configuredMeasurement(env)(request);
     // Decode once only to reject aliases of the private settings namespace. Never
     // dispatch a decoded alias; malformed encodings retain existing route behavior.
     let decodedPath=path;try{decodedPath=decodeURIComponent(path);}catch{}

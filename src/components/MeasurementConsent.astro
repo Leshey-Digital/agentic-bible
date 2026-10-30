@@ -1,0 +1,19 @@
+---
+interface Props { enabled:boolean; }
+const {enabled}=Astro.props;
+---
+{enabled&&<aside id="measurement-consent" class="shell measurement-consent" aria-label="Optional aggregate measurement" hidden>
+  <p>Help improve the library with optional page, search-outcome and contribution-outcome counts. Search text, proposal contents and visitor identifiers are excluded. Cloudflare processes request metadata and retains these coarse events for three months. Your choice does not affect reading.</p>
+  <p data-measurement-status role="status">Optional aggregate measurement is off.</p>
+  <button type="button" data-measurement-allow>Allow aggregate measurement</button>
+  <button type="button" data-measurement-deny>Keep measurement off / revoke</button>
+</aside>}
+<script>
+  import {mountMeasurementConsent} from '../measurement/client.ts';
+  const root=document.getElementById('measurement-consent');
+  if(root)mountMeasurementConsent(root,{enabled:true,origin:'https://agenticbible.si'});
+</script>
+<style>
+.measurement-consent { padding-block:1rem; border-top:1px solid var(--line); }
+.measurement-consent button { margin-inline-end:.75rem; margin-block:.25rem; }
+</style>

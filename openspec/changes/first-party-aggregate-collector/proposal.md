@@ -1,0 +1,5 @@
+# First-party aggregate collector
+
+Connect the existing minimized projections to a default-off same-origin collector and the real Analytics Engine binding interface. Explicit policy/consent, known public pages, DNT/GPC, strict schema, streaming request bounds, one atomic global quota row and no retries govern collection. The provider receives only finite labels and counts; no queries, identities, proposal text, IPs or request IDs are retained. Native Analytics Engine submission is asynchronous, not durable ingestion acknowledgment.
+
+The separate measurement-migrations directory is never part of editorial migration application. A separate optional measurement D1 binding stores global current-hour/current-month counts only. It must never fall back to the editorial database. This keeps a cross-isolate hard datapoint/event quota without collecting visitor identity. No remote binding, migration, dataset or collection is activated. The new browser transport and consent controls remain absent unless the approved public build policy is explicitly configured. Existing static/hosted reading and private authentication stay unchanged.

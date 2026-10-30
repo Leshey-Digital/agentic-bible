@@ -74,6 +74,8 @@ Run a `baseline` and then a `change` for one source. Synthetic HTTP responses pr
 
 `npm run test:monitoring` runs 23 source/job/publication and batch-receipt tests after a build. `npm run validate` includes them; `npm run test:editorial:browser` also exercises the new flow against actual Worker/local D1. Run `npm run test:monitoring:worker` separately, with port 8788 free, for restart, failed-completion and receipt-retention checks against actual local D1. It resets only `.git/monitor-command-worker-state`, preserving interactive and browser-suite data. [Source-monitoring contracts](docs/source-monitoring-contracts.md) describe limits, state transitions, endpoints and remaining live-integration gates. The original PR #5/#8 heads remain unchanged; the integration candidate combines the separately accepted contribution fixes.
 
+The default-off [first-party aggregate collector](docs/first-party-measurement.md) now provides minimized consent controls, bounded same-origin ingestion, atomic global quota and a native Analytics Engine transport. No collection/binding/database is activated; editorial data is never reused for its counter.
+
 ## Local measurement settings
 
 After `npm run build` and `npm run editorial:migrate`, start `npm run editorial:local` and open `/admin/settings/` with the local editor fixture. Google tag/GA4 and Microsoft Clarity identifiers save independently with per-section revisions and a bounded audit history. Use synthetic identifiers only. Consent defaults are denied and ads are locked off.

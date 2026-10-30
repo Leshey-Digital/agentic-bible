@@ -25,6 +25,9 @@ export type ApprovedNote=ApprovedNoteV1|ApprovedNoteV2;
 export type ReviewSource={articleId:string;contentPath:string;baseCommit:string;baseMarkdownSha256:string;markdown:string;citations:string[];sourceAuthority?:'immutable-build';gitHubDraftAvailable?:boolean};
 export type Ports={cloudflareDrafts?:import('./cloudflare-drafts.ts').CloudflareDraftAction;reviewSource?:(articleId:string)=>Promise<ReviewSource>;verifyAdmin?:(request:Request)=>Promise<VerifiedAdmin|null>;approvedNote?:(id:string,admin:VerifiedAdmin)=>Promise<ApprovedNote|null>;sendGitHub?:(request:Request,beforeDispatch?:()=>Promise<void>)=>Promise<Response>;hostedApprovals?:true;maintenanceReview?:true;integrationSettings?:IntegrationAdapters;contributions?:ContributionAdapters;jevDispatch?:JevDispatchPort};
 export type RuntimeEnv={
+  PUBLIC_MEASUREMENT?:import('../measurement/collector.ts').AnalyticsEngineBinding;
+  PUBLIC_MEASUREMENT_DB?:SqlDatabase;
+  PUBLIC_MEASUREMENT_POLICY?:string;
   ASSETS:{fetch(request:Request):Promise<Response>};
   AI?:import('../maintenance-adapters/cloudflare-prose.ts').WorkersAiBinding;
   CLOUDFLARE_DRAFT_POLICY?:string;
