@@ -1,4 +1,4 @@
-export {};
+import {recordMeasurement} from '../measurement/browser.ts';
 interface SearchResult { url: string; meta: { title?: string; description?: string }; plain_excerpt?: string; }
 interface Pagefind { options?: (config:{baseUrl?:string;noWorker:boolean})=>Promise<void>; search: (query: string) => Promise<{ results: { data: () => Promise<SearchResult> }[] }>; }
 const input = document.querySelector<HTMLInputElement>('#search-input')!;
@@ -68,16 +68,19 @@ async function search() {
       const link = document.createElement('a');
       link.href = url.pathname + url.hash;
       link.textContent = entry.meta.title ?? 'Reference entry';
+      link.addEventListener('click',()=>{const article=/^\/articles\/([a-z-]+)\/$/.exec(url.pathname)?.[1];if(article)recordMeasurement({event:'search_select',article});});
       const p = document.createElement('p');
       p.textContent = entry.plain_excerpt ?? entry.meta.description ?? '';
       li.append(link, p);
       results.append(li);
     }
+    recordMeasurement({event:'search_complete',results:results.childElementCount===0?'none':results.childElementCount<=5?'few':'many',expanded:!!expandedTo});
   } catch {
     if (request !== sequence) return;
     engine = undefined;
     searchStatus.textContent = 'Search could not be completed.';
     error.hidden = false;
+    recordMeasurement({event:'reader_error',component:'search'});
   } finally {
     if (request === sequence) results.setAttribute('aria-busy', 'false');
   }

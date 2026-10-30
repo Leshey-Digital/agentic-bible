@@ -4,7 +4,7 @@ description: A system that uses a model to choose actions, observe their results
 topic: Foundations
 order: 1
 status: Working draft
-verified: '2026-10-16'
+verified: '2026-10-30'
 author: AI-assisted project draft
 related: [tool-use, model-context-protocol, agent-orchestration, agent-memory, retrieval-augmented-generation, agent-evaluation, prompt-injection, agent-planning, durable-agent-execution, tool-permissions, agent-sandboxing, agent-observability, human-oversight]
 sources:
@@ -12,43 +12,53 @@ sources:
     title: Building effective agents
     url: https://www.anthropic.com/engineering/building-effective-agents
     publisher: Anthropic
-    context: Published 19 December 2024; architectural patterns, not a current SDK reference.
+    context: Published 19 December 2024; architectural distinction checked 30 October 2026. The page warns that its tooling examples have changed.
   - id: react
     title: 'ReAct: Synergizing Reasoning and Acting in Language Models'
-    url: https://arxiv.org/abs/2210.03629
+    url: https://arxiv.org/abs/2210.03629v3
     publisher: Yao et al., arXiv
-    context: Research first submitted October 2022; results apply to the paper’s evaluated tasks.
+    context: Version 3, 10 March 2023; sections 2–4 and task-specific evaluation checked 30 October 2026.
   - id: tools
     title: Tool use with Claude
     url: https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview
     publisher: Anthropic
-    context: Living API documentation; consulted for the client-tool execution boundary.
+    context: Living API documentation checked 30 October 2026; client versus server tools and execution results.
 ---
 
-An **AI agent** is a system that uses a model to select actions, receives feedback from its environment, and continues toward a goal. In this encyclopedia, the term describes a pattern of control. It does not imply consciousness, unlimited independence, or reliable judgment. Definitions vary: Anthropic distinguishes model-directed agents from workflows whose paths are fixed in code. [1](#source-patterns)
+An **AI agent** uses a model to choose actions and uses their results to decide what to do next. The surrounding application supplies the tools, state and execution limits. An agent might investigate a failed test, navigate an unfamiliar interface or gather evidence for an answer. The label describes how work is controlled; it does not establish how reliably that work is done.
 
-## The action–observation loop
+Definitions vary. Anthropic distinguishes agents, with model-directed steps, from workflows with predefined paths. A system can combine both. [1](#source-patterns)
 
-A task starts with an objective and a set of available actions. The model may request an action, the surrounding software executes it, and the result becomes input for the next decision. A stop condition ends the loop. Anthropic describes environmental feedback and bounded iteration as practical ingredients of this pattern. [1](#source-patterns)
+## What makes the loop an agent?
 
-The ReAct research paper explored interleaving reasoning and actions so a language model could interact with external environments. Its experiments are evidence for particular methods on particular benchmarks, rather than proof that every agent is dependable. [2](#source-react)
+The distinguishing question is whether a new observation can change the model’s choice of action. A model that writes a checklist has produced a plan. A program that always runs three prescribed steps is executing a workflow. A model that chooses which test to inspect after reading a failure is participating in an agent loop.
 
-Consider an illustrative library assistant asked to investigate a broken citation. It could open the cited page, inspect a replacement source, and propose an edit with evidence. A successful run would leave a reviewable correction and an explanation of its sources. A failed fetch should remain a failed fetch; generating a plausible replacement URL would not complete the task.
+ReAct is an early research example of alternating generated reasoning, actions and environmental observations. Its evaluations include question answering, fact verification, a text-based household environment and web shopping. Those results concern the tested models and tasks, rather than a general reliability guarantee. [2](#source-react)
 
-## Agent or workflow?
+## A worked example: repairing a failing test
 
-The useful question is who chooses the next step. A workflow might always retrieve a document, summarize it, and pass the summary to a reviewer. An agent can choose another retrieval after inspecting the first result. Real systems can combine these approaches. Anthropic’s taxonomy is a helpful architectural distinction, not a universally agreed definition. [1](#source-patterns)
+Consider this original, simplified example. A coding assistant receives a failing test and permission to edit a disposable checkout. The names and results below are invented; they are not a provider API or a benchmark result.
 
-More autonomy also creates more possible failure paths. A fixed workflow can be easier to test when a task has predictable steps. Anthropic recommends adding complexity only when the task benefits justify the extra latency and cost. [1](#source-patterns)
+| Step | Observation available | Action selected | What changes |
+| --- | --- | --- | --- |
+| Start | Test `parse-empty-name` fails | Read the parser and the test | The model gains code context |
+| Inspect | Parser accepts an empty string | Propose an input check | A patch is prepared |
+| Apply | Patch is within the permitted files | Write the patch | Checkout files change |
+| Check | The focused test passes | Run the neighbouring parser tests | New evidence can expose a regression |
+| Finish | Relevant checks pass | Return the diff and test results | Work stops; nothing is deployed |
 
-## Tools and authority
+If the neighbouring test fails, the next action may be to revise the patch. If access to the required file is denied, the correct terminal result is an unresolved repair. “I fixed it” is weaker evidence than the actual diff and test outputs. Passing those tests still does not prove that every possible input works.
 
-[Tool use](/articles/tool-use/) supplies the actions in many agent loops. With client-side tools, the model returns a structured request and the application executes it. That boundary gives the application a place to validate arguments, enforce permissions, and reject an operation. A tool request is not itself proof that an operation happened. [3](#source-tools)
+An agent implementation must make choices that this small trace leaves implicit: which files may change, whether commands have network access, how much work is allowed, and how a canceled run is recorded. These are application policies. Adding another model or a longer prompt does not define them.
 
-[Model Context Protocol](/articles/model-context-protocol/) is one way to connect such capabilities. An agent can also use ordinary application functions. The protocol choice and the decision to allow an action are separate design questions.
+## Tool use, retrieval and autonomy
 
-## How to evaluate a claim
+A tool connects a model’s request to an operation. For Claude client tools, the application runs the requested function and returns its result; server tools run on Anthropic’s infrastructure. [3](#source-tools) See [tool use](/articles/tool-use/) for the request/result boundary and [tool permissions](/articles/tool-permissions/) for access decisions.
 
-For this project, we propose evaluating agents against an observable outcome: did a correction have valid evidence, did it preserve history, and did the system stop within its limits? These are editorial design criteria, not measurements from a deployed pipeline.
+[Retrieval-augmented generation](/articles/retrieval-augmented-generation/) concerns supplying relevant information to generation. A fixed retrieve-then-answer process can use retrieval without letting a model choose another action. [Orchestration](/articles/agent-orchestration/) concerns how steps and components are coordinated. Multiple agents are an architectural option, not a prerequisite for calling a system an agent.
 
-An evaluation should make the task, environment, allowed actions, failure cases, and budget explicit. A fluent final answer alone would not show whether a citation was checked. The long-term Agentic Bible goal includes bounded autonomous maintenance; this first slice implements reading and search only.
+## How to assess an agent system
+
+For the coding example, a useful evaluation would include a repairable failure, a misleading test, an unavailable dependency and a request outside the permitted files. Record successful repairs, regressions, elapsed work and cases left unresolved. Compare the result with a simpler fixed procedure on the same cases; an extra loop should justify its cost.
+
+Inspect the evidence at three separate boundaries: what the model requested, what the executor did, and what final state was verified. [Observability](/articles/agent-observability/) helps retain that evidence; [evaluation](/articles/agent-evaluation/) defines what counts as success. [Budgets and termination](/articles/agent-budgets/) bound the work, while [human oversight](/articles/human-oversight/) determines where a person can inspect or intervene.
