@@ -63,7 +63,7 @@ Suppose the document application asks two workers to check a report. One checks 
 }
 ```
 
-This invented record is an application contract, not a LangGraph message format. Its revision field prevents a result about yesterday’s document from silently becoming evidence about today’s. Its locations let the receiving step inspect the finding. The arithmetic worker may succeed while the date worker fails; the coordinator must decide whether to return a partial report or stop. Inventing the missing result would conceal that decision.
+This invented record is an application contract, not a LangGraph message format. A coordinator can compare its revision field with the current document revision and reject a stale result; merely including the field enforces nothing. Its locations let the receiving step inspect the finding. The arithmetic worker may succeed while the date worker fails; the coordinator must decide whether to return a partial report or stop. Inventing the missing result would conceal that decision.
 
 A coordinator should also distinguish an assigned task from a completed task. An assignment can be recorded before work begins; acceptance requires the expected result. If a worker is restarted, [durable execution](/articles/durable-agent-execution/) determines whether it resumes, repeats a safe read or reconciles an earlier write.
 

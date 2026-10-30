@@ -22,12 +22,12 @@ function checkedSignal(input:unknown,path:string):Signal|null {
   const s=input as Record<string,unknown>,keys=Object.keys(s).sort().join(',');
   if(keys==='event'&&s.event==='page_view'&&path!=='/contribute/')return {event:s.event};
   if(path==='/search/'){
-    if(keys==='event,expanded,results'&&s.event==='search_complete'&&['none','few','many'].includes(String(s.results))&&typeof s.expanded==='boolean')return {event:s.event,results:s.results as 'none'|'few'|'many',expanded:s.expanded};
+    if(keys==='event,expanded,results'&&s.event==='search_complete'&&typeof s.results==='string'&&['none','few','many'].includes(s.results)&&typeof s.expanded==='boolean')return {event:s.event,results:s.results as 'none'|'few'|'many',expanded:s.expanded};
     if(keys==='article,event'&&s.event==='search_select'&&typeof s.article==='string'&&articles.has(s.article))return {event:s.event,article:s.article};
   }
   if(path==='/contribute/'){
     if(keys==='event'&&s.event==='contribution_open')return {event:s.event};
-    if(keys==='event,outcome'&&s.event==='contribution_result'&&['closed','saved','duplicate','rejected','unconfirmed'].includes(String(s.outcome)))return {event:s.event,outcome:s.outcome as 'closed'|'saved'|'duplicate'|'rejected'|'unconfirmed'};
+    if(keys==='event,outcome'&&s.event==='contribution_result'&&typeof s.outcome==='string'&&['closed','saved','duplicate','rejected','unconfirmed'].includes(s.outcome))return {event:s.event,outcome:s.outcome as 'closed'|'saved'|'duplicate'|'rejected'|'unconfirmed'};
   }
   if(keys==='component,event'&&s.event==='reader_error'&&
     ((s.component==='search'&&path==='/search/')||(s.component==='contribution'&&path==='/contribute/')||(s.component==='reader'&&!['/search/','/contribute/'].includes(path))))return {event:s.event,component:s.component as 'reader'|'search'|'contribution'};
@@ -36,7 +36,7 @@ function checkedSignal(input:unknown,path:string):Signal|null {
 
 // Preparation only: no caller in the public application supplies enabled=true or
 // a sink. No network, cookies, storage, IDs, query text or error messages here.
-export function createRecorder(options:{enabled:boolean;origin:'https://agenticbible.si'|'http://127.0.0.1';sink:(row:Measurement)=>void;now?:()=>number}):Recorder {
+export function createRecorder(options:{enabled:boolean;origin:'https://agenticbible.si'|'http://127.0.0.1';sink:(row:Measurement)=>unknown;now?:()=>number}):Recorder {
   let admitted=0,failed=false;
   return (input,context)=>{
     if(options.enabled!==true||!['https://agenticbible.si','http://127.0.0.1'].includes(options.origin)||failed||admitted>=32||context.origin!==options.origin||context.consent!=='granted'||context.dnt==='1'||context.gpc===true)return false;
@@ -45,7 +45,15 @@ export function createRecorder(options:{enabled:boolean;origin:'https://agenticb
     const now=(options.now??Date.now)();if(!Number.isFinite(now)||now<0||now>8.64e15)return false;
     const row:Measurement={schemaVersion:1,day:new Date(now).toISOString().slice(0,10),page:path,signal};
     ++admitted; // Never retry a sink with an unknown outcome.
-    try{options.sink(row);return true;}catch{failed=true;return false;}
+    try{
+      const result=options.sink(row);
+      // Only synchronous local sinks are supported. An unexpected promise may
+      // already have dispatched; retain the allowance and stop, without retry.
+      if(result&&(typeof result==='object'||typeof result==='function')&&typeof (result as PromiseLike<unknown>).then==='function'){
+        failed=true;void Promise.resolve(result).catch(()=>{});return false;
+      }
+      return true;
+    }catch{failed=true;return false;}
   };
 }
 

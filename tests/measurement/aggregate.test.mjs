@@ -19,6 +19,12 @@ test('event contracts reject raw queries, errors, proposal text and identifiers 
  assert.deepEqual(Object.keys(f.aggregate.snapshot()[0].measurement).sort(),['day','page','schemaVersion','signal']);
  assert.equal(f.aggregate.snapshot()[0].measurement.day,'2026-10-30');
 });
+test('coercible objects cannot cross enum fields into a sink',()=>{
+ const rows=[],record=createRecorder({enabled:true,origin:base.origin,sink:row=>rows.push(row),now});
+ assert.equal(record({event:'search_complete',results:{toString:()=> 'none',private:'raw'},expanded:false},{...base,pathname:'/search/'}),false);
+ assert.equal(record({event:'contribution_result',outcome:{toString:()=> 'saved',private:'raw'}},{...base,pathname:'/contribute/'}),false);
+ assert.deepEqual(rows,[]);
+});
 test('revocation is immediate, events stay on their own route and failures do not cause retries',()=>{
  const f=fixture();assert.equal(f.record({event:'page_view'},base),true);
  assert.equal(f.record({event:'page_view'},{...base,consent:'denied'}),false);
@@ -32,4 +38,9 @@ test('finite page budget and immutable aggregate snapshots; events are not uniqu
  const snapshot=f.aggregate.snapshot();assert.equal(snapshot[0].count,32);snapshot[0].count=1000;snapshot[0].measurement.page='/private/';
  assert.equal(f.aggregate.snapshot()[0].count,32);assert.equal(f.aggregate.snapshot()[0].measurement.page,'/');
  for(const instant of [NaN,-1,Infinity])assert.equal(createRecorder({enabled:true,origin:base.origin,sink:()=>assert.fail(),now:()=>instant})({event:'page_view'},base),false);
+});
+test('unsupported async sink is consumed as unknown and stops without another dispatch',async()=>{
+ let calls=0;const record=createRecorder({enabled:true,origin:base.origin,now,sink:async()=>{++calls;throw Error('unknown outcome');}});
+ assert.equal(record({event:'page_view'},base),false);assert.equal(record({event:'page_view'},base),false);
+ await new Promise(resolve=>setImmediate(resolve));assert.equal(calls,1);
 });

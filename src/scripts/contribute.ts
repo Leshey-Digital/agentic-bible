@@ -1,5 +1,6 @@
 import {policyPath} from '../hosted/policy.ts';
 import {recordMeasurement} from '../measurement/browser.ts';
+import {closedIntakeSignal,submissionSignal} from '../measurement/contribution.ts';
 const form = document.querySelector<HTMLFormElement>('#contribution-form')!;
 const fields = document.querySelector<HTMLFieldSetElement>('#contribution-fields')!;
 const message = document.querySelector<HTMLElement>('#intake-status')!;
@@ -67,7 +68,7 @@ async function init() {
   try {
     const response = await fetch('/api/editorial/status', { credentials: 'same-origin' });
     const state = await response.json();
-    if (!response.ok) { recordMeasurement({event:'contribution_result',outcome:'closed'}); return; }
+    if (!response.ok) { recordMeasurement(closedIntakeSignal(response.status,state)); return; }
     if (state.mode === 'hosted-contributions' && state.publicIntake === true && state.policy && policyPath(state.policy.termsPath) && policyPath(state.policy.privacyPath)) {
       form.hidden = false; fields.disabled = false; sendLabel = 'Send suggestion'; send.textContent = sendLabel; inboxDescription = 'It is available for editorial review.';
       message.textContent = 'Suggestions enter editorial review and do not directly change an article. No email delivery is configured.';
@@ -77,7 +78,7 @@ async function init() {
       const privacy = document.querySelector<HTMLAnchorElement>('#contribution-privacy')!; privacy.href = state.policy.privacyPath;
       return;
     }
-    if (!state.enabled || state.mode !== 'local-synthetic-only') { recordMeasurement({event:'contribution_result',outcome:'closed'}); return; }
+    if (!state.enabled || state.mode !== 'local-synthetic-only') { recordMeasurement(closedIntakeSignal(response.status,state)); return; }
     form.hidden = false; fields.disabled = false; sendLabel = 'Send local suggestion'; send.textContent = sendLabel;
     for (const item of document.querySelectorAll<HTMLElement>('[data-local-intake]')) item.hidden = false;
     document.querySelector<HTMLElement>('#editorial-inbox-link')!.hidden = false;
@@ -98,8 +99,8 @@ form.addEventListener('submit', async event => {
       body: JSON.stringify(submitted),
     });
     const result = await response.json();
+    recordMeasurement(submissionSignal(response.status,result));
     if (!response.ok) {
-      recordMeasurement({event:'contribution_result',outcome:'rejected'});
       if (response.status === 409 && requestKey.value === submitted.requestKey) { showRecovery(true); persist(); }
       for (const [name, text] of Object.entries(result.fields ?? {})) {
         const target = document.getElementById(`${name}-error`);
@@ -110,7 +111,6 @@ form.addEventListener('submit', async event => {
       return;
     }
     receipt.hidden = false;
-    recordMeasurement({event:'contribution_result',outcome:result.duplicate?'duplicate':'saved'});
     receipt.textContent = result.reference ? `Suggestion saved. Reference ${result.reference}. ${result.duplicate ? 'This matches a previously saved suggestion.' : inboxDescription}` : 'Suggestion received.';
     if (names.every(name => control(name).value === submitted[name])) {
       form.reset(); requestKey.value = crypto.randomUUID(); showRecovery(false);
