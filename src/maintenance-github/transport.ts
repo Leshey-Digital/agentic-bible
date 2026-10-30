@@ -1,7 +1,7 @@
 import {canonical,repository,writerLimits,stop} from './contracts.ts';
 import type {WriterOutbox} from './outbox.ts';
 export type ControlledGitHub={kind:'controlled-github-maintenance-fixture';send:(request:Request)=>Promise<Response>};
-export function session(outbox:WriterOutbox,id:string,owner:string,port:Pick<ControlledGitHub,'send'>,clock:()=>number,beforeMutation?:()=>Promise<void>){
+export function session(outbox:Pick<WriterOutbox,'reserve'>,id:string,owner:string,port:Pick<ControlledGitHub,'send'>,clock:()=>number,beforeMutation?:()=>Promise<void>){
  let calls=0;const started=performance.now();
  async function request(path:string,body?:unknown):Promise<any>{
   if(++calls>writerLimits.invocationRequests||performance.now()-started>=writerLimits.invocationMs)stop('writer_invocation_budget');

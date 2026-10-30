@@ -1,3 +1,5 @@
+import {sourceBodyLimit} from '../monitoring/http-registry.ts';
+import {assertSourceCaptureSchema,readSourceCapture,retainSourceCapture,captureReference,type CaptureReference} from './source-capture.ts';
 import {createHostedCanonicalPublisher,type HostedCanonicalOptions} from './canonical.ts';
 import {createHostedCompleteCandidateAction,type CompleteCandidateOptions} from './complete-candidate.ts';
 import {admitSourceBackedPublication} from './authority.ts';
@@ -9,7 +11,7 @@ import {maintenanceTarget} from '../maintenance-quality/target.ts';
 import {assessQuality} from '../maintenance-quality/admission.ts';
 import {qualityIdentity,snapshotQuality,type QualityControl} from '../maintenance-quality/contracts.ts';
 import {executeQualityPublication} from '../maintenance-quality/publisher.ts';
-import {acquireMaintenanceSource,verifyAcquiredSourceReference,type AcquiredSource} from '../maintenance-adapters/acquisition.ts';
+import {acquireMaintenanceSource,verifyAcquiredSourceReference} from '../maintenance-adapters/acquisition.ts';
 import {createAcquiredQualitySourcePort} from '../maintenance-adapters/quality-source.ts';
 import {extractionProfile} from '../maintenance-adapters/profiles.ts';
 import type {WebFetch} from '../monitoring/http-core.ts';
@@ -30,8 +32,7 @@ export type HostedMaintenanceOptions={
  publisher?:Pick<PublicationStore,'execute'>;completeCandidate?:Omit<CompleteCandidateOptions,'article'|'db'|'clock'>;canonical?:Omit<HostedCanonicalOptions,'db'|'clock'>;clock?:()=>number;
  checkpoint?:(phase:'source-ready'|'proposal-ready'|'quality-ready'|'publication-ready')=>void|Promise<void>;
 };
-type PackedSource={citationId:string;requestKey:string;source:Omit<AcquiredSource['source'],'raw'>&{raw:{hash:string;bytes:string;contentType:'text/html'}}};
-type Journal={sources?:PackedSource[]};
+type Journal={sources?:CaptureReference[]};
 const time=(value:unknown):value is number=>Number.isSafeInteger(value)&&(value as number)>=0&&(value as number)<=253402300799999;
 const uuid=(seed:string)=>{const x=hash(seed);return x.slice(0,8)+'-'+x.slice(8,12)+'-'+x.slice(12,16)+'-'+x.slice(16,20)+'-'+x.slice(20,32);};
 function selected(value:HostedMaintenanceSelection,native=false){
@@ -40,12 +41,6 @@ function selected(value:HostedMaintenanceSelection,native=false){
  const sources=value.sources.map(s=>{const profile=extractionProfile(s.sourceId),citation=article.sources.find(c=>c.id===s.citationId);if(!profile||!citation||citation.url!==profile.url)stop('hosted_maintenance_selection');return {citationId:s.citationId,sourceId:s.sourceId};});
  if(new Set(sources.map(s=>s.citationId)).size!==sources.length||new Set(sources.map(s=>s.sourceId)).size!==sources.length)stop('hosted_maintenance_selection');
  return {article,baseRevision:value.baseRevision,sources};
-}
-function pack(citationId:string,packet:AcquiredSource):PackedSource{return {citationId,requestKey:packet.receipt.requestKey,source:{...packet.source,raw:{...packet.source.raw,bytes:Buffer.from(packet.source.raw.bytes).toString('base64')}}};}
-function unpack(value:PackedSource){
- const raw=value?.source?.raw;if(!raw||typeof raw.bytes!=='string'||raw.bytes.length>65536)stop('hosted_maintenance_journal');
- const bytes=Buffer.from(raw.bytes,'base64');if(bytes.toString('base64')!==raw.bytes)stop('hosted_maintenance_journal');
- return {citationId:value.citationId,requestKey:value.requestKey,source:{...value.source,raw:{...raw,bytes}}};
 }
 function candidate(selection:HostedMaintenanceSelection,eventId:string,extracts:{citationId:string;quote:string}[],observedAt:number[]):Publish{
  // Complete extractive controlled candidate, never a correction-note approval.
@@ -66,13 +61,14 @@ export function createHostedMaintenanceAction(options:HostedMaintenanceOptions={
   const native=options.completeCandidate!==undefined;
   if(!options.db||typeof options.db.prepare!=='function'||typeof options.db.batch!=='function'||!options.selection||typeof options.cron!=='string'||options.cron.length>80||!/^[-* /,0-9]+$/.test(options.cron)||options.source?.kind!==(native?'bounded-official-http-source-v2':'controlled-maintenance-source-port-v1')||typeof options.source.send!=='function'||(!options.publisher&&!native)||!options.quality)throw Error();
   if(!native&&(options.provider?.kind!=='deterministic-extractive-fake'||options.provider.id!=='fake-extractive-v1'||options.provider.tokenizer!=='synthetic-utf8-bytes'||typeof options.provider.invoke!=='function'))throw Error();
-  const quality=snapshotQuality(options.quality);if(!native&&quality.verifier!.environment!=='controlled-test'||quality.previousCandidateHash!==undefined)throw Error();
+  const quality=snapshotQuality({...options.quality,...(options.canonical?{canonicalContext:{commit:options.canonical.expectedBaseCommit!,markdownSha256:options.canonical.expectedMarkdownHash!,markdown:options.canonical.baselineMarkdown!}}:{})});if(!native&&quality.verifier!.environment!=='controlled-test'||quality.previousCandidateHash!==undefined)throw Error();
   const selection=selected(structuredClone(options.selection),native),policy=policyInput(options.policy);
-  const complete=native?{...options.completeCandidate,enabled:true,baseRevision:selection.baseRevision,...(options.canonical?{canonicalBase:{commit:options.canonical.expectedBaseCommit!,markdownSha256:options.canonical.expectedMarkdownHash!}}:{}),article:selection.article as import('../publishing/contracts.ts').SourceBackedArticle,db:options.db,clock:options.clock,policy,ai:options.completeCandidate?.ai?{run:options.completeCandidate.ai.run.bind(options.completeCandidate.ai)}:undefined,currency:options.completeCandidate?.currency?structuredClone(options.completeCandidate.currency):undefined}:undefined;
+  if((native&&options.canonical||selection.sources.some(s=>sourceBodyLimit(s.sourceId)>32768))&&!quality.verifier?.acceptedRequestSchemas?.includes(2))throw Error();
+  const complete=native?{...options.completeCandidate,enabled:true,baseRevision:selection.baseRevision,...(options.canonical?{canonicalBase:{commit:options.canonical.expectedBaseCommit!,markdownSha256:options.canonical.expectedMarkdownHash!,markdown:options.canonical.baselineMarkdown!}}:{}),article:selection.article as import('../publishing/contracts.ts').SourceBackedArticle,db:options.db,clock:options.clock,policy,ai:options.completeCandidate?.ai?{run:options.completeCandidate.ai.run.bind(options.completeCandidate.ai)}:undefined,currency:options.completeCandidate?.currency?structuredClone(options.completeCandidate.currency):undefined}:undefined;
   const completeAction=complete?createHostedCompleteCandidateAction(complete):undefined;if(completeAction&&completeAction.state!=='configured')throw Error();
   const canonicalAction=options.canonical?createHostedCanonicalPublisher({...options.canonical,db:options.db,clock:options.clock}):undefined;
   if(options.publisher&&typeof options.publisher.execute!=='function'||canonicalAction&&(!native||canonicalAction.state!=='configured')||!options.publisher&&!canonicalAction)throw Error();
-  configuration={selection,policy,quality,cron:options.cron,...(complete?{complete,completeAction}:{}),...(canonicalAction?{canonicalAction,canonical:{expectedBaseCommit:options.canonical!.expectedBaseCommit,expectedMarkdownHash:options.canonical!.expectedMarkdownHash}}:{})};
+  configuration={selection,policy,quality,cron:options.cron,...(complete?{complete,completeAction}:{}),...(canonicalAction?{canonicalAction,canonical:{expectedBaseCommit:options.canonical!.expectedBaseCommit,expectedMarkdownHash:options.canonical!.expectedMarkdownHash,qualifiedCodeHash:options.canonical!.qualifiedCodeHash}}:{})};
  }catch{/* Missing/invalid trust or controlled capabilities always closes activation. */}
  const state=!configuration?'unconfigured' as const:options.enabled===true?'configured' as const:'disabled' as const;
  // Snapshot function ports as well as data before asynchronous work. No mutable
@@ -82,11 +78,13 @@ export function createHostedMaintenanceAction(options:HostedMaintenanceOptions={
   if(state!=='configured'||!configuration||!db||!send)stop('hosted_maintenance_'+state);
   const config=configuration,now=()=>{const at=clock();if(!time(at))stop('hosted_maintenance_clock');return at;};
   if(!event||Object.keys(event).sort().join(',')!=='cron,scheduledTime'||event.cron!==config.cron||!time(event.scheduledTime))stop('hosted_maintenance_event');
-  const scheduledTime=event.scheduledTime,input=canonical({kind:'hosted-controlled-scheduled-maintenance-v1',scheduledTime,cron:config.cron,selection:config.selection}),eventId='hosted-maintenance-'+hash(canonical({scheduledTime,cron:config.cron,articleId:config.selection.article.id})).slice(0,48),quality={...config.quality,previousCandidateHash:config.selection.baseRevision};
+  await assertSourceCaptureSchema(db);
+  const kind=config.complete?'source-backed-scheduled-maintenance-v2':'hosted-controlled-scheduled-maintenance-v2',scheduledTime=event.scheduledTime,input=canonical({kind,scheduledTime,cron:config.cron,selection:config.selection}),eventId='hosted-maintenance-'+hash(canonical({scheduledTime,cron:config.cron,articleId:config.selection.article.id})).slice(0,48),quality={...config.quality,previousCandidateHash:config.selection.baseRevision};
   const fingerprint=hash(canonical({input,policy:config.policy,quality:qualityIdentity(quality),provider:config.complete?{kind:'native-complete-candidate-v1',currency:currencyPin(currencyInput(config.complete.currency)!)}:provider!.id,...(config.canonical?{canonical:config.canonical}:{})})),ledger=new PipelineLedger(db,true),prior=await ledger.get(eventId);
   if(prior){ledger.validate(prior,fingerprint,input);const denial=await ledger.denial(eventId);if(denial){if(denial.fingerprint!==fingerprint)stop('hosted_maintenance_receipt');return JSON.parse(denial.receipt);}}
   if(!prior&&(scheduledTime>now()||now()-scheduledTime>hostedMaintenanceLimits.maximumDelayMs))stop('hosted_maintenance_schedule_stale');
-  const claimed=await ledger.claim(eventId,fingerprint,input,{kind:'hosted-controlled-scheduled-maintenance-v1'},now()),owner=claimed.owner;let row:Row=claimed.row;
+  if(!prior&&config.canonicalAction)await config.canonicalAction.preflight(config.selection.article.id);
+  const claimed=await ledger.claim(eventId,fingerprint,input,{kind},now()),owner=claimed.owner;let row:Row=claimed.row;
   try{
    let journal:Journal=ledger.validate(row,fingerprint,input).journal;
    const denied=await ledger.denial(eventId);if(denied){if(denied.fingerprint!==fingerprint)stop('hosted_maintenance_receipt');return JSON.parse(denied.receipt);}
@@ -95,20 +93,21 @@ export function createHostedMaintenanceAction(options:HostedMaintenanceOptions={
    }
    if(!['admitted','collected','generated','complete'].includes(row.phase))stop('hosted_maintenance_journal');
    if(row.phase==='admitted'){
-    const sources:PackedSource[]=[];
+    const sources:CaptureReference[]=[];
     for(const source of config.selection.sources){
-     const requestKey=uuid(eventId+'\n'+source.sourceId),packet=await acquireMaintenanceSource({sourceId:source.sourceId,requestKey},{enabled:true,db,send,clock:now});
-     sources.push(pack(source.citationId,packet));
+     const requestKey=uuid(eventId+'\n'+source.sourceId),existing=await readSourceCapture(db,eventId,{...source,requestKey},false,now),packet=existing??await acquireMaintenanceSource({sourceId:source.sourceId,requestKey},{enabled:true,db,send,clock:now});
+     sources.push(await retainSourceCapture(db,eventId,source.citationId,packet,now));
     }
     journal={sources};if(Buffer.byteLength(canonical(journal))>hostedMaintenanceLimits.journalBytes)stop('hosted_maintenance_journal_limit');
     row=await ledger.advance(row,owner,'collected',journal,now());await checkpoint?.('source-ready');
    }
    if(!Array.isArray(journal.sources)||journal.sources.length!==config.selection.sources.length)stop('hosted_maintenance_journal');
-   const references=journal.sources.map(unpack),historical=['generated','complete'].includes(row.phase),verify=createAcquiredQualitySourcePort({db,clock:now,historicalReplay:historical});
+   const historical=['generated','complete'].includes(row.phase),references=[];for(const saved of journal.sources){const packet=await readSourceCapture(db,eventId,saved,historical,now);if(!packet||canonical(captureReference(saved.citationId,packet))!==canonical(saved))stop('hosted_maintenance_journal');references.push({citationId:saved.citationId,requestKey:saved.requestKey,source:packet.source});}
+   const verify=createAcquiredQualitySourcePort({db,clock:now,historicalReplay:historical});
    const sources=[],observedAt:number[]=[];for(let i=0;i<references.length;i++){
     const reference=references[i],selection=config.selection.sources[i];if(reference.citationId!==selection.citationId||reference.source.sourceId!==selection.sourceId||reference.requestKey!==uuid(eventId+'\n'+selection.sourceId))stop('hosted_maintenance_journal');
     const charged=await verifyAcquiredSourceReference({source:reference.source,requestKey:reference.requestKey},{db,clock:now,historicalReplay:historical});observedAt.push(charged.receipt.observedAt);
-    const verified=await verify(reference);sources.push({...verified,bytes:Buffer.from(verified.bytes)});
+    const verified=await verify(reference);sources.push({...verified,bytes:Buffer.from(verified.bytes),...(verified.bytes.byteLength>32768?{acquisition:{requestKey:reference.requestKey}}:{})});
    }
    let command:Publish,budget:MaintenanceBudget|undefined,proposal:Awaited<ReturnType<MaintenanceBudget['job']>>,nativeProposal:Awaited<ReturnType<NonNullable<typeof config.completeAction>['prepare']>>|undefined;
    if(config.completeAction){

@@ -1,3 +1,4 @@
+import {canonicalMaintenanceCatalog} from './catalog.ts';
 import {execFileSync} from 'node:child_process';
 import {readCanonicalMaintenance} from './canonical.ts';
 // Environment selectors never supply data/receipts. Validate against the same Git source
@@ -10,4 +11,4 @@ export function maintenanceBuild(){
  if(!sourceCommit||execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim()!==sourceCommit)throw Error('history_build_source_pin_required');
  return readCanonicalMaintenance({mode,repo:process.cwd(),sourceCommit});
 }
-export function maintenanceCatalog(){const view=maintenanceBuild(),generic=view.history.some(e=>e.articleId!=='tool-use'||e.qualityRequired);return {schemaVersion:view.history.some(e=>e.receipt.mode==='hosted-source-backed')?3:generic?2:1,mode:'controlled-static-preview',enabled:view.enabled,sourceCommit:'sourceCommit' in view?view.sourceCommit:null,noindex:true,history:view.history.map(({receipt,current,articleId})=>({... (generic?{articleId}:{}),receipt,current}))};}
+export function maintenanceCatalog(){const view=maintenanceBuild();return canonicalMaintenanceCatalog(view.history,view.enabled,'sourceCommit' in view?view.sourceCommit:null);}
