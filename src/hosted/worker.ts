@@ -35,10 +35,14 @@ function publicJevDecision(value:unknown){
 // Integration settings use explicit server trust, D1 and vault key bindings.
 // Request fields and local fixture identities cannot configure trusted adapters.
 export function createHostedRuntime(ports:Ports={}){
+const maintenance=ports.maintenance;
 const contributions=ports.contributions?createContributionHandler(ports.contributions,ports.sendGitHub,ports.reviewSource):undefined;
 const integrationSettings=ports.integrationSettings?createIntegrationSettingsContract(ports.integrationSettings):undefined;
 const jevSettings=ports.integrationSettings?createIntegrationSettingsContract(ports.integrationSettings,'typesafe-jev'):undefined;
-return {async fetch(request:Request,env:RuntimeEnv):Promise<Response>{
+return {async scheduled(event:import('../hosted-maintenance/scheduled.ts').HostedMaintenanceEvent){
+ if(!maintenance)return {state:'unconfigured',canonicalGitChanged:false,deploymentChanged:false,livePublished:false};
+ return maintenance.scheduled(event);
+},async fetch(request:Request,env:RuntimeEnv):Promise<Response>{
   const url=new URL(request.url),path=url.pathname;
   try{
     if(path==='/api/measurement')return configuredMeasurement(env)(request);
@@ -195,4 +199,4 @@ async function inputJson(request:Request,maxBytes=8192){
   try{for(;;){const part=await reader.read();if(part.done)break;bytes+=part.value.length;if(bytes>maxBytes){void reader.cancel();throw new ProposalError('input_capacity');}chunks.push(part.value);}}finally{reader.releaseLock();}
   const body=new Uint8Array(bytes);let offset=0;for(const part of chunks){body.set(part,offset);offset+=part.length;}return JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(body));
 }
-export default {async fetch(request:Request,env:RuntimeEnv){return createHostedRuntime(await configuredPorts(env,request)).fetch(request,env);}};
+export default {async fetch(request:Request,env:RuntimeEnv){return createHostedRuntime(await configuredPorts(env,request)).fetch(request,env);},async scheduled(event:import('../hosted-maintenance/scheduled.ts').HostedMaintenanceEvent,_env:RuntimeEnv){await createHostedRuntime().scheduled(event);}};

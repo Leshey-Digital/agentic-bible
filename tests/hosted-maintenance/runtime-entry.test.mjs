@@ -1,0 +1,13 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {build} from 'esbuild';import {resolve} from 'node:path';import {Miniflare,convertV4MiniflareOptions} from 'miniflare';
+import worker,{createHostedRuntime} from '../../src/hosted/worker.ts';import {createModuleRuntime} from '../../src/hosted/module-runtime.ts';
+test('default scheduled handlers remain closed and cannot infer authority from environment flags',async()=>{
+ const result=await createHostedRuntime().scheduled({scheduledTime:0,cron:'* * * * *'});assert.deepEqual(result,{state:'unconfigured',canonicalGitChanged:false,deploymentChanged:false,livePublished:false});
+ await worker.scheduled({scheduledTime:0,cron:'* * * * *'},{get EDITORIAL_DB(){throw Error('no inferred scheduling');},get AI(){throw Error('no paid calls');},get GITHUB_CONTENT_TOKEN(){throw Error('no credential lookup');}});
+ const module=createModuleRuntime({fetch:async()=>new Response('reader')},{commit:'a'.repeat(40),articles:{}});assert.equal((await module.scheduled({scheduledTime:0,cron:'* * * * *'})).state,'unconfigured');
+});
+test('actual workerd ScheduledEvent reaches only the compiled trusted action; HTTP API does not trigger it',{timeout:30000},async()=>{
+ const output=await build({stdin:{contents:`import {createModuleRuntime} from './src/hosted/module-runtime.ts';let calls=0,last=null;const action=Object.freeze({state:'configured',async scheduled(event){calls++;last={scheduledTime:event.scheduledTime,cron:event.cron};return {livePublished:false};}});export default createModuleRuntime({fetch:async()=>Response.json({calls,last})},{commit:'a'.repeat(40),articles:{}},{maintenance:action});`,resolveDir:resolve('.')},bundle:true,write:false,format:'esm',platform:'browser',external:['node:crypto'],define:{__AGENTIC_RELEASE_MANIFEST_SHA256__:'null',__AGENTIC_MAINTENANCE_CATALOG_SHA256__:'null'}});
+ const mf=new Miniflare({...convertV4MiniflareOptions({modules:true,script:output.outputFiles[0].text,compatibilityDate:'2026-10-16',compatibilityFlags:['nodejs_compat'],outboundService:()=>{throw Error('no real provider');}}),cf:false});
+ try{const time=Date.UTC(2026,9,30,12),cron='0 * * * *';let r=await mf.dispatchFetch('http://127.0.0.1/state');assert.equal((await r.json()).calls,0);r=await mf.dispatchFetch('http://127.0.0.1/api/maintenance');assert.equal(r.status,503);const eventResult=await(await mf.getWorker()).scheduled({scheduledTime:new Date(time),cron});assert.equal(eventResult.outcome,'ok');r=await mf.dispatchFetch('http://127.0.0.1/state');assert.deepEqual(await r.json(),{calls:1,last:{scheduledTime:time,cron}});
+ }finally{await mf.dispose();}
+});

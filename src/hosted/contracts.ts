@@ -23,7 +23,7 @@ export type ApprovedNoteV1={schemaVersion:1;mode:'verified-admin-github-proposal
 export type ApprovedNoteV2=Omit<ApprovedNoteV1,'schemaVersion'|'citationId'> & {schemaVersion:2;articleId:HostedArticleId;contentPath:string;citationId:string};
 export type ApprovedNote=ApprovedNoteV1|ApprovedNoteV2;
 export type ReviewSource={articleId:string;contentPath:string;baseCommit:string;baseMarkdownSha256:string;markdown:string;citations:string[];sourceAuthority?:'immutable-build';gitHubDraftAvailable?:boolean};
-export type Ports={cloudflareDrafts?:import('./cloudflare-drafts.ts').CloudflareDraftAction;reviewSource?:(articleId:string)=>Promise<ReviewSource>;verifyAdmin?:(request:Request)=>Promise<VerifiedAdmin|null>;approvedNote?:(id:string,admin:VerifiedAdmin)=>Promise<ApprovedNote|null>;sendGitHub?:(request:Request,beforeDispatch?:()=>Promise<void>)=>Promise<Response>;hostedApprovals?:true;maintenanceReview?:true;integrationSettings?:IntegrationAdapters;contributions?:ContributionAdapters;jevDispatch?:JevDispatchPort};
+export type Ports={maintenance?:import('../hosted-maintenance/scheduled.ts').HostedMaintenanceAction;cloudflareDrafts?:import('./cloudflare-drafts.ts').CloudflareDraftAction;reviewSource?:(articleId:string)=>Promise<ReviewSource>;verifyAdmin?:(request:Request)=>Promise<VerifiedAdmin|null>;approvedNote?:(id:string,admin:VerifiedAdmin)=>Promise<ApprovedNote|null>;sendGitHub?:(request:Request,beforeDispatch?:()=>Promise<void>)=>Promise<Response>;hostedApprovals?:true;maintenanceReview?:true;integrationSettings?:IntegrationAdapters;contributions?:ContributionAdapters;jevDispatch?:JevDispatchPort};
 export type RuntimeEnv={
   PUBLIC_MEASUREMENT?:import('../measurement/collector.ts').AnalyticsEngineBinding;
   PUBLIC_MEASUREMENT_DB?:SqlDatabase;
