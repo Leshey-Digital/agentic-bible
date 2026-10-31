@@ -2,6 +2,8 @@
 
 A planned living encyclopedia of AI agents and the technology around them: sourced, interconnected articles with transparent revision history.
 
+**Recovery snapshot, 30 October 2026:** production remains the October 22 read-only release; PR60 is not deployed. This branch contains two rewritten article candidates and default-off measurement preparation, with local verification and remaining live prerequisites in the [recovery report](docs/review/quality-measurement-20261030.md). No tracking, paid inference or public intake is activated by this work.
+
 **Current preparation:** production preparation preserves reviewed staging source `b41a422881921638833f92b2361a70eb1647d01f` and the accepted intake/integration branches. The independently reviewed reader composition adds article corrections and inert examples, bounded search improvements, truthful Git revision metadata and page-specific sharing metadata. Hosted workflows and publishing changes require their own exact-head reviews and complete composition qualification. See the [preparation checkpoint](docs/production-preparation.md) and [launch checklist](docs/production-launch-checklist.md). Staging remains unchanged; production and live setup are not activated.
 
 The saved-environment qualification/direct-connector work began from reviewed main `fd44aeb5111145e12785a076fcc27dd323d6a193`, which contains the accepted twenty-article MVP, maintenance pipeline, currency-dispatch and monitor corrections. The historical sections below retain their own checkpoint states. Deep reading and sampled claim verification do not establish factual completeness.
@@ -71,6 +73,10 @@ The next stacked branch adds a deterministic source-observation/publication-ledg
 Run a `baseline` and then a `change` for one source. Synthetic HTTP responses produce a persisted source-change event and an automatically published **local metadata revision**, flagged afterward for review. Review flags, revert and restore are independent operations. No article text or public release changes. The controls make no outside HTTP requests; live cron, models and provider credentials remain disabled.
 
 `npm run test:monitoring` runs 23 source/job/publication and batch-receipt tests after a build. `npm run validate` includes them; `npm run test:editorial:browser` also exercises the new flow against actual Worker/local D1. Run `npm run test:monitoring:worker` separately, with port 8788 free, for restart, failed-completion and receipt-retention checks against actual local D1. It resets only `.git/monitor-command-worker-state`, preserving interactive and browser-suite data. [Source-monitoring contracts](docs/source-monitoring-contracts.md) describe limits, state transitions, endpoints and remaining live-integration gates. The original PR #5/#8 heads remain unchanged; the integration candidate combines the separately accepted contribution fixes.
+
+The default-off [first-party aggregate collector](docs/first-party-measurement.md) now provides minimized consent controls, bounded same-origin ingestion, atomic global quota and a native Analytics Engine transport. No collection/binding/database is activated; editorial data is never reused for its counter.
+
+The default-off hosted maintenance composition now connects retained primary-source evidence, shared-budget complete generation and semantic assessment, opaque quality admission, atomic expected-head canonical Git history, and existing signed review/restoration tooling. Native source capture requires additive migration0028. No source port, AI policy, schedule, canonical credential or deployment authority is configured. A canonical Git write is not a live release; all reader deployment still uses qualified artifacts.
 
 ## Local measurement settings
 

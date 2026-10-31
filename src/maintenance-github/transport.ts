@@ -1,12 +1,12 @@
 import {canonical,repository,writerLimits,stop} from './contracts.ts';
 import type {WriterOutbox} from './outbox.ts';
 export type ControlledGitHub={kind:'controlled-github-maintenance-fixture';send:(request:Request)=>Promise<Response>};
-export function session(outbox:WriterOutbox,id:string,owner:string,port:ControlledGitHub,clock:()=>number){
+export function session(outbox:Pick<WriterOutbox,'reserve'>,id:string,owner:string,port:Pick<ControlledGitHub,'send'>,clock:()=>number,beforeMutation?:()=>Promise<void>){
  let calls=0;const started=performance.now();
  async function request(path:string,body?:unknown):Promise<any>{
   if(++calls>writerLimits.invocationRequests||performance.now()-started>=writerLimits.invocationMs)stop('writer_invocation_budget');
   const encoded=body===undefined?undefined:canonical(body);if(encoded&&Buffer.byteLength(encoded)>writerLimits.requestBytes)stop('writer_request_limit');
-  await outbox.reserve(id,owner,clock());if(performance.now()-started>=writerLimits.invocationMs)stop('writer_invocation_budget');
+  await outbox.reserve(id,owner,clock());if(body!==undefined)await beforeMutation?.();if(performance.now()-started>=writerLimits.invocationMs)stop('writer_invocation_budget');
   const controller=new AbortController();let reader:ReadableStreamDefaultReader<Uint8Array>|undefined,timer:ReturnType<typeof setTimeout>|undefined;
   try{return await Promise.race([(async()=>{
    const response=await port.send(new Request(body===undefined?'https://api.github.com/repos/'+repository+path:'https://api.github.com/graphql',{method:body===undefined?'GET':'POST',headers:{Accept:'application/vnd.github+json','Content-Type':'application/json','User-Agent':'Agentic-Bible-Controlled-Maintenance','X-GitHub-Api-Version':'2026-03-10'},body:encoded,redirect:'manual',credentials:'omit',signal:controller.signal}));

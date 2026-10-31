@@ -146,6 +146,20 @@
 .prose strong {
   font-weight:600
 }
+.prose table {
+  width:100%;
+  border-collapse:collapse;
+  font-size:.9em;
+  line-height:1.5;
+  margin:24px 0
+}
+.prose th,.prose td {
+  text-align:left;
+  vertical-align:top;
+  padding:12px 8px;
+  border-bottom:1px solid var(--line);
+  overflow-wrap:anywhere
+}
 .prose a {
   color:var(--green);
   text-decoration-color:#9aab8d

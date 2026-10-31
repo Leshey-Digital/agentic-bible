@@ -113,7 +113,11 @@ test('twenty-entry inventory has eighteen scoped primary records for final six w
     assert.ok(source.includes(`/commits/${sourceCommit}/src/content/articles/${id}.md`));
     const claims=record.claims.filter(c=>c.articleId===id);assert.equal(claims.length,3);for(const c of claims){assert.ok(body.includes(`href="#source-${c.citationId}"`));assert.ok(source.includes(`href="${c.url}"`));assert.ok(c.sectionsChecked&&c.supports&&c.limits&&c.versionContext);}
   }
-  const catalog=JSON.parse(html('dist/source-catalog.json'));assert.equal(catalog.articles.length,20);assert.equal(catalog.sources.length,51);
+  const catalog=JSON.parse(html('dist/source-catalog.json'));assert.equal(catalog.articles.length,20);assert.equal(catalog.sources.length,50);
+  // AI agent now pins the same ReAct v3 source as orchestration: one shared
+  // primary record, rather than separate unversioned/versioned URL records.
+  assert.ok(html('dist/articles/ai-agent/index.html').includes('href="https://arxiv.org/abs/2210.03629v3"'));
+  assert.ok(html('dist/articles/agent-orchestration/index.html').includes('href="https://arxiv.org/abs/2210.03629v3"'));
   assert.ok(Buffer.byteLength(html('dist/source-catalog.json'))<=32768,'current catalog remains inside frozen V1 reader contract');
 });
 

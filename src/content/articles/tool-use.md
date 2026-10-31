@@ -6,7 +6,7 @@ order: 2
 status: Working draft
 verified: '2026-10-16'
 author: AI-assisted project draft
-related: [ai-agent, model-context-protocol]
+related: [ai-agent, model-context-protocol, structured-outputs, tool-permissions]
 sources:
   - id: openai
     title: Function calling

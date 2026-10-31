@@ -31,6 +31,15 @@ sources:
 
 In an original reference-library example, one agent asks another to compare two specification revisions. A message can acknowledge receipt before the comparison is finished. A later artifact might contain the proposed differences and evidence references. A useful interface would preserve which event means “received,” which means “needs input” and which means “finished.” Treating every response as final would collapse those distinct states.
 
+For example, an application could use the following conceptual exchange. These labels are invented application messages, not A2A wire objects:
+
+1. **Assign:** task `compare-7` names the two source revisions and the expected comparison artifact.
+2. **Acknowledge:** the receiver reports that it accepted `compare-7`; no completed comparison is claimed.
+3. **Ask for input:** one revision is unavailable. The task remains incomplete while the caller supplies the missing input or cancels.
+4. **Complete:** the receiver returns an artifact tied to `compare-7` and both revisions. The caller still checks whether its evidence supports the comparison.
+
+If the completion reply is lost, a supported task-status lookup could reconcile that same task identity. Merely sending `compare-7` again is not a deduplication contract. Without such a lookup or retry guarantee, completion remains unknown instead of becoming a new task automatically.
+
 The pinned A2A specification describes task states including working, input-required and terminal outcomes, and distinguishes messages from artifacts. Those types help participants represent progress under that contract. They do not establish the factual correctness of an artifact or grant access to a protected source. Both sides still need compatible versions, supported interaction modes and an authorization arrangement. [1](#source-a2a)
 
 ## Correlation is not a delivery guarantee

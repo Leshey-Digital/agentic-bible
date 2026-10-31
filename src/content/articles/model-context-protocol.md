@@ -6,7 +6,7 @@ order: 3
 status: Working draft
 verified: '2026-10-16'
 author: AI-assisted project draft
-related: [ai-agent, tool-use]
+related: [ai-agent, tool-use, tool-permissions, agent-identity, agent-to-agent-communication]
 sources:
   - id: architecture
     title: MCP specification — Architecture

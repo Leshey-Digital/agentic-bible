@@ -4,7 +4,7 @@ description: How software coordinates model decisions, tools, state, and delegat
 topic: Foundations
 order: 4
 status: Working draft
-verified: '2026-10-16'
+verified: '2026-10-30'
 author: AI-assisted project draft
 related: [ai-agent, tool-use, agent-memory, agent-evaluation, prompt-injection]
 sources:
@@ -17,7 +17,7 @@ sources:
     title: Workflows and agents
     url: https://docs.langchain.com/oss/python/langgraph/workflows-agents
     publisher: LangChain
-    context: Living implementation documentation checked 16 October 2026, especially Orchestrator-worker and its state-sharing example. Describes LangGraph, not all agent systems.
+    context: Living implementation documentation checked 30 October 2026; chaining, routing, parallelization and orchestrator-worker state flow. Framework examples are not comparative benchmarks.
   - id: react
     title: 'ReAct: Synergizing Reasoning and Acting in Language Models'
     url: https://arxiv.org/abs/2210.03629v3
@@ -25,30 +25,56 @@ sources:
     context: Version 3, 10 March 2023; research on interleaving reasoning and environmental actions. Experiments concern the paper’s selected tasks and models.
 ---
 
-**Agent orchestration** is the coordination around an [AI agent](/articles/ai-agent/): what work starts, which component receives it, what state is available, and when execution stops. This entry uses the term for software control rather than a particular product. Anthropic’s engineering taxonomy separates workflows with predefined paths from agents whose next steps are selected by a model. Both can appear within the same application. [1](#source-patterns)
+**Agent orchestration** coordinates when work starts, which component receives it, how results are combined and when a run ends. It can coordinate one model, several agents, ordinary functions or a mixture. [Planning](/articles/agent-planning/) proposes actions; orchestration connects their execution and state.
 
-## Control can take several forms
+Anthropic describes composable workflow patterns and recommends using simpler arrangements when they suffice. Its taxonomy is engineering guidance, not a universal definition or a ranking of frameworks. [1](#source-patterns)
 
-A sequence gives one step’s output to the next. A router selects a path. Parallel work divides independent pieces and later combines their results. An orchestrator-worker arrangement instead lets a coordinator determine the subtasks as work unfolds. Anthropic describes these as different architectural patterns and recommends starting with simpler approaches when they meet the task’s needs. Its guidance reflects engineering experience, rather than a controlled finding that one architecture always wins. [1](#source-patterns)
+## Five arrangements and the problem each solves
 
-Multiple agents are therefore one possible arrangement, not the definition of orchestration. A single agent still needs a surrounding loop that handles observations, actions, and termination. ReAct illustrates a research approach in which generated reasoning and actions alternate with environmental observations. Its results on question answering and interactive environments support studying that pattern; they do not establish reliability for an unrelated production task. [3](#source-react)
+LangGraph’s guide demonstrates chaining, routing, parallelization, orchestrator-workers and evaluator-optimizer loops. In its orchestrator-worker example, a model determines subtasks, workers receive their own inputs, and results accumulate for synthesis. [2](#source-langgraph)
 
-## A handoff needs state
+The following examples are original design comparisons for a hypothetical document-processing application. They describe possible choices, not measured performance or a system running on this site.
 
-LangGraph’s orchestrator-worker documentation provides a concrete implementation example: the orchestrator produces subtasks, workers receive individual inputs, and their outputs accumulate in shared state for synthesis. The documentation’s dynamic worker creation is a framework capability. The broader question it illustrates is what information crosses a handoff, and how the coordinator knows which work is complete. [2](#source-langgraph)
+| Pattern | Example work | Check |
+| --- | --- | --- |
+| Sequence | Extract, validate, render | Stop on invalid output |
+| Router | Choose invoice or contract extractor | Handle unknown types |
+| Parallel work | Check dates and totals independently | Handle partial results |
+| Orchestrator and workers | Discover sections, then delegate | Define completion |
+| Evaluator and revision loop | Score a draft, then revise | Stop without improvement |
 
-For an illustrative encyclopedia workflow, a coordinator could assign one worker to protocol history and another to current terminology. Each assignment would identify its question, permitted sources, and expected evidence. A worker’s response could include source locations and unresolved disagreements. A synthesis step could then retain the disagreement instead of converting two incompatible answers into a confident sentence. This is an original design example, not a workflow running on this site.
+For a known invoice format, a fixed extraction-and-validation sequence might be enough. For an unfamiliar bundle of mixed documents, discovering the required subtasks during execution could be useful. This is a task-design judgment to test, rather than a reason to maximize the number of agents.
 
-In that example, a handoff record would distinguish an assignment from an accepted result. If a worker stops halfway through, its partial notes would remain partial. The coordinator would also distinguish restarting research from repeating an external write: rerunning a search and sending the same message twice have different consequences. These are proposed design criteria for the example, not guarantees supplied by any framework.
+## Follow one handoff from input to result
 
-## Coordination does not grant authority
+Suppose the document application asks two workers to check a report. One checks date consistency; the other checks arithmetic. A useful handoff might look like this:
 
-[Tool use](/articles/tool-use/) explains the boundary between a model requesting an action and application software executing it. In the example above, assigning a worker a research role would not give it permission to publish, change access rights, or increase a spending limit. A proposed implementation would enforce those boundaries where actions execute. A persuasive worker response would remain input to that boundary.
+```json
+{
+  "task_id": "dates-1",
+  "document_revision": "synthetic-revision-7",
+  "question": "Do the stated dates agree?",
+  "allowed_action": "read supplied document",
+  "result": {
+    "status": "needs-review",
+    "locations": ["section-2", "appendix-a"],
+    "finding": "The two dates differ."
+  }
+}
+```
 
-The same distinction matters for [prompt injection](/articles/prompt-injection/). A passage retrieved during research might contain instructions addressed to an assistant. Passing the passage between workers would not make its author an authorized project operator. Preserving its origin would help a reviewer distinguish evidence from instructions, although provenance alone would not make the text safe or true.
+This invented record is an application contract, not a LangGraph message format. A coordinator can compare its revision field with the current document revision and reject a stale result; merely including the field enforces nothing. Its locations let the receiving step inspect the finding. The arithmetic worker may succeed while the date worker fails; the coordinator must decide whether to return a partial report or stop. Inventing the missing result would conceal that decision.
 
-## Judge the whole arrangement
+A coordinator should also distinguish an assigned task from a completed task. An assignment can be recorded before work begins; acceptance requires the expected result. If a worker is restarted, [durable execution](/articles/durable-agent-execution/) determines whether it resumes, repeats a safe read or reconciles an earlier write.
 
-For the encyclopedia example, useful [evaluation](/articles/agent-evaluation/) questions include whether assignments were completed with evidence, conflicting findings survived synthesis, and the run stopped within its declared limits. The test should include a missing worker result and an unavailable source, rather than only a successful path. More roles would be justified only by a measured benefit for this task.
+## A model loop fits inside orchestration
 
-[Memory](/articles/agent-memory/) can preserve useful state between steps or runs. It also creates another coordination decision: which record is current, who may update it, and how a correction reaches downstream work. Orchestration is useful vocabulary for making those decisions visible. It is not evidence of autonomy, factual accuracy, or a deployed publishing system.
+ReAct interleaves reasoning and actions with observations, showing how feedback can affect subsequent work. [3](#source-react) An orchestration layer can host such a loop as one component while keeping the surrounding validation and delivery sequence fixed. Conversely, several fixed model calls do not necessarily form a model-directed agent.
+
+This distinction helps diagnose failure. A wrong classification belongs at the router. A lost result belongs at the handoff or persistence boundary. A contradictory synthesis belongs at the combining step. “The agent failed” is too broad to identify which control needs correction.
+
+## Evaluate coordination as a whole
+
+For the example, test a missing worker, two conflicting results, a stale document revision and an exhausted deadline. Measure whether a correct report is delivered, how much work is consumed and whether an incomplete result is clearly marked. Compare with running one checker sequentially; parallel execution can add coordination work as well as reduce waiting.
+
+The orchestration layer also needs explicit [tool permissions](/articles/tool-permissions/). A worker authorized to read a report does not acquire publication rights from a coordinator’s prose. Retrieved instructions remain untrusted input; [prompt injection](/articles/prompt-injection/) can cross a handoff if the receiver confuses source text with authority. Retaining origin and [observable execution records](/articles/agent-observability/) helps investigation, but those records still need interpretation.

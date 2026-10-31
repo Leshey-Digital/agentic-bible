@@ -39,13 +39,17 @@ In this entry, the broader operational distinction is simple: a retrieval stage 
 
 Lost in the Middle investigated multi-document question answering and key-value retrieval. It found that changing where relevant information appears in the context affected performance, with stronger results often near the beginning or end than in the middle. This is evidence about the tested models and experiments, not a timeless ranking of all current models. It supports testing context placement rather than equating context capacity with successful use. [3](#source-long-context)
 
-For an original encyclopedia example, imagine a question asking when a protocol feature changed. A search might return the current documentation, an old specification, and a release note. A useful answer would distinguish the current definition from the history of the change. Quoting today’s page alone would not establish when the change happened.
+Consider a miniature corpus for a fictional product, Harbor. These three records and all dates are invented to show the evidence decision; they are not product documentation or experimental results.
 
-In that proposed workflow, each selected excerpt would retain its URL, version where available, and surrounding section. The generator would receive the question and the relevant excerpts. If the release note did not actually identify the change date, the answer would report that gap. These are criteria for the example, not assertions about a deployed retrieval service on this site.
+- **A — manual, 3 May 2025:** Harbor does not support CSV export.
+- **B — manual, 15 June 2025:** CSV export is available from the Export menu.
+- **C — release note, 8 June 2025:** CSV export became available today.
+
+The question is “When did Harbor gain CSV export?” A search that returns B has found relevant words but not the requested date. A search that also returns C has supplied evidence for an answer: 8 June 2025, citing C. A describes an earlier state; it does not contradict the later release. The retrieval stage must retain each record's identity, date and text so the answering stage can make that distinction.
 
 ## Citations need a claim-level check
 
-A citation should let a reader inspect the evidence for the adjacent statement. In the example, attaching the current specification to a historical date would be misleading even if both concerned the same feature. An editor would need to check whether the cited source states the date or whether the answer inferred it. This is an editorial reasoning step that follows candidate retrieval.
+A citation should let a reader inspect the evidence for the adjacent statement. In the Harbor example, citing B for the launch date would not support the answer even though B discusses the right feature. If C were missing, the available records would place the change between A's May observation and B's June observation, not establish an exact day. Asking who requested the feature would be unanswerable from these records. This claim-level check follows retrieval; a high retrieval score cannot supply the missing fact.
 
 The selected material also remains external data. A document’s instruction to change the task would not become an authorized instruction merely because search ranked it highly. [Prompt injection](/articles/prompt-injection/) examines that boundary. [Memory](/articles/agent-memory/) adds a related question when previously generated notes become retrieval candidates: is the note an observation, an interpretation, or a superseded conclusion?
 

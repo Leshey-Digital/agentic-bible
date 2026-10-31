@@ -33,6 +33,8 @@ An original example is a reference assistant allowed a fixed number of source ch
 
 For this example, a proposed system could reserve the maximum allowed work before dispatch and reconcile the result afterward. Concurrent jobs would need to share the same budget authority rather than each reading a stale balance. If usage or price is unknown, the application needs a defined policy for refusing new paid work. These are design considerations, not a claim that this encyclopedia has connected a paid agent or implemented a provider billing stop.
 
+For an original arithmetic example, start with **10 work units**, with no monetary value implied. Two concurrent jobs each ask to reserve 6. An atomic shared ledger can admit one, leaving 4 available; admitting both would promise 12 against a limit of 10. If the admitted job later confirms usage of 3, the ledger can settle that reservation at 3 and make 7 available. If its response is lost and usage is unknown, retain the 6-unit hold, leaving 4 available until reconciliation. A timeout does not establish a zero charge. These invented quantities illustrate admission and settlement, not a provider's billing rules or this site's configured spending limits.
+
 ## A loop needs a terminal condition
 
 LangGraph’s GRAPH_RECURSION_LIMIT documentation describes reaching the maximum number of graph steps before a stop condition. Its example shows a cycle, and its troubleshooting discusses configuring the step limit for intended longer executions. A graph step counter describes that framework’s execution model. It should not be equated with model turns, wall-clock time or a universal definition of an agent’s reasoning effort. [2](#source-graph-limit)

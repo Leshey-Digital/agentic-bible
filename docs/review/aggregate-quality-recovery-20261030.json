@@ -1,0 +1,889 @@
+{
+  "kind": "aggregate-evidence-with-explicit-source-correspondence",
+  "observedAt": "2026-10-30T21:50:43.524Z",
+  "source": "b0bdfb7998bfaebdc20a0b78a66130ecf23f57a7",
+  "sourceTree": "7362fa484f44e2d9c9ad05d16cd5f3ad4b1d0e19",
+  "base": "061359cc443da097e5472bac2914ac81e3f91fd0",
+  "sourceBranch": "feat/reader-quality-measurement-20261030",
+  "qualificationManifestDigest": "eefe4bd14965c45abd247facf84b69ec8da802c5f95ed57d64690586a915fe52",
+  "coverage": {
+    "passed": 60,
+    "required": 60,
+    "inheritedFrom07f8024": 50,
+    "currentSnapshotBridgeAtAa11924": 1,
+    "finalHeadCommands": 9,
+    "nativeExactHeadReceipt": false,
+    "originalNativeState": "interrupted; no qualification.json or qualification.sha256 created"
+  },
+  "correspondence": {
+    "appSrcTree": "1341c198d5c1b8ccec319234a8380504b0be78ac",
+    "packageBlob": "528f55e3751552b33c1c56f47b11a281e6ca6ed7",
+    "changedSinceInheritedSource": [
+      "tests/wiki-bridge-browser/canonical.spec.mjs",
+      "tests/wiki-seo-integration-browser/composition.spec.mjs"
+    ],
+    "review": "Exact b0bdfb7 accepted by independent Sol6.1 source reviewer; no tests/network/edits or GitHub approval by reviewer"
+  },
+  "extraChecks": [
+    {
+      "index": null,
+      "step": "build",
+      "exit": 0,
+      "overflow": false,
+      "durationMs": 2958,
+      "bytes": 5101,
+      "sha256": "a6ca251b55b182cd4cdd71100e86801e1cd2bb8bcb167663f5bd8c15e058c913",
+      "source": "aa11924799d4495d422b97007ac07659ea45a877"
+    },
+    {
+      "index": null,
+      "step": "test:browser",
+      "exit": 0,
+      "overflow": false,
+      "durationMs": 107038,
+      "bytes": 13380,
+      "sha256": "3a60458ed3fb5f595ace7f8bc3cc8696c072e7ad05574d472115e3cf6ae0a9d1",
+      "source": "aa11924799d4495d422b97007ac07659ea45a877"
+    },
+    {
+      "index": null,
+      "step": "build",
+      "exit": 0,
+      "overflow": false,
+      "durationMs": 2832,
+      "bytes": 5007,
+      "sha256": "f7e8bf8aba828a45a9addc8713b8c9b5b5ef042fff73115aab3c67e39c7e33bf",
+      "source": "b0bdfb7998bfaebdc20a0b78a66130ecf23f57a7"
+    },
+    {
+      "index": null,
+      "step": "test:browser:source-pin",
+      "exit": 0,
+      "overflow": false,
+      "durationMs": 3305,
+      "bytes": 526,
+      "sha256": "097a5dcfd6e4a9ffa5b0cd324aee900f3b73e58a43b0712f1e50586df3ec01a6",
+      "source": "b0bdfb7998bfaebdc20a0b78a66130ecf23f57a7"
+    }
+  ],
+  "artifact": {
+    "root": "/workspace/agentic-bible-quality-validation-20261030/.git/quality-evidence/continuation-b0bdfb7/candidate",
+    "digest": "48e984b4e23cef3fe698f7eba510e0f29dae5b8cc6950eb866372aa33b940498",
+    "source": "b0bdfb7998bfaebdc20a0b78a66130ecf23f57a7",
+    "sourceTree": "7362fa484f44e2d9c9ad05d16cd5f3ad4b1d0e19",
+    "assets": 84,
+    "configSha256": "a5892b62344241a091ac6363efdee813dec18f61fb7e0b18209772bfc865c022",
+    "workerSha256": "4170ceae751d285d0f1c19228872a51d2c221afa4dc22a9c9aca28c9d6304334",
+    "target": {
+      "account": "c370be29e4065365de03bc8652da2cdc",
+      "origin": "https://staging.agenticbible.si",
+      "worker": "agentic-bible-staging"
+    },
+    "deployed": false,
+    "scope": "standard closed staging preparation; no new production module package claimed"
+  },
+  "bundle": {
+    "path": "/workspace/agentic-bible-quality-validation-20261030/.git/quality-evidence/source-b0bdfb7.bundle",
+    "sha256": "1b7276e4250de05fb2594650e99f47d47be980aea0d57879655c158155443727",
+    "bytes": 44124,
+    "prerequisite": "061359cc443da097e5472bac2914ac81e3f91fd0",
+    "verified": true,
+    "exported": false
+  },
+  "readOnlyAnalytics": {
+    "observedAt": "2026-10-30T21:19:11.107Z",
+    "account": "c370be29e4065365de03bc8652da2cdc",
+    "readOnly": true,
+    "query": "SHOW TABLES",
+    "status": 200,
+    "success": true,
+    "result": {
+      "meta": [
+        {
+          "name": "dataset",
+          "type": "String"
+        }
+      ],
+      "data": [],
+      "rows": 0,
+      "rows_before_limit_at_least": 0
+    },
+    "interpretation": "Read-only SHOW TABLES returned no recorded Analytics Engine datasets. Does not prove ingestion/readback or every future query permission. No dataset created or collection activated."
+  },
+  "providerReadback": {
+    "observedAt": "2026-10-30T21:27:38.186Z",
+    "readOnly": true,
+    "providerDeployments": [
+      {
+        "target": "agentic-bible-production",
+        "status": 200,
+        "success": true,
+        "count": 2,
+        "resultInfo": {
+          "page": 1,
+          "per_page": 100,
+          "count": 2,
+          "total_count": 2,
+          "total_pages": 1
+        },
+        "latest": [
+          {
+            "id": "76e27d35-fe4a-4d9f-ba16-3db019f4340d",
+            "created_on": "2026-10-22T17:49:56.951363Z",
+            "versions": [
+              {
+                "version_id": "7eccb256-0659-43c4-b2e6-5f54ac652824",
+                "percentage": 100
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "target": "agentic-bible-staging",
+        "status": 200,
+        "success": true,
+        "count": 14,
+        "resultInfo": {
+          "page": 1,
+          "per_page": 100,
+          "count": 14,
+          "total_count": 14,
+          "total_pages": 1
+        },
+        "latest": [
+          {
+            "id": "6593f4e8-aec8-4d4c-a738-f6b02f64769a",
+            "created_on": "2026-10-25T00:07:19.368254Z",
+            "versions": [
+              {
+                "version_id": "a70ede39-1221-4a8a-983b-1ca66672bf69",
+                "percentage": 100
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "interpretation": "Both active deployments remain unchanged. These inventories do not resolve whether the historical platform upload can still execute."
+  },
+  "originalUpload": {
+    "operation": "b902c48c-767e-4515-bdb9-d1ae39572a87",
+    "cell": 8,
+    "state": "uncertain; no replay",
+    "originalJournalSha256": "a0548d2aadf2cda8f9681d3d8c6646fe04499d38ce78fb12a83d5d0bc5a29d4e",
+    "supportedPlatformStatusRouteAvailable": false
+  },
+  "preservedFailures": [
+    {
+      "run": "92c82760-b5cd-474f-a4c8-fa3067fca1b8",
+      "cause": "dependency-copy symlink dereference; environment correction only"
+    },
+    {
+      "run": "9225f32f-795f-4b1b-b78b-60b224542257",
+      "cause": "two stale catalog source-count expectations; corrected without capacity/fault guard changes"
+    },
+    {
+      "run": "continuation-07f8024",
+      "step": 50,
+      "result": "1 failed,3 passed",
+      "cause": "removed current article phrases in literal search fixture",
+      "trace": "/workspace/agentic-bible-quality-validation-20261030/.git/quality-evidence/continuation-07f8024/failure-wiki-bridge/trace.zip"
+    },
+    {
+      "run": "continuation-aa11924",
+      "step": 51,
+      "result": "1 failed",
+      "cause": "unquoted synthetic marker query had inexact current-site results; exact quoted marker absent",
+      "trace": "/workspace/agentic-bible-quality-validation-20261030/.git/quality-evidence/continuation-aa11924/failure-wiki-seo/trace.zip",
+      "diagnostic": "/workspace/agentic-bible-quality-validation-20261030/.git/quality-evidence/continuation-aa11924/failure-wiki-seo/search-diagnostic.json"
+    }
+  ],
+  "environmentRecovery": {
+    "actualTransportFailure": true,
+    "subsequentNoUsableExecutionEnvironment": true,
+    "recoveredSameExecutor": true,
+    "existingRunnerConfirmedAlive": true,
+    "duplicateRunStarted": false
+  },
+  "noRemoteWrites": true,
+  "paidInference": false,
+  "collectionActive": false,
+  "sourcePublished": false,
+  "checks": [
+    {
+      "index": 0,
+      "step": "test:docs",
+      "source": "07f8024ce7d7ad38e273d977eee7dfd437241ef7",
+      "evidenceKind": "interrupted-native-run-completed-output",
+      "successEvidence": "next log created after successful preceding exit and clean-source check by unchanged runner",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/local-qualifications/ad05a5de-4e21-41c5-a0e4-2083882509d0/logs/00.log",
+      "bytes": 282,
+      "sha256": "6205a4397c6094ac52d12282bec20f398b207947a794be4786646affe58b4223"
+    },
+    {
+      "index": 1,
+      "step": "check",
+      "source": "07f8024ce7d7ad38e273d977eee7dfd437241ef7",
+      "evidenceKind": "interrupted-native-run-completed-output",
+      "successEvidence": "next log created after successful preceding exit and clean-source check by unchanged runner",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/local-qualifications/ad05a5de-4e21-41c5-a0e4-2083882509d0/logs/01.log",
+      "bytes": 640,
+      "sha256": "78d4c0986d9cda16501e7f34795fc6aad6227f1758db39d359186a954a563863"
+    },
+    {
+      "index": 2,
+      "step": "build",
+      "source": "07f8024ce7d7ad38e273d977eee7dfd437241ef7",
+      "evidenceKind": "interrupted-native-run-completed-output",
+      "successEvidence": "next log created after successful preceding exit and clean-source check by unchanged runner",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/local-qualifications/ad05a5de-4e21-41c5-a0e4-2083882509d0/logs/02.log",
+      "bytes": 5005,
+      "sha256": "46f858ccbb5becd53b057819b2edc4278cd85f167b4c137b588bc5f14f4fc45f"
+    },
+    {
+      "index": 3,
+      "step": "test",
+      "source": "07f8024ce7d7ad38e273d977eee7dfd437241ef7",
+      "evidenceKind": "interrupted-native-run-completed-output",
+      "successEvidence": "next log created after successful preceding exit and clean-source check by unchanged runner",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/local-qualifications/ad05a5de-4e21-41c5-a0e4-2083882509d0/logs/03.log",
+      "bytes": 1384,
+      "sha256": "a2dc394bc2297bb81dea126ba52e8a7f1f480d76cf1cdd6f9150b923d4989e05"
+    },
+    {
+      "index": 4,
+      "step": "test:editorial",
+      "source": "07f8024ce7d7ad38e273d977eee7dfd437241ef7",
+      "evidenceKind": "interrupted-native-run-completed-output",
+      "successEvidence": "next log created after successful preceding exit and clean-source check by unchanged runner",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/local-qualifications/ad05a5de-4e21-41c5-a0e4-2083882509d0/logs/04.log",
+      "bytes": 1678,
+      "sha256": "56c9f7dfa1fd006657818050532b289a48bebc9df684004631b77ca9042ada84"
+    },
+    {
+      "index": 5,
+      "step": "test:monitoring",
+      "source": "07f8024ce7d7ad38e273d977eee7dfd437241ef7",
+      "evidenceKind": "interrupted-native-run-completed-output",
+      "successEvidence": "next log created after successful preceding exit and clean-source check by unchanged runner",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/local-qualifications/ad05a5de-4e21-41c5-a0e4-2083882509d0/logs/05.log",
+      "bytes": 3165,
+      "sha256": "1e8cb653eac15141a0f4136bcdfee8a540b1e7a8cb1b48310108d1c0d23911f8"
+    },
+    {
+      "index": 6,
+      "step": "test:settings",
+      "source": "07f8024ce7d7ad38e273d977eee7dfd437241ef7",
+      "evidenceKind": "interrupted-native-run-completed-output",
+      "successEvidence": "next log created after successful preceding exit and clean-source check by unchanged runner",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/local-qualifications/ad05a5de-4e21-41c5-a0e4-2083882509d0/logs/06.log",
+      "bytes": 3329,
+      "sha256": "10c24d8a964d9b1cd3c725b3a2d244937dd5265d18c0b31e2c2681f5a1330608"
+    },
+    {
+      "index": 7,
+      "step": "test:integration-settings",
+      "source": "07f8024ce7d7ad38e273d977eee7dfd437241ef7",
+      "evidenceKind": "interrupted-native-run-completed-output",
+      "successEvidence": "next log created after successful preceding exit and clean-source check by unchanged runner",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/local-qualifications/ad05a5de-4e21-41c5-a0e4-2083882509d0/logs/07.log",
+      "bytes": 2000,
+      "sha256": "deada9d4aef313581c15a496975afd5df216959c28aef7847013d3201967436d"
+    },
+    {
+      "index": 8,
+      "step": "test:hosted-integration-settings",
+      "source": "07f8024ce7d7ad38e273d977eee7dfd437241ef7",
+      "evidenceKind": "interrupted-native-run-completed-output",
+      "successEvidence": "next log created after successful preceding exit and clean-source check by unchanged runner",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/local-qualifications/ad05a5de-4e21-41c5-a0e4-2083882509d0/logs/08.log",
+      "bytes": 901,
+      "sha256": "b0ac105bf5a57c78c7b5724d86850db57ae9b0b3e10297b87814fc5a08219f78"
+    },
+    {
+      "index": 9,
+      "step": "test:integration",
+      "source": "07f8024ce7d7ad38e273d977eee7dfd437241ef7",
+      "evidenceKind": "interrupted-native-run-completed-output",
+      "successEvidence": "next log created after successful preceding exit and clean-source check by unchanged runner",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/local-qualifications/ad05a5de-4e21-41c5-a0e4-2083882509d0/logs/09.log",
+      "bytes": 592,
+      "sha256": "d3334c61db9d0d11ea2c9fd2c027be87e714b1db9127e757b44fb0e3a703d43a"
+    },
+    {
+      "index": 10,
+      "step": "test:http-sources",
+      "source": "07f8024ce7d7ad38e273d977eee7dfd437241ef7",
+      "evidenceKind": "interrupted-native-run-completed-output",
+      "successEvidence": "next log created after successful preceding exit and clean-source check by unchanged runner",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/local-qualifications/ad05a5de-4e21-41c5-a0e4-2083882509d0/logs/10.log",
+      "bytes": 1739,
+      "sha256": "f0a57feb68b9fa1d83851379845acc87a79b1db343af8e1e1112ff90ef03f81a"
+    },
+    {
+      "index": 11,
+      "step": "test:http-worker",
+      "source": "07f8024ce7d7ad38e273d977eee7dfd437241ef7",
+      "evidenceKind": "interrupted-native-run-completed-output",
+      "successEvidence": "next log created after successful preceding exit and clean-source check by unchanged runner",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/local-qualifications/ad05a5de-4e21-41c5-a0e4-2083882509d0/logs/11.log",
+      "bytes": 443,
+      "sha256": "1c7c963ef359d35faa94d3425987a70af1431f762747dd4c1ab434a89b24b903"
+    },
+    {
+      "index": 12,
+      "step": "test:publication",
+      "source": "07f8024ce7d7ad38e273d977eee7dfd437241ef7",
+      "evidenceKind": "interrupted-native-run-completed-output",
+      "successEvidence": "next log created after successful preceding exit and clean-source check by unchanged runner",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/local-qualifications/ad05a5de-4e21-41c5-a0e4-2083882509d0/logs/12.log",
+      "bytes": 1975,
+      "sha256": "faf75660d79aac3867f4954a62428d03f785e36f6c7a292f9a37637cbe0b85ef"
+    },
+    {
+      "index": 13,
+      "step": "test:seo",
+      "source": "07f8024ce7d7ad38e273d977eee7dfd437241ef7",
+      "evidenceKind": "interrupted-native-run-completed-output",
+      "successEvidence": "next log created after successful preceding exit and clean-source check by unchanged runner",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/local-qualifications/ad05a5de-4e21-41c5-a0e4-2083882509d0/logs/13.log",
+      "bytes": 1107,
+      "sha256": "1bc94425bcd3f6bcddb50a443f7b47024838968852b1d0eaea311cd6d782782a"
+    },
+    {
+      "index": 14,
+      "step": "test:seo:build",
+      "source": "07f8024ce7d7ad38e273d977eee7dfd437241ef7",
+      "evidenceKind": "interrupted-native-run-completed-output",
+      "successEvidence": "next log created after successful preceding exit and clean-source check by unchanged runner",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/local-qualifications/ad05a5de-4e21-41c5-a0e4-2083882509d0/logs/14.log",
+      "bytes": 458,
+      "sha256": "a94bb801a6eb86d90b8bfcec46fe62c0063c073f592e061e2949826bd801e15b"
+    },
+    {
+      "index": 15,
+      "step": "test:wiki-bridge:serial",
+      "source": "07f8024ce7d7ad38e273d977eee7dfd437241ef7",
+      "evidenceKind": "interrupted-native-run-completed-output",
+      "successEvidence": "next log created after successful preceding exit and clean-source check by unchanged runner",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/local-qualifications/ad05a5de-4e21-41c5-a0e4-2083882509d0/logs/15.log",
+      "bytes": 2808,
+      "sha256": "bbfce985de9ea6c19c3b4777bc2d8cc73383d565af47f7433aa6cd43fe9683f4"
+    },
+    {
+      "index": 16,
+      "step": "test:corrections",
+      "source": "07f8024ce7d7ad38e273d977eee7dfd437241ef7",
+      "evidenceKind": "interrupted-native-run-completed-output",
+      "successEvidence": "next log created after successful preceding exit and clean-source check by unchanged runner",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/local-qualifications/ad05a5de-4e21-41c5-a0e4-2083882509d0/logs/16.log",
+      "bytes": 1081,
+      "sha256": "00ad02bb54dd0439571c5e3856378d596c98b2bc405643ff393f631f602011f1"
+    },
+    {
+      "index": 17,
+      "step": "test:hosted",
+      "source": "07f8024ce7d7ad38e273d977eee7dfd437241ef7",
+      "evidenceKind": "interrupted-native-run-completed-output",
+      "successEvidence": "next log created after successful preceding exit and clean-source check by unchanged runner",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/local-qualifications/ad05a5de-4e21-41c5-a0e4-2083882509d0/logs/17.log",
+      "bytes": 5646,
+      "sha256": "280714affadd73362a2cca01d1faf1f347b37b5815383fba9ded18e5efae6dee"
+    },
+    {
+      "index": 18,
+      "step": "test:release",
+      "source": "07f8024ce7d7ad38e273d977eee7dfd437241ef7",
+      "evidenceKind": "interrupted-native-run-completed-output",
+      "successEvidence": "next log created after successful preceding exit and clean-source check by unchanged runner",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/local-qualifications/ad05a5de-4e21-41c5-a0e4-2083882509d0/logs/18.log",
+      "bytes": 18370,
+      "sha256": "48763aafe26b7c121419df1d33d69d10e502c6350fa377ca408fd20fa6aa3863"
+    },
+    {
+      "index": 19,
+      "step": "test:maintenance-sources",
+      "source": "07f8024ce7d7ad38e273d977eee7dfd437241ef7",
+      "evidenceKind": "interrupted-native-run-completed-output",
+      "successEvidence": "next log created after successful preceding exit and clean-source check by unchanged runner",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/local-qualifications/ad05a5de-4e21-41c5-a0e4-2083882509d0/logs/19.log",
+      "bytes": 1675,
+      "sha256": "ef447a6a9831bf63952624ca51e89973bff197569d4d22fb7125d630dce2328e"
+    },
+    {
+      "index": 20,
+      "step": "test:maintenance",
+      "source": "07f8024ce7d7ad38e273d977eee7dfd437241ef7",
+      "evidenceKind": "interrupted-native-run-completed-output",
+      "successEvidence": "next log created after successful preceding exit and clean-source check by unchanged runner",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/local-qualifications/ad05a5de-4e21-41c5-a0e4-2083882509d0/logs/20.log",
+      "bytes": 1328,
+      "sha256": "a024a979fb0dd76d7e6a84930a207e6a30865be9a9d4af2eab63caca336d7407"
+    },
+    {
+      "index": 21,
+      "step": "test:maintenance-github",
+      "source": "07f8024ce7d7ad38e273d977eee7dfd437241ef7",
+      "evidenceKind": "interrupted-native-run-completed-output",
+      "successEvidence": "next log created after successful preceding exit and clean-source check by unchanged runner",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/local-qualifications/ad05a5de-4e21-41c5-a0e4-2083882509d0/logs/21.log",
+      "bytes": 1922,
+      "sha256": "174a43b3d05406060d52c9552ad700486283a08bd42bd7b21158df0a5be32286"
+    },
+    {
+      "index": 22,
+      "step": "test:maintenance-history",
+      "source": "07f8024ce7d7ad38e273d977eee7dfd437241ef7",
+      "evidenceKind": "interrupted-native-run-completed-output",
+      "successEvidence": "next log created after successful preceding exit and clean-source check by unchanged runner",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/local-qualifications/ad05a5de-4e21-41c5-a0e4-2083882509d0/logs/22.log",
+      "bytes": 684,
+      "sha256": "a9ecd0a9dd93b0a1c6f5f637314e94ad65b5ec588f9a43f021bb1b8715e52eae"
+    },
+    {
+      "index": 23,
+      "step": "test:maintenance-review",
+      "exit": 0,
+      "overflow": false,
+      "durationMs": 21102,
+      "bytes": 1506,
+      "sha256": "b19b82d58e6b368f12f3bcb9e35f8c197d4e24c58eb8a1195347478ab236152a",
+      "source": "07f8024ce7d7ad38e273d977eee7dfd437241ef7",
+      "evidenceKind": "independent-continuation-actual-exit",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/quality-evidence/continuation-07f8024/23.log"
+    },
+    {
+      "index": 24,
+      "step": "test:maintenance-restore",
+      "exit": 0,
+      "overflow": false,
+      "durationMs": 60490,
+      "bytes": 2263,
+      "sha256": "e1b9f109c40d331f8f94c47208503901ae64ffe6704cee837a7ec753b6aa89a2",
+      "source": "07f8024ce7d7ad38e273d977eee7dfd437241ef7",
+      "evidenceKind": "independent-continuation-actual-exit",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/quality-evidence/continuation-07f8024/24.log"
+    },
+    {
+      "index": 25,
+      "step": "test:maintenance-base",
+      "exit": 0,
+      "overflow": false,
+      "durationMs": 111309,
+      "bytes": 831,
+      "sha256": "5380062b1b4774e566cc46f0d5d2de0c85493755ebae6f42e7e058f388c8b369",
+      "source": "07f8024ce7d7ad38e273d977eee7dfd437241ef7",
+      "evidenceKind": "independent-continuation-actual-exit",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/quality-evidence/continuation-07f8024/25.log"
+    },
+    {
+      "index": 26,
+      "step": "test:maintenance-pipeline",
+      "exit": 0,
+      "overflow": false,
+      "durationMs": 177869,
+      "bytes": 1539,
+      "sha256": "082ea29040e3ff3d8176b6503e2552c043df80e05b70ef547754bcc71574d31b",
+      "source": "07f8024ce7d7ad38e273d977eee7dfd437241ef7",
+      "evidenceKind": "independent-continuation-actual-exit",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/quality-evidence/continuation-07f8024/26.log"
+    },
+    {
+      "index": 27,
+      "step": "test:maintenance-currency",
+      "exit": 0,
+      "overflow": false,
+      "durationMs": 35841,
+      "bytes": 2686,
+      "sha256": "63cb565bffc6aa129b759f58c618d24f21d40b1197688c5cd877fad88c2419ce",
+      "source": "07f8024ce7d7ad38e273d977eee7dfd437241ef7",
+      "evidenceKind": "independent-continuation-actual-exit",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/quality-evidence/continuation-07f8024/27.log"
+    },
+    {
+      "index": 28,
+      "step": "test:maintenance-review-monitor",
+      "exit": 0,
+      "overflow": false,
+      "durationMs": 48261,
+      "bytes": 934,
+      "sha256": "74c24066b226629709173013dce8a95ddf6c8431398c929c5ed85274bbdbbeb1",
+      "source": "07f8024ce7d7ad38e273d977eee7dfd437241ef7",
+      "evidenceKind": "independent-continuation-actual-exit",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/quality-evidence/continuation-07f8024/28.log"
+    },
+    {
+      "index": 29,
+      "step": "test:reader-metadata",
+      "exit": 0,
+      "overflow": false,
+      "durationMs": 369,
+      "bytes": 515,
+      "sha256": "8915479e805bc1c38595a48e943663acaa4d581b454362bfc32e799178a5a414",
+      "source": "07f8024ce7d7ad38e273d977eee7dfd437241ef7",
+      "evidenceKind": "independent-continuation-actual-exit",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/quality-evidence/continuation-07f8024/29.log"
+    },
+    {
+      "index": 30,
+      "step": "test:social-metadata",
+      "exit": 0,
+      "overflow": false,
+      "durationMs": 271,
+      "bytes": 280,
+      "sha256": "63fa4c850879f143fc5abf51f490420fa7571aa5084268a1868a173d51349756",
+      "source": "07f8024ce7d7ad38e273d977eee7dfd437241ef7",
+      "evidenceKind": "independent-continuation-actual-exit",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/quality-evidence/continuation-07f8024/30.log"
+    },
+    {
+      "index": 31,
+      "step": "test:content-readiness",
+      "exit": 0,
+      "overflow": false,
+      "durationMs": 244,
+      "bytes": 1018,
+      "sha256": "8b94f4f77a820ebaf4e97f64e2d0f1ba707df4b79495083783fa4d3d76070b89",
+      "source": "07f8024ce7d7ad38e273d977eee7dfd437241ef7",
+      "evidenceKind": "independent-continuation-actual-exit",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/quality-evidence/continuation-07f8024/31.log"
+    },
+    {
+      "index": 32,
+      "step": "test:maintenance-quality",
+      "exit": 0,
+      "overflow": false,
+      "durationMs": 371594,
+      "bytes": 3749,
+      "sha256": "a182156d9c68a5ba826ffa3073330d7bd011b55f3216e606c83074889c712761",
+      "source": "07f8024ce7d7ad38e273d977eee7dfd437241ef7",
+      "evidenceKind": "independent-continuation-actual-exit",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/quality-evidence/continuation-07f8024/32.log"
+    },
+    {
+      "index": 33,
+      "step": "test:controlled-fixtures",
+      "exit": 0,
+      "overflow": false,
+      "durationMs": 889,
+      "bytes": 442,
+      "sha256": "e3023339008794fa184fc81a32ab183294949f9b1e8f1df29fc0ee99151cf063",
+      "source": "07f8024ce7d7ad38e273d977eee7dfd437241ef7",
+      "evidenceKind": "independent-continuation-actual-exit",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/quality-evidence/continuation-07f8024/33.log"
+    },
+    {
+      "index": 34,
+      "step": "test:production-hosted",
+      "exit": 0,
+      "overflow": false,
+      "durationMs": 44887,
+      "bytes": 7019,
+      "sha256": "8593cc43930dfa8f977a7818049480d85cb1738f1cbdcf3735a204e602b68103",
+      "source": "07f8024ce7d7ad38e273d977eee7dfd437241ef7",
+      "evidenceKind": "independent-continuation-actual-exit",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/quality-evidence/continuation-07f8024/34.log"
+    },
+    {
+      "index": 35,
+      "step": "test:integration-vault",
+      "exit": 0,
+      "overflow": false,
+      "durationMs": 8667,
+      "bytes": 1362,
+      "sha256": "5f13455ec7f67e5882d5637c144a1cd9989e52d6ce0ce749bd17f9a6ffce3700",
+      "source": "07f8024ce7d7ad38e273d977eee7dfd437241ef7",
+      "evidenceKind": "independent-continuation-actual-exit",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/quality-evidence/continuation-07f8024/35.log"
+    },
+    {
+      "index": 36,
+      "step": "test:vault-github",
+      "exit": 0,
+      "overflow": false,
+      "durationMs": 5048,
+      "bytes": 798,
+      "sha256": "a5a0a7dcb6b8123cacbf3aa5a8b6e48711c0405d2f66527117b48fd6668b7aca",
+      "source": "07f8024ce7d7ad38e273d977eee7dfd437241ef7",
+      "evidenceKind": "independent-continuation-actual-exit",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/quality-evidence/continuation-07f8024/36.log"
+    },
+    {
+      "index": 37,
+      "step": "test:maintenance-adapters",
+      "exit": 0,
+      "overflow": false,
+      "durationMs": 9408,
+      "bytes": 5155,
+      "sha256": "e91cafd9b06badb0ad3bcd97460fdc225a9fc8050b162b30941550fbe4f8eba1",
+      "source": "07f8024ce7d7ad38e273d977eee7dfd437241ef7",
+      "evidenceKind": "independent-continuation-actual-exit",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/quality-evidence/continuation-07f8024/37.log"
+    },
+    {
+      "index": 38,
+      "step": "test:history-target-pages",
+      "exit": 0,
+      "overflow": false,
+      "durationMs": 43912,
+      "bytes": 551,
+      "sha256": "97035d44e1c73f7601fa2f3fdb1097c28a1f6273f26ca550df778ac4813b173d",
+      "source": "07f8024ce7d7ad38e273d977eee7dfd437241ef7",
+      "evidenceKind": "independent-continuation-actual-exit",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/quality-evidence/continuation-07f8024/38.log"
+    },
+    {
+      "index": 39,
+      "step": "test:production-config",
+      "exit": 0,
+      "overflow": false,
+      "durationMs": 232,
+      "bytes": 727,
+      "sha256": "51b0d67d68ff15e9bab64d4b089c0d762486aeab3114b2ac238fdbe7ca73a202",
+      "source": "07f8024ce7d7ad38e273d977eee7dfd437241ef7",
+      "evidenceKind": "independent-continuation-actual-exit",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/quality-evidence/continuation-07f8024/39.log"
+    },
+    {
+      "index": 40,
+      "step": "test:recovery",
+      "exit": 0,
+      "overflow": false,
+      "durationMs": 8988,
+      "bytes": 2046,
+      "sha256": "af5262a2b085c7ce2942e8f05af67c1f302435872c72c188bc3df6426e517665",
+      "source": "07f8024ce7d7ad38e273d977eee7dfd437241ef7",
+      "evidenceKind": "independent-continuation-actual-exit",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/quality-evidence/continuation-07f8024/40.log"
+    },
+    {
+      "index": 41,
+      "step": "staging:check",
+      "exit": 0,
+      "overflow": false,
+      "durationMs": 1306,
+      "bytes": 622,
+      "sha256": "db100c451ef68efb18d5855a22e3a73e9fe00ac526edd1aa15aac0af451223cd",
+      "source": "07f8024ce7d7ad38e273d977eee7dfd437241ef7",
+      "evidenceKind": "independent-continuation-actual-exit",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/quality-evidence/continuation-07f8024/41.log"
+    },
+    {
+      "index": 42,
+      "step": "runtime:check",
+      "exit": 0,
+      "overflow": false,
+      "durationMs": 1302,
+      "bytes": 564,
+      "sha256": "90914fa8d3490bfac5b35f5ec9e0214780bc00f7bc561937858ffd809bf61c6b",
+      "source": "07f8024ce7d7ad38e273d977eee7dfd437241ef7",
+      "evidenceKind": "independent-continuation-actual-exit",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/quality-evidence/continuation-07f8024/42.log"
+    },
+    {
+      "index": 43,
+      "step": "test:browser",
+      "exit": 0,
+      "overflow": false,
+      "durationMs": 105276,
+      "bytes": 13383,
+      "sha256": "490ee60dc6ab2cca7fe820fc05b3c3e6498dbb01592abb2b240b0c814052206e",
+      "source": "07f8024ce7d7ad38e273d977eee7dfd437241ef7",
+      "evidenceKind": "independent-continuation-actual-exit",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/quality-evidence/continuation-07f8024/43.log"
+    },
+    {
+      "index": 44,
+      "step": "test:editorial:browser",
+      "exit": 0,
+      "overflow": false,
+      "durationMs": 49995,
+      "bytes": 4688,
+      "sha256": "818a8402c4f24594afcf68bf5d6a7de28a6129c338b1750df4ed163c2f6e62f6",
+      "source": "07f8024ce7d7ad38e273d977eee7dfd437241ef7",
+      "evidenceKind": "independent-continuation-actual-exit",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/quality-evidence/continuation-07f8024/44.log"
+    },
+    {
+      "index": 45,
+      "step": "test:integration:browser",
+      "exit": 0,
+      "overflow": false,
+      "durationMs": 18481,
+      "bytes": 388,
+      "sha256": "980851ef946d8d010d8b39a86233cb5da7cae1652f51f1983bf757843c6c80a2",
+      "source": "07f8024ce7d7ad38e273d977eee7dfd437241ef7",
+      "evidenceKind": "independent-continuation-actual-exit",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/quality-evidence/continuation-07f8024/45.log"
+    },
+    {
+      "index": 46,
+      "step": "test:monitoring:worker",
+      "exit": 0,
+      "overflow": false,
+      "durationMs": 27267,
+      "bytes": 318,
+      "sha256": "db0fe9184cc77310c9fe736fbd69e5dc585f8d040d3250a10473bdc3bb1cf7f8",
+      "source": "07f8024ce7d7ad38e273d977eee7dfd437241ef7",
+      "evidenceKind": "independent-continuation-actual-exit",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/quality-evidence/continuation-07f8024/46.log"
+    },
+    {
+      "index": 47,
+      "step": "test:settings:worker",
+      "exit": 0,
+      "overflow": false,
+      "durationMs": 33810,
+      "bytes": 334,
+      "sha256": "e85b177437bc5e3a85f54a654e9ddb330665ff18c821b897b9e5722c032ffbea",
+      "source": "07f8024ce7d7ad38e273d977eee7dfd437241ef7",
+      "evidenceKind": "independent-continuation-actual-exit",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/quality-evidence/continuation-07f8024/47.log"
+    },
+    {
+      "index": 48,
+      "step": "test:publication:browser",
+      "exit": 0,
+      "overflow": false,
+      "durationMs": 9110,
+      "bytes": 377,
+      "sha256": "a2d4a56c47b784826b228b5cb46393f9d4af89ec49b64b59073ed45fd93ed95b",
+      "source": "07f8024ce7d7ad38e273d977eee7dfd437241ef7",
+      "evidenceKind": "independent-continuation-actual-exit",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/quality-evidence/continuation-07f8024/48.log"
+    },
+    {
+      "index": 49,
+      "step": "test:combined:browser",
+      "exit": 0,
+      "overflow": false,
+      "durationMs": 7967,
+      "bytes": 399,
+      "sha256": "b742cb5a19eadea6d88f766c058994045ecf46e3927f70ea4f2adf7ac1f160f0",
+      "source": "07f8024ce7d7ad38e273d977eee7dfd437241ef7",
+      "evidenceKind": "independent-continuation-actual-exit",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/quality-evidence/continuation-07f8024/49.log"
+    },
+    {
+      "index": 50,
+      "step": "test:wiki-bridge:browser",
+      "exit": 0,
+      "overflow": false,
+      "durationMs": 33036,
+      "bytes": 2038,
+      "sha256": "56a6fb974f23182fa93b24338b24ff370d1e9faf8d9c98492906b10f49e79a51",
+      "source": "aa11924799d4495d422b97007ac07659ea45a877",
+      "evidenceKind": "independent-continuation-actual-exit",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/quality-evidence/continuation-aa11924/50.log"
+    },
+    {
+      "index": 51,
+      "step": "test:wiki-seo:browser",
+      "exit": 0,
+      "overflow": false,
+      "durationMs": 16123,
+      "bytes": 511,
+      "sha256": "03b1ccbc2b94a65271148b79388eb496d0b695b9a5671fef5203fc3383e0bbdb",
+      "source": "b0bdfb7998bfaebdc20a0b78a66130ecf23f57a7",
+      "evidenceKind": "independent-continuation-actual-exit",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/quality-evidence/continuation-b0bdfb7/51.log"
+    },
+    {
+      "index": 52,
+      "step": "test:corrections:browser",
+      "exit": 0,
+      "overflow": false,
+      "durationMs": 48150,
+      "bytes": 602,
+      "sha256": "8efcffb57533e45d7f571c10585be499b435be2f9192600d3afb2eef6c492174",
+      "source": "b0bdfb7998bfaebdc20a0b78a66130ecf23f57a7",
+      "evidenceKind": "independent-continuation-actual-exit",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/quality-evidence/continuation-b0bdfb7/52.log"
+    },
+    {
+      "index": 53,
+      "step": "test:hosted:browser",
+      "exit": 0,
+      "overflow": false,
+      "durationMs": 11248,
+      "bytes": 546,
+      "sha256": "622aadf1027d648ecf9300ab40a5bb183f6ce9a5f40741a5f32f4e218dcb11e8",
+      "source": "b0bdfb7998bfaebdc20a0b78a66130ecf23f57a7",
+      "evidenceKind": "independent-continuation-actual-exit",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/quality-evidence/continuation-b0bdfb7/53.log"
+    },
+    {
+      "index": 54,
+      "step": "test:hosted-admin:browser",
+      "exit": 0,
+      "overflow": false,
+      "durationMs": 49402,
+      "bytes": 3277,
+      "sha256": "72579682ce9c52a03c2500a88775e84a4273ec2005aaef9adb781cecc9580389",
+      "source": "b0bdfb7998bfaebdc20a0b78a66130ecf23f57a7",
+      "evidenceKind": "independent-continuation-actual-exit",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/quality-evidence/continuation-b0bdfb7/54.log"
+    },
+    {
+      "index": 55,
+      "step": "test:maintenance:browser",
+      "exit": 0,
+      "overflow": false,
+      "durationMs": 8725,
+      "bytes": 611,
+      "sha256": "36177afbc2d7427470b18bd02bfe6d875c77f9f524bea680322c6d3285c61952",
+      "source": "b0bdfb7998bfaebdc20a0b78a66130ecf23f57a7",
+      "evidenceKind": "independent-continuation-actual-exit",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/quality-evidence/continuation-b0bdfb7/55.log"
+    },
+    {
+      "index": 56,
+      "step": "test:maintenance-collection:browser",
+      "exit": 0,
+      "overflow": false,
+      "durationMs": 11317,
+      "bytes": 632,
+      "sha256": "04ca089200f2bc8b91def671d5f8094d7f5543931ab4dd1247c71c838cf122b1",
+      "source": "b0bdfb7998bfaebdc20a0b78a66130ecf23f57a7",
+      "evidenceKind": "independent-continuation-actual-exit",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/quality-evidence/continuation-b0bdfb7/56.log"
+    },
+    {
+      "index": 57,
+      "step": "test:maintenance-history:browser",
+      "exit": 0,
+      "overflow": false,
+      "durationMs": 44155,
+      "bytes": 2469,
+      "sha256": "2f7d76a7ba5374a0b2ea8486479c5e9627cf9403a1b3b6573ef6a03a62264ae1",
+      "source": "b0bdfb7998bfaebdc20a0b78a66130ecf23f57a7",
+      "evidenceKind": "independent-continuation-actual-exit",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/quality-evidence/continuation-b0bdfb7/57.log"
+    },
+    {
+      "index": 58,
+      "step": "test:maintenance-restore:browser",
+      "exit": 0,
+      "overflow": false,
+      "durationMs": 33913,
+      "bytes": 638,
+      "sha256": "cdda70b668f3cdcfe815e99686be639cff427fb60a85fffdca5603407dd3ed69",
+      "source": "b0bdfb7998bfaebdc20a0b78a66130ecf23f57a7",
+      "evidenceKind": "independent-continuation-actual-exit",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/quality-evidence/continuation-b0bdfb7/58.log"
+    },
+    {
+      "index": 59,
+      "step": "release:prepare",
+      "exit": 0,
+      "overflow": false,
+      "durationMs": 6530,
+      "bytes": 565,
+      "sha256": "a357edbe6efe5ec45fcb83b3ecd982c814728c4c64449dea65fbc20aa265f7c2",
+      "source": "b0bdfb7998bfaebdc20a0b78a66130ecf23f57a7",
+      "evidenceKind": "independent-continuation-actual-exit",
+      "log": "/workspace/agentic-bible-quality-validation-20261030/.git/quality-evidence/continuation-b0bdfb7/59.log"
+    }
+  ]
+}

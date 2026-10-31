@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "runtimeSource": "1c3c783e1c15255f00c946a10ae2cbbd0a6d9ead",
+  "testSource": "02d61129c909dfea819997e9a8acd68a7db58043",
+  "preservedPreview": "5d3d37052c55537ec39e85c9d756ec23a5104a06",
+  "preservedDiagnosis": "04a1b54c3536718e83e68537ae959ec8eb1c5c53",
+  "runtimeTree": "39bc838a0129b79df6efa0a07ab1dbb11bfd0d4c",
+  "logs": {
+    "editorial": {
+      "path": "docs/review/preview-draft-workflow/logs/editorial.log",
+      "sha256": "e884e934660a1a5d2922cb5a20d799769e485479e88e095aed9c5d369bfb35a0",
+      "exitCode": 0
+    },
+    "publication": {
+      "path": "docs/review/preview-draft-workflow/logs/publication.log",
+      "sha256": "162a07fa8cee4188b9ab33a268a1a058dea05317cd55c3c4138984f8c02e1cbf",
+      "exitCode": 0
+    },
+    "restoration": {
+      "path": "docs/review/preview-draft-workflow/logs/restoration.log",
+      "sha256": "442b3e87ec256a872bcbeb07163408955f7d1bd0cc5f542edfdd3f7a2f4b7857",
+      "exitCode": 0
+    },
+    "existing-browser-initial": {
+      "path": "docs/review/preview-draft-workflow/logs/existing-browser-initial.log",
+      "sha256": "a41e4968db9b91a38ba5742a524d6afb4a5031702d8f44c2ac826f2ae9f406c8",
+      "exitCode": 1
+    },
+    "existing-browser-baseline": {
+      "path": "docs/review/preview-draft-workflow/logs/existing-browser-baseline.log",
+      "sha256": "b12ebf5d1ea95a2b76d38b13a24ee875f5883475eb1a274a3fcd684d64d9f574",
+      "exitCode": 1
+    },
+    "existing-browser-corrected": {
+      "path": "docs/review/preview-draft-workflow/logs/existing-browser-corrected.log",
+      "sha256": "fdf6a842b35831528d8f9dafc81aae24164df277d793310e10a1189f739e6866",
+      "exitCode": 0
+    },
+    "new-browser-axe-initial": {
+      "path": "docs/review/preview-draft-workflow/logs/new-browser-axe-initial.log",
+      "sha256": "de162ccf14dfd41013520765b8edc563f6ee744b724bae02fed272af0057bbfd",
+      "exitCode": 1
+    },
+    "new-browser-final": {
+      "path": "docs/review/preview-draft-workflow/logs/new-browser-final.log",
+      "sha256": "57c0622104564387af8423eab2de86f6e5ad8b953a00aaf12577b1cdee9dbfad",
+      "exitCode": 0
+    },
+    "check": {
+      "path": "docs/review/preview-draft-workflow/logs/check.log",
+      "sha256": "d569b0915586a53ba55e663627ed519403ff17bce739fa600f2283d08cca3d70",
+      "exitCode": 0
+    },
+    "build-at-663e30c": {
+      "path": "docs/review/preview-draft-workflow/logs/build-at-663e30c.log",
+      "sha256": "1ede3d5379d9e00ecf0e6a577c6a855cb9dd855f7c4c591486282bc8b4b91a6c",
+      "exitCode": 0
+    },
+    "static-at-663e30c": {
+      "path": "docs/review/preview-draft-workflow/logs/static-at-663e30c.log",
+      "sha256": "571308d8aed4e5da049534bb3f70d2af71109351d6b3bd88f085e930a5cd6f8e",
+      "exitCode": 0
+    }
+  },
+  "liveInference": false,
+  "liveDraftProvider": false,
+  "deploymentPerformed": false,
+  "sourceFetchPerformed": false,
+  "publicationPerformed": false,
+  "providerReadback": {
+    "stagingVersion": "a70ede39-1221-4a8a-983b-1ca66672bf69",
+    "stagingDeployment": "6593f4e8-aec8-4d4c-a738-f6b02f64769a",
+    "productionVersion": "7eccb256-0659-43c4-b2e6-5f54ac652824",
+    "productionDeployment": "76e27d35-fe4a-4d9f-ba16-3db019f4340d",
+    "changed": false
+  },
+  "sourceOnlyPrRetry": {
+    "repository": "Leshey-Digital/agentic-bible",
+    "head": "feat/pinned-draft-revision-preview",
+    "base": "integration/editorial-recovery-reader-20261024",
+    "outcome": "rejected-before-execution",
+    "furtherRetry": false,
+    "alternateRoute": false
+  }
+}

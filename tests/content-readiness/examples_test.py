@@ -72,6 +72,20 @@ class ArticleExamples(unittest.TestCase):
         self.assertTrue(failure["error"]["code"])
         self.assertNotIn("result", failure)
 
+    def test_literal_evaluation_example_distinguishes_tasks_and_attempts(self):
+        text = (ROOT / "src/content/articles/agent-evaluation.md").read_text()
+        rows = re.findall(r"^- \*\*Task [A-D]:\*\* ([a-z, ]+)\.$", text, re.M)
+        outcomes = [row.split(", ") for row in rows]
+        self.assertEqual(len(outcomes), 4)
+        self.assertTrue(all(len(row) == 3 for row in outcomes))
+        self.assertTrue(all(value in {"success", "failure"} for row in outcomes for value in row))
+        self.assertEqual(sum("success" in row for row in outcomes), 3)
+        self.assertEqual(sum(all(value == "success" for value in row) for row in outcomes), 1)
+        self.assertEqual(sum(row.count("success") for row in outcomes), 6)
+        self.assertIn("Three of four tasks succeeded at least once: 75%", text)
+        self.assertIn("one of four succeeded on all three attempts: 25%", text)
+        self.assertIn("Six of the twelve individual attempts succeeded: 50%", text)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
