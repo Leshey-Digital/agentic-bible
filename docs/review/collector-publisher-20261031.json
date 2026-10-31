@@ -1,0 +1,684 @@
+{
+  "status": "locally-qualified-not-deployed",
+  "runtimeSource": "1a30e1ce35ea27f995e246df98df5462aae1b9bb",
+  "runtimeTree": "87212bb49a21fabe79d40fe44a66d9e47d1ad4ad",
+  "base": "20a5eeb38fc2118cd3783612f1850af2716706ac",
+  "publishedRecoveryPrerequisite": "061359cc443da097e5472bac2914ac81e3f91fd0",
+  "qualificationSha256": "0f4fda9b0f6b6459ffdf8d21d16fa2c8da7bffa161ee9bef38e31becdd85198b",
+  "candidateSha256": "90c0f2db4f35470e5c89a5e54858223bcbe339bad70c74ff320517d137f0a469",
+  "candidateTarget": {
+    "account": "c370be29e4065365de03bc8652da2cdc",
+    "origin": "https://staging.agenticbible.si",
+    "worker": "agentic-bible-staging"
+  },
+  "assets": 85,
+  "workerSha256": "2d8eb4f8adfa78c2082e4a092448d57b730411378fc5b01bab00bcc4e75558f3",
+  "configSha256": "a5892b62344241a091ac6363efdee813dec18f61fb7e0b18209772bfc865c022",
+  "manifestSha256": "2cea848f65db9a8569e84a045e4c275de795729ebeb282c4c7a799f63bbeb1fc",
+  "qualification": {
+    "candidateDigest": "90c0f2db4f35470e5c89a5e54858223bcbe339bad70c74ff320517d137f0a469",
+    "checks": [
+      {
+        "bytes": 282,
+        "durationMs": 194,
+        "exit": 0,
+        "log": "logs/00.log",
+        "manifestIndex": 0,
+        "phase": "validate",
+        "sha256": "4cdc9fd4d1757374fb5bdf9bc1dc4b1089d74a8d9e89e5bb7ef57049302a554c",
+        "step": "test:docs"
+      },
+      {
+        "bytes": 520,
+        "durationMs": 11351,
+        "exit": 0,
+        "log": "logs/01.log",
+        "manifestIndex": 1,
+        "phase": "validate",
+        "sha256": "f9a28e2a961882e411e6db74f1d44151528378b4a70eba90169bb54dd57874f8",
+        "step": "check"
+      },
+      {
+        "bytes": 5007,
+        "durationMs": 2772,
+        "exit": 0,
+        "log": "logs/02.log",
+        "manifestIndex": 2,
+        "phase": "validate",
+        "sha256": "94147ee3954f73cd9bf0781e7cedee77f737dfd367547eb61c1d0b8b34625533",
+        "step": "build"
+      },
+      {
+        "bytes": 1384,
+        "durationMs": 6775,
+        "exit": 0,
+        "log": "logs/03.log",
+        "manifestIndex": 3,
+        "phase": "validate",
+        "sha256": "14e123a53c1e447af9ecb69653f3a52dbcff5cc3c9afd3b0682423e219300f84",
+        "step": "test"
+      },
+      {
+        "bytes": 1679,
+        "durationMs": 2144,
+        "exit": 0,
+        "log": "logs/04.log",
+        "manifestIndex": 4,
+        "phase": "validate",
+        "sha256": "eb39f3cdb0b15b65f48d28845d5c70102f6ac175ebdec2721373ceadfa6af159",
+        "step": "test:editorial"
+      },
+      {
+        "bytes": 3166,
+        "durationMs": 3088,
+        "exit": 0,
+        "log": "logs/05.log",
+        "manifestIndex": 5,
+        "phase": "validate",
+        "sha256": "4981ad1223c724fec2a80a396db6ac4e6351e48b11b25c08053873155088d28e",
+        "step": "test:monitoring"
+      },
+      {
+        "bytes": 5053,
+        "durationMs": 16557,
+        "exit": 0,
+        "log": "logs/06.log",
+        "manifestIndex": 6,
+        "phase": "validate",
+        "sha256": "e0354445791d5f0befdec3d3bfbe47abac0bd0a7cd0c956ff5125b55cf4136af",
+        "step": "test:settings"
+      },
+      {
+        "bytes": 1998,
+        "durationMs": 2640,
+        "exit": 0,
+        "log": "logs/07.log",
+        "manifestIndex": 7,
+        "phase": "validate",
+        "sha256": "4d96395b11a498a3cf9e475b3656e4e2a3eb9107bb68be68b4f6eefc97f72bc6",
+        "step": "test:integration-settings"
+      },
+      {
+        "bytes": 901,
+        "durationMs": 2188,
+        "exit": 0,
+        "log": "logs/08.log",
+        "manifestIndex": 8,
+        "phase": "validate",
+        "sha256": "fcb2738f2d4d0109eb522b61273025ecbb84f23b6bd4032d6fee3711ec54ad00",
+        "step": "test:hosted-integration-settings"
+      },
+      {
+        "bytes": 593,
+        "durationMs": 769,
+        "exit": 0,
+        "log": "logs/09.log",
+        "manifestIndex": 9,
+        "phase": "validate",
+        "sha256": "f0ab17c05b9010ebd5b099745f943c38f36820b78406083a7bfe95d16e3c9c1f",
+        "step": "test:integration"
+      },
+      {
+        "bytes": 1740,
+        "durationMs": 6388,
+        "exit": 0,
+        "log": "logs/10.log",
+        "manifestIndex": 10,
+        "phase": "validate",
+        "sha256": "9437d76684b7de5ae9ec22df0dbf7e22d11e63dd81a13c294266eb0b279fdf77",
+        "step": "test:http-sources"
+      },
+      {
+        "bytes": 443,
+        "durationMs": 15516,
+        "exit": 0,
+        "log": "logs/11.log",
+        "manifestIndex": 11,
+        "phase": "validate",
+        "sha256": "5bcc573426d31fbcc8aecf0a43c549b39bd21fc0434b4165b029d073e632d8b1",
+        "step": "test:http-worker"
+      },
+      {
+        "bytes": 1975,
+        "durationMs": 9473,
+        "exit": 0,
+        "log": "logs/12.log",
+        "manifestIndex": 12,
+        "phase": "validate",
+        "sha256": "03dfad964cc4f87c8160bcb95d09df73905adde83a4ebfa736f167247802bc55",
+        "step": "test:publication"
+      },
+      {
+        "bytes": 1108,
+        "durationMs": 12616,
+        "exit": 0,
+        "log": "logs/13.log",
+        "manifestIndex": 13,
+        "phase": "validate",
+        "sha256": "2b47b9a2124e299cd2c225dc584343aae74f54c56acd549b98a7af788e484a20",
+        "step": "test:seo"
+      },
+      {
+        "bytes": 457,
+        "durationMs": 15641,
+        "exit": 0,
+        "log": "logs/14.log",
+        "manifestIndex": 14,
+        "phase": "validate",
+        "sha256": "bd4834c40a3f2d687ee9de77d23dbb8f00e707129d696a7aa68c446543561e44",
+        "step": "test:seo:build"
+      },
+      {
+        "bytes": 2808,
+        "durationMs": 83667,
+        "exit": 0,
+        "log": "logs/15.log",
+        "manifestIndex": 15,
+        "phase": "validate",
+        "sha256": "9cef0da072f35b2b466df87fb8b02d9a24d945fa031829f6ad77e68240faf512",
+        "step": "test:wiki-bridge:serial"
+      },
+      {
+        "bytes": 1080,
+        "durationMs": 21284,
+        "exit": 0,
+        "log": "logs/16.log",
+        "manifestIndex": 16,
+        "phase": "validate",
+        "sha256": "f040ff1e55b6623f1d2c57e3b5b3be8e640b70f2ffdaf4e735a1be23acac3359",
+        "step": "test:corrections"
+      },
+      {
+        "bytes": 5647,
+        "durationMs": 24034,
+        "exit": 0,
+        "log": "logs/17.log",
+        "manifestIndex": 17,
+        "phase": "validate",
+        "sha256": "c765b1c6ba5913b58cf2521c8e380fff0ae04cfe9c292fe0ddb6ef1de08cfeb5",
+        "step": "test:hosted"
+      },
+      {
+        "bytes": 18373,
+        "durationMs": 50106,
+        "exit": 0,
+        "log": "logs/18.log",
+        "manifestIndex": 18,
+        "phase": "validate",
+        "sha256": "be28f2da597b6553770691ddb2c21ba1681508f276b4502418b8073dce1a3faa",
+        "step": "test:release"
+      },
+      {
+        "bytes": 1676,
+        "durationMs": 30829,
+        "exit": 0,
+        "log": "logs/19.log",
+        "manifestIndex": 19,
+        "phase": "validate",
+        "sha256": "1ae38721769e4d671c80dfe03f7c6f05e88ef8580966f35a9043dc8652b0586f",
+        "step": "test:maintenance-sources"
+      },
+      {
+        "bytes": 1330,
+        "durationMs": 24012,
+        "exit": 0,
+        "log": "logs/20.log",
+        "manifestIndex": 20,
+        "phase": "validate",
+        "sha256": "18c46c5d398fe79d5dc17dcd99c92f7d8b49fe21c168930acc01b91370d8441c",
+        "step": "test:maintenance"
+      },
+      {
+        "bytes": 1922,
+        "durationMs": 148761,
+        "exit": 0,
+        "log": "logs/21.log",
+        "manifestIndex": 21,
+        "phase": "validate",
+        "sha256": "12e2fed442a7b6e163311ae400b6095d21ea2a64c476801739dedf529b737b05",
+        "step": "test:maintenance-github"
+      },
+      {
+        "bytes": 682,
+        "durationMs": 38773,
+        "exit": 0,
+        "log": "logs/22.log",
+        "manifestIndex": 22,
+        "phase": "validate",
+        "sha256": "5b92bb95546a6a3f055f5935dfad14606937c28af8df620d98f79278b8d3c2dc",
+        "step": "test:maintenance-history"
+      },
+      {
+        "bytes": 1509,
+        "durationMs": 20797,
+        "exit": 0,
+        "log": "logs/23.log",
+        "manifestIndex": 23,
+        "phase": "validate",
+        "sha256": "dff3f3e1356de343b5e9a6681f70c5bc238cdf7a37536d5dfa5ea32297b94ae5",
+        "step": "test:maintenance-review"
+      },
+      {
+        "bytes": 2260,
+        "durationMs": 66116,
+        "exit": 0,
+        "log": "logs/24.log",
+        "manifestIndex": 24,
+        "phase": "validate",
+        "sha256": "f0fa524c9accb37dcb33f36921c5ad4dce3d25fe66a397c9e493e6407d7d2918",
+        "step": "test:maintenance-restore"
+      },
+      {
+        "bytes": 832,
+        "durationMs": 116680,
+        "exit": 0,
+        "log": "logs/25.log",
+        "manifestIndex": 25,
+        "phase": "validate",
+        "sha256": "229685c5451e0e41f3577e5a64952e04644326134e9857b6d122a933ecac2d47",
+        "step": "test:maintenance-base"
+      },
+      {
+        "bytes": 1539,
+        "durationMs": 184058,
+        "exit": 0,
+        "log": "logs/26.log",
+        "manifestIndex": 26,
+        "phase": "validate",
+        "sha256": "2f3e732f0c6f184ca4005b4a6e9ad751ea32f8a30cd06d097ac6771dfb161c99",
+        "step": "test:maintenance-pipeline"
+      },
+      {
+        "bytes": 2686,
+        "durationMs": 35275,
+        "exit": 0,
+        "log": "logs/27.log",
+        "manifestIndex": 27,
+        "phase": "validate",
+        "sha256": "d61ad73e66c53bd8715e8852b51b68604e3e58b611cd552d821493a620db07d1",
+        "step": "test:maintenance-currency"
+      },
+      {
+        "bytes": 934,
+        "durationMs": 49879,
+        "exit": 0,
+        "log": "logs/28.log",
+        "manifestIndex": 28,
+        "phase": "validate",
+        "sha256": "3659c179f9761b63a150ce332097543d4270533e0116a9349328bd44686cbc5c",
+        "step": "test:maintenance-review-monitor"
+      },
+      {
+        "bytes": 515,
+        "durationMs": 407,
+        "exit": 0,
+        "log": "logs/29.log",
+        "manifestIndex": 29,
+        "phase": "validate",
+        "sha256": "c21850820983f3e19e8fb0e0be5658e3fd2fb0195d9c48e4511f50fa2493fef6",
+        "step": "test:reader-metadata"
+      },
+      {
+        "bytes": 281,
+        "durationMs": 288,
+        "exit": 0,
+        "log": "logs/30.log",
+        "manifestIndex": 30,
+        "phase": "validate",
+        "sha256": "9076d77f4449901d3b85d7a395b9f550dce78032a7e556f182c781479a0d0964",
+        "step": "test:social-metadata"
+      },
+      {
+        "bytes": 1018,
+        "durationMs": 267,
+        "exit": 0,
+        "log": "logs/31.log",
+        "manifestIndex": 31,
+        "phase": "validate",
+        "sha256": "8b94f4f77a820ebaf4e97f64e2d0f1ba707df4b79495083783fa4d3d76070b89",
+        "step": "test:content-readiness"
+      },
+      {
+        "bytes": 3751,
+        "durationMs": 375072,
+        "exit": 0,
+        "log": "logs/32.log",
+        "manifestIndex": 32,
+        "phase": "validate",
+        "sha256": "a1413908b427cfda6cb8b590c94fdb023436b048192941fd8c489ba8254edc4b",
+        "step": "test:maintenance-quality"
+      },
+      {
+        "bytes": 442,
+        "durationMs": 916,
+        "exit": 0,
+        "log": "logs/33.log",
+        "manifestIndex": 33,
+        "phase": "validate",
+        "sha256": "87d224b78288825e891501715e7027f9079fd0a9c70a263ac39629dd6ae92d77",
+        "step": "test:controlled-fixtures"
+      },
+      {
+        "bytes": 7027,
+        "durationMs": 46272,
+        "exit": 0,
+        "log": "logs/34.log",
+        "manifestIndex": 34,
+        "phase": "validate",
+        "sha256": "eabe8c034c01c0d1462f83ee1fb17a99126f2fd286921721b515fa0b81e13018",
+        "step": "test:production-hosted"
+      },
+      {
+        "bytes": 1364,
+        "durationMs": 8481,
+        "exit": 0,
+        "log": "logs/35.log",
+        "manifestIndex": 35,
+        "phase": "validate",
+        "sha256": "e5299f139a4f62d10718e8c7f541c5ee7eeac8ac6b920d23a14e52c30a0fc2d5",
+        "step": "test:integration-vault"
+      },
+      {
+        "bytes": 800,
+        "durationMs": 4857,
+        "exit": 0,
+        "log": "logs/36.log",
+        "manifestIndex": 36,
+        "phase": "validate",
+        "sha256": "2a713649c17c05501077d31a14072fe0232cb21d61831b250b5035eeb5e27049",
+        "step": "test:vault-github"
+      },
+      {
+        "bytes": 10347,
+        "durationMs": 129526,
+        "exit": 0,
+        "log": "logs/37.log",
+        "manifestIndex": 37,
+        "phase": "validate",
+        "sha256": "1c07edfdca621ff339483a45092d13a62d535c4c4107df0f8b162371e2debba2",
+        "step": "test:maintenance-adapters"
+      },
+      {
+        "bytes": 549,
+        "durationMs": 45739,
+        "exit": 0,
+        "log": "logs/38.log",
+        "manifestIndex": 38,
+        "phase": "validate",
+        "sha256": "dcabe81b8f0345e301d72d550961e912576326b6e7a50dd4a255fa1dbeb88d05",
+        "step": "test:history-target-pages"
+      },
+      {
+        "bytes": 727,
+        "durationMs": 255,
+        "exit": 0,
+        "log": "logs/39.log",
+        "manifestIndex": 39,
+        "phase": "validate",
+        "sha256": "eecf117a429d2e75a99e42dad07fa7b400cfe9b7e6e54dd8a74935e83eac5c30",
+        "step": "test:production-config"
+      },
+      {
+        "bytes": 2044,
+        "durationMs": 9296,
+        "exit": 0,
+        "log": "logs/40.log",
+        "manifestIndex": 40,
+        "phase": "validate",
+        "sha256": "4dd82532b52d51225d33b34acf2e7513348593b02cfcd680651a3f84861477eb",
+        "step": "test:recovery"
+      },
+      {
+        "bytes": 514,
+        "durationMs": 1297,
+        "exit": 0,
+        "log": "logs/41.log",
+        "manifestIndex": 41,
+        "phase": "post-validate",
+        "sha256": "c0be39708094a5ae76d8cacdca5a147863fc361a0491db345d46e93ad1b72638",
+        "step": "staging:check"
+      },
+      {
+        "bytes": 564,
+        "durationMs": 1390,
+        "exit": 0,
+        "log": "logs/42.log",
+        "manifestIndex": 42,
+        "phase": "post-validate",
+        "sha256": "e278a556c54439a8730bc625583ab1175c9786f4a9c83d3af53fa50f15caee12",
+        "step": "runtime:check"
+      },
+      {
+        "bytes": 13380,
+        "durationMs": 107726,
+        "exit": 0,
+        "log": "logs/43.log",
+        "manifestIndex": 43,
+        "phase": "post-validate",
+        "sha256": "185a20c4c4756b7d79f489fe86eee302b301a1afdf598bbb764e8d07deea4602",
+        "step": "test:browser"
+      },
+      {
+        "bytes": 4686,
+        "durationMs": 51571,
+        "exit": 0,
+        "log": "logs/44.log",
+        "manifestIndex": 44,
+        "phase": "post-validate",
+        "sha256": "fbd491257344dc03972a847499ef38c1f958723d3d64e43f7b5632e8ddd2bb0f",
+        "step": "test:editorial:browser"
+      },
+      {
+        "bytes": 388,
+        "durationMs": 19603,
+        "exit": 0,
+        "log": "logs/45.log",
+        "manifestIndex": 45,
+        "phase": "post-validate",
+        "sha256": "9af1fd50b1dff58b8e0528900ee65617157feff27b973a6815e4c5e874b3119c",
+        "step": "test:integration:browser"
+      },
+      {
+        "bytes": 318,
+        "durationMs": 35418,
+        "exit": 0,
+        "log": "logs/46.log",
+        "manifestIndex": 46,
+        "phase": "post-validate",
+        "sha256": "a4a1440b16531805090a721a60c045b094f3a69512dbb1a85984ed61b1259caa",
+        "step": "test:monitoring:worker"
+      },
+      {
+        "bytes": 334,
+        "durationMs": 50617,
+        "exit": 0,
+        "log": "logs/47.log",
+        "manifestIndex": 47,
+        "phase": "post-validate",
+        "sha256": "716012f138d4551728aab0de69c5e26071e6576529816e5536f5c9edfb211c83",
+        "step": "test:settings:worker"
+      },
+      {
+        "bytes": 377,
+        "durationMs": 9119,
+        "exit": 0,
+        "log": "logs/48.log",
+        "manifestIndex": 48,
+        "phase": "post-validate",
+        "sha256": "78bed8593bf5de43900057a53b52af51346d675db00be3a2bf56a54e242ca430",
+        "step": "test:publication:browser"
+      },
+      {
+        "bytes": 399,
+        "durationMs": 8007,
+        "exit": 0,
+        "log": "logs/49.log",
+        "manifestIndex": 49,
+        "phase": "post-validate",
+        "sha256": "0c9a675406f7174af4d8ebba23a12845fa01c3e670ace7b6c41430084fae6068",
+        "step": "test:combined:browser"
+      },
+      {
+        "bytes": 2006,
+        "durationMs": 33805,
+        "exit": 0,
+        "log": "logs/50.log",
+        "manifestIndex": 50,
+        "phase": "post-validate",
+        "sha256": "16ec468d61544da4d1cc9a045087ea835c11d81124cab07b4222f48dc25ea8bf",
+        "step": "test:wiki-bridge:browser"
+      },
+      {
+        "bytes": 511,
+        "durationMs": 16003,
+        "exit": 0,
+        "log": "logs/51.log",
+        "manifestIndex": 51,
+        "phase": "post-validate",
+        "sha256": "582b738b5e763b8cc0698fb0327f4565bf44d9e4ea2ec7fad89b1548e0c0959e",
+        "step": "test:wiki-seo:browser"
+      },
+      {
+        "bytes": 602,
+        "durationMs": 50577,
+        "exit": 0,
+        "log": "logs/52.log",
+        "manifestIndex": 52,
+        "phase": "post-validate",
+        "sha256": "f8b39a3ac07d7f21e9cdcc8d35dd59fc55facd9281f8f95ac8f16ae32236101a",
+        "step": "test:corrections:browser"
+      },
+      {
+        "bytes": 546,
+        "durationMs": 11840,
+        "exit": 0,
+        "log": "logs/53.log",
+        "manifestIndex": 53,
+        "phase": "post-validate",
+        "sha256": "093dcde338c5188d49d6d1e089c8fd447561d5fe76e2900a81a00593f9090349",
+        "step": "test:hosted:browser"
+      },
+      {
+        "bytes": 3277,
+        "durationMs": 48989,
+        "exit": 0,
+        "log": "logs/54.log",
+        "manifestIndex": 54,
+        "phase": "post-validate",
+        "sha256": "2d98dfae33c5eb17fb7b093c385855b59dfff790c6dcc0b143c35f309eba9f76",
+        "step": "test:hosted-admin:browser"
+      },
+      {
+        "bytes": 611,
+        "durationMs": 8731,
+        "exit": 0,
+        "log": "logs/55.log",
+        "manifestIndex": 55,
+        "phase": "post-validate",
+        "sha256": "6eca8eec85f815ba02c7c4228ebb3b17fdd337145f614f61ec700a619f89f96a",
+        "step": "test:maintenance:browser"
+      },
+      {
+        "bytes": 631,
+        "durationMs": 8629,
+        "exit": 0,
+        "log": "logs/56.log",
+        "manifestIndex": 56,
+        "phase": "post-validate",
+        "sha256": "035b487a27c1461605b40db2f9ac32cb64a6efa8d19a0940eeb8414fb06ffcd4",
+        "step": "test:maintenance-collection:browser"
+      },
+      {
+        "bytes": 2469,
+        "durationMs": 42022,
+        "exit": 0,
+        "log": "logs/57.log",
+        "manifestIndex": 57,
+        "phase": "post-validate",
+        "sha256": "94f89473e5fb0151114dd8d090985b7ed9cdac50acdc20c4e8749593c9b6f1d0",
+        "step": "test:maintenance-history:browser"
+      },
+      {
+        "bytes": 638,
+        "durationMs": 34771,
+        "exit": 0,
+        "log": "logs/58.log",
+        "manifestIndex": 58,
+        "phase": "post-validate",
+        "sha256": "c10bf6b86b2f93f93cb2129d1b8b52dcaa9aa95e858fcbb1e948fab99d8835d5",
+        "step": "test:maintenance-restore:browser"
+      },
+      {
+        "bytes": 587,
+        "durationMs": 1637,
+        "exit": 0,
+        "log": "logs/59.log",
+        "manifestIndex": 59,
+        "phase": "post-validate",
+        "sha256": "3853a5a313e3c9bc2fa468ae1e8036ea47454a9a717536e7e02e69e14ab2c8f7",
+        "step": "release:prepare"
+      }
+    ],
+    "chromium": "154.0.8037.57",
+    "completedAt": 1793406223520,
+    "mode": "saved-coding-environment",
+    "node": "24.19.0",
+    "npm": "11.9.0",
+    "repository": "Leshey-Digital/agentic-bible",
+    "schemaVersion": 4,
+    "sourceCommit": "1a30e1ce35ea27f995e246df98df5462aae1b9bb",
+    "sourceTree": "87212bb49a21fabe79d40fe44a66d9e47d1ad4ad",
+    "startedAt": 1793404057120,
+    "state": "qualified",
+    "validationManifestDigest": "eefe4bd14965c45abd247facf84b69ec8da802c5f95ed57d64690586a915fe52"
+  },
+  "independentReview": {
+    "sourceCommit": "1a30e1ce35ea27f995e246df98df5462aae1b9bb",
+    "sourceTree": "87212bb49a21fabe79d40fe44a66d9e47d1ad4ad",
+    "reviewer": "publisher_security",
+    "method": "independent read-only source review; no reviewer tests/builds/provider calls",
+    "result": "accepted; no actionable findings remain in reviewed scope",
+    "exactDelta": "one-line removal from reviewed579eebb; target five unchanged recovery/cost guard checks passed",
+    "qualification": "60/60 native exact-head commands passed; strict verifier passed",
+    "originalFailedRun": "collector-publisher-579eebb, 37 command passes then 89/91adapter tests; preserved unchanged",
+    "collection": "disabled",
+    "paidInference": "none",
+    "livePublication": "none",
+    "originalUpload": "b902c48c-767e-4515-bdb9-d1ae39572a87/cell8 remains uncertain and untouched"
+  },
+  "tests": {
+    "settingsMeasurement": "46/46",
+    "semanticAdmission": "27/27",
+    "adapterHostedMaintenance": "91/91",
+    "readerBrowser": "94/94"
+  },
+  "originalFailedAttempt": {
+    "source": "579eebb2e9257165ea0bb6327f66a37b33b74e1e",
+    "passedCommands": 37,
+    "failedStep": "test:maintenance-adapters",
+    "stepTests": "89 passed, 2 failed",
+    "cause": "unconditional canonical pre-assessment preflight blocked retained write reconciliation",
+    "fix": "one-line removal; actual new paid calls retain post-reservation guard",
+    "path": "/workspace/agentic-bible-quality-validation-20261030/.git/local-qualifications/collector-publisher-579eebb"
+  },
+  "sourceBundle": {
+    "path": "/workspace/agentic-bible-quality-validation-20261030/.git/quality-evidence/collector-publisher-final-1a30e1c/source-from-pr60.bundle",
+    "sha256": "23a9168b540ff04de6cfa95055a2a2ab3f658041099487785df3bc230e033abe",
+    "prerequisite": "061359cc443da097e5472bac2914ac81e3f91fd0"
+  },
+  "oldUpload": {
+    "operation": "b902c48c-767e-4515-bdb9-d1ae39572a87",
+    "cell": 8,
+    "state": "uncertain; untouched; no supported terminal status receipt available",
+    "journalSha256": "a0548d2aadf2cda8f9681d3d8c6646fe04499d38ce78fb12a83d5d0bc5a29d4e"
+  },
+  "externalEffects": {
+    "providerWrites": false,
+    "sourceFetch": false,
+    "paidInference": false,
+    "collection": false,
+    "deployment": false,
+    "credentialsOrGrants": false,
+    "remoteSourcePublication": false
+  }
+}
